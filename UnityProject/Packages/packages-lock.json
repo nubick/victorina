@@ -152,6 +152,13 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "com.yasirkula.ingamedebugconsole": {
+      "version": "https://github.com/yasirkula/UnityIngameDebugConsole.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "f1907ce5f7061252356c2ec3484f2c00dff6978c"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

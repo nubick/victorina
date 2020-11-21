@@ -1,6 +1,7 @@
 UnityProject/Library
 UnityProject/Logs
 UnityProject/obj
+UnityProject/Temp
 .idea/
 *.sln
 *.csproj
