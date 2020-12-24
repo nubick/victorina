@@ -1,4 +1,6 @@
+using System.Linq;
 using Injection;
+using UnityEngine;
 
 namespace Victorina
 {
@@ -19,9 +21,19 @@ namespace Victorina
             GameLobbyView.RefreshUI();
         }
         
-        private void OnPlayerDisconnect(NetworkPlayer networkPlayer)
+        private void OnPlayerDisconnect(ulong clientId)
         {
-            Data.NetworkPlayers.Remove(networkPlayer);
+            NetworkPlayer networkPlayer = Data.NetworkPlayers.SingleOrDefault(_ => _.NetworkedObject.NetworkId == clientId);
+
+            if (networkPlayer == null)
+            {
+                Debug.Log($"Can't find NetworkPlayer with clientId: {clientId}");
+            }
+            else
+            {
+                Data.NetworkPlayers.Remove(networkPlayer);
+                GameLobbyView.RefreshUI();
+            }
         }
     }
 }

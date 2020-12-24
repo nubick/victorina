@@ -6,6 +6,8 @@ namespace Victorina
     {
         public GameObject Content;
 
+        public bool IsActive => Content.activeSelf;
+        
         protected virtual void OnShown() { }
 
         public void Show()

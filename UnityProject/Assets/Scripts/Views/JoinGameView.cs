@@ -7,6 +7,7 @@ namespace Victorina
     {
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private ClientService ClientService { get; set; }
+        [Inject] private GameLobbyView GameLobbyView { get; set; }
 
         public InputField PlayerNameInputField;
         
@@ -14,6 +15,8 @@ namespace Victorina
         {
             string playerName = PlayerNameInputField.text;
             ClientService.JoinGame(playerName);
+            //Is success - go to lobby
+            SwitchTo(GameLobbyView);
         }
 
         public void OnBackButtonClicked()

@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.Xml;
 using Injection;
 using MLAPI;
+using MLAPI.Connection;
 using MLAPI.Spawning;
 using UnityEngine;
 
@@ -11,6 +12,8 @@ namespace Victorina
     public class ServerService
     {
         [Inject] private NetworkingManager NetworkingManager { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
+        [Inject] private RightsData RightsData { get; set; }
         
         public void Initialize()
         {
@@ -23,7 +26,8 @@ namespace Victorina
         public void StartHost()
         {
             Debug.Log("StartHost");
-            NetworkingManager.StartHost();
+            NetworkingManager.StartHost(createPlayerObject: false);
+            RightsData.IsAdmin = true;
         }
 
         private void OnServerStarted()
@@ -35,7 +39,7 @@ namespace Victorina
         
         private void OnConnectionApprovalCallback(byte[] connectionData, ulong clientId, NetworkingManager.ConnectionApprovedDelegate callback)
         {
-            Debug.Log($"OnConnectionApproval, clientId: {clientId}");
+            Debug.Log($"Server.OnConnectionApproval, clientId: {clientId}");
 
             string playerName = Encoding.UTF32.GetString(connectionData);
             Debug.Log($"PlayerName: {playerName}");
@@ -43,15 +47,13 @@ namespace Victorina
             _namesMap[clientId] = playerName;
             
             ulong? prefabHash = SpawnManager.GetPrefabHashFromGenerator("NetworkPlayer");
-            
-            bool approved = true;
-            bool createPlayerObject = true;
-            callback(createPlayerObject, prefabHash, approved, Vector3.zero, Quaternion.identity);
+
+            callback(createPlayerObject: true, prefabHash, approved: true, Vector3.zero, Quaternion.identity);
         }
 
         private void OnClientConnected(ulong clientId)
         {
-            Debug.Log($"OnClientConnected: {clientId}");
+            Debug.Log($"OnClientConnected, clientId: {clientId}, connected clients: {GetConnectedClients()}");
             NetworkedObject networkedObject = SpawnManager.GetPlayerObject(clientId);
             if (networkedObject == null)
             {
@@ -65,24 +67,30 @@ namespace Victorina
                 Debug.Log("Can't get NetworkPlayer component from spawned NetworkedObject");
                 return;
             }
-            
-            networkPlayer.PlayerName = _namesMap[clientId];
-            
+
+            if (NetworkingManager.IsServer)
+            {
+                Debug.Log($"Server. Set player name: {_namesMap[clientId]}");
+                networkPlayer.SetPlayerName(_namesMap[clientId]);
+            }
+
             MetagameEvents.PlayerConnected.Publish(networkPlayer);
         }
 
         private void OnClientDisconnect(ulong clientId)
         {
-            Debug.Log($"OnClientDisconnect: {clientId}");
-            NetworkedObject networkedObject = SpawnManager.GetPlayerObject(clientId);
+            Debug.Log($"OnClientDisconnect, clientId: {clientId}, connected clients: {GetConnectedClients()}");
+            MetagameEvents.PlayerDisconnect.Publish(clientId);
+        }
 
-            if (networkedObject == null)
+        private string GetConnectedClients()
+        {
+            string str = string.Empty;
+            foreach (NetworkedClient client in NetworkingManager.ConnectedClients.Values)
             {
-                Debug.Log($"NetworkedObject is null");
-                return;
+                str += $"clientId: {client.ClientId}, ";
             }
-            
-            MetagameEvents.PlayerDisconnect.Publish(null);
+            return str;
         }
     }
 }

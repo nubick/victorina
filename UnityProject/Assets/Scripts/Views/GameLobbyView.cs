@@ -1,15 +1,21 @@
 using Injection;
+using UnityEngine;
 
 namespace Victorina
 {
     public class GameLobbyView : ViewBase
     {
         [Inject] private GameLobbyData GameLobbyData { get; set; }
+        [Inject] private MatchService MatchService { get; set; }
+        [Inject] private ServerService ServerService { get; set; }
+        [Inject] private RightsData RightsData { get; set; }
         
         public PlayerWidget[] PlayerWidgets;
+        public GameObject AdminPart;
         
         protected override void OnShown()
         {
+            AdminPart.SetActive(RightsData.IsAdmin);
             RefreshUI();
         }
 
@@ -21,6 +27,19 @@ namespace Victorina
                 if (i < GameLobbyData.NetworkPlayers.Count)
                     PlayerWidgets[i].Bind(GameLobbyData.NetworkPlayers[i]);
             }
+        }
+
+        public void OnStartGameButtonClicked()
+        {
+            MatchService.Start();
+        }
+
+        public void OnRefreshButtonClicked()
+        {
+            //Admin only
+            
+            Debug.Log("Admin. Refresh button clicked");
+            //ServerService.RefreshPlayersBoard();
         }
     }
 }

@@ -8,6 +8,7 @@ namespace Victorina
     public class ClientService
     {
         [Inject] private NetworkingManager NetworkingManager { get; set; }
+        [Inject] private RightsData RightsData { get; set; }
         
         public void JoinGame(string playerName)
         {
@@ -15,6 +16,7 @@ namespace Victorina
             byte[] login = Encoding.UTF32.GetBytes(playerName);
             NetworkingManager.NetworkConfig.ConnectionData = login;
             NetworkingManager.StartClient();
+            RightsData.IsAdmin = false;
         }
     }
 }
