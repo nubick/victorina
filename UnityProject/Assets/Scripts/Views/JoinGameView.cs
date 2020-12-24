@@ -10,11 +10,13 @@ namespace Victorina
         [Inject] private GameLobbyView GameLobbyView { get; set; }
 
         public InputField PlayerNameInputField;
+        public InputField IpInputField;
         
         public void OnJoinButtonClicked()
         {
             string playerName = PlayerNameInputField.text;
-            ClientService.JoinGame(playerName);
+            string ip = IpInputField.text;
+            ClientService.JoinGame(playerName, ip);
             //Is success - go to lobby
             SwitchTo(GameLobbyView);
         }

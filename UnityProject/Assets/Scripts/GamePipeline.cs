@@ -21,7 +21,6 @@ namespace Victorina
             _injector.Bind(new ViewsSystem());
             
             _injector.Bind(FindObjectOfType<StartupView>());
-            _injector.Bind(FindObjectOfType<HostView>());
             _injector.Bind(FindObjectOfType<JoinGameView>());
             _injector.Bind(FindObjectOfType<GameLobbyView>());
             _injector.Bind(FindObjectOfType<TextQuestionView>());
@@ -33,6 +32,9 @@ namespace Victorina
             
             _injector.Bind(new MatchService());
             _injector.Bind(new MatchData());
+            
+            _injector.Bind(new ExternalIpSystem());
+            _injector.Bind(new ExternalIpData());
             
             _injector.Bind(NetworkingManager.Singleton);
             _injector.Bind(new ServerService());
@@ -46,7 +48,9 @@ namespace Victorina
 
         private void Initialize()
         {
+            StartCoroutine(_injector.Get<ExternalIpSystem>().Initialize());
             _injector.Get<ServerService>().Initialize();
+            
             _injector.Get<GameLobbySystem>().Initialize();
             _injector.Get<ViewsSystem>().Initialize();
             _injector.Get<DataSerializationService>().Initialize();

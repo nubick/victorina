@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Injection;
 using MLAPI;
 using MLAPI.Connection;
 using MLAPI.Spawning;
+using MLAPI.Transports.UNET;
 using UnityEngine;
 
 namespace Victorina
@@ -12,8 +12,8 @@ namespace Victorina
     public class ServerService
     {
         [Inject] private NetworkingManager NetworkingManager { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private RightsData RightsData { get; set; }
+        [Inject] private ExternalIpData ExternalIpData { get; set; }
         
         public void Initialize()
         {
@@ -25,11 +25,14 @@ namespace Victorina
 
         public void StartHost()
         {
-            Debug.Log("StartHost");
-            NetworkingManager.StartHost(createPlayerObject: false);
+            Debug.Log("Master: StartServer");
+            UnetTransport transport = NetworkingManager.GetComponent<UnetTransport>();
+            transport.ConnectAddress = ExternalIpData.Ip;
+            transport.ConnectPort = 139;
+            NetworkingManager.StartServer();
             RightsData.IsAdmin = true;
         }
-
+        
         private void OnServerStarted()
         {
             Debug.Log("OnServerStarted");

@@ -8,6 +8,7 @@ namespace Victorina.SI
 {
     public class SiConverter
     {
+#if UNITY_EDITOR
         [MenuItem("Victorina/Run Convert")]
         public static void RunConvertMenu()
         {
@@ -16,7 +17,8 @@ namespace Victorina.SI
             SiConverter converter = new SiConverter();
             converter.Convert();
         }
-        
+#endif
+
         public void Convert()
         {
             string xml = ReadXmlFile();
@@ -47,7 +49,7 @@ namespace Victorina.SI
             do
             {
                 int price = int.Parse(xmlReader.GetAttribute("price"));
-                
+
                 xmlReader.ReadToFollowing("atom");
                 string questionText = xmlReader.ReadInnerXml();
 
@@ -58,7 +60,7 @@ namespace Victorina.SI
                 question.Text = questionText;
                 question.Answer = questionAnswer;
                 question.Price = price;
-                
+
                 questions.Add(question);
 
             } while (xmlReader.ReadToFollowing("question"));
