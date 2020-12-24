@@ -8,21 +8,53 @@
             <question price="100">
                 <scenario>
                     <atom>Сотрудник ООН Гари Лейн наперегонки со временем пытается остановить заражение, способное полностью истребить человечество.</atom>
-            </scenario>
+                </scenario>
                 <right>
                     <answer>Война миров Z</answer>
                 </right>
             </question>
             
-            
             <question price="200">
                 <info>
                     <comments> В этот день произошли террористические акты в США. Напомним, что фильм вышел в 1999 г. Откуда создатели фильма знали эту дату?</comments>
-                </info><scenario><atom>DeLorean DMC-12 обрёл широкую известность после выхода фильма «********», в котором автомобиль сыграл одну из главных ролей.</atom><atom type="marker"></atom><atom type="image">@1080px-TeamTimeCar.com-BTTF_DeLorean_Time_Machine-OtoGodfrey.com-JMortonPhoto.com-01.jpg</atom></scenario><right><answer>Назад в будущее</answer></right></question><question price="300"><scenario><atom>В первом фильме «****» этого персонажа сыграл малоизвестный актёр Дэмион Пуатье. В 4 фильмах этого персонажа сыграл Джош Бролин.
-Назовите этого персонажа и серию фильмов </atom><atom type="image">@orig.jfif</atom></scenario>
-        <right><answer>Танос, серия фильмов Мстители</answer></right></question><question price="400">
-        <type name="auction" /><scenario>
-        <atom>В сцене тренировочного поединка с Морфеусом, Нео потирает пальцем кончик носа – это дань уважения ЕМУ, который часто использовал это движение в своих фильмах. Несмотря на импровизацию со стороны Киану Ривза, режиссеры не стали удалять кадры из киноленты.</atom><atom type="marker"></atom><atom type="image">@Киану-Ривз-кунг-фу-Матрица-Брюс-Ли.jpg</atom></scenario><right><answer>Брюс Ли</answer></right></question><question price="500"><type name="auction" /><scenario><atom>Назовите персонажа</atom><atom type="voice">@y2mate.com - Один из Марвел. ГОЛОС ТАНОСА - Сергей Воробьев_ МСТИТЕЛИ _ ФИНАЛ. (mp3cut.net).mp3</atom></scenario><right><answer>Танос</answer></right></question><question price="600"><type name="auction" /><scenario><atom>Назовите персонажа</atom><atom type="voice">@y2mate.com - Официальный Голос ОПТИМУСА ПРАЙМА в России - Андрей Ярославцев_ Трансформеры. (mp3cut.net).mp3</atom></scenario><right><answer>Оптимус Прайм</answer></right></question><question price="700"><type name="auction" /><scenario><atom>Назовите персонажа</atom><atom type="voice">@y2mate.com - Голос СИДА из ЛЕДНИКОВОГО ПЕРИОДА - Антон Комолов. (mp3cut.net).mp3</atom></scenario><right><answer>Сид</answer></right></question><question price="800"><scenario><atom>Назовите персонажа</atom><atom type="voice">@y2mate (mp3cut.net).mp3</atom></scenario><right><answer>ОНО</answer></right></question><question price="900"><scenario><atom>Назовите персонажа</atom><atom type="voice">@y2mate.com - Один из Marvel.ЧЕЛОВЕК ПАУК.Озвучивает Иван ЧабанThe one of the Marvel.Spider Man. (mp3cut.net).mp3</atom></scenario><right><answer>Человек Паук</answer></right></question><question price="1000"><type name="auction" /><scenario><atom>Фильм снят по мотивам манги Хироси Сакурадзаки «Всё, что тебе нужно — это убивать» (All you need is kill, 2004).
+                </info>
+                <scenario>
+                    <atom>
+                        DeLorean DMC-12 обрёл широкую известность после выхода фильма «********», в котором автомобиль сыграл одну из главных ролей.
+                    </atom>
+                    <atom type="marker"></atom>
+                    <atom type="image">@1080px-TeamTimeCar.com-BTTF_DeLorean_Time_Machine-OtoGodfrey.com-JMortonPhoto.com-01.jpg</atom>
+                </scenario>
+                <right>
+                    <answer>Назад в будущее</answer></right>
+            </question>
+            
+            <question price="300">
+                <scenario>
+                    <atom>В первом фильме «****» этого персонажа сыграл малоизвестный актёр Дэмион Пуатье. В 4 фильмах этого персонажа сыграл Джош Бролин.
+Назовите этого персонажа и серию фильмов </atom>
+                    <atom type="image">@orig.jfif</atom>
+                </scenario>
+                <right>
+                    <answer>Танос, серия фильмов Мстители</answer>
+                </right>
+            </question>
+            
+            <question price="400">
+                <type name="auction" />
+                <scenario>
+                    <atom>
+                        В сцене тренировочного поединка с Морфеусом, Нео потирает пальцем кончик носа – это дань уважения ЕМУ, который часто использовал это движение в своих фильмах. Несмотря на импровизацию со стороны Киану Ривза, режиссеры не стали удалять кадры из киноленты.
+                    </atom>
+                    <atom type="marker"></atom>
+                    <atom type="image">@Киану-Ривз-кунг-фу-Матрица-Брюс-Ли.jpg</atom>
+                </scenario>
+                <right>
+                    <answer>Брюс Ли</answer>
+                </right>
+            </question>
+            
+            <question price="500"><type name="auction" /><scenario><atom>Назовите персонажа</atom><atom type="voice">@y2mate.com - Один из Марвел. ГОЛОС ТАНОСА - Сергей Воробьев_ МСТИТЕЛИ _ ФИНАЛ. (mp3cut.net).mp3</atom></scenario><right><answer>Танос</answer></right></question><question price="600"><type name="auction" /><scenario><atom>Назовите персонажа</atom><atom type="voice">@y2mate.com - Официальный Голос ОПТИМУСА ПРАЙМА в России - Андрей Ярославцев_ Трансформеры. (mp3cut.net).mp3</atom></scenario><right><answer>Оптимус Прайм</answer></right></question><question price="700"><type name="auction" /><scenario><atom>Назовите персонажа</atom><atom type="voice">@y2mate.com - Голос СИДА из ЛЕДНИКОВОГО ПЕРИОДА - Антон Комолов. (mp3cut.net).mp3</atom></scenario><right><answer>Сид</answer></right></question><question price="800"><scenario><atom>Назовите персонажа</atom><atom type="voice">@y2mate (mp3cut.net).mp3</atom></scenario><right><answer>ОНО</answer></right></question><question price="900"><scenario><atom>Назовите персонажа</atom><atom type="voice">@y2mate.com - Один из Marvel.ЧЕЛОВЕК ПАУК.Озвучивает Иван ЧабанThe one of the Marvel.Spider Man. (mp3cut.net).mp3</atom></scenario><right><answer>Человек Паук</answer></right></question><question price="1000"><type name="auction" /><scenario><atom>Фильм снят по мотивам манги Хироси Сакурадзаки «Всё, что тебе нужно — это убивать» (All you need is kill, 2004).
 В фильме сыграли главные роли Том Круз и Эмили Блант. Назовите этот фильм.</atom>
     <atom type="marker"></atom><atom type="image">@Постер_фильма_«Грань_будущего».jpg</atom></scenario><right>
         <answer>Грань  будущего</answer></right></question></questions></theme><theme name="Игрушки"><questions><question price="100"><scenario><atom>ЕГО придумала Аки Маита, которая работала в отделе продаж и маркетинга компании «Бандай». Однажды она увидела рекламный ролик про мальчика, который хотел, но не мог взять с собой в детский сад черепашку. Тогда Маита решила, что любимого питомца может заменить электронный друг.</atom><atom type="marker"></atom><atom type="image">@828856b48af1cdbbd8b395d490a86e03.jpg</atom></scenario><right><answer>Тамагочи</answer></right></question><question price="200"><scenario><atom>Игровая консоль о которой каждый мечтал в дестве, в игры можно было играть по сети, можно было слушать музыку, сидеть в интернете и даже фотографировать. Часто мы одолживали или менялись друг с другом играми, но технический прогресс сделал свое дело и о ней всей уже давно забыли.  </atom><atom type="marker"></atom><atom type="image">@1268px-Psp-1000.jpg</atom></scenario><right><answer>PSP</answer></right></question><question price="300"><scenario><atom type="image">@igr_33.jpg</atom></scenario><right><answer>Морской бой</answer></right></question><question price="400"><scenario><atom>«ОНИ» изначально были именно линией игрушек и лишь затем обрели анимационную и кинематографическую форму. Разработаны на основе героев японского производителя Takara  в 1984 году, но потребовалось изменить  конструкцию — в частности, японские игрушки имели металлические детали, которые в масс-маркете обходились дороже и требовали более сложного производства. Назовите ИХ. (М. Бэй)</atom><atom type="marker"></atom><atom type="image">@1463722289183260671.jpg</atom></scenario><right><answer>Трансформеры</answer></right></question><question price="500"><scenario><atom>Бабушка внучку свою наказала
