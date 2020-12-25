@@ -25,10 +25,10 @@ namespace Victorina
 
         public void StartHost()
         {
-            Debug.Log("Master: StartServer");
+            Debug.Log($"Master: StartServer, IP: {ExternalIpData.Ip}");
             UnetTransport transport = NetworkingManager.GetComponent<UnetTransport>();
             transport.ConnectAddress = ExternalIpData.Ip;
-            transport.ConnectPort = 139;
+            transport.ConnectPort = Static.Port;
             NetworkingManager.StartServer();
             RightsData.IsAdmin = true;
         }
@@ -95,5 +95,6 @@ namespace Victorina
             }
             return str;
         }
+
     }
 }

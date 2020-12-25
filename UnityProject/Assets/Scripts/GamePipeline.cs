@@ -27,14 +27,20 @@ namespace Victorina
             
             _injector.Bind(new RightsData());
             
+            _injector.Bind(new AppState());
+            _injector.Bind(new SaveSystem());
+            
+            _injector.Bind(new ExternalIpSystem());
+            _injector.Bind(new ExternalIpData());
+            
+            _injector.Bind(new IpCodeSystem());
+            
             _injector.Bind(new GameLobbySystem());
             _injector.Bind(new GameLobbyData());
             
             _injector.Bind(new MatchService());
             _injector.Bind(new MatchData());
             
-            _injector.Bind(new ExternalIpSystem());
-            _injector.Bind(new ExternalIpData());
             
             _injector.Bind(NetworkingManager.Singleton);
             _injector.Bind(new ServerService());
@@ -48,6 +54,8 @@ namespace Victorina
 
         private void Initialize()
         {
+            _injector.Get<SaveSystem>().LoadAll();
+            
             StartCoroutine(_injector.Get<ExternalIpSystem>().Initialize());
             _injector.Get<ServerService>().Initialize();
             

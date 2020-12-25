@@ -1,5 +1,3 @@
-using System;
-using System.Net;
 using System.Text;
 using Injection;
 using MLAPI;
@@ -12,31 +10,25 @@ namespace Victorina
     {
         [Inject] private NetworkingManager NetworkingManager { get; set; }
         [Inject] private RightsData RightsData { get; set; }
-        [Inject] private ExternalIpData ExternalIpData { get; set; }
+        [Inject] private IpCodeSystem IpCodeSystem { get; set; }
         
-        public void JoinGame(string playerName, string ip)
+        public void JoinGame(string playerName, string gameCode)
         {
-            Debug.Log($"JoinGame: '{playerName}', ip: {ip}");
+            Debug.Log($"JoinGame: '{playerName}', game code: {gameCode}");
+            
+            string ip = IpCodeSystem.GetIp(gameCode);
+            Debug.Log($"Joining IP: {ip}");
 
             UnetTransport transport = NetworkingManager.GetComponent<UnetTransport>();
-
-            IPAddress ipAddress;
-            if (IPAddress.TryParse(ip, out ipAddress))
-            {
-                transport.ConnectAddress = ipAddress.ToString();
-                transport.ConnectPort = 139;
-                
-                byte[] login = Encoding.UTF32.GetBytes(playerName);
-                NetworkingManager.NetworkConfig.ConnectionData = login;
-                
-                
-                NetworkingManager.StartClient();
-                RightsData.IsAdmin = false;
-            }
-            else
-            {
-                throw new Exception($"Can't parse ip: {ip}");
-            }
+            transport.ConnectAddress = ip;
+            transport.ConnectPort = Static.Port;
+            
+            byte[] playerNameBytes = Encoding.UTF32.GetBytes(playerName);
+            NetworkingManager.NetworkConfig.ConnectionData = playerNameBytes;
+            
+            NetworkingManager.StartClient();
+            
+            RightsData.IsAdmin = false;
         }
     }
 }

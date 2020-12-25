@@ -33,13 +33,5 @@ namespace Victorina
         {
             MatchService.Start();
         }
-
-        public void OnRefreshButtonClicked()
-        {
-            //Admin only
-            
-            Debug.Log("Admin. Refresh button clicked");
-            //ServerService.RefreshPlayersBoard();
-        }
     }
 }

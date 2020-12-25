@@ -10,21 +10,11 @@ namespace Victorina
         
         public void OnCreateNewGameButtonClicked()
         {
-            StartHost();
+            ServerService.StartHost();
             SwitchTo(GameLobbyView);
         }
 
         public void OnJoinGameButtonClicked()
-        {
-            JoinGame();
-        }
-
-        private void StartHost()
-        {
-            ServerService.StartHost();
-        }
-        
-        private void JoinGame()
         {
             SwitchTo(JoinGameView);
         }
