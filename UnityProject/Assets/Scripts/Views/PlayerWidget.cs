@@ -7,9 +7,9 @@ namespace Victorina
     {
         public Text PlayerName;
 
-        public void Bind(NetworkPlayer networkPlayer)
+        public void Bind(string playerName)
         {
-            PlayerName.text = networkPlayer.PlayerName;
+            PlayerName.text = playerName;
         }
     }
 }

@@ -7,47 +7,30 @@ namespace Victorina
 {
     public class NetworkPlayer : NetworkedBehaviour
     {
-        public string PlayerName;
-
         [Inject] private ViewsSystem ViewsSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         
         public void Awake()
         {
-            Debug.Log($"Network player created: {OwnerClientId}");
+            Debug.Log("Network player created");
         }
         
-        public void SetPlayerName(string playerName)
-        {
-            Debug.Log($"Client. Set player name: {playerName}");
-            PlayerName = playerName;
-            InvokeClientRpcOnEveryone(SetPlayerNameRPC, playerName);
-        }
-        
-        [ClientRPC]
-        public void SetPlayerNameRPC(string playerName)
-        {
-            Debug.Log($"Client RPC. Set player name: {playerName}");
-            PlayerName = playerName;
-        }
-
         public void SendPlayersBoard(PlayersBoard playersBoard)
         {
-            Debug.Log($"Master: Send PlayersBoard: {playersBoard}");
+            Debug.Log($"Master: Send PlayersBoard: {playersBoard} to {OwnerClientId}");
             InvokeClientRpcOnOwner(UpdatePlayersBoardRPC, playersBoard);
         }
         
         [ClientRPC]
         private void UpdatePlayersBoardRPC(PlayersBoard playersBoard)
         {
-            Debug.Log($"Player {OwnerClientId}: Wow, I am player and I got player board.");
-            Debug.Log($"Players amount: {playersBoard.PlayerNames.Count}");
-            //todo: update on player
+            Debug.Log($"Player {OwnerClientId}: Receive PlayersBoard: {playersBoard}");
+            MatchData.PlayersBoard.Value = playersBoard;
         }
 
         public void SendMatchData(MatchData matchData)
         {
-            Debug.Log($"Master: Send MatchData: {matchData}");
+            Debug.Log($"Master: Send MatchData: {matchData} to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveMatchDataRPC, matchData);
         }
 
@@ -61,7 +44,7 @@ namespace Victorina
 
         public void SendTextQuestion(TextQuestion textQuestion)
         {
-            Debug.Log($"Master: Send TextQuestion: {textQuestion}");
+            Debug.Log($"Master: Send TextQuestion: {textQuestion} to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveTextQuestionRPC, textQuestion);
         }
 

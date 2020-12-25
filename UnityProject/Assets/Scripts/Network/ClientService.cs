@@ -45,6 +45,9 @@ namespace Victorina
 
         private void OnClientConnected(ulong clientId)
         {
+            if (NetworkingManager.IsServer)
+                return;
+            
             if (NetworkingManager.LocalClientId == clientId)
             {
                 Debug.Log($"Client connection success, clientId: {clientId}");
@@ -59,6 +62,9 @@ namespace Victorina
 
         private void OnClientDisconnect(ulong clientId)
         {
+            if (NetworkingManager.IsServer)
+                return;
+            
             Debug.Log($"OnClientDisconnect: {clientId}");
             NetworkData.ClientConnectingState = ClientConnectingState.Fail;
         }

@@ -5,10 +5,9 @@ namespace Victorina
 {
     public class GameLobbyView : ViewBase
     {
-        [Inject] private GameLobbyData GameLobbyData { get; set; }
         [Inject] private MatchService MatchService { get; set; }
-        [Inject] private ServerService ServerService { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
         
         public PlayerWidget[] PlayerWidgets;
         public GameObject AdminPart;
@@ -21,11 +20,16 @@ namespace Victorina
 
         public void RefreshUI()
         {
+            RefreshPlayersBoard(MatchData.PlayersBoard.Value);
+        }
+
+        private void RefreshPlayersBoard(PlayersBoard playersBoard)
+        {
             for (int i = 0; i < PlayerWidgets.Length; i++)
             {
-                PlayerWidgets[i].gameObject.SetActive(i < GameLobbyData.NetworkPlayers.Count);
-                if (i < GameLobbyData.NetworkPlayers.Count)
-                    PlayerWidgets[i].Bind(GameLobbyData.NetworkPlayers[i]);
+                PlayerWidgets[i].gameObject.SetActive(i < playersBoard.PlayerNames.Count);
+                if (i < playersBoard.PlayerNames.Count)
+                    PlayerWidgets[i].Bind(playersBoard.PlayerNames[i]);
             }
         }
 

@@ -17,25 +17,19 @@ namespace Victorina
         
         public void Send(PlayersBoard playersBoard)
         {
-            Debug.Log("Admin. ServerService. Refresh");
-
-            // PlayersBoard playersBoard = new PlayersBoard();
-            // playersBoard.PlayerNames.Add("Name A");
-            // playersBoard.PlayerNames.Add("Name B");
-            // playersBoard.PlayerNames.Add("Name C");
-
+            Debug.Log($"Master: Send PlayersBoard to All: {playersBoard}");
             GetPlayers().ForEach(player => player.SendPlayersBoard(playersBoard));
         }
 
         public void Send(MatchData matchData)
         {
-            Debug.Log($"Master: Send MatchData: {matchData}");
+            Debug.Log($"Master: Send MatchData to All: {matchData}");
             GetPlayers().ForEach(player => player.SendMatchData(matchData));
         }
 
         public void Send(TextQuestion textQuestion)
         {
-            Debug.Log($"Master: Send TextQuestion: {textQuestion}");
+            Debug.Log($"Master: Send TextQuestion to All: {textQuestion}");
             GetPlayers().ForEach(player => player.SendTextQuestion(textQuestion));
         }
     }

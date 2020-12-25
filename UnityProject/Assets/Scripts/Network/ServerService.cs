@@ -14,6 +14,8 @@ namespace Victorina
         [Inject] private NetworkingManager NetworkingManager { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private ExternalIpData ExternalIpData { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
+        [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         
         public void Initialize()
         {
@@ -70,19 +72,33 @@ namespace Victorina
                 Debug.Log("Can't get NetworkPlayer component from spawned NetworkedObject");
                 return;
             }
+            
+            MetagameEvents.PlayerConnected.Publish(networkPlayer);
 
             if (NetworkingManager.IsServer)
-            {
-                Debug.Log($"Server. Set player name: {_namesMap[clientId]}");
-                networkPlayer.SetPlayerName(_namesMap[clientId]);
-            }
+                UpdatePlayersBoard(MatchData.PlayersBoard.Value);
+        }
 
-            MetagameEvents.PlayerConnected.Publish(networkPlayer);
+        private void UpdatePlayersBoard(PlayersBoard playersBoard)
+        {
+            playersBoard.PlayerNames.Clear();
+            foreach (ulong connectedClientId in NetworkingManager.ConnectedClients.Keys)
+            {
+                string name = _namesMap[connectedClientId];
+                playersBoard.PlayerNames.Add(name);
+            }
+            MatchData.PlayersBoard.NotifyChanged();
+            SendToPlayersService.Send(playersBoard);
         }
 
         private void OnClientDisconnect(ulong clientId)
         {
-            Debug.Log($"OnClientDisconnect, clientId: {clientId}, connected clients: {GetConnectedClients()}");
+            if (NetworkingManager.IsServer)
+            {
+                Debug.Log($"OnClientDisconnect, clientId: {clientId}, connected clients: {GetConnectedClients()}");
+                UpdatePlayersBoard(MatchData.PlayersBoard.Value);
+            }
+
             MetagameEvents.PlayerDisconnect.Publish(clientId);
         }
 

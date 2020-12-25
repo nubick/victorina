@@ -36,7 +36,6 @@ namespace Victorina
             _injector.Bind(new IpCodeSystem());
             
             _injector.Bind(new GameLobbySystem());
-            _injector.Bind(new GameLobbyData());
             
             _injector.Bind(new MatchService());
             _injector.Bind(new MatchData());
@@ -67,6 +66,7 @@ namespace Victorina
         
         private void OnPlayerConnected(NetworkPlayer networkPlayer)
         {
+            Debug.Log($"Pipeline: OnPlayerConnected, inject to networkPlayer:{networkPlayer.OwnerClientId}");
             _injector.InjectTo(networkPlayer);
         }
     }
