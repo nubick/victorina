@@ -25,7 +25,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<GameLobbyView>());
             _injector.Bind(FindObjectOfType<TextQuestionView>());
             
-            _injector.Bind(new RightsData());
+            _injector.Bind(new NetworkData());
             
             _injector.Bind(new AppState());
             _injector.Bind(new SaveSystem());
@@ -58,6 +58,7 @@ namespace Victorina
             
             StartCoroutine(_injector.Get<ExternalIpSystem>().Initialize());
             _injector.Get<ServerService>().Initialize();
+            _injector.Get<ClientService>().Initialize();
             
             _injector.Get<GameLobbySystem>().Initialize();
             _injector.Get<ViewsSystem>().Initialize();

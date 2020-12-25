@@ -1,3 +1,4 @@
+using System.Collections;
 using Injection;
 using UnityEngine;
 
@@ -11,20 +12,27 @@ namespace Victorina
         [Inject] private IpCodeSystem IpCodeSystem { get; set; }
         [Inject] private AppState AppState { get; set; }
         [Inject] private SaveSystem SaveSystem { get; set; }
+        [Inject] private NetworkData NetworkData { get; set; }
 
         public ValidatedInputField PlayerNameInputField;
         public ValidatedInputField GameCodeInputField;
         public GameObject UseLocalhostButton;
 
+        public CanvasGroup CanvasGroup;
+        public GameObject LoadingIndicator;
+        
         protected override void OnShown()
         {
+            CanvasGroup.interactable = true;
+            LoadingIndicator.SetActive(false);
+            
             if (string.IsNullOrWhiteSpace(PlayerNameInputField.Text))
                 PlayerNameInputField.Text = AppState.LastJoinPlayerName;
 
             if (string.IsNullOrWhiteSpace(GameCodeInputField.Text))
                 GameCodeInputField.Text = AppState.LastJoinGameCode;
             
-            UseLocalhostButton.SetActive(true);//todo: link to build mode settings
+            UseLocalhostButton.SetActive(Static.BuildMode == BuildMode.Development);
         }
 
         public void OnJoinButtonClicked()
@@ -48,15 +56,30 @@ namespace Victorina
             
             if (!hasValidationError)
             {
-                ClientService.JoinGame(playerName, gameCode);
-                
-                //todo: go to lobby only after success join
+                StartCoroutine(JoinCoroutine(playerName, gameCode));
+            }
+        }
 
+        private IEnumerator JoinCoroutine(string playerName, string gameCode)
+        {
+            CanvasGroup.interactable = false;
+            LoadingIndicator.SetActive(true);
+            
+            yield return ClientService.JoinGame(playerName, gameCode);
+
+            CanvasGroup.interactable = true;
+            LoadingIndicator.SetActive(false);
+            
+            if (NetworkData.ClientConnectingState == ClientConnectingState.Success)
+            {
                 AppState.LastJoinPlayerName = playerName;
                 AppState.LastJoinGameCode = gameCode;
                 SaveSystem.Save();
-                
                 SwitchTo(GameLobbyView);
+            }
+            else
+            {
+                Debug.Log($"Join game error, client connecting state: {NetworkData.ClientConnectingState}");
             }
         }
 

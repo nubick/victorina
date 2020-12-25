@@ -8,14 +8,14 @@ namespace Victorina
         [Inject] private GameLobbyData GameLobbyData { get; set; }
         [Inject] private MatchService MatchService { get; set; }
         [Inject] private ServerService ServerService { get; set; }
-        [Inject] private RightsData RightsData { get; set; }
+        [Inject] private NetworkData NetworkData { get; set; }
         
         public PlayerWidget[] PlayerWidgets;
         public GameObject AdminPart;
         
         protected override void OnShown()
         {
-            AdminPart.SetActive(RightsData.IsAdmin);
+            AdminPart.SetActive(NetworkData.IsAdmin);
             RefreshUI();
         }
 

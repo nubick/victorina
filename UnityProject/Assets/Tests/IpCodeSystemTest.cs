@@ -17,17 +17,7 @@ namespace Victorina.Test
             Assert.AreEqual(s.GetCode("94.232.233.226"), "QDYIZISI");
             Assert.AreEqual(s.GetCode("127.0.0.1"), Static.LocalhostGameCode);
         }
-
-        [Test]
-        public void GetCodeWrongTest()
-        {
-            IpCodeSystem s = new IpCodeSystem();
-            
-            string code1 = s.GetCode(string.Empty);
-            // string code2 = s.GetCode("1000.1000.1000.1000");
-            // string code3 = s.GetCode("GiveMeCodePlease");
-        }
-
+        
         [Test]
         public void GetIpTest()
         {

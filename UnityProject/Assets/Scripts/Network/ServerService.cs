@@ -12,7 +12,7 @@ namespace Victorina
     public class ServerService
     {
         [Inject] private NetworkingManager NetworkingManager { get; set; }
-        [Inject] private RightsData RightsData { get; set; }
+        [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private ExternalIpData ExternalIpData { get; set; }
         
         public void Initialize()
@@ -30,7 +30,7 @@ namespace Victorina
             transport.ConnectAddress = ExternalIpData.Ip;
             transport.ConnectPort = Static.Port;
             NetworkingManager.StartServer();
-            RightsData.IsAdmin = true;
+            NetworkData.IsAdmin = true;
         }
         
         private void OnServerStarted()
