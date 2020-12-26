@@ -8,6 +8,8 @@ namespace Victorina
         [Inject] private MatchService MatchService { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private MatchData MatchData { get; set; }
+        [Inject] private ServerService ServerService { get; set; }
+        [Inject] private StartupView StartupView { get; set; }
         
         public PlayerWidget[] PlayerWidgets;
         public GameObject AdminPart;
@@ -36,6 +38,12 @@ namespace Victorina
         public void OnStartGameButtonClicked()
         {
             MatchService.Start();
+        }
+
+        public void OnBackButtonClicked()
+        {
+            ServerService.StopServer();
+            SwitchTo(StartupView);
         }
     }
 }

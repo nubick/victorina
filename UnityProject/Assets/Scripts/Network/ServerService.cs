@@ -17,6 +17,8 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         
+        private readonly Dictionary<ulong, string> _namesMap = new Dictionary<ulong, string>();
+        
         public void Initialize()
         {
             NetworkingManager.OnServerStarted += OnServerStarted;
@@ -25,7 +27,7 @@ namespace Victorina
             NetworkingManager.OnClientDisconnectCallback += OnClientDisconnect;
         }
 
-        public void StartHost()
+        public void StartServer()
         {
             Debug.Log($"Master: StartServer, IP: {ExternalIpData.Ip}");
             UnetTransport transport = NetworkingManager.GetComponent<UnetTransport>();
@@ -39,8 +41,6 @@ namespace Victorina
         {
             Debug.Log("OnServerStarted");
         }
-
-        private Dictionary<ulong, string> _namesMap = new Dictionary<ulong, string>();
         
         private void OnConnectionApprovalCallback(byte[] connectionData, ulong clientId, NetworkingManager.ConnectionApprovedDelegate callback)
         {
@@ -112,5 +112,10 @@ namespace Victorina
             return str;
         }
 
+        public void StopServer()
+        {
+            NetworkingManager.StopServer();
+            NetworkData.IsAdmin = false;
+        }
     }
 }

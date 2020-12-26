@@ -24,6 +24,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<JoinGameView>());
             _injector.Bind(FindObjectOfType<GameLobbyView>());
             _injector.Bind(FindObjectOfType<TextQuestionView>());
+            _injector.Bind(FindObjectOfType<RoundView>());
             
             _injector.Bind(new NetworkData());
             
@@ -40,6 +41,8 @@ namespace Victorina
             _injector.Bind(new MatchService());
             _injector.Bind(new MatchData());
             
+            _injector.Bind(new PackageSystem());
+            _injector.Bind(new PackageData());
             
             _injector.Bind(NetworkingManager.Singleton);
             _injector.Bind(new ServerService());
@@ -62,6 +65,8 @@ namespace Victorina
             _injector.Get<GameLobbySystem>().Initialize();
             _injector.Get<ViewsSystem>().Initialize();
             _injector.Get<DataSerializationService>().Initialize();
+            
+            _injector.Get<PackageSystem>().Initialize();
         }
         
         private void OnPlayerConnected(NetworkPlayer networkPlayer)
