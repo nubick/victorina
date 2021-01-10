@@ -36,16 +36,24 @@ namespace Victorina
             while (QuestionsRoot.childCount > 0)
                 DestroyImmediate(QuestionsRoot.GetChild(0).gameObject);
             
+            int columns = netRound.Themes.Max(_ => _.Questions.Count);
+            
             foreach (NetRoundTheme netRoundTheme in netRound.Themes)
             {
                 ThemeWidget themeWidget = Instantiate(ThemeWidgetPrefab, ThemeWidgetsRoot);
                 themeWidget.Name.text = netRoundTheme.Name;
-
+                
                 Transform questionsRoot = Instantiate(RoundQuestionsLinePrefab, QuestionsRoot);
                 foreach (NetRoundQuestion netRoundQuestion in netRoundTheme.Questions)
                 {
                     RoundQuestionWidget widget = Instantiate(RoundQuestionWidgetPrefab, questionsRoot);
                     widget.Bind(netRoundQuestion);
+                }
+
+                for (int i = netRoundTheme.Questions.Count; i < columns; i++)
+                {
+                    RoundQuestionWidget widget = Instantiate(RoundQuestionWidgetPrefab, questionsRoot);
+                    widget.BindEmpty();
                 }
             }
         }
@@ -62,7 +70,7 @@ namespace Victorina
 
         public IEnumerator ShowQuestionBlinkEffect(NetRoundQuestion netRoundQuestion)
         {
-            RoundQuestionWidget widget = QuestionsRoot.GetComponentsInChildren<RoundQuestionWidget>().Single(_ => _.NetRoundQuestion.QuestionId == netRoundQuestion.QuestionId);
+            RoundQuestionWidget widget = QuestionsRoot.GetComponentsInChildren<RoundQuestionWidget>().Single(_ => _.NetRoundQuestion != null && _.NetRoundQuestion.QuestionId == netRoundQuestion.QuestionId);
             for (int i = 0; i < 5; i++)
             {
                 widget.ShowHighlighted();

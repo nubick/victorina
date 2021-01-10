@@ -103,7 +103,8 @@ namespace Victorina.SI
                 if (xmlReader.NodeType == XmlNodeType.Element && xmlReader.Name == "question")
                 {
                     Question question = ReadQuestion(xmlReader);
-                    questions.Add(question);
+                    if(!IsEmpty(question))
+                        questions.Add(question);
                     //Debug.Log($"Question: {question}, {xmlReader.Name}");
                 }
                 
@@ -124,6 +125,11 @@ namespace Victorina.SI
             xmlReader.ReadToFollowing("answer");
             question.Answer = xmlReader.ReadInnerXml();
             return question;
+        }
+
+        private bool IsEmpty(Question question)
+        {
+            return question.Price == 0;
         }
     }
 }
