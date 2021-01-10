@@ -12,6 +12,7 @@ namespace Victorina
 
         public void Show()
         {
+            Debug.Log($"Show '{name}' view");
             Content.SetActive(true);
             OnShown();
         }

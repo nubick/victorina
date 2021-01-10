@@ -21,16 +21,22 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendPlayersBoard(playersBoard));
         }
 
-        public void Send(MatchData matchData)
+        public void Send(MatchPhase matchPhase)
         {
-            Debug.Log($"Master: Send MatchData to All: {matchData}");
-            GetPlayers().ForEach(player => player.SendMatchData(matchData));
+            Debug.Log($"Master: Send match phase to All: {matchPhase}");
+            GetPlayers().ForEach(player => player.SendMatchPhase(matchPhase));
+        }
+        
+        public void Send(NetRound netRound)
+        {
+            Debug.Log($"Master: Send RoundData to All: {netRound}");
+            GetPlayers().ForEach(player => player.SendRoundData(netRound));
         }
 
-        public void Send(TextQuestion textQuestion)
+        public void SendSelectedQuestion(NetRoundQuestion netRoundQuestion)
         {
-            Debug.Log($"Master: Send TextQuestion to All: {textQuestion}");
-            GetPlayers().ForEach(player => player.SendTextQuestion(textQuestion));
+            Debug.Log($"Master: Send selected question to All: {netRoundQuestion}");
+            GetPlayers().ForEach(player => player.SendSelectedQuestion(netRoundQuestion));
         }
     }
 }

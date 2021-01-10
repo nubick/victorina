@@ -38,7 +38,7 @@ namespace Victorina
             
             _injector.Bind(new GameLobbySystem());
             
-            _injector.Bind(new MatchService());
+            _injector.Bind(new MatchSystem());
             _injector.Bind(new MatchData());
             
             _injector.Bind(new PackageSystem());
@@ -65,6 +65,8 @@ namespace Victorina
             _injector.Get<GameLobbySystem>().Initialize();
             _injector.Get<ViewsSystem>().Initialize();
             _injector.Get<DataSerializationService>().Initialize();
+            
+            _injector.Get<RoundView>().Initialize();
             
             _injector.Get<PackageSystem>().Initialize();
         }

@@ -7,7 +7,6 @@ namespace Victorina
 {
     public class NetworkPlayer : NetworkedBehaviour
     {
-        [Inject] private ViewsSystem ViewsSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         
         public void Awake()
@@ -28,32 +27,43 @@ namespace Victorina
             MatchData.PlayersBoard.Value = playersBoard;
         }
 
-        public void SendMatchData(MatchData matchData)
+        public void SendMatchPhase(MatchPhase matchPhase)
         {
-            Debug.Log($"Master: Send MatchData: {matchData} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveMatchDataRPC, matchData);
+            Debug.Log($"Master: Send match phase: {matchPhase} to {OwnerClientId}");
+            InvokeClientRpcOnOwner(ReceiveMatchPhase, matchPhase);
         }
 
         [ClientRPC]
-        private void ReceiveMatchDataRPC(MatchData matchData)
+        private void ReceiveMatchPhase(MatchPhase matchPhase)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive matchData: {matchData}");
-            MatchData.Phase = matchData.Phase;
-            ViewsSystem.Refresh();
+            Debug.Log($"Player {OwnerClientId}: Receive match phase: {matchPhase}");
+            MatchData.Phase.Value = matchPhase;
         }
-
-        public void SendTextQuestion(TextQuestion textQuestion)
+        
+        public void SendRoundData(NetRound netRound)
         {
-            Debug.Log($"Master: Send TextQuestion: {textQuestion} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveTextQuestionRPC, textQuestion);
+            Debug.Log($"Master: Send RoundData: {netRound} to {OwnerClientId}");
+            InvokeClientRpcOnOwner(ReceiveRoundData, netRound, "RFS");
         }
 
         [ClientRPC]
-        private void ReceiveTextQuestionRPC(TextQuestion textQuestion)
+        private void ReceiveRoundData(NetRound netRound)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive TextQuestion: {textQuestion}");
-            MatchData.TextQuestion = textQuestion;
-            ViewsSystem.Refresh();
+            Debug.Log($"Player {OwnerClientId}: Receive RoundData: {netRound}");
+            MatchData.RoundData.Value = netRound;
+        }
+        
+        public void SendSelectedQuestion(NetRoundQuestion netRoundQuestion)
+        {
+            Debug.Log($"Master: Send selected question: {netRoundQuestion} to {OwnerClientId}");
+            InvokeClientRpcOnOwner(ReceiveSelectedQuestion, netRoundQuestion);
+        }
+
+        [ClientRPC]
+        private void ReceiveSelectedQuestion(NetRoundQuestion netRoundQuestion)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive selected question: {netRoundQuestion}");
+            MatchData.SelectedQuestion = netRoundQuestion;
         }
     }
 }

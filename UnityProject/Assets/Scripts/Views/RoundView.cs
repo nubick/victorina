@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Linq;
 using Injection;
 using UnityEngine;
 
@@ -5,8 +7,9 @@ namespace Victorina
 {
     public class RoundView : ViewBase
     {
-        [Inject] private PackageData PackageData { get; set; }
         [Inject] private StartupView StartupView { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
+        [Inject] private MatchSystem MatchSystem { get; set; }
 
         public Transform ThemeWidgetsRoot;
         public ThemeWidget ThemeWidgetPrefab;
@@ -14,14 +17,18 @@ namespace Victorina
         public Transform QuestionsRoot;
         public Transform RoundQuestionsLinePrefab;
         public RoundQuestionWidget RoundQuestionWidgetPrefab;
+
+        public void Initialize()
+        {
+            MetagameEvents.RoundQuestionClicked.Subscribe(OnRoundQuestionClicked);
+        }
         
         protected override void OnShown()
         {
-            int index = Random.Range(0, PackageData.Package.Rounds.Count);
-            RefreshUI(PackageData.Package.Rounds[index]);
+            RefreshUI(MatchData.RoundData.Value);
         }
 
-        private void RefreshUI(Round round)
+        private void RefreshUI(NetRound netRound)
         {
             while (ThemeWidgetsRoot.childCount > 0)
                 DestroyImmediate(ThemeWidgetsRoot.GetChild(0).gameObject);
@@ -29,23 +36,40 @@ namespace Victorina
             while (QuestionsRoot.childCount > 0)
                 DestroyImmediate(QuestionsRoot.GetChild(0).gameObject);
             
-            foreach (Theme theme in round.Themes)
+            foreach (NetRoundTheme netRoundTheme in netRound.Themes)
             {
                 ThemeWidget themeWidget = Instantiate(ThemeWidgetPrefab, ThemeWidgetsRoot);
-                themeWidget.Name.text = theme.Name;
+                themeWidget.Name.text = netRoundTheme.Name;
 
                 Transform questionsRoot = Instantiate(RoundQuestionsLinePrefab, QuestionsRoot);
-                foreach (Question question in theme.Questions)
+                foreach (NetRoundQuestion netRoundQuestion in netRoundTheme.Questions)
                 {
-                    RoundQuestionWidget roundQuestionWidget = Instantiate(RoundQuestionWidgetPrefab, questionsRoot);
-                    roundQuestionWidget.Price.text = question.Price.ToString();
+                    RoundQuestionWidget widget = Instantiate(RoundQuestionWidgetPrefab, questionsRoot);
+                    widget.Bind(netRoundQuestion);
                 }
             }
         }
-
+        
         public void OnBackButtonClicked()
         {
             SwitchTo(StartupView);
+        }
+        
+        private void OnRoundQuestionClicked(NetRoundQuestion netRoundQuestion)
+        {
+            MatchSystem.TrySelectQuestion(netRoundQuestion);
+        }
+
+        public IEnumerator ShowQuestionBlinkEffect(NetRoundQuestion netRoundQuestion)
+        {
+            RoundQuestionWidget widget = QuestionsRoot.GetComponentsInChildren<RoundQuestionWidget>().Single(_ => _.NetRoundQuestion.QuestionId == netRoundQuestion.QuestionId);
+            for (int i = 0; i < 5; i++)
+            {
+                widget.ShowHighlighted();
+                yield return new WaitForSeconds(0.1f);
+                widget.ShowDefault();
+                yield return new WaitForSeconds(0.1f);
+            }
         }
     }
 }

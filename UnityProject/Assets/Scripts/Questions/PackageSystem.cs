@@ -10,7 +10,7 @@ namespace Victorina
         public void Initialize()
         {
             SiConverter siConverter = new SiConverter();
-            Data.Package = siConverter.Convert();
+            Data.Package = siConverter.Convert();;
         }
     }
 }

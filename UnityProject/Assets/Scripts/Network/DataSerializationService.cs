@@ -9,8 +9,8 @@ namespace Victorina
         public void Initialize()
         {
             SerializationManager.RegisterSerializationHandlers(SerializePlayersBoard, DeserializePlayersBoard);
-            SerializationManager.RegisterSerializationHandlers(SerializeMatchData, DeserializeMatchData);
-            SerializationManager.RegisterSerializationHandlers(SerializeTextQuestion, DeserializeTextQuestion);
+            SerializationManager.RegisterSerializationHandlers(SerializeRoundData, DeserializeRoundData);
+            SerializationManager.RegisterSerializationHandlers(SerializeNetRoundQuestion, DeserializeNetRoundQuestion);
         }
 
         #region PlayersBoard
@@ -41,51 +41,134 @@ namespace Victorina
         }
 
         #endregion
+        
+        #region RoundData
 
-        #region MatchData
-
-        private void SerializeMatchData(Stream stream, MatchData matchData)
+        private void SerializeRoundData(Stream stream, NetRound netRound)
         {
             using (PooledBitWriter writer = PooledBitWriter.Get(stream))
             {
-                writer.WriteInt32((int) matchData.Phase);
+                writer.WriteInt32(netRound.Themes.Count);
+                foreach (NetRoundTheme roundThemeData in netRound.Themes)
+                    SerializeNetRoundTheme(writer, roundThemeData);
             }
         }
 
-        private MatchData DeserializeMatchData(Stream stream)
+        private NetRound DeserializeRoundData(Stream stream)
         {
-            MatchData matchData = new MatchData();
+            NetRound netRound = new NetRound();
             using (PooledBitReader reader = PooledBitReader.Get(stream))
             {
-                matchData.Phase = (MatchPhase) reader.ReadInt32();
+                int amount = reader.ReadInt32();
+                for (int i = 0; i < amount; i++)
+                {
+                    NetRoundTheme netRoundTheme = DeserializeRoundThemeData(reader);
+                    netRound.Themes.Add(netRoundTheme);
+                }
             }
-            return matchData;
+            return netRound;
         }
 
+        private void SerializeNetRoundTheme(PooledBitWriter writer, NetRoundTheme netRoundTheme)
+        {
+            writer.WriteString(netRoundTheme.Name);
+            writer.WriteInt32(netRoundTheme.Questions.Count);
+            foreach (NetRoundQuestion netRoundQuestion in netRoundTheme.Questions)
+                SerializeNetRoundQuestion(writer, netRoundQuestion);
+        }
+
+        private NetRoundTheme DeserializeRoundThemeData(PooledBitReader reader)
+        {
+            NetRoundTheme netRoundTheme = new NetRoundTheme();
+            netRoundTheme.Name = reader.ReadString().ToString();
+            int amount = reader.ReadInt32();
+            for (int i = 0; i < amount; i++)
+            {
+                NetRoundQuestion netRoundQuestion = DeserializeNetRoundQuestion(reader);
+                netRoundTheme.Questions.Add(netRoundQuestion);
+            }
+            return netRoundTheme;
+        }
+        
+        private void SerializeTheme(PooledBitWriter writer, Theme theme)
+        {
+            writer.WriteString(theme.Id);
+            writer.WriteString(theme.Name);
+            writer.WriteInt32(theme.Questions.Count);
+            foreach(Question question in theme.Questions)
+                SerializeQuestion(writer, question);
+        }
+
+        private Theme DeserializeTheme(PooledBitReader reader)
+        {
+            string id = reader.ReadString().ToString();
+            Theme theme = new Theme(id);
+            theme.Name = reader.ReadString().ToString();
+            int questionsAmount = reader.ReadInt32();
+            for (int i = 0; i < questionsAmount; i++)
+            {
+                Question question = DeserializeQuestion(reader);
+                theme.Questions.Add(question);
+            }
+            return theme;
+        }
+
+        private void SerializeQuestion(PooledBitWriter writer, Question question)
+        {
+            writer.WriteString(question.Id);
+            writer.WriteInt32(question.Price);
+            writer.WriteString(question.Text);
+            writer.WriteString(question.Answer);
+        }
+
+        private Question DeserializeQuestion(PooledBitReader reader)
+        {
+            string id = reader.ReadString().ToString();
+            Question question = new Question(id);
+            question.Price = reader.ReadInt32();
+            question.Text = reader.ReadString().ToString();
+            question.Text = reader.ReadString().ToString();
+            return question;
+        }
+        
         #endregion
         
-        #region TextQuestion
-
-        private void SerializeTextQuestion(Stream stream, TextQuestion textQuestion)
+        #region NetRoundQuestion
+        
+        private void SerializeNetRoundQuestion(Stream stream, NetRoundQuestion netRoundQuestion)
         {
-            using (PooledBitWriter writer = PooledBitWriter.Get(stream))
-            {
-                writer.WriteString(textQuestion.Question);
-                writer.WriteString(textQuestion.Answer);
-            }
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            SerializeNetRoundQuestion(writer, netRoundQuestion);
+        }
+        
+        private NetRoundQuestion DeserializeNetRoundQuestion(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            NetRoundQuestion netRoundQuestion = DeserializeNetRoundQuestion(reader);
+            return netRoundQuestion;
         }
 
-        private TextQuestion DeserializeTextQuestion(Stream stream)
+        private void SerializeNetRoundQuestion(PooledBitWriter writer, NetRoundQuestion netRoundQuestion)
         {
-            TextQuestion textQuestion = new TextQuestion();
-            using (PooledBitReader reader = PooledBitReader.Get(stream))
-            {
-                textQuestion.Question = reader.ReadString().ToString();
-                textQuestion.Answer = reader.ReadString().ToString();
-            }
-            return textQuestion;
+            writer.WriteString(netRoundQuestion.QuestionId);
+            writer.WriteInt32(netRoundQuestion.Price);
+            writer.WriteString(netRoundQuestion.Text);
+            writer.WriteString(netRoundQuestion.Answer);
+            writer.WriteBool(netRoundQuestion.IsAnswered);
         }
-
+        
+        private NetRoundQuestion DeserializeNetRoundQuestion(PooledBitReader reader)
+        {
+            string questionId = reader.ReadString().ToString();
+            NetRoundQuestion netRoundQuestion = new NetRoundQuestion(questionId);
+            netRoundQuestion.Price = reader.ReadInt32();
+            netRoundQuestion.Text = reader.ReadString().ToString();
+            netRoundQuestion.Answer = reader.ReadString().ToString();
+            netRoundQuestion.IsAnswered = reader.ReadBool();
+            return netRoundQuestion;
+        }
+        
         #endregion
+
     }
 }

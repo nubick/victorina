@@ -5,11 +5,12 @@ namespace Victorina
 {
     public class GameLobbyView : ViewBase
     {
-        [Inject] private MatchService MatchService { get; set; }
+        [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private ServerService ServerService { get; set; }
         [Inject] private StartupView StartupView { get; set; }
+        [Inject] private RoundView RoundView { get; set; }
         
         public PlayerWidget[] PlayerWidgets;
         public GameObject AdminPart;
@@ -37,7 +38,8 @@ namespace Victorina
 
         public void OnStartGameButtonClicked()
         {
-            MatchService.Start();
+            MatchSystem.Start();
+            SwitchTo(RoundView);
         }
 
         public void OnBackButtonClicked()

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 using UnityEditor;
 using UnityEngine;
@@ -20,7 +21,9 @@ namespace Victorina.SI
 
         public Package Convert()
         {
-            XmlReader xmlReader = XmlReader.Create($"{Application.dataPath}/Data/content.xml");
+            string content = Resources.Load<TextAsset>("content").text;
+            File.WriteAllText($"{Application.persistentDataPath}/content.xml", content);
+            XmlReader xmlReader = XmlReader.Create($"{Application.persistentDataPath}/content.xml");
 
             Package package = new Package();
             package.Rounds = ReadRounds(xmlReader);

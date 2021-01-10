@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using Injection;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Victorina
@@ -9,6 +11,7 @@ namespace Victorina
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private TextQuestionView TextQuestionView { get; set; }
         [Inject] private GameLobbyView GameLobbyView { get; set; }
+        [Inject] private RoundView RoundView { get; set; }
         
         [Inject] private MatchData MatchData { get; set; }
         
@@ -17,6 +20,8 @@ namespace Victorina
             foreach(ViewBase view in Object.FindObjectsOfType<ViewBase>())
                 view.Content.SetActive(false);
             StartupView.Show();
+
+            MatchData.Phase.SubscribeChanged(() => RefreshPhase(MatchData.Phase.Value));
         }
 
         private void HideAll()
@@ -25,22 +30,38 @@ namespace Victorina
                 if(view.IsActive)
                     view.Hide();
         }
-        
-        public void Refresh()
+
+        private void RefreshPhase(MatchPhase phase)
         {
-            HideAll();
-            
-            switch (MatchData.Phase)
+            Debug.Log($"RefreshPhase: {phase}");
+            if (phase == MatchPhase.Question)
             {
-                case MatchPhase.WaitingInLobby:
-                    GameLobbyView.Show();
-                    break;
-                case MatchPhase.Question:
-                    TextQuestionView.Show();
-                    break;
-                default:
-                    throw new Exception($"Not supported phase: {MatchData.Phase}");
+                RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedQuestion));
             }
+            else
+            {
+                HideAll();
+                switch (phase)
+                {
+                    case MatchPhase.WaitingInLobby:
+                        GameLobbyView.Show();
+                        break;
+                    case MatchPhase.Round:
+                        RoundView.Show();
+                        break;
+                    default:
+                        throw new Exception($"Not supported phase: {MatchData.Phase}");
+                }
+            }
+        }
+
+        private IEnumerator SwitchToQuestionView(NetRoundQuestion netRoundQuestion)
+        {
+            if (RoundView.IsActive)
+                yield return RoundView.ShowQuestionBlinkEffect(netRoundQuestion);
+            
+            HideAll();
+            TextQuestionView.Show();
         }
     }
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <package name="Pososi" version="4" id="c257e3be-d274-4e4e-aea9-2d8119151f19" date="25.08.2020"
          publisher="Activision Blizzard" difficulty="7" xmlns="http://vladimirkhil.com/ygpackage3.0.xsd">
     <info><authors><author>Mr.Cocos</author></authors></info>

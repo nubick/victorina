@@ -1,14 +1,26 @@
+using System;
+
 namespace Victorina
 {
     public class Question
     {
+        public string Id { get; }
         public int Price { get; set; }
         public string Text { get; set; }
         public string Answer { get; set; }
 
+        public Question() : this(Guid.NewGuid().ToString())
+        {
+        }
+
+        public Question(string id)
+        {
+            Id = id;
+        }
+        
         public override string ToString()
         {
-            return $"{nameof(Price)}: {Price}, {nameof(Text)}: {Text}, {nameof(Answer)}: {Answer}";
+            return $"{nameof(Id)}: {Id}, {nameof(Price)}: {Price}, {nameof(Text)}: {Text.Substring(20)}";
         }
     }
 }
