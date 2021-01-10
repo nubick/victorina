@@ -53,17 +53,30 @@ namespace Victorina
             MatchData.RoundData.Value = netRound;
         }
         
-        public void SendSelectedQuestion(NetRoundQuestion netRoundQuestion)
+        public void SendSelectedQuestion(NetQuestion netQuestion)
         {
-            Debug.Log($"Master: Send selected question: {netRoundQuestion} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveSelectedQuestion, netRoundQuestion);
+            Debug.Log($"Master: Send selected question: {netQuestion} to {OwnerClientId}");
+            InvokeClientRpcOnOwner(ReceiveSelectedQuestion, netQuestion, "RFS");
         }
 
         [ClientRPC]
-        private void ReceiveSelectedQuestion(NetRoundQuestion netRoundQuestion)
+        private void ReceiveSelectedQuestion(NetQuestion netQuestion)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive selected question: {netRoundQuestion}");
-            MatchData.SelectedQuestion = netRoundQuestion;
+            Debug.Log($"Player {OwnerClientId}: Receive selected question: {netQuestion}");
+            MatchData.SelectedQuestion = netQuestion;
+        }
+
+        public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
+        {
+            Debug.Log($"Master: Send selected round question: {netRoundQuestion} to {OwnerClientId}");
+            InvokeClientRpcOnOwner(ReceiveSelectedRoundQuestion, netRoundQuestion);
+        }
+
+        [ClientRPC]
+        private void ReceiveSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive selected round question: {netRoundQuestion}");
+            MatchData.SelectedRoundQuestion = netRoundQuestion;
         }
     }
 }

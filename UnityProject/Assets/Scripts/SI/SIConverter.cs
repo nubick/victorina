@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using UnityEditor;
 using UnityEngine;
 
-namespace Victorina.SI
+namespace Victorina
 {
     public class SiConverter
     {
@@ -21,23 +22,18 @@ namespace Victorina.SI
 
         public Package Convert()
         {
-            string content = Resources.Load<TextAsset>("content").text;
+            //Дед 🎅🏼
+            //string content = Resources.Load<TextAsset>("content").text;
+            string content = Resources.Load<TextAsset>("Pack01/content").text;
+            
             File.WriteAllText($"{Application.persistentDataPath}/content.xml", content);
             XmlReader xmlReader = XmlReader.Create($"{Application.persistentDataPath}/content.xml");
 
             Package package = new Package();
             package.Rounds = ReadRounds(xmlReader);
             
-            // foreach (Round round in package.Rounds)
-            // {
-            //     Debug.Log($"Round: {round.Name}");
-            //     foreach (Theme theme in round.Themes)
-            //     {
-            //         Debug.Log($"Theme: {theme.Name}");
-            //         Debug.Log($"Questions: {theme.Questions.Count}");
-            //     }
-            // }
-
+            LoadImages(package);
+            
             return package;
         }
 
@@ -120,8 +116,24 @@ namespace Victorina.SI
             int price = int.Parse(xmlReader.GetAttribute("price"));
             question.Price = price;
             xmlReader.ReadToFollowing("scenario");
+            
             xmlReader.ReadToFollowing("atom");
-            question.Text = xmlReader.ReadInnerXml();
+            string type = xmlReader.GetAttribute("type");
+            if (string.IsNullOrEmpty(type))
+            {
+                question.Text = xmlReader.ReadInnerXml();
+            }
+            else
+            {
+                if (type == "image")
+                {
+                    question.IsImage = true;
+                    string fileName = xmlReader.ReadInnerXml();
+                    //format = "@_august_243_2.jpg"
+                    question.ImagePath = fileName.Substring(1);
+                }
+            }
+            
             xmlReader.ReadToFollowing("answer");
             question.Answer = xmlReader.ReadInnerXml();
             return question;
@@ -130,6 +142,24 @@ namespace Victorina.SI
         private bool IsEmpty(Question question)
         {
             return question.Price == 0;
+        }
+
+        private void LoadImages(Package package)
+        {
+            List<Question> imageQuestions = package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions.Where(question => question.IsImage))).ToList();
+            Debug.Log($"Questions with image amount: {imageQuestions.Count}");
+
+            foreach (Question question in imageQuestions)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(question.ImagePath);
+                string path = $"Pack01/Images/{fileName}";
+                Sprite sprite = Resources.Load<Sprite>(path);
+                
+                if(sprite == null)
+                    Debug.Log($"Sprite is null, path: {path}");
+                
+                question.Image = sprite;
+            }
         }
     }
 }

@@ -24,6 +24,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<JoinGameView>());
             _injector.Bind(FindObjectOfType<GameLobbyView>());
             _injector.Bind(FindObjectOfType<TextQuestionView>());
+            _injector.Bind(FindObjectOfType<ImageQuestionView>());
             _injector.Bind(FindObjectOfType<RoundView>());
             
             _injector.Bind(new NetworkData());

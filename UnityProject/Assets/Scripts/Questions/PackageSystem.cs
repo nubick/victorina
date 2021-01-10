@@ -1,5 +1,5 @@
+using System.Linq;
 using Injection;
-using Victorina.SI;
 
 namespace Victorina
 {
@@ -11,6 +11,12 @@ namespace Victorina
         {
             SiConverter siConverter = new SiConverter();
             Data.Package = siConverter.Convert();;
+        }
+
+        public Question GetQuestion(string questionId)
+        {
+            var questions = Data.Package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions));
+            return questions.Single(question => question.Id == questionId);
         }
     }
 }

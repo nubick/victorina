@@ -8,6 +8,7 @@ namespace Victorina
     {
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private MatchData MatchData { get; set; }
+        [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         
@@ -31,11 +32,27 @@ namespace Victorina
                 Debug.Log($"Not admin can't select question: {netRoundQuestion}");
             }
         }
-        
+
         private void SelectQuestion(NetRoundQuestion netRoundQuestion)
         {
-            MatchData.SelectedQuestion = netRoundQuestion;
+            Question question = PackageSystem.GetQuestion(netRoundQuestion.QuestionId);
+
+            NetQuestion netQuestion = new NetQuestion();
+            netQuestion.Text = question.Text;
+            netQuestion.Answer = question.Answer;
+            netQuestion.IsImage = question.IsImage;
+
+            if (question.IsImage)
+            {
+                netQuestion.ImageBytes = question.Image.texture.EncodeToJPG();
+                Debug.Log($"Image size: {netQuestion.ImageBytes.Length/1024}kb");
+            }
+
+            MatchData.SelectedQuestion = netQuestion;
             SendToPlayersService.SendSelectedQuestion(MatchData.SelectedQuestion);
+
+            MatchData.SelectedRoundQuestion = netRoundQuestion;
+            SendToPlayersService.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
 
             MatchData.Phase.Value = MatchPhase.Question;
             SendToPlayersService.Send(MatchData.Phase.Value);
@@ -68,8 +85,6 @@ namespace Victorina
                 {
                     NetRoundQuestion netRoundQuestion = new NetRoundQuestion(question.Id);
                     netRoundQuestion.Price = question.Price;
-                    netRoundQuestion.Text = question.Text;
-                    netRoundQuestion.Answer = question.Answer;
                     netRoundTheme.Questions.Add(netRoundQuestion);
                 }
                 netRound.Themes.Add(netRoundTheme);

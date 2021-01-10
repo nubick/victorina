@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Victorina
 {
@@ -8,6 +9,10 @@ namespace Victorina
         public int Price { get; set; }
         public string Text { get; set; }
         public string Answer { get; set; }
+
+        public bool IsImage { get; set; }
+        public string ImagePath { get; set; }
+        public Sprite Image { get; set; }
 
         public Question() : this(Guid.NewGuid().ToString())
         {

@@ -10,6 +10,7 @@ namespace Victorina
     {
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private TextQuestionView TextQuestionView { get; set; }
+        [Inject] private ImageQuestionView ImageQuestionView { get; set; }
         [Inject] private GameLobbyView GameLobbyView { get; set; }
         [Inject] private RoundView RoundView { get; set; }
         
@@ -36,7 +37,7 @@ namespace Victorina
             Debug.Log($"RefreshPhase: {phase}");
             if (phase == MatchPhase.Question)
             {
-                RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedQuestion));
+                RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedRoundQuestion));
             }
             else
             {
@@ -61,7 +62,11 @@ namespace Victorina
                 yield return RoundView.ShowQuestionBlinkEffect(netRoundQuestion);
             
             HideAll();
-            TextQuestionView.Show();
+
+            if (MatchData.SelectedQuestion.IsImage)
+                ImageQuestionView.Show();
+            else
+                TextQuestionView.Show();
         }
     }
 }

@@ -4,8 +4,6 @@ namespace Victorina
     {
         public string QuestionId { get; }
         public int Price { get; set; }
-        public string Text { get; set; }
-        public string Answer { get; set; }
         public bool IsAnswered { get; set; }
         
         public NetRoundQuestion(string questionId)
@@ -15,7 +13,7 @@ namespace Victorina
 
         public override string ToString()
         {
-            return $"{nameof(QuestionId)}: {QuestionId}, {nameof(IsAnswered)}: {IsAnswered}";
+            return $"{nameof(QuestionId)}: {QuestionId}, {nameof(Price)}: {Price}";
         }
     }
 }

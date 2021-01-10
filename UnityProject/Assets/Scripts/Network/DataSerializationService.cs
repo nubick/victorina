@@ -11,6 +11,7 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializePlayersBoard, DeserializePlayersBoard);
             SerializationManager.RegisterSerializationHandlers(SerializeRoundData, DeserializeRoundData);
             SerializationManager.RegisterSerializationHandlers(SerializeNetRoundQuestion, DeserializeNetRoundQuestion);
+            SerializationManager.RegisterSerializationHandlers(SerializeNetQuestion, DeserializeNetQuestion);
         }
 
         #region PlayersBoard
@@ -152,8 +153,6 @@ namespace Victorina
         {
             writer.WriteString(netRoundQuestion.QuestionId);
             writer.WriteInt32(netRoundQuestion.Price);
-            writer.WriteString(netRoundQuestion.Text);
-            writer.WriteString(netRoundQuestion.Answer);
             writer.WriteBool(netRoundQuestion.IsAnswered);
         }
         
@@ -162,13 +161,44 @@ namespace Victorina
             string questionId = reader.ReadString().ToString();
             NetRoundQuestion netRoundQuestion = new NetRoundQuestion(questionId);
             netRoundQuestion.Price = reader.ReadInt32();
-            netRoundQuestion.Text = reader.ReadString().ToString();
-            netRoundQuestion.Answer = reader.ReadString().ToString();
             netRoundQuestion.IsAnswered = reader.ReadBool();
             return netRoundQuestion;
         }
         
         #endregion
 
+        #region NetQuestion
+        
+        private void SerializeNetQuestion(Stream stream, NetQuestion netQuestion)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            
+            writer.WriteBool(netQuestion.IsImage);
+            if (netQuestion.IsImage)
+                writer.WriteByteArray(netQuestion.ImageBytes);
+            else
+                writer.WriteString(netQuestion.Text);
+            
+            writer.WriteString(netQuestion.Answer);
+        }
+        
+        private NetQuestion DeserializeNetQuestion(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            NetQuestion netQuestion = new NetQuestion();
+            netQuestion.IsImage = reader.ReadBool();
+            
+            if (netQuestion.IsImage)
+                netQuestion.ImageBytes = reader.ReadByteArray();
+            else
+                netQuestion.Text = reader.ReadString().ToString();
+            
+            netQuestion.Answer = reader.ReadString().ToString();
+            
+            return netQuestion;
+        }
+        
+        #endregion
+        
     }
 }

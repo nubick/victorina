@@ -5,7 +5,8 @@ namespace Victorina
         public ReactiveProperty<MatchPhase> Phase { get; set; } = new ReactiveProperty<MatchPhase>();
         public ReactiveProperty<PlayersBoard> PlayersBoard { get; } = new ReactiveProperty<PlayersBoard>();
         public ReactiveProperty<NetRound> RoundData { get; } = new ReactiveProperty<NetRound>();
-        public NetRoundQuestion SelectedQuestion { get; set; }
+        public NetRoundQuestion SelectedRoundQuestion { get; set; }
+        public NetQuestion SelectedQuestion { get; set; }
         
         public MatchData()
         {
