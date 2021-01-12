@@ -1,6 +1,7 @@
 using Injection;
 using SFB;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Victorina
@@ -17,6 +18,8 @@ namespace Victorina
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private SiqLoadedPackageSystem SiqLoadedPackageSystem { get; set; }
         [Inject] private SiqLoadedPackageData SiqLoadedPackageData { get; set; }
+        [Inject] private ExternalIpData ExternalIpData { get; set; }
+        [Inject] private IpCodeSystem IpCodeSystem { get; set; }
         
         public PlayerWidget[] PlayerWidgets;
         public GameObject AdminPart;
@@ -24,11 +27,19 @@ namespace Victorina
         public GameObject[] OpenPackButtons;
         public Text[] OpenPackButtonTexts;
         public GameObject[] DeletePackButtons;
+
+        public Text CodeText;
         
         protected override void OnShown()
         {
             AdminPart.SetActive(NetworkData.IsAdmin);
             RefreshUI();
+            CodeText.text = $"Код Игры: {GetCode()}";
+        }
+
+        private string GetCode()
+        {
+            return IpCodeSystem.GetCode(ExternalIpData.Ip);
         }
 
         public void RefreshUI()
@@ -97,6 +108,11 @@ namespace Victorina
             string packageName = SiqLoadedPackageData.PackageNames[index];
             SiqLoadedPackageSystem.Delete(packageName);
             RefreshUI();
+        }
+
+        public void OnCopyCodeToClipboardButtonClicked()
+        {
+            GUIUtility.systemCopyBuffer = GetCode();
         }
     }
 }
