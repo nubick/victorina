@@ -7,10 +7,10 @@ namespace Victorina
     {
         [Inject] private PackageData Data { get; set; }
 
-        public void Initialize()
+        public void Initialize(string packageName)
         {
-            SiConverter siConverter = new SiConverter();
-            Data.Package = siConverter.Convert();;
+            SiqConverter siqConverter = new SiqConverter(); 
+            Data.Package = siqConverter.Convert(packageName);;
         }
 
         public Question GetQuestion(string questionId)

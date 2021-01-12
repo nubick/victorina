@@ -12,7 +12,7 @@ namespace Victorina
 
         public bool IsImage { get; set; }
         public string ImagePath { get; set; }
-        public Sprite Image { get; set; }
+        public byte[] ImageBytes { get; set; }
 
         public Question() : this(Guid.NewGuid().ToString())
         {

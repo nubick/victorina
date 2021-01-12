@@ -44,7 +44,7 @@ namespace Victorina
 
             if (question.IsImage)
             {
-                netQuestion.ImageBytes = question.Image.texture.EncodeToJPG();
+                netQuestion.ImageBytes = question.ImageBytes;
                 Debug.Log($"Image size: {netQuestion.ImageBytes.Length/1024}kb");
             }
 

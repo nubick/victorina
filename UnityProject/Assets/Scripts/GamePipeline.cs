@@ -52,6 +52,10 @@ namespace Victorina
             _injector.Bind(new SendToPlayersService());
             _injector.Bind(new DataSerializationService());
             
+            _injector.Bind(new SiqPackOpenSystem());
+            _injector.Bind(new SiqLoadedPackageSystem());
+            _injector.Bind(new SiqLoadedPackageData());
+            
             _injector.CommitBindings();
         }
 
@@ -68,8 +72,6 @@ namespace Victorina
             _injector.Get<DataSerializationService>().Initialize();
             
             _injector.Get<RoundView>().Initialize();
-            
-            _injector.Get<PackageSystem>().Initialize();
         }
         
         private void OnPlayerConnected(NetworkPlayer networkPlayer)

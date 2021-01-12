@@ -7,33 +7,14 @@ using UnityEngine;
 
 namespace Victorina
 {
-    public class SiConverter
+    public class SiqConverter
     {
-#if UNITY_EDITOR
-        [MenuItem("Victorina/Run Convert")]
-        public static void RunConvertMenu()
+        public Package Convert(string packageName)
         {
-            Debug.Log("Run Convert");
-
-            SiConverter converter = new SiConverter();
-            converter.Convert();
-        }
-#endif
-
-        public Package Convert()
-        {
-            //Дед 🎅🏼
-            //string content = Resources.Load<TextAsset>("content").text;
-            string content = Resources.Load<TextAsset>("Pack01/content").text;
-            
-            File.WriteAllText($"{Application.persistentDataPath}/content.xml", content);
-            XmlReader xmlReader = XmlReader.Create($"{Application.persistentDataPath}/content.xml");
-
-            Package package = new Package();
+            Package package = new Package(packageName);
+            XmlReader xmlReader = XmlReader.Create($"{Application.persistentDataPath}/{packageName}/content.xml");
             package.Rounds = ReadRounds(xmlReader);
-            
             LoadImages(package);
-            
             return package;
         }
 
@@ -151,14 +132,17 @@ namespace Victorina
 
             foreach (Question question in imageQuestions)
             {
-                string fileName = Path.GetFileNameWithoutExtension(question.ImagePath);
-                string path = $"Pack01/Images/{fileName}";
-                Sprite sprite = Resources.Load<Sprite>(path);
-                
-                if(sprite == null)
-                    Debug.Log($"Sprite is null, path: {path}");
-                
-                question.Image = sprite;
+                string path = $"{Application.persistentDataPath}/{package.Name}/Images/{question.ImagePath}";
+                if (File.Exists(path))
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    question.ImageBytes = bytes;
+                    Debug.Log($"Image bytes are loaded, size: {bytes.Length / 1024}kb");
+                }
+                else
+                {
+                    Debug.LogWarning($"Image doesn't exist by path: {path}");
+                }
             }
         }
     }
