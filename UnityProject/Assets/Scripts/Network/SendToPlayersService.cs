@@ -37,12 +37,25 @@ namespace Victorina
         {
             Debug.Log($"Master: Send selected question to All: {netQuestion}");
             GetPlayers().ForEach(player => player.SendSelectedQuestion(netQuestion));
+            List<NetworkPlayer> networkPlayers = GetPlayers();
+            foreach (StoryDot storyDot in netQuestion.QuestionStory)
+            {
+                Debug.Log($"Master: Send story dot to All: {storyDot}");
+                networkPlayers.ForEach(player => player.SendStoryDot(storyDot));
+            }
         }
 
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
         {
             Debug.Log($"Master: Send selected round question to All: {netRoundQuestion}");
             GetPlayers().ForEach(player => player.SendSelectedRoundQuestion(netRoundQuestion));
+        }
+
+        public void SendCurrentStoryDotIndex(int index)
+        {
+            Debug.Log($"Master: Send current story dot index to All: {index}");
+            GetPlayers().ForEach(player => player.SendCurrentStoryDotIndex(index));
+
         }
     }
 }

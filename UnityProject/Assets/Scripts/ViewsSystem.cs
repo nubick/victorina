@@ -9,11 +9,14 @@ namespace Victorina
     public class ViewsSystem
     {
         [Inject] private StartupView StartupView { get; set; }
-        [Inject] private TextQuestionView TextQuestionView { get; set; }
-        [Inject] private ImageQuestionView ImageQuestionView { get; set; }
         [Inject] private GameLobbyView GameLobbyView { get; set; }
         [Inject] private RoundView RoundView { get; set; }
-        
+        [Inject] private TextQuestionView TextQuestionView { get; set; }
+        [Inject] private ImageQuestionView ImageQuestionView { get; set; }
+        [Inject] private AudioStoryDotView AudioStoryDotView { get; set; }
+        [Inject] private VideoStoryDotView VideoStoryDotView { get; set; }
+        [Inject] private AnswerView AnswerView { get; set; }
+
         [Inject] private MatchData MatchData { get; set; }
         
         public void Initialize()
@@ -22,7 +25,8 @@ namespace Victorina
                 view.Content.SetActive(false);
             StartupView.Show();
 
-            MatchData.Phase.SubscribeChanged(() => RefreshPhase(MatchData.Phase.Value));
+            MatchData.Phase.SubscribeChanged(RefreshPhase);
+            MatchData.CurrentStoryDotIndex.SubscribeChanged(RefreshPhase);
         }
 
         private void HideAll()
@@ -32,8 +36,9 @@ namespace Victorina
                     view.Hide();
         }
 
-        private void RefreshPhase(MatchPhase phase)
+        private void RefreshPhase()
         {
+            MatchPhase phase = MatchData.Phase.Value;
             Debug.Log($"RefreshPhase: {phase}");
             if (phase == MatchPhase.Question)
             {
@@ -50,6 +55,9 @@ namespace Victorina
                     case MatchPhase.Round:
                         RoundView.Show();
                         break;
+                    case MatchPhase.Answer:
+                        AnswerView.Show();
+                        break;
                     default:
                         throw new Exception($"Not supported phase: {MatchData.Phase}");
                 }
@@ -60,11 +68,15 @@ namespace Victorina
         {
             if (RoundView.IsActive)
                 yield return RoundView.ShowQuestionBlinkEffect(netRoundQuestion);
-            
+
             HideAll();
 
-            if (MatchData.SelectedQuestion.IsImage)
+            if (MatchData.CurrentStoryDot is ImageStoryDot)
                 ImageQuestionView.Show();
+            else if (MatchData.CurrentStoryDot is AudioStoryDot)
+                AudioStoryDotView.Show();
+            else if (MatchData.CurrentStoryDot is VideoStoryDot)
+                VideoStoryDotView.Show();
             else
                 TextQuestionView.Show();
         }

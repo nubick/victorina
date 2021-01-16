@@ -1,3 +1,4 @@
+using System.Linq;
 using Injection;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -38,26 +39,23 @@ namespace Victorina
             Question question = PackageSystem.GetQuestion(netRoundQuestion.QuestionId);
 
             NetQuestion netQuestion = new NetQuestion();
-            netQuestion.Text = question.Text;
+            netQuestion.QuestionStory = question.QuestionStory.ToArray();
+            netQuestion.StoryDotsAmount = netQuestion.QuestionStory.Length;
             netQuestion.Answer = question.Answer;
-            netQuestion.IsImage = question.IsImage;
-
-            if (question.IsImage)
-            {
-                netQuestion.ImageBytes = question.ImageBytes;
-                Debug.Log($"Image size: {netQuestion.ImageBytes.Length/1024}kb");
-            }
-
+            
             MatchData.SelectedQuestion = netQuestion;
             SendToPlayersService.SendSelectedQuestion(MatchData.SelectedQuestion);
 
             MatchData.SelectedRoundQuestion = netRoundQuestion;
             SendToPlayersService.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
 
+            MatchData.CurrentStoryDotIndex.Value = 0;
+            SendToPlayersService.SendCurrentStoryDotIndex(MatchData.CurrentStoryDotIndex.Value);
+            
             MatchData.Phase.Value = MatchPhase.Question;
             SendToPlayersService.Send(MatchData.Phase.Value);
         }
-
+        
         public void BackToRound()
         {
             SelectRound(PackageData.Package.Rounds[0]);
@@ -88,6 +86,20 @@ namespace Victorina
                     netRoundTheme.Questions.Add(netRoundQuestion);
                 }
                 netRound.Themes.Add(netRoundTheme);
+            }
+        }
+        
+        public void ShowNext()
+        {
+            if (MatchData.CurrentStoryDot == MatchData.SelectedQuestion.QuestionStory.Last())
+            {
+                MatchData.Phase.Value = MatchPhase.Answer;
+                SendToPlayersService.Send(MatchData.Phase.Value);
+            }
+            else
+            {
+                MatchData.CurrentStoryDotIndex.Value++;
+                SendToPlayersService.SendCurrentStoryDotIndex(MatchData.CurrentStoryDotIndex.Value);
             }
         }
     }

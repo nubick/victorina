@@ -9,6 +9,7 @@ namespace Victorina
         public bool IsActive => Content.activeSelf;
         
         protected virtual void OnShown() { }
+        protected virtual void OnHide() { }
 
         public void Show()
         {
@@ -19,7 +20,8 @@ namespace Victorina
 
         public void Hide()
         {
-            Content.SetActive(false);   
+            Content.SetActive(false);
+            OnHide();
         }
 
         protected void SwitchTo(ViewBase otherView)

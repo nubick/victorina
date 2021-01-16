@@ -1,3 +1,4 @@
+using System;
 using Injection;
 using UnityEngine.UI;
 
@@ -7,19 +8,20 @@ namespace Victorina
     {
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
-        [Inject] private RoundView RoundView { get; set; }
-        
+
         public Text QuestionText;
 
         protected override void OnShown()
         {
-            QuestionText.text = MatchData.SelectedQuestion.Text;
+            if (MatchData.CurrentStoryDot is TextStoryDot textDot)
+                QuestionText.text = textDot.Text;
+            else
+                throw new Exception($"TextQuestionView: Current story dot is not text, {MatchData.CurrentStoryDot}");
         }
 
         public void OnAnswerButtonClicked()
         {
-            MatchSystem.BackToRound();
-            SwitchTo(RoundView);
+            MatchSystem.ShowNext();
         }
     }
 }

@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using UnityEditor;
 using UnityEngine;
 
 namespace Victorina
@@ -96,28 +96,74 @@ namespace Victorina
             Question question = new Question();
             int price = int.Parse(xmlReader.GetAttribute("price"));
             question.Price = price;
-            xmlReader.ReadToFollowing("scenario");
             
-            xmlReader.ReadToFollowing("atom");
-            string type = xmlReader.GetAttribute("type");
-            if (string.IsNullOrEmpty(type))
-            {
-                question.Text = xmlReader.ReadInnerXml();
-            }
-            else
-            {
-                if (type == "image")
-                {
-                    question.IsImage = true;
-                    string fileName = xmlReader.ReadInnerXml();
-                    //format = "@_august_243_2.jpg"
-                    question.ImagePath = fileName.Substring(1);
-                }
-            }
+            xmlReader.ReadToFollowing("scenario");
+            ReadScenario(xmlReader, question);
             
             xmlReader.ReadToFollowing("answer");
             question.Answer = xmlReader.ReadInnerXml();
             return question;
+        }
+
+        private void ReadScenario(XmlReader xmlReader, Question question)
+        {
+            while (xmlReader.Read())
+            {
+                if (xmlReader.NodeType == XmlNodeType.Element && xmlReader.Name == "atom")
+                {
+                    if (xmlReader.Name == "atom")
+                    {
+                        string type = xmlReader.GetAttribute("type");
+                        if (string.IsNullOrEmpty(type))
+                        {
+                            string text = xmlReader.ReadInnerXml();
+                            TextStoryDot textDot = new TextStoryDot(text);
+                            question.QuestionStory.Add(textDot);
+                        }
+                        else
+                        {
+                            if (type == "say")
+                            {
+                                string text = xmlReader.ReadInnerXml();
+                                TextStoryDot textDot = new TextStoryDot($"say: {text}");
+                                question.QuestionStory.Add(textDot);
+                            }
+                            else if (type == "image")
+                            {
+                                string fileName = xmlReader.ReadInnerXml();//format = "@_august_243_2.jpg"
+                                string imagePath = fileName.Substring(1);
+                                ImageStoryDot imageDot = new ImageStoryDot(imagePath);
+                                question.QuestionStory.Add(imageDot);
+                            }
+                            else if (type == "voice")
+                            {
+                                string fileName = xmlReader.ReadInnerXml();
+                                string audioPath = fileName.Substring(1);
+                                AudioStoryDot imageDot = new AudioStoryDot(audioPath);
+                                question.QuestionStory.Add(imageDot);
+                            }
+                            else if (type == "video")
+                            {
+                                string fileName = xmlReader.ReadInnerXml();
+                                string videoPath = fileName.Substring(1);
+                                VideoStoryDot videoDot = new VideoStoryDot(videoPath);
+                                question.QuestionStory.Add(videoDot);
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"Not supported atom type '{type}'");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception($"Not supported element '{xmlReader.Name}'");
+                    }
+                }
+                
+                if (xmlReader.NodeType == XmlNodeType.EndElement && xmlReader.Name == "scenario")
+                    break;
+            }
         }
 
         private bool IsEmpty(Question question)
@@ -127,22 +173,34 @@ namespace Victorina
 
         private void LoadImages(Package package)
         {
-            List<Question> imageQuestions = package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions.Where(question => question.IsImage))).ToList();
-            Debug.Log($"Questions with image amount: {imageQuestions.Count}");
-
-            foreach (Question question in imageQuestions)
+            List<Question> allQuestions = package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions)).ToList();
+            foreach (Question question in allQuestions)
             {
-                string path = $"{Application.persistentDataPath}/{package.Name}/Images/{question.ImagePath}";
-                if (File.Exists(path))
+                int index = 0;
+                foreach (StoryDot dot in question.QuestionStory)
                 {
-                    byte[] bytes = File.ReadAllBytes(path);
-                    question.ImageBytes = bytes;
-                    Debug.Log($"Image bytes are loaded, size: {bytes.Length / 1024}kb");
+                    dot.Index = index;
+                    index++;
+                    
+                    if (dot is ImageStoryDot imageDot)
+                        LoadImage(imageDot, package.Name);
                 }
-                else
-                {
-                    Debug.LogWarning($"Image doesn't exist by path: {path}");
-                }
+            }
+            Debug.Log("Images are loaded");
+        }
+
+        private void LoadImage(ImageStoryDot imageDot, string packageName)
+        {
+            string path = $"{Application.persistentDataPath}/{packageName}/Images/{imageDot.Path}";
+            if (File.Exists(path))
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                imageDot.Bytes = bytes;
+                Debug.Log($"Image bytes are loaded, size: {bytes.Length / 1024}kb");
+            }
+            else
+            {
+                Debug.LogWarning($"Image doesn't exist by path: {path}");
             }
         }
     }

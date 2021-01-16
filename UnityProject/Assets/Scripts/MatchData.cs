@@ -6,8 +6,11 @@ namespace Victorina
         public ReactiveProperty<PlayersBoard> PlayersBoard { get; } = new ReactiveProperty<PlayersBoard>();
         public ReactiveProperty<NetRound> RoundData { get; } = new ReactiveProperty<NetRound>();
         public NetRoundQuestion SelectedRoundQuestion { get; set; }
-        public NetQuestion SelectedQuestion { get; set; }
         
+        public NetQuestion SelectedQuestion { get; set; }
+        public ReactiveProperty<int> CurrentStoryDotIndex { get; set; } = new ReactiveProperty<int>();
+        public StoryDot CurrentStoryDot => SelectedQuestion.QuestionStory[CurrentStoryDotIndex.Value];
+
         public MatchData()
         {
             PlayersBoard.Value = new PlayersBoard();

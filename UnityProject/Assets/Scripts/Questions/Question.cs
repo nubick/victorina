@@ -1,5 +1,5 @@
 using System;
-using UnityEngine;
+using System.Collections.Generic;
 
 namespace Victorina
 {
@@ -7,13 +7,11 @@ namespace Victorina
     {
         public string Id { get; }
         public int Price { get; set; }
-        public string Text { get; set; }
         public string Answer { get; set; }
 
-        public bool IsImage { get; set; }
-        public string ImagePath { get; set; }
-        public byte[] ImageBytes { get; set; }
-
+        public List<StoryDot> QuestionStory { get; set; } = new List<StoryDot>();
+        public List<StoryDot> AnswerStory { get; set; } = new List<StoryDot>();
+        
         public Question() : this(Guid.NewGuid().ToString())
         {
         }
@@ -25,7 +23,7 @@ namespace Victorina
         
         public override string ToString()
         {
-            return $"{nameof(Id)}: {Id}, {nameof(Price)}: {Price}, {nameof(Text)}: {Text.Substring(20)}";
+            return $"{nameof(Id)}: {Id}, {nameof(Price)}: {Price}";
         }
     }
 }

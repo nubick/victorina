@@ -1,7 +1,7 @@
+using System.Collections;
 using Injection;
 using SFB;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Victorina
@@ -34,9 +34,28 @@ namespace Victorina
         {
             AdminPart.SetActive(NetworkData.IsAdmin);
             RefreshUI();
-            CodeText.text = $"Код Игры: {GetCode()}";
+            StartCoroutine(RefreshCode());
         }
 
+        protected override void OnHide()
+        {
+            StopAllCoroutines();
+        }
+
+        private IEnumerator RefreshCode()
+        {
+            if(!ExternalIpData.IsRequestFinished)
+                CodeText.text = "Код Игры: вычисляю...";
+
+            while (!ExternalIpData.IsRequestFinished)
+                yield return null;
+
+            if (ExternalIpData.HasError)
+                CodeText.text = "Код Игры: ошибка!";
+            else
+                CodeText.text = $"Код Игры: {GetCode()}";
+        }
+        
         private string GetCode()
         {
             return IpCodeSystem.GetCode(ExternalIpData.Ip);
@@ -112,7 +131,8 @@ namespace Victorina
 
         public void OnCopyCodeToClipboardButtonClicked()
         {
-            GUIUtility.systemCopyBuffer = GetCode();
+            if (ExternalIpData.IsRequestFinished && !ExternalIpData.HasError)
+                GUIUtility.systemCopyBuffer = GetCode();
         }
     }
 }

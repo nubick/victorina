@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using MLAPI.Serialization;
 using MLAPI.Serialization.Pooled;
@@ -12,6 +13,7 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeRoundData, DeserializeRoundData);
             SerializationManager.RegisterSerializationHandlers(SerializeNetRoundQuestion, DeserializeNetRoundQuestion);
             SerializationManager.RegisterSerializationHandlers(SerializeNetQuestion, DeserializeNetQuestion);
+            SerializationManager.RegisterSerializationHandlers(SerializeStoryDot, DeserializeStoryDot);
         }
 
         #region PlayersBoard
@@ -91,47 +93,6 @@ namespace Victorina
             return netRoundTheme;
         }
         
-        private void SerializeTheme(PooledBitWriter writer, Theme theme)
-        {
-            writer.WriteString(theme.Id);
-            writer.WriteString(theme.Name);
-            writer.WriteInt32(theme.Questions.Count);
-            foreach(Question question in theme.Questions)
-                SerializeQuestion(writer, question);
-        }
-
-        private Theme DeserializeTheme(PooledBitReader reader)
-        {
-            string id = reader.ReadString().ToString();
-            Theme theme = new Theme(id);
-            theme.Name = reader.ReadString().ToString();
-            int questionsAmount = reader.ReadInt32();
-            for (int i = 0; i < questionsAmount; i++)
-            {
-                Question question = DeserializeQuestion(reader);
-                theme.Questions.Add(question);
-            }
-            return theme;
-        }
-
-        private void SerializeQuestion(PooledBitWriter writer, Question question)
-        {
-            writer.WriteString(question.Id);
-            writer.WriteInt32(question.Price);
-            writer.WriteString(question.Text);
-            writer.WriteString(question.Answer);
-        }
-
-        private Question DeserializeQuestion(PooledBitReader reader)
-        {
-            string id = reader.ReadString().ToString();
-            Question question = new Question(id);
-            question.Price = reader.ReadInt32();
-            question.Text = reader.ReadString().ToString();
-            question.Text = reader.ReadString().ToString();
-            return question;
-        }
-        
         #endregion
         
         #region NetRoundQuestion
@@ -172,30 +133,54 @@ namespace Victorina
         private void SerializeNetQuestion(Stream stream, NetQuestion netQuestion)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            
-            writer.WriteBool(netQuestion.IsImage);
-            if (netQuestion.IsImage)
-                writer.WriteByteArray(netQuestion.ImageBytes);
-            else
-                writer.WriteString(netQuestion.Text);
-            
             writer.WriteString(netQuestion.Answer);
+            writer.WriteInt32(netQuestion.StoryDotsAmount);
         }
         
         private NetQuestion DeserializeNetQuestion(Stream stream)
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             NetQuestion netQuestion = new NetQuestion();
-            netQuestion.IsImage = reader.ReadBool();
-            
-            if (netQuestion.IsImage)
-                netQuestion.ImageBytes = reader.ReadByteArray();
-            else
-                netQuestion.Text = reader.ReadString().ToString();
-            
             netQuestion.Answer = reader.ReadString().ToString();
-            
+            netQuestion.StoryDotsAmount = reader.ReadInt32();
             return netQuestion;
+        }
+
+        private void SerializeStoryDot(Stream stream, StoryDot storyDot)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            if (storyDot is TextStoryDot textDot)
+            {
+                writer.WriteByte(0);
+                writer.WriteString(textDot.Text);
+            }
+            else if (storyDot is ImageStoryDot imageDot)
+            {
+                writer.WriteByte(1);
+                writer.WriteByteArray(imageDot.Bytes);
+            }
+        }
+
+        private StoryDot DeserializeStoryDot(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            byte type = reader.ReadByteDirect();
+
+            if (type == 0)
+            {
+                string text = reader.ReadString().ToString();
+                TextStoryDot testDot = new TextStoryDot(text);
+                return testDot;
+            }
+            
+            if (type == 1)
+            {
+                byte[] bytes = reader.ReadByteArray();
+                ImageStoryDot imageDot = new ImageStoryDot(bytes);
+                return imageDot;
+            }
+
+            throw new Exception($"Not supported story dot type: {type}");
         }
         
         #endregion

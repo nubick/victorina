@@ -11,6 +11,8 @@ namespace Victorina
         
         public IEnumerator Initialize()
         {
+            Data.IsRequestFinished = false;
+            
             UnityWebRequest unityWebRequest = UnityWebRequest.Get("https://api.ipify.org");
 
             yield return unityWebRequest.SendWebRequest();
@@ -21,6 +23,13 @@ namespace Victorina
                 Data.Ip = unityWebRequest.downloadHandler.text;
                 Debug.Log($"External Ip: {Data.Ip}");
             }
+            else
+            {
+                Debug.Log($"Get external ip error: {unityWebRequest.error}");
+            }
+
+            Data.HasError = unityWebRequest.result != UnityWebRequest.Result.Success;
+            Data.IsRequestFinished = true;
         }
     }
 }
