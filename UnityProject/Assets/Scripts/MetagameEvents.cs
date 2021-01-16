@@ -8,5 +8,6 @@ namespace Victorina
         public static GameEvent<ulong> PlayerDisconnect { get; } = new GameEvent<ulong>();
 
         public static GameEvent<NetRoundQuestion> RoundQuestionClicked { get; } = new GameEvent<NetRoundQuestion>();
+        public static GameEvent<int> RoundInfoClicked { get; } = new GameEvent<int>();
     }
 }

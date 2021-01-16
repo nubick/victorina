@@ -15,7 +15,7 @@ namespace Victorina
         
         public void Start()
         {
-            SelectRound(PackageData.Package.Rounds[0]);
+            SelectRound(1);
         }
         
         public void TrySelectQuestion(NetRoundQuestion netRoundQuestion)
@@ -58,20 +58,25 @@ namespace Victorina
         
         public void BackToRound()
         {
-            SelectRound(PackageData.Package.Rounds[0]);
+            SelectRound(MatchData.RoundsInfo.Value.CurrentRoundNumber );
         }
-
-        public void SelectRound(Round round)
+        
+        public void SelectRound(int number)
         {
             Assert.IsTrue(NetworkData.IsAdmin);
-            
+
+            MatchData.RoundsInfo.Value.RoundsAmount = PackageData.Package.Rounds.Count;
+            MatchData.RoundsInfo.Value.CurrentRoundNumber = number;
+            SendToPlayersService.Send(MatchData.RoundsInfo.Value);
+
+            Round round = PackageData.Package.Rounds[number - 1];
             UpdateRoundData(MatchData.RoundData.Value, round);
             SendToPlayersService.Send(MatchData.RoundData.Value);
-            
+
             MatchData.Phase.Value = MatchPhase.Round;
             SendToPlayersService.Send(MatchData.Phase.Value);
         }
-        
+
         private void UpdateRoundData(NetRound netRound, Round round)
         {
             netRound.Themes.Clear();

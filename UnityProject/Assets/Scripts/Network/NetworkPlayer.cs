@@ -105,5 +105,18 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive current story dot index: {index}");
             MatchData.CurrentStoryDotIndex.Value = index;
         }
+
+        public void SendNetRoundsInfo(NetRoundsInfo netRoundsInfo)
+        {
+            Debug.Log($"Master: Send rounds info: {netRoundsInfo} to {OwnerClientId}");
+            InvokeClientRpcOnOwner(ReceiveNetRoundsInfo, netRoundsInfo);
+        }
+
+        [ClientRPC]
+        private void ReceiveNetRoundsInfo(NetRoundsInfo netRoundsInfo)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive rounds info: {netRoundsInfo}");
+            MatchData.RoundsInfo.Value = netRoundsInfo;
+        }
     }
 }

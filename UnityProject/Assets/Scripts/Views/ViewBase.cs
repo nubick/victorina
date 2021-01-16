@@ -29,5 +29,11 @@ namespace Victorina
             Hide();
             otherView.Show();
         }
+
+        protected void ClearChild(RectTransform root)
+        {
+            while (root.childCount > 0)
+                DestroyImmediate(root.GetChild(0).gameObject);
+        }
     }
 }

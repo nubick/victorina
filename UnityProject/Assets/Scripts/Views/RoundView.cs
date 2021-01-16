@@ -11,16 +11,21 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
 
-        public Transform ThemeWidgetsRoot;
+        public RectTransform ThemeWidgetsRoot;
         public ThemeWidget ThemeWidgetPrefab;
 
-        public Transform QuestionsRoot;
+        public RectTransform QuestionsRoot;
         public Transform RoundQuestionsLinePrefab;
         public RoundQuestionWidget RoundQuestionWidgetPrefab;
 
+        [Header("Rounds Info")] 
+        public RectTransform RoundsInfoRoot;
+        public RoundInfoWidget RoundInfoWidgetPrefab;
+        
         public void Initialize()
         {
             MetagameEvents.RoundQuestionClicked.Subscribe(OnRoundQuestionClicked);
+            MetagameEvents.RoundInfoClicked.Subscribe(OnRoundInfoClicked);
         }
         
         protected override void OnShown()
@@ -30,11 +35,8 @@ namespace Victorina
 
         private void RefreshUI(NetRound netRound)
         {
-            while (ThemeWidgetsRoot.childCount > 0)
-                DestroyImmediate(ThemeWidgetsRoot.GetChild(0).gameObject);
-
-            while (QuestionsRoot.childCount > 0)
-                DestroyImmediate(QuestionsRoot.GetChild(0).gameObject);
+            ClearChild(ThemeWidgetsRoot);
+            ClearChild(QuestionsRoot);
             
             int columns = netRound.Themes.Max(_ => _.Questions.Count);
             
@@ -56,8 +58,23 @@ namespace Victorina
                     widget.BindEmpty();
                 }
             }
+            
+            RefreshRoundsInfo(MatchData.RoundsInfo.Value);
         }
-        
+
+        private void RefreshRoundsInfo(NetRoundsInfo roundsInfo)
+        {
+            ClearChild(RoundsInfoRoot);
+            for (int number = 1; number <= roundsInfo.RoundsAmount; number++)
+            {
+                RoundInfoWidget widget = Instantiate(RoundInfoWidgetPrefab, RoundsInfoRoot);
+                RoundProgress roundProgress =
+                    number < roundsInfo.CurrentRoundNumber ? RoundProgress.Passed :
+                    number > roundsInfo.CurrentRoundNumber ? RoundProgress.Next : RoundProgress.Current;
+                widget.Bind($"Раунд {number}", number, roundProgress); //passed, current, next
+            }
+        }
+
         public void OnBackButtonClicked()
         {
             SwitchTo(StartupView);
@@ -78,6 +95,11 @@ namespace Victorina
                 widget.ShowDefault();
                 yield return new WaitForSeconds(0.1f);
             }
+        }
+
+        private void OnRoundInfoClicked(int number)
+        {
+            MatchSystem.SelectRound(number);
         }
     }
 }

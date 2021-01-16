@@ -14,6 +14,7 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeNetRoundQuestion, DeserializeNetRoundQuestion);
             SerializationManager.RegisterSerializationHandlers(SerializeNetQuestion, DeserializeNetQuestion);
             SerializationManager.RegisterSerializationHandlers(SerializeStoryDot, DeserializeStoryDot);
+            SerializationManager.RegisterSerializationHandlers(SerializeNetRoundsInfo, DeserializeNetRoundsInfo);
         }
 
         #region PlayersBoard
@@ -184,6 +185,22 @@ namespace Victorina
         }
         
         #endregion
+
+        private void SerializeNetRoundsInfo(Stream stream, NetRoundsInfo netRoundsInfo)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32(netRoundsInfo.RoundsAmount);
+            writer.WriteInt32(netRoundsInfo.CurrentRoundNumber);
+        }
+
+        private NetRoundsInfo DeserializeNetRoundsInfo(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            NetRoundsInfo netRoundsInfo = new NetRoundsInfo();
+            netRoundsInfo.RoundsAmount = reader.ReadInt32();
+            netRoundsInfo.CurrentRoundNumber = reader.ReadInt32();
+            return netRoundsInfo;
+        }
         
     }
 }

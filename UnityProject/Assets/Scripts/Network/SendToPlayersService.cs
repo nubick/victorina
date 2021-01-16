@@ -55,7 +55,12 @@ namespace Victorina
         {
             Debug.Log($"Master: Send current story dot index to All: {index}");
             GetPlayers().ForEach(player => player.SendCurrentStoryDotIndex(index));
+        }
 
+        public void Send(NetRoundsInfo netRoundsInfo)
+        {
+            Debug.Log($"Master: Send rounds info to All: {netRoundsInfo}");
+            GetPlayers().ForEach(player => player.SendNetRoundsInfo(netRoundsInfo));
         }
     }
 }

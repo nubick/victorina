@@ -4,6 +4,7 @@ namespace Victorina
     {
         public ReactiveProperty<MatchPhase> Phase { get; set; } = new ReactiveProperty<MatchPhase>();
         public ReactiveProperty<PlayersBoard> PlayersBoard { get; } = new ReactiveProperty<PlayersBoard>();
+        public ReactiveProperty<NetRoundsInfo> RoundsInfo { get; } = new ReactiveProperty<NetRoundsInfo>();
         public ReactiveProperty<NetRound> RoundData { get; } = new ReactiveProperty<NetRound>();
         public NetRoundQuestion SelectedRoundQuestion { get; set; }
         
@@ -15,6 +16,7 @@ namespace Victorina
         {
             PlayersBoard.Value = new PlayersBoard();
             RoundData.Value = new NetRound();
+            RoundsInfo.Value = new NetRoundsInfo();
         }
         
         public override string ToString()
