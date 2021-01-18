@@ -110,6 +110,7 @@ namespace Victorina
             
             xmlReader.ReadToFollowing("answer");
             question.Answer = xmlReader.ReadInnerXml();
+            Debug.Log($"Answer: {question.Answer}");
             return question;
         }
 
@@ -117,51 +118,12 @@ namespace Victorina
         {
             while (xmlReader.Read())
             {
-                if (xmlReader.NodeType == XmlNodeType.Element && xmlReader.Name == "atom")
+                Debug.Log($"NodeType: {xmlReader.NodeType}");
+                if (xmlReader.NodeType == XmlNodeType.Element)
                 {
                     if (xmlReader.Name == "atom")
                     {
-                        string type = xmlReader.GetAttribute("type");
-                        if (string.IsNullOrEmpty(type))
-                        {
-                            string text = xmlReader.ReadInnerXml();
-                            TextStoryDot textDot = new TextStoryDot(text);
-                            question.QuestionStory.Add(textDot);
-                        }
-                        else
-                        {
-                            if (type == "say")
-                            {
-                                string text = xmlReader.ReadInnerXml();
-                                TextStoryDot textDot = new TextStoryDot($"say: {text}");
-                                question.QuestionStory.Add(textDot);
-                            }
-                            else if (type == "image")
-                            {
-                                string fileName = xmlReader.ReadInnerXml();//format = "@_august_243_2.jpg"
-                                string imagePath = fileName.Substring(1);
-                                ImageStoryDot imageDot = new ImageStoryDot(imagePath);
-                                question.QuestionStory.Add(imageDot);
-                            }
-                            else if (type == "voice")
-                            {
-                                string fileName = xmlReader.ReadInnerXml();
-                                string audioPath = fileName.Substring(1);
-                                AudioStoryDot imageDot = new AudioStoryDot(audioPath);
-                                question.QuestionStory.Add(imageDot);
-                            }
-                            else if (type == "video")
-                            {
-                                string fileName = xmlReader.ReadInnerXml();
-                                string videoPath = fileName.Substring(1);
-                                VideoStoryDot videoDot = new VideoStoryDot(videoPath);
-                                question.QuestionStory.Add(videoDot);
-                            }
-                            else
-                            {
-                                Debug.LogWarning($"Not supported atom type '{type}'");
-                            }
-                        }
+                        ReadAtom(xmlReader, question);
                     }
                     else
                     {
@@ -172,6 +134,64 @@ namespace Victorina
                 if (xmlReader.NodeType == XmlNodeType.EndElement && xmlReader.Name == "scenario")
                     break;
             }
+        }
+        
+        private void ReadAtom(XmlReader xmlReader, Question question)
+        {
+            string type = xmlReader.GetAttribute("type");
+            xmlReader.Read();
+
+            if (xmlReader.NodeType == XmlNodeType.EndElement && xmlReader.Name == "atom")
+                return;//<atom></atom> - skip
+            
+            if (xmlReader.NodeType != XmlNodeType.Text)
+                throw new Exception($"Next NodeType is not text, it is '{xmlReader.NodeType}'");
+            
+            if (string.IsNullOrEmpty(type))
+            {
+                string text = xmlReader.Value;
+                Debug.Log(text);
+                TextStoryDot textDot = new TextStoryDot(text);
+                question.QuestionStory.Add(textDot);
+            }
+            else
+            {
+                if (type == "say")
+                {
+                    string text = xmlReader.Value;
+                    TextStoryDot textDot = new TextStoryDot($"say: {text}");
+                    question.QuestionStory.Add(textDot);
+                }
+                else if (type == "image")
+                {
+                    string fileName = xmlReader.Value; //format = "@_august_243_2.jpg"
+                    Debug.Log($"image:{fileName}");
+                    string imagePath = fileName.Substring(1);
+                    ImageStoryDot imageDot = new ImageStoryDot(imagePath);
+                    question.QuestionStory.Add(imageDot);
+                }
+                else if (type == "voice")
+                {
+                    string fileName = xmlReader.Value;
+                    Debug.Log($"voice:{fileName}");
+                    string audioPath = fileName.Substring(1);
+                    AudioStoryDot imageDot = new AudioStoryDot(audioPath);
+                    question.QuestionStory.Add(imageDot);
+                }
+                else if (type == "video")
+                {
+                    string fileName = xmlReader.Value;
+                    Debug.Log($"video:{fileName}");
+                    string videoPath = fileName.Substring(1);
+                    VideoStoryDot videoDot = new VideoStoryDot(videoPath);
+                    question.QuestionStory.Add(videoDot);
+                }
+                else
+                {
+                    Debug.LogWarning($"Not supported atom type '{type}'");
+                }
+            }
+
         }
 
         private bool IsEmpty(Question question)
@@ -232,7 +252,7 @@ namespace Victorina
             if (File.Exists(path))
             {
                 bytes = File.ReadAllBytes(path);
-                Debug.Log($"File bytes are loaded, size: {bytes.Length / 1024}kb");
+                //Debug.Log($"File bytes are loaded, size: {bytes.Length / 1024}kb");
             }
             else
             {
