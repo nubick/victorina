@@ -6,11 +6,11 @@ namespace Victorina
     public class PackageSystem
     {
         [Inject] private PackageData Data { get; set; }
+        [Inject] private SiqConverter SiqConverter { get; set; }
 
         public void Initialize(string packageName)
         {
-            SiqConverter siqConverter = new SiqConverter(); 
-            Data.Package = siqConverter.Convert(packageName);;
+            Data.Package = SiqConverter.Convert(packageName);;
         }
 
         public Question GetQuestion(string questionId)

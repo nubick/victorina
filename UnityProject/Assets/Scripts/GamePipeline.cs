@@ -58,6 +58,8 @@ namespace Victorina
             _injector.Bind(new SiqPackOpenSystem());
             _injector.Bind(new SiqLoadedPackageSystem());
             _injector.Bind(new SiqLoadedPackageData());
+            _injector.Bind(new SiqConverter());
+            _injector.Bind(new EncodingFixSystem());
             
             _injector.CommitBindings();
         }

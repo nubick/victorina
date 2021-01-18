@@ -2,18 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml;
+using Injection;
 using UnityEngine;
 
 namespace Victorina
 {
     public class SiqConverter
     {
+        [Inject] private EncodingFixSystem EncodingFixSystem { get; set; }
+        
         public Package Convert(string packageName)
         {
             Package package = new Package(packageName);
             XmlReader xmlReader = XmlReader.Create($"{Application.persistentDataPath}/{packageName}/content.xml");
             package.Rounds = ReadRounds(xmlReader);
+            
+            
+            EncodingFixSystem.TryFix(packageName);
+            
             LoadFiles(package);
             return package;
         }
@@ -195,20 +203,20 @@ namespace Victorina
 
         private void LoadImage(ImageStoryDot imageDot, string packageName)
         {
-            string path = GetPath(packageName, "Images", imageDot.Path);
+            string path = $"{GetImagesPath(packageName)}/{imageDot.Path}";
             imageDot.Bytes = LoadFile(path);
         }
 
         private void LoadAudio(AudioStoryDot audioStoryDot, string packageName)
         {
-            string path = GetPath(packageName, "Audio", audioStoryDot.Path);
+            string path = $"{GetAudioPath(packageName)}/{audioStoryDot.Path}";
             audioStoryDot.FullPath = path;
             audioStoryDot.Bytes = LoadFile(path);
         }
 
         private void LoadVideo(VideoStoryDot videoStoryDot, string packageName)
         {
-            string path = GetPath(packageName, "Video", videoStoryDot.Path);
+            string path = $"{GetVideoPath(packageName)}/{videoStoryDot.Path}";
             videoStoryDot.Bytes = LoadFile(path);
         }
         
@@ -230,6 +238,21 @@ namespace Victorina
                 Debug.LogWarning($"File doesn't exist by path: {path}");
             }
             return bytes;
+        }
+
+        public string GetImagesPath(string packageName)
+        {
+            return $"{Application.persistentDataPath}/{packageName}/Images";
+        }
+        
+        public string GetAudioPath(string packageName)
+        {
+            return $"{Application.persistentDataPath}/{packageName}/Audio";
+        }
+
+        public string GetVideoPath(string packageName)
+        {
+            return $"{Application.persistentDataPath}/{packageName}/Video";
         }
     }
 }
