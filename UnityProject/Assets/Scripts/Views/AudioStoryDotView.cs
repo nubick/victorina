@@ -1,4 +1,5 @@
 using System.Collections;
+using System.IO;
 using Injection;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -22,21 +23,30 @@ namespace Victorina
 
         private IEnumerator LoadAndPlay(string path)
         {
-            string requestPath = $"file://{path}";
-            Debug.Log($"Request audio path: '{requestPath}'");
-            UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(requestPath, AudioType.MPEG);
+            bool exist = File.Exists(path);
 
-            yield return request.SendWebRequest();
-
-            if (request.error != null)
+            if (exist)
             {
-                Debug.Log($"Audio file loading error: {request.error}");
+                string requestPath = $"file://{path}";
+                Debug.Log($"Request audio path: '{requestPath}'");
+                UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(requestPath, AudioType.MPEG);
+
+                yield return request.SendWebRequest();
+
+                if (request.error != null)
+                {
+                    Debug.Log($"Audio file loading error: {request.error}");
+                }
+                else
+                {
+                    AudioClip audioClip = DownloadHandlerAudioClip.GetContent(request);
+                    AudioSource.clip = audioClip;
+                    AudioSource.Play();
+                }
             }
             else
             {
-                AudioClip audioClip = DownloadHandlerAudioClip.GetContent(request);
-                AudioSource.clip = audioClip;
-                AudioSource.Play();
+                Debug.Log($"Can't play audio. File doesn't exist: '{path}'");
             }
         }
         
