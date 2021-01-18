@@ -12,7 +12,7 @@ namespace Victorina
         [Inject] private GameLobbyView GameLobbyView { get; set; }
         [Inject] private RoundView RoundView { get; set; }
         [Inject] private TextQuestionView TextQuestionView { get; set; }
-        [Inject] private ImageQuestionView ImageQuestionView { get; set; }
+        [Inject] private ImageStoryDotView ImageStoryDotView { get; set; }
         [Inject] private AudioStoryDotView AudioStoryDotView { get; set; }
         [Inject] private VideoStoryDotView VideoStoryDotView { get; set; }
         [Inject] private AnswerView AnswerView { get; set; }
@@ -72,7 +72,7 @@ namespace Victorina
             HideAll();
 
             if (MatchData.CurrentStoryDot is ImageStoryDot)
-                ImageQuestionView.Show();
+                ImageStoryDotView.Show();
             else if (MatchData.CurrentStoryDot is AudioStoryDot)
                 AudioStoryDotView.Show();
             else if (MatchData.CurrentStoryDot is VideoStoryDot)

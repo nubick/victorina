@@ -14,7 +14,7 @@ namespace Victorina
             Package package = new Package(packageName);
             XmlReader xmlReader = XmlReader.Create($"{Application.persistentDataPath}/{packageName}/content.xml");
             package.Rounds = ReadRounds(xmlReader);
-            LoadImages(package);
+            LoadFiles(package);
             return package;
         }
 
@@ -171,7 +171,7 @@ namespace Victorina
             return question.Price == 0;
         }
 
-        private void LoadImages(Package package)
+        private void LoadFiles(Package package)
         {
             List<Question> allQuestions = package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions)).ToList();
             foreach (Question question in allQuestions)
@@ -181,27 +181,55 @@ namespace Victorina
                 {
                     dot.Index = index;
                     index++;
-                    
-                    if (dot is ImageStoryDot imageDot)
-                        LoadImage(imageDot, package.Name);
+
+                    if (dot is ImageStoryDot imageStoryDot)
+                        LoadImage(imageStoryDot, package.Name);
+                    else if (dot is AudioStoryDot audioStoryDot)
+                        LoadAudio(audioStoryDot, package.Name);
+                    else if (dot is VideoStoryDot videoStoryDot)
+                        LoadVideo(videoStoryDot, package.Name);
                 }
             }
-            Debug.Log("Images are loaded");
+            Debug.Log("Files are loaded");
         }
 
         private void LoadImage(ImageStoryDot imageDot, string packageName)
         {
-            string path = $"{Application.persistentDataPath}/{packageName}/Images/{imageDot.Path}";
+            string path = GetPath(packageName, "Images", imageDot.Path);
+            imageDot.Bytes = LoadFile(path);
+        }
+
+        private void LoadAudio(AudioStoryDot audioStoryDot, string packageName)
+        {
+            string path = GetPath(packageName, "Audio", audioStoryDot.Path);
+            audioStoryDot.FullPath = path;
+            audioStoryDot.Bytes = LoadFile(path);
+        }
+
+        private void LoadVideo(VideoStoryDot videoStoryDot, string packageName)
+        {
+            string path = GetPath(packageName, "Video", videoStoryDot.Path);
+            videoStoryDot.Bytes = LoadFile(path);
+        }
+        
+        private string GetPath(string packageName, string folder, string path)
+        {
+            return $"{Application.persistentDataPath}/{packageName}/{folder}/{path}";
+        }
+
+        private byte[] LoadFile(string path)
+        {
+            byte[] bytes = null;
             if (File.Exists(path))
             {
-                byte[] bytes = File.ReadAllBytes(path);
-                imageDot.Bytes = bytes;
-                Debug.Log($"Image bytes are loaded, size: {bytes.Length / 1024}kb");
+                bytes = File.ReadAllBytes(path);
+                Debug.Log($"File bytes are loaded, size: {bytes.Length / 1024}kb");
             }
             else
             {
-                Debug.LogWarning($"Image doesn't exist by path: {path}");
+                Debug.LogWarning($"File doesn't exist by path: {path}");
             }
+            return bytes;
         }
     }
 }
