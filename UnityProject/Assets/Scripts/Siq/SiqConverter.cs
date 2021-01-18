@@ -217,6 +217,7 @@ namespace Victorina
         private void LoadVideo(VideoStoryDot videoStoryDot, string packageName)
         {
             string path = $"{GetVideoPath(packageName)}/{videoStoryDot.Path}";
+            videoStoryDot.FullPath = path;
             videoStoryDot.Bytes = LoadFile(path);
         }
         

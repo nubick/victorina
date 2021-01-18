@@ -23,7 +23,7 @@ namespace Victorina
         private IEnumerator LoadAndPlay(string path)
         {
             string requestPath = $"file://{path}";
-            Debug.Log($"Request path: '{requestPath}'");
+            Debug.Log($"Request audio path: '{requestPath}'");
             UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(requestPath, AudioType.MPEG);
 
             yield return request.SendWebRequest();
