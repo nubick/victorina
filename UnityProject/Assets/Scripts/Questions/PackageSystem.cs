@@ -7,10 +7,12 @@ namespace Victorina
     {
         [Inject] private PackageData Data { get; set; }
         [Inject] private SiqConverter SiqConverter { get; set; }
+        [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
 
         public void Initialize(string packageName)
         {
-            Data.Package = SiqConverter.Convert(packageName);;
+            Data.Package = SiqConverter.Convert(packageName);
+            MasterFilesRepository.AddMasterFiles(Data.Package);
         }
 
         public Question GetQuestion(string questionId)

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.IO;
 using Injection;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -10,6 +9,7 @@ namespace Victorina
     {
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
+        [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
 
         public AudioSource AudioSource;
         
@@ -17,14 +17,15 @@ namespace Victorina
         {
             if (MatchData.CurrentStoryDot is AudioStoryDot audioStoryDot)
             {
-                StartCoroutine(LoadAndPlay(audioStoryDot.FullPath));
+                StartCoroutine(LoadAndPlay(audioStoryDot.FileId));
             }
         }
 
-        private IEnumerator LoadAndPlay(string path)
+        private IEnumerator LoadAndPlay(int fileId)
         {
-            bool exist = File.Exists(path);
-
+            bool exist = MasterFilesRepository.Has(fileId);
+            string path = MasterFilesRepository.GetPath(fileId);
+            
             if (exist)
             {
                 string requestPath = $"file://{path}";

@@ -15,7 +15,7 @@ namespace Victorina
             if (exists)
             {
                 string packageName = Path.GetFileNameWithoutExtension(path);
-                string destinationDirectoryName = $"{Application.persistentDataPath}/{packageName}";
+                string destinationDirectoryName = $"{Static.DataPath}/{packageName}";
                 UnZip(path, destinationDirectoryName);
                 return packageName;
             }

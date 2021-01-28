@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using MLAPI.Serialization;
 using MLAPI.Serialization.Pooled;
@@ -13,8 +12,12 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeRoundData, DeserializeRoundData);
             SerializationManager.RegisterSerializationHandlers(SerializeNetRoundQuestion, DeserializeNetRoundQuestion);
             SerializationManager.RegisterSerializationHandlers(SerializeNetQuestion, DeserializeNetQuestion);
-            SerializationManager.RegisterSerializationHandlers(SerializeStoryDot, DeserializeStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeNetRoundsInfo, DeserializeNetRoundsInfo);
+            
+            SerializationManager.RegisterSerializationHandlers(SerializeTextStoryDot, DeserializeTextStoryDot);
+            SerializationManager.RegisterSerializationHandlers(SerializeImageStoryDot, DeserializeImageStoryDot);
+            SerializationManager.RegisterSerializationHandlers(SerializeAudioStoryDot, DeserializeAudioStoryDot);
+            SerializationManager.RegisterSerializationHandlers(SerializeVideoStoryDot, DeserializeVideoStoryDot);
         }
 
         #region PlayersBoard
@@ -147,41 +150,75 @@ namespace Victorina
             return netQuestion;
         }
 
-        private void SerializeStoryDot(Stream stream, StoryDot storyDot)
+        #endregion
+        
+        #region Story Dots
+
+        private void SerializeTextStoryDot(Stream stream, TextStoryDot textStoryDot)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            if (storyDot is TextStoryDot textDot)
-            {
-                writer.WriteByte(0);
-                writer.WriteString(textDot.Text);
-            }
-            else if (storyDot is ImageStoryDot imageDot)
-            {
-                writer.WriteByte(1);
-                writer.WriteByteArray(imageDot.Bytes);
-            }
+            writer.WriteInt32(textStoryDot.Index);
+            writer.WriteString(textStoryDot.Text);
         }
 
-        private StoryDot DeserializeStoryDot(Stream stream)
+        private TextStoryDot DeserializeTextStoryDot(Stream stream)
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
-            byte type = reader.ReadByteDirect();
+            int index = reader.ReadInt32();
+            string text = reader.ReadString().ToString();
+            return new TextStoryDot(index, text);
+        }
+        
+        private void SerializeFileStoryDot(Stream stream, FileStoryDot fileStoryDot)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32(fileStoryDot.Index);
+            writer.WriteInt32(fileStoryDot.FileId);
+            writer.WriteInt32(fileStoryDot.ChunksAmount);
+        }
+        
+        private void SerializeImageStoryDot(Stream stream, ImageStoryDot imageStoryDot)
+        {
+            SerializeFileStoryDot(stream, imageStoryDot);
+        }
 
-            if (type == 0)
-            {
-                string text = reader.ReadString().ToString();
-                TextStoryDot testDot = new TextStoryDot(text);
-                return testDot;
-            }
-            
-            if (type == 1)
-            {
-                byte[] bytes = reader.ReadByteArray();
-                ImageStoryDot imageDot = new ImageStoryDot(bytes);
-                return imageDot;
-            }
+        private void SerializeAudioStoryDot(Stream stream, AudioStoryDot audioStoryDot)
+        {
+            SerializeFileStoryDot(stream, audioStoryDot);
+        }
 
-            throw new Exception($"Not supported story dot type: {type}");
+        private void SerializeVideoStoryDot(Stream stream, VideoStoryDot videoStoryDot)
+        {
+            SerializeFileStoryDot(stream, videoStoryDot);
+        }
+        
+        private void DeserializeFileStoryDot(Stream stream, FileStoryDot fileStoryDot)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            fileStoryDot.Index = reader.ReadInt32();
+            fileStoryDot.FileId = reader.ReadInt32();
+            fileStoryDot.ChunksAmount = reader.ReadInt32();
+        }
+
+        private ImageStoryDot DeserializeImageStoryDot(Stream stream)
+        {
+            ImageStoryDot imageStoryDot = new ImageStoryDot();
+            DeserializeFileStoryDot(stream, imageStoryDot);
+            return imageStoryDot;
+        }
+
+        private AudioStoryDot DeserializeAudioStoryDot(Stream stream)
+        {
+            AudioStoryDot audioStoryDot = new AudioStoryDot();
+            DeserializeFileStoryDot(stream, audioStoryDot);
+            return audioStoryDot;
+        }
+
+        private VideoStoryDot DeserializeVideoStoryDot(Stream stream)
+        {
+            VideoStoryDot videoStoryDot = new VideoStoryDot();
+            DeserializeFileStoryDot(stream, videoStoryDot);
+            return videoStoryDot;
         }
         
         #endregion

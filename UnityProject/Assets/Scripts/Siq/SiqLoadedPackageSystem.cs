@@ -12,14 +12,14 @@ namespace Victorina
         public void Refresh()
         {
             Data.PackageNames.Clear();
-            string[] fullPaths = Directory.GetDirectories(Application.persistentDataPath);
+            string[] fullPaths = Directory.GetDirectories(Static.DataPath);
             Data.PackageNames.AddRange(fullPaths.Select(Path.GetFileName));
             Debug.Log($"Converted packs amount: {Data.PackageNames.Count}");
         }
 
         public void Delete(string packageName)
         {
-            string path = $"{Application.persistentDataPath}/{packageName}";
+            string path = $"{Static.DataPath}/{packageName}";
             Debug.Log($"Delete directory: {path}");
             if (Directory.Exists(path))
             {

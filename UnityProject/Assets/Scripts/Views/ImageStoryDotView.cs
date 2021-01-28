@@ -9,6 +9,7 @@ namespace Victorina
     {
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
+        [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
 
         public Sprite NoImageSprite;
         public Image ImageBorder;
@@ -30,15 +31,17 @@ namespace Victorina
         private Sprite GetSprite(ImageStoryDot imageStoryDot)
         {
             Sprite sprite = NoImageSprite;
-            if (imageStoryDot.Bytes == null)
+
+            if (MasterFilesRepository.Has(imageStoryDot.FileId))
             {
-                Debug.LogWarning($"Don't have loaded image, path '{imageStoryDot.Path}'");
+                byte[] bytes = MasterFilesRepository.GetBytes(imageStoryDot.FileId);
+                Texture2D texture = new Texture2D(1, 1);
+                texture.LoadImage(bytes);
+                sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             }
             else
             {
-                Texture2D texture = new Texture2D(1, 1);
-                texture.LoadImage(imageStoryDot.Bytes);
-                sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                Debug.LogWarning($"Don't have loaded file, fileId '{imageStoryDot.FileId}'");
             }
             return sprite;
         }

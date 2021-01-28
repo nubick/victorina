@@ -35,7 +35,7 @@ namespace Injection
 				}
 				else
 				{
-					Debug.Log($"Injecting:{type.Name}");
+					//Debug.Log($"Injecting:{type.Name}");
 					InjectTo(_objects[type]);
 				}
 			}
