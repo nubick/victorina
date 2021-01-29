@@ -18,7 +18,7 @@ namespace Victorina
         public void Bind(NetRoundQuestion netRoundQuestion)
         {
             NetRoundQuestion = netRoundQuestion;
-            Price.text = netRoundQuestion.Price.ToString();
+            Price.text = netRoundQuestion.IsAnswered ? string.Empty : netRoundQuestion.Price.ToString();
         }
 
         public void BindEmpty()
@@ -29,7 +29,7 @@ namespace Victorina
         
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (IsEmpty)
+            if (IsEmpty || NetRoundQuestion.IsAnswered)
                 return;
             
             MetagameEvents.RoundQuestionClicked.Publish(NetRoundQuestion);
@@ -42,7 +42,7 @@ namespace Victorina
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (IsEmpty)
+            if (IsEmpty || NetRoundQuestion.IsAnswered)
                 return;
             
             ShowHighlighted();
@@ -50,7 +50,7 @@ namespace Victorina
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (IsEmpty)
+            if (IsEmpty || NetRoundQuestion.IsAnswered)
                 return;
             
             ShowDefault();

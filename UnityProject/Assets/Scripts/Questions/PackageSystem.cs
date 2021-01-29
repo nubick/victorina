@@ -12,6 +12,7 @@ namespace Victorina
         public void Initialize(string packageName)
         {
             Data.Package = SiqConverter.Convert(packageName);
+            Data.PackageProgress = new PackageProgress();
             MasterFilesRepository.AddMasterFiles(Data.Package);
         }
 

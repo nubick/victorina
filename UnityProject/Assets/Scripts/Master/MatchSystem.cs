@@ -58,6 +58,7 @@ namespace Victorina
         
         public void BackToRound()
         {
+            PackageData.PackageProgress.SetQuestionAsAnswered(MatchData.SelectedRoundQuestion.QuestionId);
             SelectRound(MatchData.RoundsInfo.Value.CurrentRoundNumber );
         }
         
@@ -70,16 +71,16 @@ namespace Victorina
             SendToPlayersService.Send(MatchData.RoundsInfo.Value);
 
             Round round = PackageData.Package.Rounds[number - 1];
-            UpdateRoundData(MatchData.RoundData.Value, round);
+            MatchData.RoundData.Value = BuildNetRound(round, PackageData.PackageProgress);
             SendToPlayersService.Send(MatchData.RoundData.Value);
 
             MatchData.Phase.Value = MatchPhase.Round;
             SendToPlayersService.Send(MatchData.Phase.Value);
         }
 
-        private void UpdateRoundData(NetRound netRound, Round round)
+        private NetRound BuildNetRound(Round round, PackageProgress packageProgress)
         {
-            netRound.Themes.Clear();
+            NetRound netRound = new NetRound();
             foreach (Theme theme in round.Themes)
             {
                 NetRoundTheme netRoundTheme = new NetRoundTheme();
@@ -88,10 +89,12 @@ namespace Victorina
                 {
                     NetRoundQuestion netRoundQuestion = new NetRoundQuestion(question.Id);
                     netRoundQuestion.Price = question.Price;
+                    netRoundQuestion.IsAnswered = packageProgress.IsAnswered(question.Id);
                     netRoundTheme.Questions.Add(netRoundQuestion);
                 }
                 netRound.Themes.Add(netRoundTheme);
             }
+            return netRound;
         }
         
         public void ShowNext()

@@ -6,7 +6,7 @@ namespace Victorina
     {
         public string GetPath(int fileId)
         {
-            return $"{Static.DataPath}/PackageFiles/{fileId.ToString()}.mp4";
+            return $"{Static.DataPath}/PackageFiles/{fileId.ToString()}.dat";
         }
 
         public string GetTempVideoFilePath()
