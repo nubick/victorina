@@ -32,7 +32,7 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            AdminPart.SetActive(NetworkData.IsAdmin);
+            AdminPart.SetActive(NetworkData.IsMaster);
             RefreshUI();
             StartCoroutine(RefreshCode());
         }

@@ -34,7 +34,7 @@ namespace Victorina
             transport.ConnectAddress = ExternalIpData.Ip;
             transport.ConnectPort = Static.Port;
             NetworkingManager.StartServer();
-            NetworkData.IsAdmin = true;
+            NetworkData.IsMaster = true;
         }
         
         private void OnServerStarted()
@@ -115,7 +115,7 @@ namespace Victorina
         public void StopServer()
         {
             NetworkingManager.StopServer();
-            NetworkData.IsAdmin = false;
+            NetworkData.IsMaster = false;
         }
     }
 }

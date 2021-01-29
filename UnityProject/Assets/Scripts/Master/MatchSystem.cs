@@ -24,7 +24,7 @@ namespace Victorina
             {
                 Debug.Log($"Selected question is answered: {netRoundQuestion}");
             }
-            else if (NetworkData.IsAdmin)
+            else if (NetworkData.IsMaster)
             {
                 SelectQuestion(netRoundQuestion);
             }
@@ -64,7 +64,8 @@ namespace Victorina
         
         public void SelectRound(int number)
         {
-            Assert.IsTrue(NetworkData.IsAdmin);
+            if (NetworkData.IsClient)
+                return;
 
             MatchData.RoundsInfo.Value.RoundsAmount = PackageData.Package.Rounds.Count;
             MatchData.RoundsInfo.Value.CurrentRoundNumber = number;

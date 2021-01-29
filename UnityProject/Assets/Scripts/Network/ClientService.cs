@@ -24,7 +24,7 @@ namespace Victorina
         {
             Debug.Log($"JoinGame: '{playerName}', game code: {gameCode}");
 
-            NetworkData.IsAdmin = false;
+            NetworkData.IsMaster = false;
             
             string ip = IpCodeSystem.GetIp(gameCode);
             Debug.Log($"Joining IP: {ip}");
