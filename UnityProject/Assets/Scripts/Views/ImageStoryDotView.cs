@@ -7,20 +7,25 @@ namespace Victorina
 {
     public class ImageStoryDotView : ViewBase
     {
+        private int? _pendingFileId;
+        
         [Inject] private MatchData MatchData { get; set; }
-        [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
 
         public Sprite NoImageSprite;
         public Image ImageBorder;
         public Image Image;
 
+        public void Initialize()
+        {
+            MetagameEvents.ClientFileDownloaded.Subscribe(OnClientFileDownloaded);
+        }
+        
         protected override void OnShown()
         {
             if (MatchData.CurrentStoryDot is ImageStoryDot imageDot)
             {
-                Image.sprite = GetSprite(imageDot);
-                ImageBorder.sprite = Image.sprite;
+                ShowImage(imageDot.FileId);
             }
             else
             {
@@ -28,22 +33,39 @@ namespace Victorina
             }
         }
 
-        private Sprite GetSprite(ImageStoryDot imageStoryDot)
+        private void ShowImage(int fileId)
+        {
+            Image.sprite = GetSprite(fileId);
+            ImageBorder.sprite = Image.sprite;
+        }
+        
+        private Sprite GetSprite(int fileId)
         {
             Sprite sprite = NoImageSprite;
 
-            if (MasterFilesRepository.Has(imageStoryDot.FileId))
+            if (MasterFilesRepository.Has(fileId))
             {
-                byte[] bytes = MasterFilesRepository.GetBytes(imageStoryDot.FileId);
+                byte[] bytes = MasterFilesRepository.GetBytes(fileId);
                 Texture2D texture = new Texture2D(1, 1);
                 texture.LoadImage(bytes);
                 sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                _pendingFileId = null;
             }
             else
             {
-                Debug.LogWarning($"Don't have loaded file, fileId '{imageStoryDot.FileId}'");
+                _pendingFileId = fileId;
+                Debug.LogWarning($"Don't have loaded file, fileId '{fileId}'");
             }
             return sprite;
+        }
+
+        private void OnClientFileDownloaded(int fileId)
+        {
+            if (!IsActive)
+                return;
+
+            if (_pendingFileId == fileId)
+                ShowImage(fileId);
         }
     }
 }

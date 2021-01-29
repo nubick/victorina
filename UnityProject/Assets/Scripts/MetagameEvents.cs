@@ -9,5 +9,9 @@ namespace Victorina
 
         public static GameEvent<NetRoundQuestion> RoundQuestionClicked { get; } = new GameEvent<NetRoundQuestion>();
         public static GameEvent<int> RoundInfoClicked { get; } = new GameEvent<int>();
+
+
+        //Client events
+        public static GameEvent<int> ClientFileDownloaded = new GameEvent<int>();
     }
 }

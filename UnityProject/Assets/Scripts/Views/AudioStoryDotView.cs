@@ -7,12 +7,18 @@ namespace Victorina
 {
     public class AudioStoryDotView : ViewBase
     {
-        [Inject] private MatchSystem MatchSystem { get; set; }
+        private int? _pendingFileId;
+
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
 
         public AudioSource AudioSource;
-        
+
+        public void Initialize()
+        {
+            MetagameEvents.ClientFileDownloaded.Subscribe(OnClientFileDownloaded);
+        }
+
         protected override void OnShown()
         {
             if (MatchData.CurrentStoryDot is AudioStoryDot audioStoryDot)
@@ -28,6 +34,7 @@ namespace Victorina
             
             if (exist)
             {
+                _pendingFileId = null;
                 string requestPath = $"file://{path}";
                 Debug.Log($"Request audio path: '{requestPath}'");
                 UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(requestPath, AudioType.MPEG);
@@ -47,8 +54,18 @@ namespace Victorina
             }
             else
             {
+                _pendingFileId = fileId;
                 Debug.Log($"Can't play audio. File doesn't exist: '{path}'");
             }
+        }
+        
+        private void OnClientFileDownloaded(int fileId)
+        {
+            if (!IsActive)
+                return;
+
+            if (_pendingFileId == fileId)
+                StartCoroutine(LoadAndPlay(fileId));
         }
     }
 }

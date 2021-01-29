@@ -85,6 +85,9 @@ namespace Victorina
             _injector.Get<DataSerializationService>().Initialize();
             
             _injector.Get<RoundView>().Initialize();
+            _injector.Get<ImageStoryDotView>().Initialize();
+            _injector.Get<AudioStoryDotView>().Initialize();
+            _injector.Get<VideoStoryDotView>().Initialize();
 
             StartCoroutine(_injector.Get<ClientFilesRequestSystem>().RequestCoroutine());
         }

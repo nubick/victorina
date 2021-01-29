@@ -44,6 +44,7 @@ namespace Victorina
             string path = GetPath(file.FileId);
             byte[] bytes = file.GetBytes();
             File.WriteAllBytes(path, bytes);
+            MetagameEvents.ClientFileDownloaded.Publish(file.FileId);
         }
     }
 }
