@@ -23,12 +23,15 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<StartupView>());
             _injector.Bind(FindObjectOfType<JoinGameView>());
             _injector.Bind(FindObjectOfType<GameLobbyView>());
-            _injector.Bind(FindObjectOfType<TextQuestionView>());
+            _injector.Bind(FindObjectOfType<TextStoryDotView>());
             _injector.Bind(FindObjectOfType<ImageStoryDotView>());
             _injector.Bind(FindObjectOfType<AudioStoryDotView>());
             _injector.Bind(FindObjectOfType<VideoStoryDotView>());
             _injector.Bind(FindObjectOfType<RoundView>());
-            _injector.Bind(FindObjectOfType<AnswerView>());
+            _injector.Bind(FindObjectOfType<MasterQuestionPanelView>());
+            
+            _injector.Bind(FindObjectOfType<PlayerButtonView>());
+            _injector.Bind(new QuestionTimer());
             
             _injector.Bind(new NetworkData());
             

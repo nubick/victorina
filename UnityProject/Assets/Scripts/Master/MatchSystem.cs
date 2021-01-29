@@ -1,7 +1,6 @@
 using System.Linq;
 using Injection;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace Victorina
 {
@@ -12,6 +11,7 @@ namespace Victorina
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private QuestionTimer QuestionTimer { get; set; }
         
         public void Start()
         {
@@ -36,24 +36,34 @@ namespace Victorina
 
         private void SelectQuestion(NetRoundQuestion netRoundQuestion)
         {
-            Question question = PackageSystem.GetQuestion(netRoundQuestion.QuestionId);
-
-            NetQuestion netQuestion = new NetQuestion();
-            netQuestion.QuestionStory = question.QuestionStory.ToArray();
-            netQuestion.StoryDotsAmount = netQuestion.QuestionStory.Length;
-            netQuestion.Answer = question.Answer;
+            QuestionTimer.Reset(Static.TimeForAnswer);
+            MatchData.WasTimerStarted = false;
+            MatchData.IsTimerOn = false;
             
-            MatchData.SelectedQuestion = netQuestion;
-            SendToPlayersService.SendSelectedQuestion(MatchData.SelectedQuestion);
+            MatchData.SelectedQuestion.Value = BuildNetQuestion(netRoundQuestion);
+            SendToPlayersService.SendSelectedQuestion(MatchData.SelectedQuestion.Value);
 
             MatchData.SelectedRoundQuestion = netRoundQuestion;
             SendToPlayersService.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
 
+            MatchData.Phase.Value = MatchPhase.ShowQuestion;
+            SendToPlayersService.Send(MatchData.Phase.Value);
+
             MatchData.CurrentStoryDotIndex.Value = 0;
             SendToPlayersService.SendCurrentStoryDotIndex(MatchData.CurrentStoryDotIndex.Value);
             
-            MatchData.Phase.Value = MatchPhase.Question;
-            SendToPlayersService.Send(MatchData.Phase.Value);
+            StartTimerIfTime();
+        }
+
+        private NetQuestion BuildNetQuestion(NetRoundQuestion netRoundQuestion)
+        {
+            Question question = PackageSystem.GetQuestion(netRoundQuestion.QuestionId);
+            NetQuestion netQuestion = new NetQuestion();
+            netQuestion.QuestionStory = question.QuestionStory.ToArray();
+            netQuestion.QuestionStoryDotsAmount = netQuestion.QuestionStory.Length;
+            netQuestion.AnswerStory = question.AnswerStory.ToArray();
+            netQuestion.AnswerStoryDotsAmount = netQuestion.AnswerStory.Length;
+            return netQuestion;
         }
         
         public void BackToRound()
@@ -97,19 +107,55 @@ namespace Victorina
             }
             return netRound;
         }
-        
+
         public void ShowNext()
         {
-            if (MatchData.CurrentStoryDot == MatchData.SelectedQuestion.QuestionStory.Last())
-            {
-                MatchData.Phase.Value = MatchPhase.Answer;
-                SendToPlayersService.Send(MatchData.Phase.Value);
-            }
-            else
-            {
-                MatchData.CurrentStoryDotIndex.Value++;
-                SendToPlayersService.SendCurrentStoryDotIndex(MatchData.CurrentStoryDotIndex.Value);
-            }
+            MatchData.CurrentStoryDotIndex.Value++;
+            SendToPlayersService.SendCurrentStoryDotIndex(MatchData.CurrentStoryDotIndex.Value);
+            StartTimerIfTime();
+        }
+
+        private void StartTimerIfTime()
+        {
+            if (MatchData.WasTimerStarted)
+                return;
+            
+            if (MatchData.Phase.Value == MatchPhase.ShowQuestion &&
+                MatchData.CurrentStoryDot == MatchData.SelectedQuestion.Value.QuestionStory.Last())
+                StartTimer();
+        }
+
+        public void ShowPrevious()
+        {
+            MatchData.CurrentStoryDotIndex.Value--;
+            SendToPlayersService.SendCurrentStoryDotIndex(MatchData.CurrentStoryDotIndex.Value);
+        }
+
+        public void StartTimer()
+        {
+            QuestionTimer.Start();
+            
+            MatchData.WasTimerStarted = true;
+            MatchData.IsTimerOn = true;
+            SendToPlayersService.SendStartTimer();
+        }
+
+        public void StopTimer()
+        {
+            QuestionTimer.Stop();
+            
+            MatchData.IsTimerOn = false;
+            SendToPlayersService.SendStopTimer();
+        }
+        
+        public void ShowAnswer()
+        {
+            StopTimer();
+            MatchData.Phase.Value = MatchPhase.ShowAnswer;
+            SendToPlayersService.Send(MatchData.Phase.Value);
+
+            MatchData.CurrentStoryDotIndex.Value = 0;
+            SendToPlayersService.SendCurrentStoryDotIndex(MatchData.CurrentStoryDotIndex.Value);
         }
     }
 }

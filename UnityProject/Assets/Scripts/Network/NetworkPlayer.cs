@@ -66,56 +66,65 @@ namespace Victorina
         private void ReceiveSelectedQuestion(NetQuestion netQuestion)
         {
             Debug.Log($"Player {OwnerClientId}: Receive selected question: {netQuestion}");
-            netQuestion.QuestionStory = new StoryDot[netQuestion.StoryDotsAmount];
-            MatchData.SelectedQuestion = netQuestion;
+            netQuestion.QuestionStory = new StoryDot[netQuestion.QuestionStoryDotsAmount];
+            netQuestion.AnswerStory = new StoryDot[netQuestion.AnswerStoryDotsAmount];
+            MatchData.SelectedQuestion.Value = netQuestion;
         }
 
-        public void SendStoryDot(StoryDot storyDot)
+        public void SendStoryDot(StoryDot storyDot, bool isQuestion)
         {
             Debug.Log($"Master: Send story dot: {storyDot} to {OwnerClientId}");
             if(storyDot is TextStoryDot textStoryDot)
-                InvokeClientRpcOnOwner(ReceiveTextStoryDot, textStoryDot);
+                InvokeClientRpcOnOwner(ReceiveTextStoryDot, textStoryDot, isQuestion);
             else if (storyDot is ImageStoryDot imageStoryDot)
-                InvokeClientRpcOnOwner(ReceiveImageStoryDot, imageStoryDot);
+                InvokeClientRpcOnOwner(ReceiveImageStoryDot, imageStoryDot, isQuestion);
             else if(storyDot is AudioStoryDot audioStoryDot)
-                InvokeClientRpcOnOwner(ReceiveAudioStoryDot, audioStoryDot);
+                InvokeClientRpcOnOwner(ReceiveAudioStoryDot, audioStoryDot, isQuestion);
             else if (storyDot is VideoStoryDot videoStoryDot)
-                InvokeClientRpcOnOwner(ReceiveVideoStoryDot, videoStoryDot);
+                InvokeClientRpcOnOwner(ReceiveVideoStoryDot, videoStoryDot, isQuestion);
             else
                 throw new Exception($"Not supported story dot: {storyDot}");
         }
+
+        private void SetStoryDot(StoryDot storyDot, bool isQuestion)
+        {
+            if (isQuestion)
+                MatchData.SelectedQuestion.Value.QuestionStory[storyDot.Index] = storyDot;
+            else
+                MatchData.SelectedQuestion.Value.AnswerStory[storyDot.Index] = storyDot;
+        }
         
         [ClientRPC]
-        private void ReceiveTextStoryDot(TextStoryDot storyDot)
+        private void ReceiveTextStoryDot(TextStoryDot textStoryDot, bool isQuestion)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive text story dot: {storyDot}");
-            MatchData.SelectedQuestion.QuestionStory[storyDot.Index] = storyDot;
+            Debug.Log($"Player {OwnerClientId}: Receive text story dot: {textStoryDot}");
+            SetStoryDot(textStoryDot, isQuestion);
         }
 
         [ClientRPC]
-        private void ReceiveImageStoryDot(ImageStoryDot imageStoryDot)
+        private void ReceiveImageStoryDot(ImageStoryDot imageStoryDot, bool isQuestion)
         {
             Debug.Log($"Player {OwnerClientId}: Receive image story dot: {imageStoryDot}");
-            MatchData.SelectedQuestion.QuestionStory[imageStoryDot.Index] = imageStoryDot;
+            SetStoryDot(imageStoryDot, isQuestion);
             ClientFilesRepository.Register(imageStoryDot.FileId, imageStoryDot.ChunksAmount);
         }
         
         [ClientRPC]
-        private void ReceiveAudioStoryDot(AudioStoryDot audioStoryDot)
+        private void ReceiveAudioStoryDot(AudioStoryDot audioStoryDot, bool isQuestion)
         {
             Debug.Log($"Player {OwnerClientId}: Receive audio story dot: {audioStoryDot}");
-            MatchData.SelectedQuestion.QuestionStory[audioStoryDot.Index] = audioStoryDot;
+            SetStoryDot(audioStoryDot, isQuestion);
             ClientFilesRepository.Register(audioStoryDot.FileId, audioStoryDot.ChunksAmount);
         }
-        
+
         [ClientRPC]
-        private void ReceiveVideoStoryDot(VideoStoryDot videoStoryDot)
+        private void ReceiveVideoStoryDot(VideoStoryDot videoStoryDot, bool isQuestion)
         {
             Debug.Log($"Player {OwnerClientId}: Receive video story dot: {videoStoryDot}");
-            MatchData.SelectedQuestion.QuestionStory[videoStoryDot.Index] = videoStoryDot;
+            SetStoryDot(videoStoryDot, isQuestion);
             ClientFilesRepository.Register(videoStoryDot.FileId, videoStoryDot.ChunksAmount);
         }
-        
+
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
         {
             Debug.Log($"Master: Send selected round question: {netRoundQuestion} to {OwnerClientId}");
@@ -193,5 +202,34 @@ namespace Victorina
         }
         
         #endregion
+
+        #region Timer
+
+        public void SendStartTimer()
+        {
+            Debug.Log($"Master: Send start timer to {OwnerClientId}");
+            InvokeClientRpcOnOwner(ReceiveStartTimer);
+        }
+
+        [ClientRPC]
+        private void ReceiveStartTimer()
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive start timer");
+        }
+
+        public void SendStopTimer()
+        {
+            Debug.Log($"Master: Send stop timer to {OwnerClientId}");
+            InvokeClientRpcOnOwner(ReceiveStopTimer);
+        }
+
+        [ClientRPC]
+        private void ReceiveStopTimer()
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive stop timer");
+        }
+        
+        #endregion
+        
     }
 }

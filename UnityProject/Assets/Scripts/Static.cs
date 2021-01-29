@@ -6,6 +6,7 @@ namespace Victorina
     {
         public static int Port = 139;
         public static string LocalhostGameCode = "XEAAAABA";
+        public static float TimeForAnswer = 15f;
 
 #if UNITY_EDITOR
         public static string DataPath => $"{Application.persistentDataPath}/Editor";

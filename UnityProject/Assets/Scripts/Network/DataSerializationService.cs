@@ -137,16 +137,16 @@ namespace Victorina
         private void SerializeNetQuestion(Stream stream, NetQuestion netQuestion)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteString(netQuestion.Answer);
-            writer.WriteInt32(netQuestion.StoryDotsAmount);
+            writer.WriteInt32(netQuestion.QuestionStoryDotsAmount);
+            writer.WriteInt32(netQuestion.AnswerStoryDotsAmount);
         }
         
         private NetQuestion DeserializeNetQuestion(Stream stream)
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             NetQuestion netQuestion = new NetQuestion();
-            netQuestion.Answer = reader.ReadString().ToString();
-            netQuestion.StoryDotsAmount = reader.ReadInt32();
+            netQuestion.QuestionStoryDotsAmount = reader.ReadInt32();
+            netQuestion.AnswerStoryDotsAmount = reader.ReadInt32();
             return netQuestion;
         }
 

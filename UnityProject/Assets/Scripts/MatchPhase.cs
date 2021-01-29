@@ -4,7 +4,7 @@ namespace Victorina
     {
         WaitingInLobby,
         Round,
-        Question,
-        Answer
+        ShowQuestion,
+        ShowAnswer
     }
 }

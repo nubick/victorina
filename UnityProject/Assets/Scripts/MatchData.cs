@@ -1,3 +1,5 @@
+using System;
+
 namespace Victorina
 {
     public class MatchData
@@ -7,10 +9,31 @@ namespace Victorina
         public ReactiveProperty<NetRoundsInfo> RoundsInfo { get; } = new ReactiveProperty<NetRoundsInfo>();
         public ReactiveProperty<NetRound> RoundData { get; } = new ReactiveProperty<NetRound>();
         public NetRoundQuestion SelectedRoundQuestion { get; set; }
-        
-        public NetQuestion SelectedQuestion { get; set; }
-        public ReactiveProperty<int> CurrentStoryDotIndex { get; set; } = new ReactiveProperty<int>();
-        public StoryDot CurrentStoryDot => SelectedQuestion.QuestionStory[CurrentStoryDotIndex.Value];
+
+        public ReactiveProperty<NetQuestion> SelectedQuestion { get; } = new ReactiveProperty<NetQuestion>();
+        public ReactiveProperty<int> CurrentStoryDotIndex { get; } = new ReactiveProperty<int>();
+
+        public StoryDot CurrentStoryDot
+        {
+            get
+            {
+                if (Phase.Value == MatchPhase.ShowQuestion)
+                {
+                    return SelectedQuestion.Value.QuestionStory[CurrentStoryDotIndex.Value];    
+                }
+                else if (Phase.Value == MatchPhase.ShowAnswer)
+                {
+                    return SelectedQuestion.Value.AnswerStory[CurrentStoryDotIndex.Value];
+                }
+                else
+                {
+                    throw new Exception($"Can't get CurrentStoryDot for phase: {Phase.Value}");
+                }
+            }
+        }
+
+        public bool WasTimerStarted { get; set; }
+        public bool IsTimerOn { get; set; }
 
         public MatchData()
         {

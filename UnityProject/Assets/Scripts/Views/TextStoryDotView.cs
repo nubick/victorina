@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class TextQuestionView : ViewBase
+    public class TextStoryDotView : ViewBase
     {
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
@@ -17,11 +17,6 @@ namespace Victorina
                 QuestionText.text = textDot.Text;
             else
                 throw new Exception($"TextQuestionView: Current story dot is not text, {MatchData.CurrentStoryDot}");
-        }
-
-        public void OnAnswerButtonClicked()
-        {
-            MatchSystem.ShowNext();
         }
     }
 }

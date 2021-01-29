@@ -40,10 +40,5 @@ namespace Victorina
                 }
             }
         }
-
-        public void OnNextButtonClicked()
-        {
-            MatchSystem.ShowNext();
-        }
     }
 }

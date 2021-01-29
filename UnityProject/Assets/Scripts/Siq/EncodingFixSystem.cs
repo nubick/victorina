@@ -18,6 +18,9 @@ namespace Victorina
 
         private void FixURLEncoding(string folder)
         {
+            if (!Directory.Exists(folder))
+                return;
+            
             string[] fileNames = Directory.GetFiles(folder);
             foreach (string filePath in fileNames)
             {
@@ -26,7 +29,7 @@ namespace Victorina
                     string unescapedFilePath = UnityWebRequest.UnEscapeURL(filePath);
                     if (unescapedFilePath != filePath)
                     {
-                        Debug.Log($"Move file from '{filePath}' to '{unescapedFilePath}'");
+                        Debug.Log($"Unescape file name '{filePath}' to '{unescapedFilePath}'");
                         File.Move(filePath, unescapedFilePath);
                     }
                 }

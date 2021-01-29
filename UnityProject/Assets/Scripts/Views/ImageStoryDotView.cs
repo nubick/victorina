@@ -45,10 +45,5 @@ namespace Victorina
             }
             return sprite;
         }
-
-        public void OnAnswerButtonClicked()
-        {
-            MatchSystem.ShowNext();
-        }
     }
 }

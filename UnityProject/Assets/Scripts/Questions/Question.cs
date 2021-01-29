@@ -7,10 +7,9 @@ namespace Victorina
     {
         public string Id { get; }
         public int Price { get; set; }
-        public string Answer { get; set; }
 
-        public List<StoryDot> QuestionStory { get; set; } = new List<StoryDot>();
-        public List<StoryDot> AnswerStory { get; set; } = new List<StoryDot>();
+        public List<StoryDot> QuestionStory { get; } = new List<StoryDot>();
+        public List<StoryDot> AnswerStory { get; } = new List<StoryDot>();
         
         public Question() : this(Guid.NewGuid().ToString())
         {

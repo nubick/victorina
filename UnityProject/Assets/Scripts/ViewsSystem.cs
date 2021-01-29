@@ -11,13 +11,16 @@ namespace Victorina
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private GameLobbyView GameLobbyView { get; set; }
         [Inject] private RoundView RoundView { get; set; }
-        [Inject] private TextQuestionView TextQuestionView { get; set; }
+        [Inject] private TextStoryDotView TextStoryDotView { get; set; }
         [Inject] private ImageStoryDotView ImageStoryDotView { get; set; }
         [Inject] private AudioStoryDotView AudioStoryDotView { get; set; }
         [Inject] private VideoStoryDotView VideoStoryDotView { get; set; }
-        [Inject] private AnswerView AnswerView { get; set; }
 
+        [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
+        [Inject] private PlayerButtonView PlayerButtonView { get; set; }
+        
         [Inject] private MatchData MatchData { get; set; }
+        [Inject] private NetworkData NetworkData { get; set; }
         
         public void Initialize()
         {
@@ -25,8 +28,8 @@ namespace Victorina
                 view.Content.SetActive(false);
             StartupView.Show();
 
-            MatchData.Phase.SubscribeChanged(RefreshPhase);
-            MatchData.CurrentStoryDotIndex.SubscribeChanged(RefreshPhase);
+            MatchData.Phase.SubscribeChanged(OnPhaseChanged);
+            MatchData.CurrentStoryDotIndex.SubscribeChanged(OnCurrentStoryDotIndexChanged);
         }
 
         private void HideAll()
@@ -36,34 +39,36 @@ namespace Victorina
                     view.Hide();
         }
 
-        private void RefreshPhase()
+        private void OnPhaseChanged()
         {
             MatchPhase phase = MatchData.Phase.Value;
-            Debug.Log($"RefreshPhase: {phase}");
-            if (phase == MatchPhase.Question)
+            Debug.Log($"OnPhaseChanged: {phase}");
+
+            if (phase == MatchPhase.ShowQuestion || phase == MatchPhase.ShowAnswer)
+                return;
+            
+            HideAll();
+            switch (phase)
             {
-                RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedRoundQuestion));
-            }
-            else
-            {
-                HideAll();
-                switch (phase)
-                {
-                    case MatchPhase.WaitingInLobby:
-                        GameLobbyView.Show();
-                        break;
-                    case MatchPhase.Round:
-                        RoundView.Show();
-                        break;
-                    case MatchPhase.Answer:
-                        AnswerView.Show();
-                        break;
-                    default:
-                        throw new Exception($"Not supported phase: {MatchData.Phase}");
-                }
+                case MatchPhase.WaitingInLobby:
+                    GameLobbyView.Show();
+                    break;
+                case MatchPhase.Round:
+                    RoundView.Show();
+                    break;
+                default:
+                    throw new Exception($"Not supported phase: {MatchData.Phase}");
             }
         }
 
+        private void OnCurrentStoryDotIndexChanged()
+        {
+            MatchPhase phase = MatchData.Phase.Value;
+            Debug.Log($"OnCurrentStoryDotIndexChanged: {phase}, {MatchData.CurrentStoryDotIndex.Value}");
+            if (phase == MatchPhase.ShowQuestion || phase == MatchPhase.ShowAnswer)
+                RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedRoundQuestion));
+        }
+        
         private IEnumerator SwitchToQuestionView(NetRoundQuestion netRoundQuestion)
         {
             if (RoundView.IsActive)
@@ -78,7 +83,12 @@ namespace Victorina
             else if (MatchData.CurrentStoryDot is VideoStoryDot)
                 VideoStoryDotView.Show();
             else
-                TextQuestionView.Show();
+                TextStoryDotView.Show();
+            
+            if(NetworkData.IsMaster)
+                MasterQuestionPanelView.Show();
+            else
+                PlayerButtonView.Show();
         }
     }
 }

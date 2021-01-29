@@ -17,7 +17,6 @@ namespace Victorina
             XmlReader xmlReader = XmlReader.Create($"{Static.DataPath}/{packageName}/content.xml");
             package.Rounds = ReadRounds(xmlReader);
             
-            
             EncodingFixSystem.TryFix(packageName);
             
             LoadFiles(package);
@@ -46,7 +45,6 @@ namespace Victorina
         {
             Round round = new Round();
             round.Name = xmlReader.GetAttribute("name");
-            //Debug.Log($"Round:{round.Name}");
             round.Themes = ReadThemes(xmlReader);
             return round;
         }
@@ -107,19 +105,22 @@ namespace Victorina
             ReadScenario(xmlReader, question);
             
             xmlReader.ReadToFollowing("answer");
-            question.Answer = xmlReader.ReadInnerXml();
+            string answer = xmlReader.ReadInnerXml();
+            TextStoryDot textStoryDot = new TextStoryDot(answer);
+            question.AnswerStory.Add(textStoryDot);
             return question;
         }
 
         private void ReadScenario(XmlReader xmlReader, Question question)
         {
+            bool isAfterMarker = false;
             while (xmlReader.Read())
             {
                 if (xmlReader.NodeType == XmlNodeType.Element)
                 {
                     if (xmlReader.Name == "atom")
                     {
-                        ReadAtom(xmlReader, question);
+                        ReadAtom(xmlReader, question, ref isAfterMarker);
                     }
                     else
                     {
@@ -131,58 +132,69 @@ namespace Victorina
                     break;
             }
         }
-        
-        private void ReadAtom(XmlReader xmlReader, Question question)
+
+        private void ReadAtom(XmlReader xmlReader, Question question, ref bool isAfterMarker)
         {
             string type = xmlReader.GetAttribute("type");
             xmlReader.Read();
+            
+            if (type == "marker")
+            {
+                isAfterMarker = true;
+                return;
+            }
 
             if (xmlReader.NodeType == XmlNodeType.EndElement && xmlReader.Name == "atom")
-                return;//<atom></atom> - skip
-            
+                return; //<atom></atom> - skip
+
             if (xmlReader.NodeType != XmlNodeType.Text)
                 throw new Exception($"Next NodeType is not text, it is '{xmlReader.NodeType}'");
-            
+
             if (string.IsNullOrEmpty(type))
             {
                 string text = xmlReader.Value;
-                TextStoryDot textDot = new TextStoryDot(text);
-                question.QuestionStory.Add(textDot);
+                TextStoryDot textStoryDot = new TextStoryDot(text);
+                AddStoryDot(question, textStoryDot, isAfterMarker);
+            }
+            else if (type == "say")
+            {
+                string text = xmlReader.Value;
+                TextStoryDot textStoryDot = new TextStoryDot($"say: {text}");
+                AddStoryDot(question, textStoryDot, isAfterMarker);
+            }
+            else if (type == "image")
+            {
+                string fileName = xmlReader.Value; //format = "@_august_243_2.jpg"
+                ImageStoryDot imageStoryDot = new ImageStoryDot();
+                imageStoryDot.SiqPath = fileName.Substring(1);
+                AddStoryDot(question, imageStoryDot, isAfterMarker);
+            }
+            else if (type == "voice")
+            {
+                string fileName = xmlReader.Value;
+                AudioStoryDot audioStoryDot = new AudioStoryDot();
+                audioStoryDot.SiqPath = fileName.Substring(1);
+                AddStoryDot(question, audioStoryDot, isAfterMarker);
+            }
+            else if (type == "video")
+            {
+                string fileName = xmlReader.Value;
+                VideoStoryDot videoStoryDot = new VideoStoryDot();
+                videoStoryDot.SiqPath = fileName.Substring(1);
+                AddStoryDot(question, videoStoryDot, isAfterMarker);
             }
             else
             {
-                if (type == "say")
-                {
-                    string text = xmlReader.Value;
-                    TextStoryDot textDot = new TextStoryDot($"say: {text}");
-                    question.QuestionStory.Add(textDot);
-                }
-                else if (type == "image")
-                {
-                    string fileName = xmlReader.Value; //format = "@_august_243_2.jpg"
-                    ImageStoryDot imageStoryDot = new ImageStoryDot();
-                    imageStoryDot.SiqPath = fileName.Substring(1);
-                    question.QuestionStory.Add(imageStoryDot);
-                }
-                else if (type == "voice")
-                {
-                    string fileName = xmlReader.Value;
-                    AudioStoryDot audioStoryDot = new AudioStoryDot();
-                    audioStoryDot.SiqPath= fileName.Substring(1);
-                    question.QuestionStory.Add(audioStoryDot);
-                }
-                else if (type == "video")
-                {
-                    string fileName = xmlReader.Value;
-                    VideoStoryDot videoStoryDot = new VideoStoryDot();
-                    videoStoryDot.SiqPath = fileName.Substring(1);
-                    question.QuestionStory.Add(videoStoryDot);
-                }
-                else
-                {
-                    Debug.LogWarning($"Not supported atom type '{type}'");
-                }
+                Debug.LogWarning($"Not supported atom type '{type}'");
             }
+        }
+
+        private void AddStoryDot(Question question, StoryDot storyDot, bool isAfterMarker)
+        {
+            if(isAfterMarker)
+                question.AnswerStory.Add(storyDot);
+            else
+                question.QuestionStory.Add(storyDot);
         }
 
         private bool IsEmpty(Question question)
@@ -195,21 +207,27 @@ namespace Victorina
             List<Question> allQuestions = package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions)).ToList();
             foreach (Question question in allQuestions)
             {
-                int index = 0;
-                foreach (StoryDot storyDot in question.QuestionStory)
-                {
-                    storyDot.Index = index;
-                    index++;
-                    
-                    if (storyDot is ImageStoryDot imageStoryDot)
-                        imageStoryDot.SiqPath = $"{GetImagesPath(package.Name)}/{imageStoryDot.SiqPath}";
-                    else if (storyDot is AudioStoryDot audioStoryDot)
-                        audioStoryDot.SiqPath = $"{GetAudioPath(package.Name)}/{audioStoryDot.SiqPath}";
-                    else if (storyDot is VideoStoryDot videoStoryDot)
-                        videoStoryDot.SiqPath = $"{GetVideoPath(package.Name)}/{videoStoryDot.SiqPath}";
-                }
+                InitializeStory(question.QuestionStory, package.Name);
+                InitializeStory(question.AnswerStory, package.Name);
             }
             Debug.Log("Files are loaded");
+        }
+
+        private void InitializeStory(List<StoryDot> story, string packageName)
+        {
+            int index = 0;
+            foreach (StoryDot storyDot in story)
+            {
+                storyDot.Index = index;
+                index++;
+                    
+                if (storyDot is ImageStoryDot imageStoryDot)
+                    imageStoryDot.SiqPath = $"{GetImagesPath(packageName)}/{imageStoryDot.SiqPath}";
+                else if (storyDot is AudioStoryDot audioStoryDot)
+                    audioStoryDot.SiqPath = $"{GetAudioPath(packageName)}/{audioStoryDot.SiqPath}";
+                else if (storyDot is VideoStoryDot videoStoryDot)
+                    videoStoryDot.SiqPath = $"{GetVideoPath(packageName)}/{videoStoryDot.SiqPath}";
+            }
         }
         
         public string GetImagesPath(string packageName)

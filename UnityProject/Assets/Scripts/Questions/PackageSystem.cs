@@ -13,7 +13,7 @@ namespace Victorina
         {
             Data.Package = SiqConverter.Convert(packageName);
             Data.PackageProgress = new PackageProgress();
-            MasterFilesRepository.AddMasterFiles(Data.Package);
+            MasterFilesRepository.AddPackageFiles(Data.Package);
         }
 
         public Question GetQuestion(string questionId)

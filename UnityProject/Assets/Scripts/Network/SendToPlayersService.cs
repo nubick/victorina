@@ -38,10 +38,17 @@ namespace Victorina
             Debug.Log($"Master: Send selected question to All: {netQuestion}");
             GetPlayers().ForEach(player => player.SendSelectedQuestion(netQuestion));
             List<NetworkPlayer> networkPlayers = GetPlayers();
+            
             foreach (StoryDot storyDot in netQuestion.QuestionStory)
             {
-                Debug.Log($"Master: Send story dot to All: {storyDot}");
-                networkPlayers.ForEach(player => player.SendStoryDot(storyDot));
+                Debug.Log($"Master: Send question story dot to All: {storyDot}");
+                networkPlayers.ForEach(player => player.SendStoryDot(storyDot, isQuestion: true));
+            }
+
+            foreach (StoryDot storyDot in netQuestion.AnswerStory)
+            {
+                Debug.Log($"Master: Send answer story dot to All: {storyDot}");
+                networkPlayers.ForEach(player => player.SendStoryDot(storyDot, isQuestion: false));
             }
         }
 
@@ -61,6 +68,18 @@ namespace Victorina
         {
             Debug.Log($"Master: Send rounds info to All: {netRoundsInfo}");
             GetPlayers().ForEach(player => player.SendNetRoundsInfo(netRoundsInfo));
+        }
+
+        public void SendStartTimer()
+        {
+            Debug.Log("Master: Send start timer to All");
+            GetPlayers().ForEach(player => player.SendStartTimer());
+        }
+
+        public void SendStopTimer()
+        {
+            Debug.Log($"Master: Send stop timer to All");
+            GetPlayers().ForEach(player => player.SendStopTimer());
         }
     }
 }

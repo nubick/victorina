@@ -13,7 +13,7 @@ namespace Victorina
         private HashSet<int> _fileIds = new HashSet<int>();
         private Dictionary<int, string> _hashMap = new Dictionary<int, string>();
         
-        public void AddMasterFiles(Package package)
+        public void AddPackageFiles(Package package)
         {
             _fileIds.Clear();
             _hashMap.Clear();
@@ -23,21 +23,27 @@ namespace Victorina
             var questions = package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions));
             foreach (Question question in questions)
             {
-                foreach (StoryDot storyDot in question.QuestionStory)
-                {
-                    if (storyDot is FileStoryDot fileStoryDot)
-                    {
-                        fileStoryDot.FileId = AddMasterFile(fileStoryDot.SiqPath);
-                        if (fileStoryDot.FileId != 0)
-                            fileStoryDot.ChunksAmount = GetFileChunksAmount(fileStoryDot.FileId);
-                    }
-                }
+                AddStoryFiles(question.QuestionStory);
+                AddStoryFiles(question.AnswerStory);
             }
 
             Debug.Log($"Master Files were added, amount: {_fileIds.Count}");
         }
 
-        private int AddMasterFile(string path)
+        private void AddStoryFiles(List<StoryDot> story)
+        {
+            foreach (StoryDot storyDot in story)
+            {
+                if (storyDot is FileStoryDot fileStoryDot)
+                {
+                    fileStoryDot.FileId = AddFile(fileStoryDot.SiqPath);
+                    if (fileStoryDot.FileId != 0)
+                        fileStoryDot.ChunksAmount = GetFileChunksAmount(fileStoryDot.FileId);
+                }
+            }
+        }
+        
+        private int AddFile(string path)
         {
             int hash = 0;
             if (File.Exists(path))

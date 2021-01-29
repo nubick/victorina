@@ -50,10 +50,5 @@ namespace Victorina
                 Debug.Log($"Can't play audio. File doesn't exist: '{path}'");
             }
         }
-        
-        public void OnNextButtonClicked()
-        {
-            MatchSystem.ShowNext();
-        }
     }
 }
