@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics;
 using Injection;
 using MLAPI;
 using MLAPI.Messaging;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Victorina
 {
@@ -170,7 +172,7 @@ namespace Victorina
         {
             if (MasterFilesRepository.Has(fileId))
             {
-                Debug.Log($"Master: Send file chunk [{fileId};{chunkIndex}]");
+                Debug.Log($"Master: Send file chunk [{fileId};{chunkIndex}] to Player {OwnerClientId}");
                 byte[] bytes = MasterFilesRepository.GetFileChunk(fileId, chunkIndex);
                 InvokeClientRpcOnOwner(ReceiveFileChunk, fileId, chunkIndex, bytes, "RFS");
             }
@@ -183,14 +185,13 @@ namespace Victorina
         [ClientRPC]
         private void ReceiveFileChunk(int fileId, int chunkIndex, byte[] bytes)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive file chunk [{fileId};{chunkIndex}], bytes: {bytes.SizeKb()}");
+            Debug.Log($"Player {OwnerClientId}: Receive file chunk [{fileId};{chunkIndex}], bytes: {bytes.SizeKb()}, ({Time.time:0.000})");
             ClientFilesRepository.AddChunk(fileId, chunkIndex, bytes);
         }
         
-        //==== To Master ====
         public void SendFileChunkRequest(int fileId, int chunkIndex)
         {
-            Debug.Log($"Player {OwnerClientId}: Request file chunk [{fileId};{chunkIndex}]");
+            Debug.Log($"Player {OwnerClientId}: Request file chunk [{fileId};{chunkIndex}], ({Time.time:0.000})");
             InvokeServerRpc(ReceiveClientFileRequest, fileId, chunkIndex);
         }
         
@@ -199,6 +200,19 @@ namespace Victorina
         {
             Debug.Log($"Master: Receive Player {OwnerClientId} file chunk request: [{fileId};{chunkIndex}]");
             SendFileChunk(fileId, chunkIndex);
+        }
+
+        public void SendRoundFileIds(int[] fileIds, int[] chunksAmounts)
+        {
+            Debug.Log($"Master: Send round of file ids ({fileIds.Length}) to {IsOwner}");
+            InvokeClientRpcOnOwner(ReceiveRoundFileIds, fileIds, chunksAmounts);
+        }
+
+        [ClientRPC]
+        private void ReceiveRoundFileIds(int[] fileIds, int[] chunksAmounts)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive round file ids, amount: {fileIds.Length}");
+            ClientFilesRepository.Register(fileIds, chunksAmounts);
         }
         
         #endregion

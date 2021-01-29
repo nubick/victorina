@@ -12,6 +12,7 @@ namespace Victorina
 
 
         //Client events
-        public static GameEvent<int> ClientFileDownloaded = new GameEvent<int>();
+        public static GameEvent<int> ClientFileDownloaded { get; } = new GameEvent<int>();
+        public static GameEvent ClientFileRequested { get; } = new GameEvent();
     }
 }

@@ -8,11 +8,17 @@ namespace Victorina
     {
         public Dictionary<int, DownloadingFile> Files { get; } = new Dictionary<int, DownloadingFile>();
 
+        public void Register(int[] fileIds, int[] chunksAmounts)
+        {
+            for (int i = 0; i < fileIds.Length; i++)
+                Register(fileIds[i], chunksAmounts[i]);
+        }
+        
         public void Register(int fileId, int chunksAmount)
         {
             if (Files.ContainsKey(fileId))
             {
-                Debug.Log($"Client file [{fileId}] was registered before.");
+                //Debug.Log($"Client file [{fileId}] was registered before.");
             }
             else
             {
@@ -27,10 +33,13 @@ namespace Victorina
             if (Files.ContainsKey(fileId))
             {
                 DownloadingFile file = Files[fileId];
-                file.SetChunk(chunkIndex, bytes);
+                if(file.IsEmpty(chunkIndex))
+                {
+                    file.SetChunk(chunkIndex, bytes);
 
-                if (file.IsFull())
-                    SaveFullFile(file);
+                    if (file.IsDownloaded())
+                        SaveDownloadedFile(file);
+                }
             }
             else
             {
@@ -38,7 +47,7 @@ namespace Victorina
             }
         }
 
-        private void SaveFullFile(DownloadingFile file)
+        private void SaveDownloadedFile(DownloadingFile file)
         {
             EnsurePackageFilesDirectory();
             string path = GetPath(file.FileId);

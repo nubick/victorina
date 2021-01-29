@@ -71,7 +71,7 @@ namespace Victorina
             PackageData.PackageProgress.SetQuestionAsAnswered(MatchData.SelectedRoundQuestion.QuestionId);
             SelectRound(MatchData.RoundsInfo.Value.CurrentRoundNumber );
         }
-        
+
         public void SelectRound(int number)
         {
             if (NetworkData.IsClient)
@@ -87,6 +87,9 @@ namespace Victorina
 
             MatchData.Phase.Value = MatchPhase.Round;
             SendToPlayersService.Send(MatchData.Phase.Value);
+
+            (int[] fileIds, int[] chunksAmounts) info = PackageSystem.GetRoundFileIds(round);
+            SendToPlayersService.SendRoundFileIds(info.fileIds, info.chunksAmounts);
         }
 
         private NetRound BuildNetRound(Round round, PackageProgress packageProgress)

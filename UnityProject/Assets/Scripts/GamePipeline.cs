@@ -29,6 +29,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<VideoStoryDotView>());
             _injector.Bind(FindObjectOfType<RoundView>());
             _injector.Bind(FindObjectOfType<MasterQuestionPanelView>());
+            _injector.Bind(FindObjectOfType<DownloadingFilesPanelView>());
             
             _injector.Bind(FindObjectOfType<PlayerButtonView>());
             _injector.Bind(new QuestionTimer());
@@ -90,6 +91,7 @@ namespace Victorina
             _injector.Get<VideoStoryDotView>().Initialize();
 
             StartCoroutine(_injector.Get<ClientFilesRequestSystem>().RequestCoroutine());
+            _injector.Get<DownloadingFilesPanelView>().Initialize();
         }
         
         private void OnPlayerConnected(NetworkPlayer networkPlayer)

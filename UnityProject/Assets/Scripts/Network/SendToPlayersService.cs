@@ -78,8 +78,14 @@ namespace Victorina
 
         public void SendStopTimer()
         {
-            Debug.Log($"Master: Send stop timer to All");
+            Debug.Log("Master: Send stop timer to All");
             GetPlayers().ForEach(player => player.SendStopTimer());
+        }
+
+        public void SendRoundFileIds(int[] fileIds, int[] chunksAmounts)
+        {
+            Debug.Log($"Master: Send round file ids ({fileIds.Length}) to All");
+            GetPlayers().ForEach(player => player.SendRoundFileIds(fileIds, chunksAmounts));
         }
     }
 }
