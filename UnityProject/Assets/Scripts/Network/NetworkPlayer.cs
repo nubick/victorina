@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using Injection;
 using MLAPI;
 using MLAPI.Messaging;
@@ -10,9 +9,11 @@ namespace Victorina
 {
     public class NetworkPlayer : NetworkedBehaviour
     {
+        [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
-        [Inject] private ClientFilesRepository ClientFilesRepository { get; set; }
+        [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
+        [Inject] private PlayerDataReceiver PlayerDataReceiver { get; set; }
         
         public void Awake()
         {
@@ -108,7 +109,7 @@ namespace Victorina
         {
             Debug.Log($"Player {OwnerClientId}: Receive image story dot: {imageStoryDot}");
             SetStoryDot(imageStoryDot, isQuestion);
-            ClientFilesRepository.Register(imageStoryDot.FileId, imageStoryDot.ChunksAmount);
+            PlayerFilesRepository.Register(imageStoryDot.FileId, imageStoryDot.ChunksAmount);
         }
         
         [ClientRPC]
@@ -116,7 +117,7 @@ namespace Victorina
         {
             Debug.Log($"Player {OwnerClientId}: Receive audio story dot: {audioStoryDot}");
             SetStoryDot(audioStoryDot, isQuestion);
-            ClientFilesRepository.Register(audioStoryDot.FileId, audioStoryDot.ChunksAmount);
+            PlayerFilesRepository.Register(audioStoryDot.FileId, audioStoryDot.ChunksAmount);
         }
 
         [ClientRPC]
@@ -124,7 +125,7 @@ namespace Victorina
         {
             Debug.Log($"Player {OwnerClientId}: Receive video story dot: {videoStoryDot}");
             SetStoryDot(videoStoryDot, isQuestion);
-            ClientFilesRepository.Register(videoStoryDot.FileId, videoStoryDot.ChunksAmount);
+            PlayerFilesRepository.Register(videoStoryDot.FileId, videoStoryDot.ChunksAmount);
         }
 
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
@@ -186,17 +187,17 @@ namespace Victorina
         private void ReceiveFileChunk(int fileId, int chunkIndex, byte[] bytes)
         {
             Debug.Log($"Player {OwnerClientId}: Receive file chunk [{fileId};{chunkIndex}], bytes: {bytes.SizeKb()}, ({Time.time:0.000})");
-            ClientFilesRepository.AddChunk(fileId, chunkIndex, bytes);
+            PlayerFilesRepository.AddChunk(fileId, chunkIndex, bytes);
         }
         
-        public void SendFileChunkRequest(int fileId, int chunkIndex)
+        public void SendFileChunkRequestToMaster(int fileId, int chunkIndex)
         {
             Debug.Log($"Player {OwnerClientId}: Request file chunk [{fileId};{chunkIndex}], ({Time.time:0.000})");
-            InvokeServerRpc(ReceiveClientFileRequest, fileId, chunkIndex);
+            InvokeServerRpc(MasterReceiveClientFileRequest, fileId, chunkIndex);
         }
         
         [ServerRPC]
-        private void ReceiveClientFileRequest(int fileId, int chunkIndex)
+        private void MasterReceiveClientFileRequest(int fileId, int chunkIndex)
         {
             Debug.Log($"Master: Receive Player {OwnerClientId} file chunk request: [{fileId};{chunkIndex}]");
             SendFileChunk(fileId, chunkIndex);
@@ -212,23 +213,24 @@ namespace Victorina
         private void ReceiveRoundFileIds(int[] fileIds, int[] chunksAmounts)
         {
             Debug.Log($"Player {OwnerClientId}: Receive round file ids, amount: {fileIds.Length}");
-            ClientFilesRepository.Register(fileIds, chunksAmounts);
+            PlayerFilesRepository.Register(fileIds, chunksAmounts);
         }
         
         #endregion
 
-        #region Timer
+        #region Timer and button
 
-        public void SendStartTimer()
+        public void SendStartTimer(float resetSeconds, float leftSeconds)
         {
             Debug.Log($"Master: Send start timer to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveStartTimer);
+            InvokeClientRpcOnOwner(ReceiveStartTimer, resetSeconds, leftSeconds);
         }
 
         [ClientRPC]
-        private void ReceiveStartTimer()
+        private void ReceiveStartTimer(float resetSeconds, float leftSeconds)
         {
             Debug.Log($"Player {OwnerClientId}: Receive start timer");
+            PlayerDataReceiver.OnReceiveStartTimer(resetSeconds, leftSeconds);
         }
 
         public void SendStopTimer()
@@ -242,8 +244,33 @@ namespace Victorina
         {
             Debug.Log($"Player {OwnerClientId}: Receive stop timer");
         }
+
+        public void SendPlayerButtonClickToMaster(float thoughtSeconds)
+        {
+            Debug.Log($"Player {OwnerClientId}: send button click to Master, thoughtSeconds: {thoughtSeconds}");
+            InvokeServerRpc(MasterReceivePlayerButtonClick, thoughtSeconds);
+        }
+        
+        [ServerRPC]
+        private void MasterReceivePlayerButtonClick(float thoughtSeconds)
+        {
+            Debug.Log($"Master: Receive Player {OwnerClientId} button click, thoughtSeconds: {thoughtSeconds}");
+            MatchSystem.OnPlayerButtonClickReceived(OwnerClientId, thoughtSeconds);
+        }
+
+        public void SendPlayersButtonClickData(PlayersButtonClickData playerButtonClickData)
+        {
+            Debug.Log($"Master: Send players button click data to {OwnerClientId}");
+            InvokeClientRpcOnOwner(ReceivePlayersButtonClickData, playerButtonClickData);
+        }
+
+        [ClientRPC]
+        private void ReceivePlayersButtonClickData(PlayersButtonClickData playersButtonClickData)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive players button click data");
+            PlayerDataReceiver.OnReceive(playersButtonClickData);
+        }
         
         #endregion
-        
     }
 }

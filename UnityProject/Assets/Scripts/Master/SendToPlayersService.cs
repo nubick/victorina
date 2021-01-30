@@ -70,10 +70,10 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendNetRoundsInfo(netRoundsInfo));
         }
 
-        public void SendStartTimer()
+        public void SendStartTimer(float resetSeconds, float leftSeconds)
         {
             Debug.Log("Master: Send start timer to All");
-            GetPlayers().ForEach(player => player.SendStartTimer());
+            GetPlayers().ForEach(player => player.SendStartTimer(resetSeconds, leftSeconds));
         }
 
         public void SendStopTimer()
@@ -86,6 +86,12 @@ namespace Victorina
         {
             Debug.Log($"Master: Send round file ids ({fileIds.Length}) to All");
             GetPlayers().ForEach(player => player.SendRoundFileIds(fileIds, chunksAmounts));
+        }
+
+        public void SendPlayersButtonClickData(PlayersButtonClickData playersButtonClickData)
+        {
+            Debug.Log($"Master: Send players button click data to All, ({playersButtonClickData.Players.Count})");
+            GetPlayers().ForEach(player => player.SendPlayersButtonClickData(playersButtonClickData));
         }
     }
 }

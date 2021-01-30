@@ -10,10 +10,15 @@ namespace Victorina
         
         public float LeftSeconds { get; set; }
         
-        public void Reset(float seconds)
+        public void Reset(float resetSeconds)
         {
-            _resetSeconds = seconds;
-            LeftSeconds = seconds;
+            Reset(resetSeconds, resetSeconds);
+        }
+
+        public void Reset(float resetSeconds, float leftSeconds)
+        {
+            _resetSeconds = resetSeconds;
+            LeftSeconds = leftSeconds;
         }
         
         public void Start()

@@ -12,6 +12,8 @@ namespace Victorina
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private QuestionTimer QuestionTimer { get; set; }
+        [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
+        [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         
         public void Start()
         {
@@ -136,11 +138,11 @@ namespace Victorina
 
         public void StartTimer()
         {
-            QuestionTimer.Start();
-            
             MatchData.WasTimerStarted = true;
             MatchData.IsTimerOn = true;
-            SendToPlayersService.SendStartTimer();
+            
+            QuestionTimer.Start();
+            SendToPlayersService.SendStartTimer(Static.TimeForAnswer, QuestionTimer.LeftSeconds);
         }
 
         public void StopTimer()
@@ -159,6 +161,25 @@ namespace Victorina
 
             MatchData.CurrentStoryDotIndex.Value = 0;
             SendToPlayersService.SendCurrentStoryDotIndex(MatchData.CurrentStoryDotIndex.Value);
+        }
+
+        public void OnPlayerButtonClickReceived(ulong playerId, float thoughtSeconds)
+        {
+            PlayerButtonClickData data = PlayersButtonClickData.Players.SingleOrDefault(_ => _.PlayerId == playerId);
+            if (data == null)
+            {
+                data = new PlayerButtonClickData();
+                PlayersButtonClickData.Players.Add(data);
+            }
+
+            data.PlayerId = playerId;
+            data.Name = ConnectedPlayersData.PlayersIdNameMap[playerId];
+            data.Time = thoughtSeconds;
+
+            StopTimer();
+            
+            MatchData.PlayersButtonClickData.Value = PlayersButtonClickData;
+            SendToPlayersService.SendPlayersButtonClickData(PlayersButtonClickData);
         }
     }
 }

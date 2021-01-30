@@ -20,6 +20,7 @@ namespace Victorina
         {
             _injector.Bind(new ViewsSystem());
             
+            //Views
             _injector.Bind(FindObjectOfType<StartupView>());
             _injector.Bind(FindObjectOfType<JoinGameView>());
             _injector.Bind(FindObjectOfType<GameLobbyView>());
@@ -29,7 +30,11 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<VideoStoryDotView>());
             _injector.Bind(FindObjectOfType<RoundView>());
             _injector.Bind(FindObjectOfType<MasterQuestionPanelView>());
+            _injector.Bind(FindObjectOfType<PlayersButtonClickPanelView>());
+            
+            //Views: Players only
             _injector.Bind(FindObjectOfType<DownloadingFilesPanelView>());
+            
             
             _injector.Bind(FindObjectOfType<PlayerButtonView>());
             _injector.Bind(new QuestionTimer());
@@ -48,12 +53,21 @@ namespace Victorina
             
             _injector.Bind(new MatchSystem());
             _injector.Bind(new MatchData());
+            _injector.Bind(new PlayersButtonClickData());
             
             _injector.Bind(new PackageSystem());
             _injector.Bind(new PackageData());
             
             _injector.Bind(NetworkingManager.Singleton);
+            
+            //Server only
             _injector.Bind(new ServerService());
+            _injector.Bind(new ConnectedPlayersData());
+            
+            //Client only
+            _injector.Bind(new PlayerDataReceiver());
+            _injector.Bind(new PlayerAnswerSystem());
+            
             _injector.Bind(new ClientService());
             
             _injector.Bind(new SendToPlayersService());
@@ -61,8 +75,8 @@ namespace Victorina
             _injector.Bind(new DataSerializationService());
             
             _injector.Bind(new MasterFilesRepository());
-            _injector.Bind(new ClientFilesRepository());
-            _injector.Bind(new ClientFilesRequestSystem());
+            _injector.Bind(new PlayerFilesRepository());
+            _injector.Bind(new PlayerFilesRequestSystem());
             
             _injector.Bind(new SiqPackOpenSystem());
             _injector.Bind(new SiqLoadedPackageSystem());
@@ -90,8 +104,9 @@ namespace Victorina
             _injector.Get<AudioStoryDotView>().Initialize();
             _injector.Get<VideoStoryDotView>().Initialize();
 
-            StartCoroutine(_injector.Get<ClientFilesRequestSystem>().RequestCoroutine());
+            StartCoroutine(_injector.Get<PlayerFilesRequestSystem>().RequestCoroutine());
             _injector.Get<DownloadingFilesPanelView>().Initialize();
+            _injector.Get<PlayersButtonClickPanelView>().Initialize();
         }
         
         private void OnPlayerConnected(NetworkPlayer networkPlayer)

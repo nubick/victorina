@@ -6,7 +6,7 @@ namespace Victorina
 {
     public class DownloadingFilesPanelView : ViewBase
     {
-        [Inject] private ClientFilesRepository ClientFilesRepository { get; set; }
+        [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         
         public Text ProgressText;
         public Image ProgressStrip;
@@ -25,8 +25,8 @@ namespace Victorina
         {
             if (IsActive)
             {
-                int total = ClientFilesRepository.Files.Count;
-                int downloaded = ClientFilesRepository.Files.Values.Count(_ => _.IsDownloaded());
+                int total = PlayerFilesRepository.Files.Count;
+                int downloaded = PlayerFilesRepository.Files.Values.Count(_ => _.IsDownloaded());
                 ProgressText.text = $"{downloaded}/{total}";
                 ProgressStrip.fillAmount = downloaded * 1f / total;
                 

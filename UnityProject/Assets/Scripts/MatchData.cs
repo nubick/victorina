@@ -32,14 +32,21 @@ namespace Victorina
             }
         }
 
+        public ReactiveProperty<PlayersButtonClickData> PlayersButtonClickData { get; } = new ReactiveProperty<PlayersButtonClickData>();
+        
         public bool WasTimerStarted { get; set; }
         public bool IsTimerOn { get; set; }
 
+        //Player only data
+        public PlayerMatchData Player { get; set; }
+        
         public MatchData()
         {
             PlayersBoard.Value = new PlayersBoard();
             RoundData.Value = new NetRound();
             RoundsInfo.Value = new NetRoundsInfo();
+            PlayersButtonClickData.Value = new PlayersButtonClickData();
+            Player = new PlayerMatchData();
         }
         
         public override string ToString()

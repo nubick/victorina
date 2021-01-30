@@ -7,7 +7,8 @@ namespace Victorina
     {
         public int FileId { get; }
         public DownloadingFileChunk[] Chunks { get; }
-
+        public bool IsSavedToDisk { get; set; }
+        
         public DownloadingFile(int fileId, int chunksAmount)
         {
             FileId = fileId;
@@ -18,7 +19,7 @@ namespace Victorina
 
         public bool IsDownloaded()
         {
-            return Chunks.All(chunk => chunk.IsDownloaded);
+            return IsSavedToDisk || Chunks.All(chunk => chunk.IsDownloaded);
         }
 
         public void SetChunk(int chunkIndex, byte[] bytes)

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text;
 using Injection;
 using MLAPI;
@@ -16,8 +15,7 @@ namespace Victorina
         [Inject] private ExternalIpData ExternalIpData { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
-        
-        private readonly Dictionary<ulong, string> _namesMap = new Dictionary<ulong, string>();
+        [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         
         public void Initialize()
         {
@@ -49,7 +47,7 @@ namespace Victorina
             string playerName = Encoding.UTF32.GetString(connectionData);
             Debug.Log($"PlayerName: {playerName}");
 
-            _namesMap[clientId] = playerName;
+            ConnectedPlayersData.PlayersIdNameMap[clientId] = playerName;
             
             ulong? prefabHash = SpawnManager.GetPrefabHashFromGenerator("NetworkPlayer");
 
@@ -84,7 +82,7 @@ namespace Victorina
             playersBoard.PlayerNames.Clear();
             foreach (ulong connectedClientId in NetworkingManager.ConnectedClients.Keys)
             {
-                string name = _namesMap[connectedClientId];
+                string name = ConnectedPlayersData.PlayersIdNameMap[connectedClientId];
                 playersBoard.PlayerNames.Add(name);
             }
             MatchData.PlayersBoard.NotifyChanged();

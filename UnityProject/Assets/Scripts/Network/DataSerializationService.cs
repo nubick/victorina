@@ -18,6 +18,8 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeImageStoryDot, DeserializeImageStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeAudioStoryDot, DeserializeAudioStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeVideoStoryDot, DeserializeVideoStoryDot);
+            
+            SerializationManager.RegisterSerializationHandlers(SerializePlayersButtonClickData, DeserializePlayersButtonClickData);
         }
 
         #region PlayersBoard
@@ -237,6 +239,34 @@ namespace Victorina
             netRoundsInfo.RoundsAmount = reader.ReadInt32();
             netRoundsInfo.CurrentRoundNumber = reader.ReadInt32();
             return netRoundsInfo;
+        }
+
+        private void SerializePlayersButtonClickData(Stream stream, PlayersButtonClickData data)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32(data.Players.Count);
+            foreach (PlayerButtonClickData player in data.Players)
+            {
+                writer.WriteUInt64(player.PlayerId);
+                writer.WriteString(player.Name);
+                writer.WriteSingle(player.Time);
+            }
+        }
+
+        private PlayersButtonClickData DeserializePlayersButtonClickData(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            PlayersButtonClickData data = new PlayersButtonClickData();
+            int count = reader.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                PlayerButtonClickData player = new PlayerButtonClickData();
+                player.PlayerId = reader.ReadUInt64();
+                player.Name = reader.ReadString().ToString();
+                player.Time = reader.ReadSingle();
+                data.Players.Add(player);
+            }
+            return data;
         }
         
     }
