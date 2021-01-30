@@ -143,6 +143,10 @@ namespace Victorina
             
             QuestionTimer.Start();
             SendToPlayersService.SendStartTimer(Static.TimeForAnswer, QuestionTimer.LeftSeconds);
+            
+            MatchData.PlayersButtonClickData.Value.Players.Clear();
+            MatchData.PlayersButtonClickData.NotifyChanged();
+            SendToPlayersService.SendPlayersButtonClickData(MatchData.PlayersButtonClickData.Value);
         }
 
         public void StopTimer()

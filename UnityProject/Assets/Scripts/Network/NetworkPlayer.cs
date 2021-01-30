@@ -243,6 +243,7 @@ namespace Victorina
         private void ReceiveStopTimer()
         {
             Debug.Log($"Player {OwnerClientId}: Receive stop timer");
+            PlayerDataReceiver.OnReceiveStopTimer();
         }
 
         public void SendPlayerButtonClickToMaster(float thoughtSeconds)

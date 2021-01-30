@@ -14,6 +14,11 @@ namespace Victorina
             QuestionTimer.Start();
         }
 
+        public void StopTimer()
+        {
+            QuestionTimer.Stop();
+        }
+        
         public void SendAnswer()
         {
             QuestionTimer.Stop();

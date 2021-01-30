@@ -18,5 +18,10 @@ namespace Victorina
             MatchData.Player.TimerLeftSeconds = leftSeconds;
             PlayerAnswerSystem.EnableAnswer(resetSeconds, leftSeconds);
         }
+
+        public void OnReceiveStopTimer()
+        {
+            PlayerAnswerSystem.StopTimer();
+        }
     }
 }
