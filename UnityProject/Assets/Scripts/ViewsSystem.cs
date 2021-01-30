@@ -28,8 +28,8 @@ namespace Victorina
                 view.Content.SetActive(false);
             StartupView.Show();
 
-            MatchData.Phase.SubscribeChanged(OnPhaseChanged);
-            MatchData.CurrentStoryDotIndex.SubscribeChanged(OnCurrentStoryDotIndexChanged);
+            MatchData.Phase.SubscribeChanged(OnMatchPhaseChanged);
+            MatchData.QuestionAnsweringData.CurrentStoryDotIndex.SubscribeChanged(OnCurrentStoryDotIndexChanged);
         }
 
         private void HideAll()
@@ -39,13 +39,10 @@ namespace Victorina
                     view.Hide();
         }
 
-        private void OnPhaseChanged()
+        private void OnMatchPhaseChanged()
         {
             MatchPhase phase = MatchData.Phase.Value;
             Debug.Log($"OnPhaseChanged: {phase}");
-
-            if (phase == MatchPhase.ShowQuestion || phase == MatchPhase.ShowAnswer)
-                return;
             
             HideAll();
             switch (phase)
@@ -63,12 +60,12 @@ namespace Victorina
 
         private void OnCurrentStoryDotIndexChanged()
         {
-            MatchPhase phase = MatchData.Phase.Value;
-            Debug.Log($"OnCurrentStoryDotIndexChanged: {phase}, {MatchData.CurrentStoryDotIndex.Value}");
-            if (phase == MatchPhase.ShowQuestion || phase == MatchPhase.ShowAnswer)
+            QuestionPhase phase = MatchData.QuestionAnsweringData.Phase.Value;
+            Debug.Log($"OnCurrentStoryDotIndexChanged: {phase}, {MatchData.QuestionAnsweringData.CurrentStoryDotIndex.Value}");
+            if (phase == QuestionPhase.ShowQuestion || phase == QuestionPhase.ShowAnswer)
                 RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedRoundQuestion));
         }
-        
+
         private IEnumerator SwitchToQuestionView(NetRoundQuestion netRoundQuestion)
         {
             if (RoundView.IsActive)
@@ -76,11 +73,11 @@ namespace Victorina
 
             HideAll();
 
-            if (MatchData.CurrentStoryDot is ImageStoryDot)
+            if (MatchData.QuestionAnsweringData.CurrentStoryDot is ImageStoryDot)
                 ImageStoryDotView.Show();
-            else if (MatchData.CurrentStoryDot is AudioStoryDot)
+            else if (MatchData.QuestionAnsweringData.CurrentStoryDot is AudioStoryDot)
                 AudioStoryDotView.Show();
-            else if (MatchData.CurrentStoryDot is VideoStoryDot)
+            else if (MatchData.QuestionAnsweringData.CurrentStoryDot is VideoStoryDot)
                 VideoStoryDotView.Show();
             else
                 TextStoryDotView.Show();

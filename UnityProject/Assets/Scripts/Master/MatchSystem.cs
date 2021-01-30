@@ -8,6 +8,7 @@ namespace Victorina
     {
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private MatchData MatchData { get; set; }
+        [Inject] private QuestionAnsweringData QuestionAnsweringData { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
@@ -39,20 +40,20 @@ namespace Victorina
         private void SelectQuestion(NetRoundQuestion netRoundQuestion)
         {
             QuestionTimer.Reset(Static.TimeForAnswer);
-            MatchData.WasTimerStarted = false;
-            MatchData.IsTimerOn = false;
+            QuestionAnsweringData.WasTimerStarted = false;
+            QuestionAnsweringData.IsTimerOn = false;
             
-            MatchData.SelectedQuestion.Value = BuildNetQuestion(netRoundQuestion);
-            SendToPlayersService.SendSelectedQuestion(MatchData.SelectedQuestion.Value);
+            QuestionAnsweringData.SelectedQuestion.Value = BuildNetQuestion(netRoundQuestion);
+            SendToPlayersService.SendSelectedQuestion(QuestionAnsweringData.SelectedQuestion.Value);
 
             MatchData.SelectedRoundQuestion = netRoundQuestion;
             SendToPlayersService.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
 
-            MatchData.Phase.Value = MatchPhase.ShowQuestion;
+            QuestionAnsweringData.Phase.Value = QuestionPhase.ShowQuestion;
             SendToPlayersService.Send(MatchData.Phase.Value);
 
-            MatchData.CurrentStoryDotIndex.Value = 0;
-            SendToPlayersService.SendCurrentStoryDotIndex(MatchData.CurrentStoryDotIndex.Value);
+            QuestionAnsweringData.CurrentStoryDotIndex.Value = 0;
+            SendToPlayersService.SendCurrentStoryDotIndex(QuestionAnsweringData.CurrentStoryDotIndex.Value);
             
             StartTimerIfTime();
         }
@@ -115,56 +116,56 @@ namespace Victorina
 
         public void ShowNext()
         {
-            MatchData.CurrentStoryDotIndex.Value++;
-            SendToPlayersService.SendCurrentStoryDotIndex(MatchData.CurrentStoryDotIndex.Value);
+            QuestionAnsweringData.CurrentStoryDotIndex.Value++;
+            SendToPlayersService.SendCurrentStoryDotIndex(QuestionAnsweringData.CurrentStoryDotIndex.Value);
             StartTimerIfTime();
         }
 
         private void StartTimerIfTime()
         {
-            if (MatchData.WasTimerStarted)
+            if (QuestionAnsweringData.WasTimerStarted)
                 return;
             
-            if (MatchData.Phase.Value == MatchPhase.ShowQuestion &&
-                MatchData.CurrentStoryDot == MatchData.SelectedQuestion.Value.QuestionStory.Last())
+            if (QuestionAnsweringData.Phase.Value == QuestionPhase.ShowQuestion &&
+                QuestionAnsweringData.CurrentStoryDot == QuestionAnsweringData.SelectedQuestion.Value.QuestionStory.Last())
                 StartTimer();
         }
 
         public void ShowPrevious()
         {
-            MatchData.CurrentStoryDotIndex.Value--;
-            SendToPlayersService.SendCurrentStoryDotIndex(MatchData.CurrentStoryDotIndex.Value);
+            QuestionAnsweringData.CurrentStoryDotIndex.Value--;
+            SendToPlayersService.SendCurrentStoryDotIndex(QuestionAnsweringData.CurrentStoryDotIndex.Value);
         }
 
         public void StartTimer()
         {
-            MatchData.WasTimerStarted = true;
-            MatchData.IsTimerOn = true;
+            QuestionAnsweringData.WasTimerStarted = true;
+            QuestionAnsweringData.IsTimerOn = true;
             
             QuestionTimer.Start();
             SendToPlayersService.SendStartTimer(Static.TimeForAnswer, QuestionTimer.LeftSeconds);
             
-            MatchData.PlayersButtonClickData.Value.Players.Clear();
-            MatchData.PlayersButtonClickData.NotifyChanged();
-            SendToPlayersService.SendPlayersButtonClickData(MatchData.PlayersButtonClickData.Value);
+            QuestionAnsweringData.PlayersButtonClickData.Value.Players.Clear();
+            QuestionAnsweringData.PlayersButtonClickData.NotifyChanged();
+            SendToPlayersService.SendPlayersButtonClickData(QuestionAnsweringData.PlayersButtonClickData.Value);
         }
 
         public void StopTimer()
         {
             QuestionTimer.Stop();
             
-            MatchData.IsTimerOn = false;
+            QuestionAnsweringData.IsTimerOn = false;
             SendToPlayersService.SendStopTimer();
         }
         
         public void ShowAnswer()
         {
             StopTimer();
-            MatchData.Phase.Value = MatchPhase.ShowAnswer;
+            QuestionAnsweringData.Phase.Value = QuestionPhase.ShowAnswer;
             SendToPlayersService.Send(MatchData.Phase.Value);
 
-            MatchData.CurrentStoryDotIndex.Value = 0;
-            SendToPlayersService.SendCurrentStoryDotIndex(MatchData.CurrentStoryDotIndex.Value);
+            QuestionAnsweringData.CurrentStoryDotIndex.Value = 0;
+            SendToPlayersService.SendCurrentStoryDotIndex(QuestionAnsweringData.CurrentStoryDotIndex.Value);
         }
 
         public void OnPlayerButtonClickReceived(ulong playerId, float thoughtSeconds)
@@ -182,7 +183,7 @@ namespace Victorina
 
             StopTimer();
             
-            MatchData.PlayersButtonClickData.Value = PlayersButtonClickData;
+            QuestionAnsweringData.PlayersButtonClickData.Value = PlayersButtonClickData;
             SendToPlayersService.SendPlayersButtonClickData(PlayersButtonClickData);
         }
     }

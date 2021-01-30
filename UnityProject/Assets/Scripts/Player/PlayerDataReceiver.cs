@@ -9,7 +9,7 @@ namespace Victorina
         
         public void OnReceive(PlayersButtonClickData data)
         {
-            MatchData.PlayersButtonClickData.Value = data;
+            MatchData.QuestionAnsweringData.PlayersButtonClickData.Value = data;
         }
 
         public void OnReceiveStartTimer(float resetSeconds, float leftSeconds)

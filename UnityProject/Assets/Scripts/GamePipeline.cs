@@ -52,7 +52,9 @@ namespace Victorina
             _injector.Bind(new GameLobbySystem());
             
             _injector.Bind(new MatchSystem());
-            _injector.Bind(new MatchData());
+            MatchData matchData = new MatchData();
+            _injector.Bind(matchData);
+            _injector.Bind(matchData.QuestionAnsweringData);
             _injector.Bind(new PlayersButtonClickData());
             
             _injector.Bind(new PackageSystem());

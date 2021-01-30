@@ -23,13 +23,13 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            if (MatchData.CurrentStoryDot is ImageStoryDot imageDot)
+            if (MatchData.QuestionAnsweringData.CurrentStoryDot is ImageStoryDot imageDot)
             {
                 ShowImage(imageDot.FileId);
             }
             else
             {
-                throw new Exception($"ImageQuestionView: Current story dot is not image, {MatchData.CurrentStoryDot}");
+                throw new Exception($"ImageQuestionView: Current story dot is not image, {MatchData.QuestionAnsweringData.CurrentStoryDot}");
             }
         }
 

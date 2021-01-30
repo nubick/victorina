@@ -71,7 +71,7 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive selected question: {netQuestion}");
             netQuestion.QuestionStory = new StoryDot[netQuestion.QuestionStoryDotsAmount];
             netQuestion.AnswerStory = new StoryDot[netQuestion.AnswerStoryDotsAmount];
-            MatchData.SelectedQuestion.Value = netQuestion;
+            MatchData.QuestionAnsweringData.SelectedQuestion.Value = netQuestion;
         }
 
         public void SendStoryDot(StoryDot storyDot, bool isQuestion)
@@ -92,9 +92,9 @@ namespace Victorina
         private void SetStoryDot(StoryDot storyDot, bool isQuestion)
         {
             if (isQuestion)
-                MatchData.SelectedQuestion.Value.QuestionStory[storyDot.Index] = storyDot;
+                MatchData.QuestionAnsweringData.SelectedQuestion.Value.QuestionStory[storyDot.Index] = storyDot;
             else
-                MatchData.SelectedQuestion.Value.AnswerStory[storyDot.Index] = storyDot;
+                MatchData.QuestionAnsweringData.SelectedQuestion.Value.AnswerStory[storyDot.Index] = storyDot;
         }
         
         [ClientRPC]
@@ -151,7 +151,7 @@ namespace Victorina
         private void ReceiveCurrentStoryDotIndex(int index)
         {
             Debug.Log($"Player {OwnerClientId}: Receive current story dot index: {index}");
-            MatchData.CurrentStoryDotIndex.Value = index;
+            MatchData.QuestionAnsweringData.CurrentStoryDotIndex.Value = index;
         }
 
         public void SendNetRoundsInfo(NetRoundsInfo netRoundsInfo)

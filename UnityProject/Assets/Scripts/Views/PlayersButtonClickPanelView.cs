@@ -12,7 +12,7 @@ namespace Victorina
         
         public void Initialize()
         {
-            MatchData.PlayersButtonClickData.SubscribeChanged(() => Refresh(MatchData.PlayersButtonClickData.Value));
+            MatchData.QuestionAnsweringData.PlayersButtonClickData.SubscribeChanged(() => Refresh(MatchData.QuestionAnsweringData.PlayersButtonClickData.Value));
         }
 
         private void Refresh(PlayersButtonClickData data)

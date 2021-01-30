@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Injection;
 using UnityEngine;
@@ -29,39 +28,32 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            RefreshUI();
+            RefreshUI();            
         }
 
         private void RefreshUI()
         {
-            MatchPhase phase = MatchData.Phase.Value;
-            
-            bool canNavigateToPreviousQuestionDot = MatchData.CurrentStoryDotIndex.Value > 0;
-            PreviousQuestionDotButton.SetActive(canNavigateToPreviousQuestionDot);
-            
-            StoryDot[] story = GetCurrentStory(MatchData.SelectedQuestion.Value, phase);
-            bool isLastDot = MatchData.CurrentStoryDot == story.Last();
-            NextQuestionDotButton.SetActive(!isLastDot);
-            
-            StartTimerButton.SetActive(phase == MatchPhase.ShowQuestion && (isLastDot || MatchData.WasTimerStarted ) && !MatchData.IsTimerOn);
-            StopTimerButton.SetActive(MatchData.IsTimerOn);
-
-            ShowAnswerButton.SetActive(phase == MatchPhase.ShowQuestion && MatchData.WasTimerStarted);
-            
-            ShowRoundButton.SetActive(phase == MatchPhase.ShowAnswer && isLastDot);
+            RefreshUI(MatchData.QuestionAnsweringData);
         }
 
-        private StoryDot[] GetCurrentStory(NetQuestion netQuestion, MatchPhase phase)
+        private void RefreshUI(QuestionAnsweringData data)
         {
-            if (phase == MatchPhase.ShowQuestion)
-                return netQuestion.QuestionStory;
-            
-            if (phase == MatchPhase.ShowAnswer)
-                return netQuestion.AnswerStory;
+            QuestionPhase phase = data.Phase.Value;
 
-            throw new Exception($"Can't get current story for phase: {phase}");
+            bool canNavigateToPreviousQuestionDot = data.CurrentStoryDotIndex.Value > 0;
+            PreviousQuestionDotButton.SetActive(canNavigateToPreviousQuestionDot);
+
+            bool isLastDot = data.CurrentStoryDot == data.CurrentStory.Last();
+            NextQuestionDotButton.SetActive(!isLastDot);
+
+            StartTimerButton.SetActive(phase == QuestionPhase.ShowQuestion && (isLastDot || data.WasTimerStarted) && !data.IsTimerOn);
+            StopTimerButton.SetActive(data.IsTimerOn);
+
+            ShowAnswerButton.SetActive(phase == QuestionPhase.ShowQuestion && data.WasTimerStarted);
+
+            ShowRoundButton.SetActive(phase == QuestionPhase.ShowAnswer && isLastDot);
         }
-        
+
         public void Update()
         {
             if (IsActive)

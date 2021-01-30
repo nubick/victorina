@@ -9,7 +9,7 @@ namespace Victorina
         [Inject] private PlayerAnswerSystem PlayerAnswerSystem { get; set; }
 
         public Image TimerStrip;
-
+        
         public void OnAnswerButtonClicked()
         {
             PlayerAnswerSystem.SendAnswer();
@@ -19,7 +19,9 @@ namespace Victorina
         {
             if (IsActive)
             {
-                TimerStrip.fillAmount = QuestionTimer.GetLeftSecondsPercentage();
+                float leftSeconds = QuestionTimer.GetLeftSecondsPercentage();
+                TimerStrip.fillAmount = leftSeconds;
+                
             }
         }
     }

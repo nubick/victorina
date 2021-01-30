@@ -1,10 +1,9 @@
 namespace Victorina
 {
-    public enum MatchPhase
+    public enum QuestionPhase
     {
-        WaitingInLobby,
-        Round,
         ShowQuestion,
+        AcceptingAnswer,
         ShowAnswer
     }
 }
