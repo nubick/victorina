@@ -21,7 +21,7 @@ namespace Victorina
 
         protected override void OnShown()
         {
-            if (MatchData.QuestionAnsweringData.CurrentStoryDot is AudioStoryDot audioStoryDot)
+            if (MatchData.QuestionAnswerData.CurrentStoryDot is AudioStoryDot audioStoryDot)
             {
                 StartCoroutine(LoadAndPlay(audioStoryDot.FileId));
             }

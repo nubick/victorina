@@ -9,7 +9,7 @@ namespace Victorina
     {
         private int? _pendingFileId;
         
-        [Inject] private MatchData MatchData { get; set; }
+        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
 
         public Sprite NoImageSprite;
@@ -23,13 +23,13 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            if (MatchData.QuestionAnsweringData.CurrentStoryDot is ImageStoryDot imageDot)
+            if (QuestionAnswerData.CurrentStoryDot is ImageStoryDot imageDot)
             {
                 ShowImage(imageDot.FileId);
             }
             else
             {
-                throw new Exception($"ImageQuestionView: Current story dot is not image, {MatchData.QuestionAnsweringData.CurrentStoryDot}");
+                throw new Exception($"ImageQuestionView: Current story dot is not image, {QuestionAnswerData.CurrentStoryDot}");
             }
         }
 

@@ -9,11 +9,11 @@ namespace Victorina
 {
     public class NetworkPlayer : NetworkedBehaviour
     {
-        [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         [Inject] private PlayerDataReceiver PlayerDataReceiver { get; set; }
+        [Inject] private MasterDataReceiver MasterDataReceiver { get; set; }
         
         public void Awake()
         {
@@ -59,10 +59,23 @@ namespace Victorina
             MatchData.RoundData.Value = netRound;
         }
         
+        public void SendQuestionPhase(QuestionPhase questionPhase)
+        {
+            Debug.Log($"Master: Send question phase: {questionPhase} to {OwnerClientId}");
+            InvokeClientRpcOnOwner(ReceiveQuestionPhase, questionPhase);
+        }
+
+        [ClientRPC]
+        private void ReceiveQuestionPhase(QuestionPhase questionPhase)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive question phase: {questionPhase}");
+            PlayerDataReceiver.OnReceive(questionPhase);
+        }
+        
         public void SendSelectedQuestion(NetQuestion netQuestion)
         {
             Debug.Log($"Master: Send selected question: {netQuestion} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveSelectedQuestion, netQuestion, "RFS");
+            InvokeClientRpcOnOwner(ReceiveSelectedQuestion, netQuestion);
         }
 
         [ClientRPC]
@@ -71,7 +84,7 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive selected question: {netQuestion}");
             netQuestion.QuestionStory = new StoryDot[netQuestion.QuestionStoryDotsAmount];
             netQuestion.AnswerStory = new StoryDot[netQuestion.AnswerStoryDotsAmount];
-            MatchData.QuestionAnsweringData.SelectedQuestion.Value = netQuestion;
+            MatchData.QuestionAnswerData.SelectedQuestion.Value = netQuestion;
         }
 
         public void SendStoryDot(StoryDot storyDot, bool isQuestion)
@@ -92,9 +105,9 @@ namespace Victorina
         private void SetStoryDot(StoryDot storyDot, bool isQuestion)
         {
             if (isQuestion)
-                MatchData.QuestionAnsweringData.SelectedQuestion.Value.QuestionStory[storyDot.Index] = storyDot;
+                MatchData.QuestionAnswerData.SelectedQuestion.Value.QuestionStory[storyDot.Index] = storyDot;
             else
-                MatchData.QuestionAnsweringData.SelectedQuestion.Value.AnswerStory[storyDot.Index] = storyDot;
+                MatchData.QuestionAnswerData.SelectedQuestion.Value.AnswerStory[storyDot.Index] = storyDot;
         }
         
         [ClientRPC]
@@ -151,7 +164,7 @@ namespace Victorina
         private void ReceiveCurrentStoryDotIndex(int index)
         {
             Debug.Log($"Player {OwnerClientId}: Receive current story dot index: {index}");
-            MatchData.QuestionAnsweringData.CurrentStoryDotIndex.Value = index;
+            MatchData.QuestionAnswerData.CurrentStoryDotIndex.Value = index;
         }
 
         public void SendNetRoundsInfo(NetRoundsInfo netRoundsInfo)
@@ -256,7 +269,7 @@ namespace Victorina
         private void MasterReceivePlayerButtonClick(float thoughtSeconds)
         {
             Debug.Log($"Master: Receive Player {OwnerClientId} button click, thoughtSeconds: {thoughtSeconds}");
-            MatchSystem.OnPlayerButtonClickReceived(OwnerClientId, thoughtSeconds);
+            MasterDataReceiver.OnPlayerButtonClickReceived(OwnerClientId, thoughtSeconds);
         }
 
         public void SendPlayersButtonClickData(PlayersButtonClickData playerButtonClickData)

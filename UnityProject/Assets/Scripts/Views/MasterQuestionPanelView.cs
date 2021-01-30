@@ -7,9 +7,9 @@ namespace Victorina
 {
     public class MasterQuestionPanelView : ViewBase
     {
-        [Inject] private MatchSystem MatchSystem { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private QuestionTimer QuestionTimer { get; set; }
+        [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
+        [Inject] private QuestionAnswerData Data { get; set; }
         
         [Header("Bottom panel")]
         public GameObject PreviousQuestionDotButton;
@@ -30,26 +30,21 @@ namespace Victorina
         {
             RefreshUI();            
         }
-
-        private void RefreshUI()
+        
+        public void RefreshUI()
         {
-            RefreshUI(MatchData.QuestionAnsweringData);
-        }
+            QuestionPhase phase = Data.Phase.Value;
 
-        private void RefreshUI(QuestionAnsweringData data)
-        {
-            QuestionPhase phase = data.Phase.Value;
-
-            bool canNavigateToPreviousQuestionDot = data.CurrentStoryDotIndex.Value > 0;
+            bool canNavigateToPreviousQuestionDot = Data.CurrentStoryDotIndex.Value > 0;
             PreviousQuestionDotButton.SetActive(canNavigateToPreviousQuestionDot);
 
-            bool isLastDot = data.CurrentStoryDot == data.CurrentStory.Last();
+            bool isLastDot = Data.CurrentStoryDot == Data.CurrentStory.Last();
             NextQuestionDotButton.SetActive(!isLastDot);
 
-            StartTimerButton.SetActive(phase == QuestionPhase.ShowQuestion && (isLastDot || data.WasTimerStarted) && !data.IsTimerOn);
-            StopTimerButton.SetActive(data.IsTimerOn);
+            StartTimerButton.SetActive(phase == QuestionPhase.ShowQuestion && (isLastDot || Data.WasTimerStarted) && !Data.IsTimerOn);
+            StopTimerButton.SetActive(Data.IsTimerOn);
 
-            ShowAnswerButton.SetActive(phase == QuestionPhase.ShowQuestion && data.WasTimerStarted);
+            ShowAnswerButton.SetActive(phase == QuestionPhase.ShowQuestion && Data.WasTimerStarted);
 
             ShowRoundButton.SetActive(phase == QuestionPhase.ShowAnswer && isLastDot);
         }
@@ -64,35 +59,34 @@ namespace Victorina
 
         public void OnPreviousQuestionDotButtonClicked()
         {
-            MatchSystem.ShowPrevious();
+            QuestionAnswerSystem.ShowPrevious();
         }
         
         public void OnNextQuestionDotButtonClicked()
         {
-            MatchSystem.ShowNext();
-            RefreshUI();
+            QuestionAnswerSystem.ShowNext();
         }
 
         public void OnStartTimerButtonClicked()
         {
-            MatchSystem.StartTimer();
+            QuestionAnswerSystem.StartTimer();
             RefreshUI();
         }
 
         public void OnStopTimerButtonClicked()
         {
-            MatchSystem.StopTimer();
+            QuestionAnswerSystem.StopTimer();
             RefreshUI();
         }
         
         public void OnShowAnswerButtonClicked()
         {
-            MatchSystem.ShowAnswer();
+            QuestionAnswerSystem.ShowAnswer();
         }
 
         public void OnShowRoundButtonClicked()
         {
-            MatchSystem.BackToRound();
+            QuestionAnswerSystem.BackToRound();
         }
         
         #region Accept answer panel

@@ -1,6 +1,6 @@
 namespace Victorina
 {
-    public class QuestionAnsweringData
+    public class QuestionAnswerData
     {
         public ReactiveProperty<QuestionPhase> Phase { get; } = new ReactiveProperty<QuestionPhase>();
         public ReactiveProperty<NetQuestion> SelectedQuestion { get; } = new ReactiveProperty<NetQuestion>();
@@ -17,7 +17,7 @@ namespace Victorina
         public bool WasTimerStarted { get; set; }
         public bool IsTimerOn { get; set; }
         
-        public QuestionAnsweringData()
+        public QuestionAnswerData()
         {
             PlayersButtonClickData.Value = new PlayersButtonClickData();
         }

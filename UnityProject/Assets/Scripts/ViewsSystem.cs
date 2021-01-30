@@ -29,7 +29,7 @@ namespace Victorina
             StartupView.Show();
 
             MatchData.Phase.SubscribeChanged(OnMatchPhaseChanged);
-            MatchData.QuestionAnsweringData.CurrentStoryDotIndex.SubscribeChanged(OnCurrentStoryDotIndexChanged);
+            MatchData.QuestionAnswerData.CurrentStoryDotIndex.SubscribeChanged(OnCurrentStoryDotIndexChanged);
         }
 
         private void HideAll()
@@ -53,6 +53,8 @@ namespace Victorina
                 case MatchPhase.Round:
                     RoundView.Show();
                     break;
+                case MatchPhase.Question:
+                    break;
                 default:
                     throw new Exception($"Not supported phase: {MatchData.Phase}");
             }
@@ -60,10 +62,9 @@ namespace Victorina
 
         private void OnCurrentStoryDotIndexChanged()
         {
-            QuestionPhase phase = MatchData.QuestionAnsweringData.Phase.Value;
-            Debug.Log($"OnCurrentStoryDotIndexChanged: {phase}, {MatchData.QuestionAnsweringData.CurrentStoryDotIndex.Value}");
-            if (phase == QuestionPhase.ShowQuestion || phase == QuestionPhase.ShowAnswer)
-                RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedRoundQuestion));
+            QuestionPhase phase = MatchData.QuestionAnswerData.Phase.Value;
+            Debug.Log($"OnCurrentStoryDotIndexChanged: {phase}, {MatchData.QuestionAnswerData.CurrentStoryDotIndex.Value}");
+            RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedRoundQuestion));
         }
 
         private IEnumerator SwitchToQuestionView(NetRoundQuestion netRoundQuestion)
@@ -73,11 +74,11 @@ namespace Victorina
 
             HideAll();
 
-            if (MatchData.QuestionAnsweringData.CurrentStoryDot is ImageStoryDot)
+            if (MatchData.QuestionAnswerData.CurrentStoryDot is ImageStoryDot)
                 ImageStoryDotView.Show();
-            else if (MatchData.QuestionAnsweringData.CurrentStoryDot is AudioStoryDot)
+            else if (MatchData.QuestionAnswerData.CurrentStoryDot is AudioStoryDot)
                 AudioStoryDotView.Show();
-            else if (MatchData.QuestionAnsweringData.CurrentStoryDot is VideoStoryDot)
+            else if (MatchData.QuestionAnswerData.CurrentStoryDot is VideoStoryDot)
                 VideoStoryDotView.Show();
             else
                 TextStoryDotView.Show();

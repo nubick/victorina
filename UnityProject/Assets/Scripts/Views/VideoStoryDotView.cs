@@ -22,7 +22,7 @@ namespace Victorina
 
         protected override void OnShown()
         {
-            if (MatchData.QuestionAnsweringData.CurrentStoryDot is VideoStoryDot videoStoryDot)
+            if (MatchData.QuestionAnswerData.CurrentStoryDot is VideoStoryDot videoStoryDot)
             {
                 PlayVideo(videoStoryDot.FileId);
             }

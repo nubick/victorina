@@ -54,9 +54,8 @@ namespace Victorina
             _injector.Bind(new MatchSystem());
             MatchData matchData = new MatchData();
             _injector.Bind(matchData);
-            _injector.Bind(matchData.QuestionAnsweringData);
-            _injector.Bind(new PlayersButtonClickData());
-            
+            _injector.Bind(matchData.QuestionAnswerData);
+
             _injector.Bind(new PackageSystem());
             _injector.Bind(new PackageData());
             
@@ -65,6 +64,8 @@ namespace Victorina
             //Server only
             _injector.Bind(new ServerService());
             _injector.Bind(new ConnectedPlayersData());
+            _injector.Bind(new QuestionAnswerSystem());
+            _injector.Bind(new MasterDataReceiver());
             
             //Client only
             _injector.Bind(new PlayerDataReceiver());

@@ -10,7 +10,7 @@ namespace Victorina
         public NetRoundQuestion SelectedRoundQuestion { get; set; }
         
         //Question Answering State
-        public QuestionAnsweringData QuestionAnsweringData { get; set; } = new QuestionAnsweringData();
+        public QuestionAnswerData QuestionAnswerData { get; } = new QuestionAnswerData();
         
         //Master only data
         

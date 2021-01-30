@@ -8,5 +8,10 @@ namespace Victorina
         
         public int AnswerStoryDotsAmount { get; set; }
         public StoryDot[] AnswerStory { get; set; }
+
+        public override string ToString()
+        {
+            return $"NetQuestion [Q:{QuestionStoryDotsAmount}, A:{AnswerStoryDotsAmount}]";
+        }
     }
 }

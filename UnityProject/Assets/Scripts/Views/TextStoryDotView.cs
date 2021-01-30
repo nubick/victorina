@@ -13,10 +13,10 @@ namespace Victorina
 
         protected override void OnShown()
         {
-            if (MatchData.QuestionAnsweringData.CurrentStoryDot is TextStoryDot textDot)
+            if (MatchData.QuestionAnswerData.CurrentStoryDot is TextStoryDot textDot)
                 QuestionText.text = textDot.Text;
             else
-                throw new Exception($"TextQuestionView: Current story dot is not text, {MatchData.QuestionAnsweringData.CurrentStoryDot}");
+                throw new Exception($"TextQuestionView: Current story dot is not text, {MatchData.QuestionAnswerData.CurrentStoryDot}");
         }
     }
 }
