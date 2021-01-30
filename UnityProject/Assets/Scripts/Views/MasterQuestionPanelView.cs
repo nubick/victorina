@@ -12,6 +12,7 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         
+        [Header("Bottom panel")]
         public GameObject PreviousQuestionDotButton;
         public GameObject NextQuestionDotButton;
         public GameObject StartTimerButton;
@@ -20,6 +21,11 @@ namespace Victorina
         public GameObject ShowRoundButton;
 
         public Image TimerStrip;
+
+        [Header("Accept answer panel")]
+        public GameObject AcceptAnswerPanel;
+        public Text Header;
+        public Text AnswerTip;
         
         protected override void OnShown()
         {
@@ -96,5 +102,32 @@ namespace Victorina
         {
             MatchSystem.BackToRound();
         }
+        
+        #region Accept answer panel
+        
+        private void RefreshAcceptAnswerPanel()
+        {
+            string playerName = "nubick";
+            Header.text = $"Отвечает: {playerName}";
+            string answer = "Ты чё, тупой! Этож бубльгум!";
+            AnswerTip.text = $"Ответ: \n{answer}";
+        }
+        
+        public void OnCorrectButtonClicked()
+        {
+            
+        }
+
+        public void OnWrongButtonClicked()
+        {
+            
+        }
+
+        public void OnCancelButtonClicked()
+        {
+            
+        }
+        
+        #endregion
     }
 }
