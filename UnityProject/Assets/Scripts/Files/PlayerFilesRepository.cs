@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Victorina
 {
-    public class ClientFilesRepository : FilesRepository
+    public class PlayerFilesRepository : FilesRepository
     {
         public Dictionary<int, DownloadingFile> Files { get; } = new Dictionary<int, DownloadingFile>();
 
@@ -25,6 +25,7 @@ namespace Victorina
                 DownloadingFile file = new DownloadingFile(fileId, chunksAmount);
                 Files.Add(fileId, file);
                 Debug.Log($"Register client file [{fileId};{chunksAmount}], total registered: {Files.Count}");
+                InitializeIfSavedToDisk(file);
             }
         }
 
@@ -53,7 +54,18 @@ namespace Victorina
             string path = GetPath(file.FileId);
             byte[] bytes = file.GetBytes();
             File.WriteAllBytes(path, bytes);
+            file.IsSavedToDisk = true;
             MetagameEvents.ClientFileDownloaded.Publish(file.FileId);
+        }
+
+        private void InitializeIfSavedToDisk(DownloadingFile file)
+        {
+            string path = GetPath(file.FileId);
+            if (File.Exists(path))
+            {
+                Debug.Log($"File [{file.FileId}] was downloaded before. Load from disk.");
+                file.IsSavedToDisk = true;
+            }
         }
     }
 }

@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Victorina
 {
-    public class ClientFilesRequestSystem
+    public class PlayerFilesRequestSystem
     {
-        [Inject] private ClientFilesRepository ClientFilesRepository { get; set; }
+        [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         [Inject] private SendToMasterService SendToMasterService { get; set; }
 
         public IEnumerator RequestCoroutine()
@@ -17,7 +17,7 @@ namespace Victorina
             {
                 yield return delay;
                 
-                DownloadingFile downloadingFile = ClientFilesRepository.Files.Values.FirstOrDefault(file => !file.IsDownloaded());
+                DownloadingFile downloadingFile = PlayerFilesRepository.Files.Values.FirstOrDefault(file => !file.IsDownloaded());
                 if (downloadingFile != null)
                 {
                     for (int chunkIndex = 0; chunkIndex < downloadingFile.Chunks.Length; chunkIndex++)
