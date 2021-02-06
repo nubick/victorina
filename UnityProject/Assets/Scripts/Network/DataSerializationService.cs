@@ -27,25 +27,28 @@ namespace Victorina
 
         private void SerializePlayersBoard(Stream stream, PlayersBoard playersBoard)
         {
-            using (PooledBitWriter writer = PooledBitWriter.Get(stream))
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32(playersBoard.Players.Count);
+            foreach (PlayerData player in playersBoard.Players)
             {
-                writer.WriteInt32(playersBoard.PlayerNames.Count);
-                foreach (string str in playersBoard.PlayerNames)
-                    writer.WriteString(str);
+                writer.WriteUInt64(player.Id);
+                writer.WriteString(player.Name);
+                writer.WriteInt32(player.Score);
             }
         }
 
         private PlayersBoard DeserializePlayersBoard(Stream stream)
         {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
             PlayersBoard playersBoard = new PlayersBoard();
-            using (PooledBitReader reader = PooledBitReader.Get(stream))
+            int amount = reader.ReadInt32();
+            for (int i = 0; i < amount; i++)
             {
-                int count = reader.ReadInt32();
-                for (int i = 0; i < count; i++)
-                {
-                    string str = reader.ReadString().ToString();
-                    playersBoard.PlayerNames.Add(str);
-                }
+                ulong playerId = reader.ReadUInt64();
+                PlayerData player = new PlayerData(playerId);
+                player.Name = reader.ReadString().ToString();
+                player.Score = reader.ReadInt32();
+                playersBoard.Players.Add(player);
             }
             return playersBoard;
         }

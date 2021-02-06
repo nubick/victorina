@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using Injection;
 using MLAPI;
@@ -79,11 +80,16 @@ namespace Victorina
 
         private void UpdatePlayersBoard(PlayersBoard playersBoard)
         {
-            playersBoard.PlayerNames.Clear();
             foreach (ulong connectedClientId in NetworkingManager.ConnectedClients.Keys)
             {
-                string name = ConnectedPlayersData.PlayersIdNameMap[connectedClientId];
-                playersBoard.PlayerNames.Add(name);
+                PlayerData player = playersBoard.Players.SingleOrDefault(_ => _.Id == connectedClientId);
+                if (player == null)
+                {
+                    player = new PlayerData(connectedClientId);
+                    player.Name = ConnectedPlayersData.PlayersIdNameMap[connectedClientId];
+                    playersBoard.Players.Add(player);
+                }
+                
             }
             MatchData.PlayersBoard.NotifyChanged();
             SendToPlayersService.Send(playersBoard);

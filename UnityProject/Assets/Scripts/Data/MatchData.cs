@@ -15,7 +15,7 @@ namespace Victorina
         //Master only data
         
         //Player only data
-        public PlayerMatchData Player { get; set; }
+        public PlayerMatchData Player { get; }
         
         public MatchData()
         {

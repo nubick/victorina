@@ -9,7 +9,7 @@ namespace Victorina
     public class ViewsSystem
     {
         [Inject] private StartupView StartupView { get; set; }
-        [Inject] private GameLobbyView GameLobbyView { get; set; }
+        [Inject] private LobbyView LobbyView { get; set; }
         [Inject] private RoundView RoundView { get; set; }
         [Inject] private TextStoryDotView TextStoryDotView { get; set; }
         [Inject] private ImageStoryDotView ImageStoryDotView { get; set; }
@@ -48,7 +48,7 @@ namespace Victorina
             switch (phase)
             {
                 case MatchPhase.WaitingInLobby:
-                    GameLobbyView.Show();
+                    LobbyView.Show();
                     break;
                 case MatchPhase.Round:
                     RoundView.Show();

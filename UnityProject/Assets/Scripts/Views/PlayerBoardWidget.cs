@@ -3,15 +3,15 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class PlayerWidget : MonoBehaviour
+    public class PlayerBoardWidget : MonoBehaviour
     {
         public Text PlayerName;
         public Text Score;
 
-        public void Bind(string playerName)
+        public void Bind(string playerName, int score)
         {
             PlayerName.text = playerName;
-            Score.text = "0";
+            Score.text = score.ToString();
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Victorina
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
+        [Inject] private PlayersBoardView PlayersBoardView { get; set; }
 
         public RectTransform ThemeWidgetsRoot;
         public ThemeWidget ThemeWidgetPrefab;
@@ -30,7 +31,13 @@ namespace Victorina
         
         protected override void OnShown()
         {
+            PlayersBoardView.Show();
             RefreshUI(MatchData.RoundData.Value);
+        }
+
+        protected override void OnHide()
+        {
+            PlayersBoardView.Hide();
         }
 
         private void RefreshUI(NetRound netRound)

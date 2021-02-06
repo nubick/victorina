@@ -6,11 +6,10 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class GameLobbyView : ViewBase
+    public class LobbyView : ViewBase
     {
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private ServerService ServerService { get; set; }
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private RoundView RoundView { get; set; }
@@ -20,8 +19,8 @@ namespace Victorina
         [Inject] private SiqLoadedPackageData SiqLoadedPackageData { get; set; }
         [Inject] private ExternalIpData ExternalIpData { get; set; }
         [Inject] private IpCodeSystem IpCodeSystem { get; set; }
+        [Inject] private PlayersBoardView PlayersBoardView { get; set; }
         
-        public PlayerWidget[] PlayerWidgets;
         public GameObject AdminPart;
 
         public GameObject[] OpenPackButtons;
@@ -33,12 +32,14 @@ namespace Victorina
         protected override void OnShown()
         {
             AdminPart.SetActive(NetworkData.IsMaster);
+            PlayersBoardView.Show();
             RefreshUI();
             StartCoroutine(RefreshCode());
         }
 
         protected override void OnHide()
         {
+            PlayersBoardView.Hide();
             StopAllCoroutines();
         }
 
@@ -63,18 +64,7 @@ namespace Victorina
 
         public void RefreshUI()
         {
-            RefreshPlayersBoard(MatchData.PlayersBoard.Value);
             RefreshButtons();
-        }
-
-        private void RefreshPlayersBoard(PlayersBoard playersBoard)
-        {
-            for (int i = 0; i < PlayerWidgets.Length; i++)
-            {
-                PlayerWidgets[i].gameObject.SetActive(i < playersBoard.PlayerNames.Count);
-                if (i < playersBoard.PlayerNames.Count)
-                    PlayerWidgets[i].Bind(playersBoard.PlayerNames[i]);
-            }
         }
         
         public void OnBackButtonClicked()

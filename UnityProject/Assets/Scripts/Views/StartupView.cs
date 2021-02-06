@@ -6,12 +6,12 @@ namespace Victorina
     {
         [Inject] private JoinGameView JoinGameView { get; set; }
         [Inject] private ServerService ServerService { get; set; }
-        [Inject] private GameLobbyView GameLobbyView { get; set; }
+        [Inject] private LobbyView LobbyView { get; set; }
 
         public void OnCreateNewGameButtonClicked()
         {
             ServerService.StartServer();
-            SwitchTo(GameLobbyView);
+            SwitchTo(LobbyView);
         }
 
         public void OnJoinGameButtonClicked()

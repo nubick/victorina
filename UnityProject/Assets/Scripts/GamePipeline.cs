@@ -23,13 +23,14 @@ namespace Victorina
             //Views
             _injector.Bind(FindObjectOfType<StartupView>());
             _injector.Bind(FindObjectOfType<JoinGameView>());
-            _injector.Bind(FindObjectOfType<GameLobbyView>());
+            _injector.Bind(FindObjectOfType<LobbyView>());
             _injector.Bind(FindObjectOfType<TextStoryDotView>());
             _injector.Bind(FindObjectOfType<ImageStoryDotView>());
             _injector.Bind(FindObjectOfType<AudioStoryDotView>());
             _injector.Bind(FindObjectOfType<VideoStoryDotView>());
             _injector.Bind(FindObjectOfType<RoundView>());
             _injector.Bind(FindObjectOfType<PlayersButtonClickPanelView>());
+            _injector.Bind(FindObjectOfType<PlayersBoardView>());
             
             //Views: Players only
             _injector.Bind(FindObjectOfType<DownloadingFilesPanelView>());
@@ -46,8 +47,6 @@ namespace Victorina
             _injector.Bind(new ExternalIpData());
             
             _injector.Bind(new IpCodeSystem());
-            
-            _injector.Bind(new GameLobbySystem());
             
             _injector.Bind(new MatchSystem());
             MatchData matchData = new MatchData();
@@ -98,10 +97,10 @@ namespace Victorina
             _injector.Get<ServerService>().Initialize();
             _injector.Get<ClientService>().Initialize();
             
-            _injector.Get<GameLobbySystem>().Initialize();
             _injector.Get<ViewsSystem>().Initialize();
             _injector.Get<DataSerializationService>().Initialize();
             
+            _injector.Get<PlayersBoardView>().Initialize();
             _injector.Get<RoundView>().Initialize();
             _injector.Get<ImageStoryDotView>().Initialize();
             _injector.Get<AudioStoryDotView>().Initialize();

@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Injection;
 using UnityEngine;
 
@@ -99,6 +101,32 @@ namespace Victorina
                 netRound.Themes.Add(netRoundTheme);
             }
             return netRound;
+        }
+
+        public void RewardPlayer(ulong playerId)
+        {
+            PlayerData player = GetPlayer(playerId);
+            player.Score += MatchData.SelectedRoundQuestion.Price;
+            Debug.Log($"Reward player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
+            MatchData.PlayersBoard.NotifyChanged();
+            SendToPlayersService.Send(MatchData.PlayersBoard.Value);
+        }
+
+        public void FinePlayer(ulong playerId)
+        {
+            PlayerData player = GetPlayer(playerId);
+            player.Score -= MatchData.SelectedRoundQuestion.Price;
+            Debug.Log($"Fine player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
+            MatchData.PlayersBoard.NotifyChanged();
+            SendToPlayersService.Send(MatchData.PlayersBoard.Value);
+        }
+
+        private PlayerData GetPlayer(ulong playerId)
+        {
+            PlayerData player = MatchData.PlayersBoard.Value.Players.SingleOrDefault(_ => _.Id == playerId);
+            if (player == null)
+                throw new Exception($"Can't find player with id: {playerId}");
+            return player;
         }
     }
 }

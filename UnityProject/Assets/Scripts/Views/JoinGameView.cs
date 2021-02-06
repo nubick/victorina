@@ -8,7 +8,7 @@ namespace Victorina
     {
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private ClientService ClientService { get; set; }
-        [Inject] private GameLobbyView GameLobbyView { get; set; }
+        [Inject] private LobbyView LobbyView { get; set; }
         [Inject] private IpCodeSystem IpCodeSystem { get; set; }
         [Inject] private AppState AppState { get; set; }
         [Inject] private SaveSystem SaveSystem { get; set; }
@@ -75,7 +75,7 @@ namespace Victorina
                 AppState.LastJoinPlayerName = playerName;
                 AppState.LastJoinGameCode = gameCode;
                 SaveSystem.Save();
-                SwitchTo(GameLobbyView);
+                SwitchTo(LobbyView);
             }
             else
             {

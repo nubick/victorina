@@ -157,7 +157,7 @@ namespace Victorina
         public void AcceptAnswerAsCorrect()
         {
             ShowAnswer();
-            //todo: Add answered player correct scores
+            MatchSystem.RewardPlayer(Data.AnsweringPlayerId);
         }
 
         public void AcceptAnswerAsWrong()
@@ -166,7 +166,7 @@ namespace Victorina
             Data.Phase.Value = QuestionPhase.ShowQuestion;
             SendToPlayersService.Send(Data);
             StartTimer();
-            //todo: Add answered player wrong scores
+            MatchSystem.FinePlayer(Data.AnsweringPlayerId);
         }
         
         #endregion
