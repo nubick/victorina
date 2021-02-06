@@ -1,3 +1,4 @@
+using System;
 using Injection;
 
 namespace Victorina
@@ -10,6 +11,7 @@ namespace Victorina
         
         public void EnableAnswer(float resetSeconds, float leftSeconds)
         {
+            MatchData.Player.EnableAnswerTime = DateTime.UtcNow;
             QuestionTimer.Reset(resetSeconds, leftSeconds);
             QuestionTimer.Start();
         }
@@ -22,9 +24,9 @@ namespace Victorina
         public void SendAnswer()
         {
             QuestionTimer.Stop();
-            float leftSeconds = QuestionTimer.LeftSeconds;
-            float thoughtSeconds = MatchData.Player.TimerLeftSeconds - leftSeconds;
-            SendToMasterService.SendPlayerButton(thoughtSeconds);
+
+            float spentSeconds = (float) (DateTime.UtcNow - MatchData.Player.EnableAnswerTime).TotalSeconds;
+            SendToMasterService.SendPlayerButton(spentSeconds);
         }
     }
 }

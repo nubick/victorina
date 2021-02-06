@@ -58,10 +58,10 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendSelectedRoundQuestion(netRoundQuestion));
         }
 
-        public void Send(QuestionPhase questionPhase)
+        public void Send(QuestionAnswerData questionAnswerData)
         {
-            Debug.Log($"Master: Send question phase to All: {questionPhase}");
-            GetPlayers().ForEach(player => player.SendQuestionPhase(questionPhase));
+            Debug.Log($"Master: Send question answer data to All: {questionAnswerData}");
+            GetPlayers().ForEach(player => player.SendQuestionAnswerData(questionAnswerData));
         }
         
         public void SendCurrentStoryDotIndex(int index)

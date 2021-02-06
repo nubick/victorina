@@ -29,14 +29,12 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<AudioStoryDotView>());
             _injector.Bind(FindObjectOfType<VideoStoryDotView>());
             _injector.Bind(FindObjectOfType<RoundView>());
-            _injector.Bind(FindObjectOfType<MasterQuestionPanelView>());
             _injector.Bind(FindObjectOfType<PlayersButtonClickPanelView>());
             
             //Views: Players only
             _injector.Bind(FindObjectOfType<DownloadingFilesPanelView>());
-            
-            
             _injector.Bind(FindObjectOfType<PlayerButtonView>());
+            
             _injector.Bind(new QuestionTimer());
             
             _injector.Bind(new NetworkData());
@@ -61,11 +59,13 @@ namespace Victorina
             
             _injector.Bind(NetworkingManager.Singleton);
             
-            //Server only
+            //Master only
             _injector.Bind(new ServerService());
             _injector.Bind(new ConnectedPlayersData());
             _injector.Bind(new QuestionAnswerSystem());
             _injector.Bind(new MasterDataReceiver());
+            _injector.Bind(FindObjectOfType<MasterQuestionPanelView>());
+            _injector.Bind(FindObjectOfType<MasterAcceptAnswerView>());
             
             //Client only
             _injector.Bind(new PlayerDataReceiver());
@@ -108,8 +108,12 @@ namespace Victorina
             _injector.Get<VideoStoryDotView>().Initialize();
 
             StartCoroutine(_injector.Get<PlayerFilesRequestSystem>().RequestCoroutine());
-            _injector.Get<DownloadingFilesPanelView>().Initialize();
             _injector.Get<PlayersButtonClickPanelView>().Initialize();
+            
+            _injector.Get<DownloadingFilesPanelView>().Initialize();
+            _injector.Get<PlayerButtonView>().Initialize();
+            
+            _injector.Get<MasterAcceptAnswerView>().Initialize();
         }
         
         private void OnPlayerConnected(NetworkPlayer networkPlayer)

@@ -62,8 +62,7 @@ namespace Victorina
 
         private void OnCurrentStoryDotIndexChanged()
         {
-            QuestionPhase phase = MatchData.QuestionAnswerData.Phase.Value;
-            Debug.Log($"OnCurrentStoryDotIndexChanged: {phase}, {MatchData.QuestionAnswerData.CurrentStoryDotIndex.Value}");
+            Debug.Log($"OnCurrentStoryDotIndexChanged: {MatchData.QuestionAnswerData.Phase.Value}, {MatchData.QuestionAnswerData.CurrentStoryDotIndex.Value}");
             RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedRoundQuestion));
         }
 

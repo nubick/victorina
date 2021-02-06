@@ -13,15 +13,18 @@ namespace Victorina
             MatchData.QuestionAnswerData.PlayersButtonClickData.Value = data;
         }
 
-        public void OnReceive(QuestionPhase questionPhase)
+        public void OnReceive(QuestionAnswerData data)
         {
-            QuestionAnswerData.Phase.Value = questionPhase;
+            QuestionAnswerData.AnsweringPlayerId = data.AnsweringPlayerId;
+            QuestionAnswerData.AnsweringPlayerName = data.AnsweringPlayerName;
+            QuestionAnswerData.WrongAnsweredIds = data.WrongAnsweredIds;
+
+            if (QuestionAnswerData.Phase.Value != data.Phase.Value)
+                QuestionAnswerData.Phase.Value = data.Phase.Value;
         }
-        
+
         public void OnReceiveStartTimer(float resetSeconds, float leftSeconds)
         {
-            MatchData.Player.TimerResetSeconds = resetSeconds;
-            MatchData.Player.TimerLeftSeconds = leftSeconds;
             PlayerAnswerSystem.EnableAnswer(resetSeconds, leftSeconds);
         }
 

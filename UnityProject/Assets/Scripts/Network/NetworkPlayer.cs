@@ -58,18 +58,18 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive RoundData: {netRound}");
             MatchData.RoundData.Value = netRound;
         }
-        
-        public void SendQuestionPhase(QuestionPhase questionPhase)
+
+        public void SendQuestionAnswerData(QuestionAnswerData questionAnswerData)
         {
-            Debug.Log($"Master: Send question phase: {questionPhase} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveQuestionPhase, questionPhase);
+            Debug.Log($"Master: Send question answer data: {questionAnswerData} to {OwnerClientId}");
+            InvokeClientRpcOnOwner(ReceiveQuestionAnswerData, questionAnswerData);
         }
 
         [ClientRPC]
-        private void ReceiveQuestionPhase(QuestionPhase questionPhase)
+        private void ReceiveQuestionAnswerData(QuestionAnswerData questionAnswerData)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive question phase: {questionPhase}");
-            PlayerDataReceiver.OnReceive(questionPhase);
+            Debug.Log($"Player {OwnerClientId}: Receive question answer data: {questionAnswerData}");
+            PlayerDataReceiver.OnReceive(questionAnswerData);
         }
         
         public void SendSelectedQuestion(NetQuestion netQuestion)
@@ -259,17 +259,17 @@ namespace Victorina
             PlayerDataReceiver.OnReceiveStopTimer();
         }
 
-        public void SendPlayerButtonClickToMaster(float thoughtSeconds)
+        public void SendPlayerButtonClickToMaster(float spentSeconds)
         {
-            Debug.Log($"Player {OwnerClientId}: send button click to Master, thoughtSeconds: {thoughtSeconds}");
-            InvokeServerRpc(MasterReceivePlayerButtonClick, thoughtSeconds);
+            Debug.Log($"Player {OwnerClientId}: send button click to Master, thoughtSeconds: {spentSeconds}");
+            InvokeServerRpc(MasterReceivePlayerButtonClick, spentSeconds);
         }
         
         [ServerRPC]
-        private void MasterReceivePlayerButtonClick(float thoughtSeconds)
+        private void MasterReceivePlayerButtonClick(float spentSeconds)
         {
-            Debug.Log($"Master: Receive Player {OwnerClientId} button click, thoughtSeconds: {thoughtSeconds}");
-            MasterDataReceiver.OnPlayerButtonClickReceived(OwnerClientId, thoughtSeconds);
+            Debug.Log($"Master: Receive Player {OwnerClientId} button click, thoughtSeconds: {spentSeconds}");
+            MasterDataReceiver.OnPlayerButtonClickReceived(OwnerClientId, spentSeconds);
         }
 
         public void SendPlayersButtonClickData(PlayersButtonClickData playerButtonClickData)

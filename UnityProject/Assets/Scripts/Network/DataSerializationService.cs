@@ -14,6 +14,7 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeNetQuestion, DeserializeNetQuestion);
             SerializationManager.RegisterSerializationHandlers(SerializeNetRoundsInfo, DeserializeNetRoundsInfo);
             
+            SerializationManager.RegisterSerializationHandlers(SerializeQuestionAnswerData, DeserializeQuestionAnswerData);
             SerializationManager.RegisterSerializationHandlers(SerializeTextStoryDot, DeserializeTextStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeImageStoryDot, DeserializeImageStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeAudioStoryDot, DeserializeAudioStoryDot);
@@ -239,6 +240,33 @@ namespace Victorina
             netRoundsInfo.RoundsAmount = reader.ReadInt32();
             netRoundsInfo.CurrentRoundNumber = reader.ReadInt32();
             return netRoundsInfo;
+        }
+
+        private void SerializeQuestionAnswerData(Stream stream, QuestionAnswerData data)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteUInt64(data.AnsweringPlayerId);
+            writer.WriteString(data.AnsweringPlayerName ?? string.Empty);
+            writer.WriteInt32((int) data.Phase.Value);
+
+            writer.WriteInt32(data.WrongAnsweredIds.Count);
+            foreach (ulong playerId in data.WrongAnsweredIds)
+                writer.WriteUInt64(playerId);
+        }
+
+        private QuestionAnswerData DeserializeQuestionAnswerData(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            QuestionAnswerData data = new QuestionAnswerData();
+            data.AnsweringPlayerId = reader.ReadUInt64();
+            data.AnsweringPlayerName = reader.ReadString().ToString();
+            data.Phase.Value = (QuestionPhase) reader.ReadInt32();
+
+            int amount = reader.ReadInt32();
+            for (int i = 0; i < amount; i++)
+                data.WrongAnsweredIds.Add(reader.ReadUInt64());
+
+            return data;
         }
 
         private void SerializePlayersButtonClickData(Stream stream, PlayersButtonClickData data)

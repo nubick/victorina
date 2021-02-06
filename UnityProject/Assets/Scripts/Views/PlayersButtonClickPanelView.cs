@@ -5,27 +5,33 @@ namespace Victorina
 {
     public class PlayersButtonClickPanelView : ViewBase
     {
-        [Inject] private MatchData MatchData { get; set; }
-
+        [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
+        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
+        
         public RectTransform WidgetsRoot;
         public PlayerButtonClickWidget WidgetPrefab;
         
         public void Initialize()
         {
-            MatchData.QuestionAnswerData.PlayersButtonClickData.SubscribeChanged(() => Refresh(MatchData.QuestionAnswerData.PlayersButtonClickData.Value));
+            QuestionAnswerData.PlayersButtonClickData.SubscribeChanged(Refresh);
+            MetagameEvents.PlayerButtonClickWidgetClicked.Subscribe(OnWidgetClicked);
         }
 
-        private void Refresh(PlayersButtonClickData data)
+        private void Refresh()
         {
             ClearChild(WidgetsRoot);
             Show();
 
-            foreach (PlayerButtonClickData player in data.Players)
+            foreach (PlayerButtonClickData player in QuestionAnswerData.PlayersButtonClickData.Value.Players)
             {
                 PlayerButtonClickWidget widget = Instantiate(WidgetPrefab, WidgetsRoot);
-                widget.Name.text = player.Name;
-                widget.Time.text = $"{player.Time:0.0} сек";
+                widget.Bind(player);
             }
+        }
+
+        private void OnWidgetClicked(PlayerButtonClickData playerData)
+        {
+            QuestionAnswerSystem.SelectPlayerForAnswer(playerData.PlayerId);
         }
     }
 }

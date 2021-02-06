@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Injection;
 
@@ -11,19 +12,21 @@ namespace Victorina
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
-
+        [Inject] private NetworkData NetworkData { get; set; }
+        
         public void StartAnswer(NetQuestion netQuestion)
         {
             QuestionTimer.Reset(Static.TimeForAnswer);
             Data.WasTimerStarted = false;
             Data.IsTimerOn = false;
+            Data.WrongAnsweredIds.Clear();
 
             Data.SelectedQuestion.Value = netQuestion;
             SendToPlayersService.SendSelectedQuestion(Data.SelectedQuestion.Value);
 
             Data.Phase.Value = QuestionPhase.ShowQuestion;
-            SendToPlayersService.Send(Data.Phase.Value);
-            
+            SendToPlayersService.Send(Data);
+
             Data.CurrentStoryDotIndex.Value = 0;
             SendToPlayersService.SendCurrentStoryDotIndex(Data.CurrentStoryDotIndex.Value);
             
@@ -82,7 +85,7 @@ namespace Victorina
         {
             StopTimer();
             Data.Phase.Value = QuestionPhase.ShowAnswer;
-            SendToPlayersService.Send(Data.Phase.Value);
+            SendToPlayersService.Send(Data);
 
             Data.CurrentStoryDotIndex.Value = 0;
             SendToPlayersService.SendCurrentStoryDotIndex(Data.CurrentStoryDotIndex.Value);
@@ -90,24 +93,27 @@ namespace Victorina
             MasterQuestionPanelView.RefreshUI();
         }
 
-        public void OnPlayerButtonClickReceived(ulong playerId, float thoughtSeconds)
+        public void OnPlayerButtonClickReceived(ulong playerId, float spentSeconds)
         {
-            PlayerButtonClickData clickData = Data.PlayersButtonClickData.Value.Players.SingleOrDefault(_ => _.PlayerId == playerId);
-            if (clickData == null)
-            {
-                clickData = new PlayerButtonClickData();
-                Data.PlayersButtonClickData.Value.Players.Add(clickData);
-            }
+            bool wasReceivedBefore = Data.PlayersButtonClickData.Value.Players.Any(_ => _.PlayerId == playerId);
+            if (wasReceivedBefore)
+                return;
 
+            bool wrongAnsweredBefore = Data.WrongAnsweredIds.Contains(playerId);
+            if (wrongAnsweredBefore)
+                return;
+            
+            PlayerButtonClickData clickData = new PlayerButtonClickData();
             clickData.PlayerId = playerId;
             clickData.Name = ConnectedPlayersData.PlayersIdNameMap[playerId];
-            clickData.Time = thoughtSeconds;
-            
+            clickData.Time = spentSeconds;
+            Data.PlayersButtonClickData.Value.Players.Add(clickData);
+
             Data.PlayersButtonClickData.NotifyChanged();
             SendToPlayersService.SendPlayersButtonClickData(Data.PlayersButtonClickData.Value);
-            
+
             StopTimer();
-            
+
             MasterQuestionPanelView.RefreshUI();
         }
 
@@ -115,5 +121,54 @@ namespace Victorina
         {
             MatchSystem.BackToRound();
         }
+        
+        #region Accepting answer
+        
+        public void SelectPlayerForAnswer(ulong playerId)
+        {
+            if (NetworkData.IsClient)
+                return;
+            
+            Data.AnsweringPlayerName = ConnectedPlayersData.PlayersIdNameMap[playerId];
+            Data.AnsweringPlayerId = playerId;
+            Data.AnswerTip = GetAnswerTip(Data.SelectedQuestion.Value);
+            Data.Phase.Value = QuestionPhase.AcceptingAnswer;
+            SendToPlayersService.Send(Data);
+        }
+        
+        private string GetAnswerTip(NetQuestion netQuestion)
+        {
+            StoryDot lastStoryDot = netQuestion.AnswerStory.Last();
+            if (lastStoryDot is TextStoryDot textStoryDot)
+            {
+                return textStoryDot.Text;
+            }
+            throw new Exception($"Last answer story dot is not text, {lastStoryDot}");
+        }
+
+        public void CancelAcceptingAnswer()
+        {
+            Data.Phase.Value = QuestionPhase.ShowQuestion;
+            SendToPlayersService.Send(Data);
+
+            StartTimer();
+        }
+
+        public void AcceptAnswerAsCorrect()
+        {
+            ShowAnswer();
+            //todo: Add answered player correct scores
+        }
+
+        public void AcceptAnswerAsWrong()
+        {
+            Data.WrongAnsweredIds.Add(Data.AnsweringPlayerId);
+            Data.Phase.Value = QuestionPhase.ShowQuestion;
+            SendToPlayersService.Send(Data);
+            StartTimer();
+            //todo: Add answered player wrong scores
+        }
+        
+        #endregion
     }
 }

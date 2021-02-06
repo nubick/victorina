@@ -6,9 +6,9 @@ namespace Victorina
     {
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
 
-        public void OnPlayerButtonClickReceived(ulong playerId, float thoughtSeconds)
+        public void OnPlayerButtonClickReceived(ulong playerId, float spentSeconds)
         {
-            QuestionAnswerSystem.OnPlayerButtonClickReceived(playerId, thoughtSeconds);
+            QuestionAnswerSystem.OnPlayerButtonClickReceived(playerId, spentSeconds);
         }
     }
 }

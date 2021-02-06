@@ -52,6 +52,7 @@ namespace Victorina
             {
                 Debug.Log($"Client connection success, clientId: {clientId}");
                 NetworkData.ClientConnectingState = ClientConnectingState.Success;
+                NetworkData.PlayerId = clientId;
             }
             else
             {

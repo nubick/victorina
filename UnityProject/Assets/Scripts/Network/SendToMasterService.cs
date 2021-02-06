@@ -24,9 +24,9 @@ namespace Victorina
             Player.SendFileChunkRequestToMaster(fileId, chunkIndex);
         }
 
-        public void SendPlayerButton(float thoughtSeconds)
+        public void SendPlayerButton(float spentSeconds)
         {
-            Player.SendPlayerButtonClickToMaster(thoughtSeconds);
+            Player.SendPlayerButtonClickToMaster(spentSeconds);
         }
     }
 }
