@@ -31,9 +31,8 @@ namespace Victorina
         private void RefreshUI()
         {
             QuestionPhase phase = QuestionAnswerData.Phase.Value;
-            bool wasWrongAnswer = QuestionAnswerData.WrongAnsweredIds.Contains(NetworkData.PlayerId);
-            AnswerButton.SetActive(phase == QuestionPhase.ShowQuestion && !wasWrongAnswer);
-            WasWrongAnswerPanel.SetActive(phase == QuestionPhase.ShowQuestion && wasWrongAnswer);
+            AnswerButton.SetActive(PlayerAnswerSystem.CanSendAnswerIntention());
+            WasWrongAnswerPanel.SetActive(phase == QuestionPhase.ShowQuestion && PlayerAnswerSystem.WasWrongAnswer());
             AnsweringPanel.SetActive(phase == QuestionPhase.AcceptingAnswer);
             AnsweringText.text = $"Отвечает: {QuestionAnswerData.AnsweringPlayerName}";
             AnswerPanel.SetActive(phase == QuestionPhase.ShowAnswer);
@@ -41,7 +40,7 @@ namespace Victorina
 
         public void OnAnswerButtonClicked()
         {
-            PlayerAnswerSystem.SendAnswer();
+            PlayerAnswerSystem.OnAnswerButtonClicked();
         }
 
         public void Update()

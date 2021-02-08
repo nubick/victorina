@@ -32,10 +32,6 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<PlayersButtonClickPanelView>());
             _injector.Bind(FindObjectOfType<PlayersBoardView>());
             
-            //Views: Players only
-            _injector.Bind(FindObjectOfType<DownloadingFilesPanelView>());
-            _injector.Bind(FindObjectOfType<PlayerButtonView>());
-            
             _injector.Bind(new QuestionTimer());
             
             _injector.Bind(new NetworkData());
@@ -67,8 +63,11 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<MasterAcceptAnswerView>());
             
             //Client only
+            _injector.Bind(FindObjectOfType<DownloadingFilesPanelView>());
+            _injector.Bind(FindObjectOfType<PlayerButtonView>());
             _injector.Bind(new PlayerDataReceiver());
             _injector.Bind(new PlayerAnswerSystem());
+            _injector.Bind(FindObjectOfType<PlayerInputSystem>());
             
             _injector.Bind(new ClientService());
             
