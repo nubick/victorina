@@ -11,13 +11,15 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         
-        public void EnableAnswer(float resetSeconds, float leftSeconds)
+        public bool IsTimerRunning => QuestionTimer.IsRunning;
+        
+        public void StartTimer(float resetSeconds, float leftSeconds)
         {
             MatchData.Player.EnableAnswerTime = DateTime.UtcNow;
             QuestionTimer.Reset(resetSeconds, leftSeconds);
             QuestionTimer.Start();
         }
-
+        
         public void StopTimer()
         {
             QuestionTimer.Stop();

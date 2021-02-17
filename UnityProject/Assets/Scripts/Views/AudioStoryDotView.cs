@@ -17,6 +17,8 @@ namespace Victorina
         public void Initialize()
         {
             MetagameEvents.ClientFileDownloaded.Subscribe(OnClientFileDownloaded);
+            MetagameEvents.QuestionTimerPauseOn.Subscribe(OnQuestionTimePauseOn);
+            MetagameEvents.QuestionTimerPauseOff.Subscribe(OnQuestionTimerPauseOff);
         }
 
         protected override void OnShown()
@@ -66,6 +68,18 @@ namespace Victorina
 
             if (_pendingFileId == fileId)
                 StartCoroutine(LoadAndPlay(fileId));
+        }
+
+        private void OnQuestionTimePauseOn()
+        {
+            if (IsActive)
+                AudioSource.Pause();
+        }
+
+        private void OnQuestionTimerPauseOff()
+        {
+            if (IsActive)
+                AudioSource.UnPause();
         }
     }
 }

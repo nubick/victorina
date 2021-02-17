@@ -27,20 +27,31 @@ namespace Victorina
         
         public void RefreshUI()
         {
-            bool canNavigateToPreviousQuestionDot = Data.CurrentStoryDotIndex.Value > 0;
+            bool canNavigateToPreviousQuestionDot = Data.CurrentStoryDotIndex > 0;
             PreviousQuestionDotButton.SetActive(canNavigateToPreviousQuestionDot);
 
             bool isLastDot = Data.CurrentStoryDot == Data.CurrentStory.Last();
             NextQuestionDotButton.SetActive(!isLastDot);
 
-            StartTimerButton.SetActive(Data.Phase.Value == QuestionPhase.ShowQuestion && (isLastDot || Data.WasTimerStarted) && !Data.IsTimerOn);
-            StopTimerButton.SetActive(Data.IsTimerOn);
+            StartTimerButton.SetActive(CanStartTimer(Data.Phase.Value, Data.TimerState, isLastDot)); 
+            StopTimerButton.SetActive(Data.TimerState == QuestionTimerState.Running);
 
-            ShowAnswerButton.SetActive(Data.Phase.Value == QuestionPhase.ShowQuestion && Data.WasTimerStarted);
+            ShowAnswerButton.SetActive(Data.Phase.Value == QuestionPhase.ShowQuestion && Data.TimerState != QuestionTimerState.NotStarted);
 
             ShowRoundButton.SetActive(Data.Phase.Value == QuestionPhase.ShowAnswer && isLastDot);
         }
 
+        private bool CanStartTimer(QuestionPhase phase, QuestionTimerState timerState, bool isLastDot)
+        {
+            if (phase != QuestionPhase.ShowQuestion)
+                return false;
+
+            if (timerState == QuestionTimerState.Running)
+                return false;
+
+            return isLastDot || timerState != QuestionTimerState.NotStarted;
+        }
+        
         public void Update()
         {
             if (IsActive)
@@ -61,13 +72,13 @@ namespace Victorina
 
         public void OnStartTimerButtonClicked()
         {
-            QuestionAnswerSystem.StartTimer();
+            QuestionAnswerSystem.ContinueTimer();
             RefreshUI();
         }
 
         public void OnStopTimerButtonClicked()
         {
-            QuestionAnswerSystem.StopTimer();
+            QuestionAnswerSystem.PauseTimer();
             RefreshUI();
         }
         

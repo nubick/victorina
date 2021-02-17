@@ -54,6 +54,8 @@ namespace Victorina
             
             _injector.Bind(NetworkingManager.Singleton);
             
+            _injector.Bind(new DataChangedHandler());
+            
             //Master only
             _injector.Bind(new ServerService());
             _injector.Bind(new ConnectedPlayersData());

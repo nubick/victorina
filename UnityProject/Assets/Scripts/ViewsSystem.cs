@@ -20,6 +20,7 @@ namespace Victorina
         [Inject] private PlayerButtonView PlayerButtonView { get; set; }
         
         [Inject] private MatchData MatchData { get; set; }
+        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         
         public void Initialize()
@@ -29,7 +30,6 @@ namespace Victorina
             StartupView.Show();
 
             MatchData.Phase.SubscribeChanged(OnMatchPhaseChanged);
-            MatchData.QuestionAnswerData.CurrentStoryDotIndex.SubscribeChanged(OnCurrentStoryDotIndexChanged);
         }
 
         private void HideAll()
@@ -43,14 +43,14 @@ namespace Victorina
         {
             MatchPhase phase = MatchData.Phase.Value;
             Debug.Log($"OnPhaseChanged: {phase}");
-            
-            HideAll();
             switch (phase)
             {
                 case MatchPhase.WaitingInLobby:
+                    HideAll();
                     LobbyView.Show();
                     break;
                 case MatchPhase.Round:
+                    HideAll();
                     RoundView.Show();
                     break;
                 case MatchPhase.Question:
@@ -59,25 +59,27 @@ namespace Victorina
                     throw new Exception($"Not supported phase: {MatchData.Phase}");
             }
         }
-
-        private void OnCurrentStoryDotIndexChanged()
+        
+        public void StartAnswering()
         {
-            Debug.Log($"OnCurrentStoryDotIndexChanged: {MatchData.QuestionAnswerData.Phase.Value}, {MatchData.QuestionAnswerData.CurrentStoryDotIndex.Value}");
-            RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedRoundQuestion));
+            RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedRoundQuestion, QuestionAnswerData));
+        }
+        
+        private IEnumerator SwitchToQuestionView(NetRoundQuestion netRoundQuestion, QuestionAnswerData data)
+        {
+            yield return RoundView.ShowQuestionBlinkEffect(netRoundQuestion);
+            UpdateStoryDot(data);
         }
 
-        private IEnumerator SwitchToQuestionView(NetRoundQuestion netRoundQuestion)
+        public void UpdateStoryDot(QuestionAnswerData data)
         {
-            if (RoundView.IsActive)
-                yield return RoundView.ShowQuestionBlinkEffect(netRoundQuestion);
-
             HideAll();
 
-            if (MatchData.QuestionAnswerData.CurrentStoryDot is ImageStoryDot)
+            if (data.CurrentStoryDot is ImageStoryDot)
                 ImageStoryDotView.Show();
-            else if (MatchData.QuestionAnswerData.CurrentStoryDot is AudioStoryDot)
+            else if (data.CurrentStoryDot is AudioStoryDot)
                 AudioStoryDotView.Show();
-            else if (MatchData.QuestionAnswerData.CurrentStoryDot is VideoStoryDot)
+            else if (data.CurrentStoryDot is VideoStoryDot)
                 VideoStoryDotView.Show();
             else
                 TextStoryDotView.Show();

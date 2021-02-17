@@ -10,6 +10,8 @@ namespace Victorina
         
         public float LeftSeconds { get; set; }
         
+        public bool IsRunning => _startTime != null;
+        
         public void Reset(float resetSeconds)
         {
             Reset(resetSeconds, resetSeconds);

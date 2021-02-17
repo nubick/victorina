@@ -20,6 +20,7 @@ namespace Victorina
 
         public void Hide()
         {
+            Debug.Log($"Hide '{name}' view");
             Content.SetActive(false);
             OnHide();
         }

@@ -13,84 +13,89 @@ namespace Victorina
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private DataChangedHandler DataChangedHandler { get; set; }
         
+        private bool IsLastQuestionStoryDot() => Data.TimerState == QuestionTimerState.NotStarted &&
+                                                 Data.Phase.Value == QuestionPhase.ShowQuestion &&
+                                                 Data.CurrentStoryDot == Data.SelectedQuestion.Value.QuestionStory.Last();
+
         public void StartAnswer(NetQuestion netQuestion)
         {
-            QuestionTimer.Reset(Static.TimeForAnswer);
-            Data.WasTimerStarted = false;
-            Data.IsTimerOn = false;
-            Data.WrongAnsweredIds.Clear();
-
             Data.SelectedQuestion.Value = netQuestion;
             SendToPlayersService.SendSelectedQuestion(Data.SelectedQuestion.Value);
 
-            Data.Phase.Value = QuestionPhase.ShowQuestion;
-            SendToPlayersService.Send(Data);
+            QuestionTimer.Reset(Static.TimeForAnswer);
 
-            Data.CurrentStoryDotIndex.Value = 0;
-            SendToPlayersService.SendCurrentStoryDotIndex(Data.CurrentStoryDotIndex.Value);
+            Data.TimerState = QuestionTimerState.NotStarted;
+            Data.WrongAnsweredIds.Clear();
+            Data.Phase.Value = QuestionPhase.ShowQuestion;
+            Data.CurrentStoryDotIndex = 0;
             
-            StartTimerIfTime();
-            
-            MasterQuestionPanelView.RefreshUI();
+            if (IsLastQuestionStoryDot())
+                StartTimer();
+        
+            SendData(MasterIntention.StartAnswering);
         }
         
-        private void StartTimerIfTime()
+        private void SendData(MasterIntention intention)
         {
-            if (Data.WasTimerStarted)
-                return;
-            
-            if (Data.Phase.Value == QuestionPhase.ShowQuestion &&
-                Data.CurrentStoryDot == Data.SelectedQuestion.Value.QuestionStory.Last())
-                StartTimer();
+            Data.MasterIntention = intention;
+            SendToPlayersService.Send(Data);
+            DataChangedHandler.HandleMasterIntention(Data);
+            MasterQuestionPanelView.RefreshUI();
         }
         
         public void ShowNext()
         {
-            Data.CurrentStoryDotIndex.Value++;
-            SendToPlayersService.SendCurrentStoryDotIndex(Data.CurrentStoryDotIndex.Value);
-            StartTimerIfTime();
-            MasterQuestionPanelView.RefreshUI();
+            Data.CurrentStoryDotIndex++;
+            
+            if(IsLastQuestionStoryDot())
+                StartTimer();
+            
+            SendData(MasterIntention.ShowStoryDot);
         }
         
         public void ShowPrevious()
         {
-            Data.CurrentStoryDotIndex.Value--;
-            SendToPlayersService.SendCurrentStoryDotIndex(Data.CurrentStoryDotIndex.Value);
-            MasterQuestionPanelView.RefreshUI();
+            Data.CurrentStoryDotIndex--;
+            SendData(MasterIntention.ShowStoryDot);
         }
         
-        public void StartTimer()
+        private void StartTimer()
         {
-            Data.WasTimerStarted = true;
-            Data.IsTimerOn = true;
-            
             QuestionTimer.Start();
-            SendToPlayersService.SendStartTimer(Static.TimeForAnswer, QuestionTimer.LeftSeconds);
+
+            Data.TimerResetSeconds = Static.TimeForAnswer;
+            Data.TimerLeftSeconds = QuestionTimer.LeftSeconds;
+            Data.TimerState = QuestionTimerState.Running;
             
             Data.PlayersButtonClickData.Value.Players.Clear();
             Data.PlayersButtonClickData.NotifyChanged();
             SendToPlayersService.SendPlayersButtonClickData(Data.PlayersButtonClickData.Value);
         }
 
-        public void StopTimer()
+        public void PauseTimer()
         {
             QuestionTimer.Stop();
-            
-            Data.IsTimerOn = false;
-            SendToPlayersService.SendStopTimer();
+            Data.TimerState = QuestionTimerState.Paused;
+            SendData(MasterIntention.PauseTimer);
+        }
+
+        public void ContinueTimer()
+        {
+            StartTimer();
+            SendData(MasterIntention.ContinueTimer);
         }
         
         public void ShowAnswer()
         {
-            StopTimer();
-            Data.Phase.Value = QuestionPhase.ShowAnswer;
-            SendToPlayersService.Send(Data);
+            QuestionTimer.Stop();
 
-            Data.CurrentStoryDotIndex.Value = 0;
-            SendToPlayersService.SendCurrentStoryDotIndex(Data.CurrentStoryDotIndex.Value);
+            Data.TimerState = QuestionTimerState.Paused;
+            Data.Phase.Value = QuestionPhase.ShowAnswer;
+            Data.CurrentStoryDotIndex = 0;
             
-            MasterQuestionPanelView.RefreshUI();
+            SendData(MasterIntention.ShowAnswer);
         }
 
         public void OnPlayerButtonClickReceived(ulong playerId, float spentSeconds)
@@ -112,7 +117,7 @@ namespace Victorina
             Data.PlayersButtonClickData.NotifyChanged();
             SendToPlayersService.SendPlayersButtonClickData(Data.PlayersButtonClickData.Value);
 
-            StopTimer();
+            PauseTimer();
 
             MasterQuestionPanelView.RefreshUI();
         }
@@ -149,9 +154,8 @@ namespace Victorina
         public void CancelAcceptingAnswer()
         {
             Data.Phase.Value = QuestionPhase.ShowQuestion;
-            SendToPlayersService.Send(Data);
-
             StartTimer();
+            SendData(MasterIntention.ShowStoryDot);
         }
 
         public void AcceptAnswerAsCorrect()
@@ -164,8 +168,8 @@ namespace Victorina
         {
             Data.WrongAnsweredIds.Add(Data.AnsweringPlayerId);
             Data.Phase.Value = QuestionPhase.ShowQuestion;
-            SendToPlayersService.Send(Data);
             StartTimer();
+            SendData(MasterIntention.ShowStoryDot);
             MatchSystem.FinePlayer(Data.AnsweringPlayerId);
         }
         

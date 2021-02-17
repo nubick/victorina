@@ -64,28 +64,10 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendQuestionAnswerData(questionAnswerData));
         }
         
-        public void SendCurrentStoryDotIndex(int index)
-        {
-            Debug.Log($"Master: Send current story dot index to All: {index}");
-            GetPlayers().ForEach(player => player.SendCurrentStoryDotIndex(index));
-        }
-
         public void Send(NetRoundsInfo netRoundsInfo)
         {
             Debug.Log($"Master: Send rounds info to All: {netRoundsInfo}");
             GetPlayers().ForEach(player => player.SendNetRoundsInfo(netRoundsInfo));
-        }
-
-        public void SendStartTimer(float resetSeconds, float leftSeconds)
-        {
-            Debug.Log("Master: Send start timer to All");
-            GetPlayers().ForEach(player => player.SendStartTimer(resetSeconds, leftSeconds));
-        }
-
-        public void SendStopTimer()
-        {
-            Debug.Log("Master: Send stop timer to All");
-            GetPlayers().ForEach(player => player.SendStopTimer());
         }
 
         public void SendRoundFileIds(int[] fileIds, int[] chunksAmounts)

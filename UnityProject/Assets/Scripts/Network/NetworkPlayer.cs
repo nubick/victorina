@@ -43,7 +43,7 @@ namespace Victorina
         private void ReceiveMatchPhase(MatchPhase matchPhase)
         {
             Debug.Log($"Player {OwnerClientId}: Receive match phase: {matchPhase}");
-            MatchData.Phase.Value = matchPhase;
+            PlayerDataReceiver.OnReceive(matchPhase);
         }
         
         public void SendRoundData(NetRound netRound)
@@ -153,20 +153,7 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive selected round question: {netRoundQuestion}");
             MatchData.SelectedRoundQuestion = netRoundQuestion;
         }
-
-        public void SendCurrentStoryDotIndex(int index)
-        {
-            Debug.Log($"Master: Send current story dot index: {index} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveCurrentStoryDotIndex, index);
-        }
-
-        [ClientRPC]
-        private void ReceiveCurrentStoryDotIndex(int index)
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive current story dot index: {index}");
-            MatchData.QuestionAnswerData.CurrentStoryDotIndex.Value = index;
-        }
-
+        
         public void SendNetRoundsInfo(NetRoundsInfo netRoundsInfo)
         {
             Debug.Log($"Master: Send rounds info: {netRoundsInfo} to {OwnerClientId}");
@@ -232,33 +219,7 @@ namespace Victorina
         #endregion
 
         #region Timer and button
-
-        public void SendStartTimer(float resetSeconds, float leftSeconds)
-        {
-            Debug.Log($"Master: Send start timer to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveStartTimer, resetSeconds, leftSeconds);
-        }
-
-        [ClientRPC]
-        private void ReceiveStartTimer(float resetSeconds, float leftSeconds)
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive start timer");
-            PlayerDataReceiver.OnReceiveStartTimer(resetSeconds, leftSeconds);
-        }
-
-        public void SendStopTimer()
-        {
-            Debug.Log($"Master: Send stop timer to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveStopTimer);
-        }
-
-        [ClientRPC]
-        private void ReceiveStopTimer()
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive stop timer");
-            PlayerDataReceiver.OnReceiveStopTimer();
-        }
-
+        
         public void SendPlayerButtonClickToMaster(float spentSeconds)
         {
             Debug.Log($"Player {OwnerClientId}: send button click to Master, thoughtSeconds: {spentSeconds}");

@@ -248,9 +248,18 @@ namespace Victorina
         private void SerializeQuestionAnswerData(Stream stream, QuestionAnswerData data)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
+
+            writer.WriteInt32((int) data.Phase.Value);
+            writer.WriteInt32((int)data.MasterIntention);
+
+            writer.WriteInt32(data.CurrentStoryDotIndex);
+            
+            writer.WriteInt32((int) data.TimerState);
+            writer.WriteSingle(data.TimerResetSeconds);
+            writer.WriteSingle(data.TimerLeftSeconds);
+
             writer.WriteUInt64(data.AnsweringPlayerId);
             writer.WriteString(data.AnsweringPlayerName ?? string.Empty);
-            writer.WriteInt32((int) data.Phase.Value);
 
             writer.WriteInt32(data.WrongAnsweredIds.Count);
             foreach (ulong playerId in data.WrongAnsweredIds)
@@ -261,9 +270,17 @@ namespace Victorina
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             QuestionAnswerData data = new QuestionAnswerData();
+            
+            data.Phase.Value = (QuestionPhase) reader.ReadInt32();
+            data.MasterIntention = (MasterIntention) reader.ReadInt32();
+            data.CurrentStoryDotIndex = reader.ReadInt32();
+            
+            data.TimerState = (QuestionTimerState) reader.ReadInt32();
+            data.TimerResetSeconds = reader.ReadSingle();
+            data.TimerLeftSeconds = reader.ReadSingle();
+
             data.AnsweringPlayerId = reader.ReadUInt64();
             data.AnsweringPlayerName = reader.ReadString().ToString();
-            data.Phase.Value = (QuestionPhase) reader.ReadInt32();
 
             int amount = reader.ReadInt32();
             for (int i = 0; i < amount; i++)
