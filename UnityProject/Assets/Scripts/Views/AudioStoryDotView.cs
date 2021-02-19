@@ -11,16 +11,25 @@ namespace Victorina
 
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
+        [Inject] private AppState AppState { get; set; }
 
         public AudioSource AudioSource;
-
+        
         public void Initialize()
         {
             MetagameEvents.ClientFileDownloaded.Subscribe(OnClientFileDownloaded);
             MetagameEvents.QuestionTimerStarted.Subscribe(OnQuestionTimeStarted);
             MetagameEvents.QuestionTimerPaused.Subscribe(OnQuestionTimerPaused);
+            
+            AppState.Volume.SubscribeChanged(SetVolume);
+            SetVolume(AppState.Volume.Value);
         }
 
+        private void SetVolume(float volume)
+        {
+            AudioSource.volume = volume;
+        }
+        
         protected override void OnShown()
         {
             if (MatchData.QuestionAnswerData.CurrentStoryDot is AudioStoryDot audioStoryDot)

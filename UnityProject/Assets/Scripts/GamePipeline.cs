@@ -21,6 +21,8 @@ namespace Victorina
             _injector.Bind(new ViewsSystem());
             
             //Views
+            ViewsData viewsData = FindObjectOfType<ViewsData>();
+            _injector.Bind(viewsData);
             _injector.Bind(FindObjectOfType<StartupView>());
             _injector.Bind(FindObjectOfType<JoinGameView>());
             _injector.Bind(FindObjectOfType<LobbyView>());
@@ -31,6 +33,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<RoundView>());
             _injector.Bind(FindObjectOfType<PlayersButtonClickPanelView>());
             _injector.Bind(FindObjectOfType<PlayersBoardView>());
+            _injector.Bind(viewsData.ViewsRoot.GetComponentInChildren<VolumeSettingsWidget>(includeInactive: true));
             
             _injector.Bind(new QuestionTimer());
             
