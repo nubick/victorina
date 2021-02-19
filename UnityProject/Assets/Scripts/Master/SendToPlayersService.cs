@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Injection;
 using MLAPI;
 using UnityEngine;
@@ -9,47 +10,60 @@ namespace Victorina
     public class SendToPlayersService
     {
         [Inject] private NetworkingManager NetworkingManager { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
+        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
 
         private List<NetworkPlayer> GetPlayers()
         {
             return NetworkingManager.ConnectedClientsList.Where(_ => _.PlayerObject != null).Select(_ => _.PlayerObject.GetComponent<NetworkPlayer>()).ToList();
         }
-        
+
+        public void SendAll(NetworkPlayer networkPlayer)
+        {
+            networkPlayer.SendPlayersBoard(MatchData.PlayersBoard.Value);
+
+            if (MatchData.Phase.Value == MatchPhase.WaitingInLobby)
+            {
+
+            }
+            else if (MatchData.Phase.Value == MatchPhase.Round)
+            {
+                networkPlayer.SendNetRound(MatchData.RoundData.Value);
+                networkPlayer.SendNetRoundsInfo(MatchData.RoundsInfo.Value);
+            }
+            else if (MatchData.Phase.Value == MatchPhase.Question)
+            {
+                networkPlayer.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
+                networkPlayer.SendSelectedQuestion(QuestionAnswerData.SelectedQuestion.Value);
+                networkPlayer.SendPlayersButtonClickData(QuestionAnswerData.PlayersButtonClickData.Value);
+                networkPlayer.SendQuestionAnswerData(QuestionAnswerData);
+            }
+            
+            networkPlayer.SendMatchPhase(MatchData.Phase.Value);
+        }
+
         public void Send(PlayersBoard playersBoard)
         {
             Debug.Log($"Master: Send PlayersBoard to All: {playersBoard}");
             GetPlayers().ForEach(player => player.SendPlayersBoard(playersBoard));
         }
 
-        public void Send(MatchPhase matchPhase)
+        public void SendMatchPhase(MatchPhase matchPhase)
         {
             Debug.Log($"Master: Send match phase to All: {matchPhase}");
             GetPlayers().ForEach(player => player.SendMatchPhase(matchPhase));
         }
         
-        public void Send(NetRound netRound)
+        public void SendNetRound(NetRound netRound)
         {
             Debug.Log($"Master: Send RoundData to All: {netRound}");
-            GetPlayers().ForEach(player => player.SendRoundData(netRound));
+            GetPlayers().ForEach(player => player.SendNetRound(netRound));
         }
 
         public void SendSelectedQuestion(NetQuestion netQuestion)
         {
             Debug.Log($"Master: Send selected question to All: {netQuestion}");
             GetPlayers().ForEach(player => player.SendSelectedQuestion(netQuestion));
-            List<NetworkPlayer> networkPlayers = GetPlayers();
-            
-            foreach (StoryDot storyDot in netQuestion.QuestionStory)
-            {
-                Debug.Log($"Master: Send question story dot to All: {storyDot}");
-                networkPlayers.ForEach(player => player.SendStoryDot(storyDot, isQuestion: true));
-            }
-
-            foreach (StoryDot storyDot in netQuestion.AnswerStory)
-            {
-                Debug.Log($"Master: Send answer story dot to All: {storyDot}");
-                networkPlayers.ForEach(player => player.SendStoryDot(storyDot, isQuestion: false));
-            }
         }
 
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
@@ -64,7 +78,7 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendQuestionAnswerData(questionAnswerData));
         }
         
-        public void Send(NetRoundsInfo netRoundsInfo)
+        public void SendNetRoundsInfo(NetRoundsInfo netRoundsInfo)
         {
             Debug.Log($"Master: Send rounds info to All: {netRoundsInfo}");
             GetPlayers().ForEach(player => player.SendNetRoundsInfo(netRoundsInfo));

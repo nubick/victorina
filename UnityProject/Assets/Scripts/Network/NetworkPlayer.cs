@@ -46,7 +46,7 @@ namespace Victorina
             PlayerDataReceiver.OnReceive(matchPhase);
         }
         
-        public void SendRoundData(NetRound netRound)
+        public void SendNetRound(NetRound netRound)
         {
             Debug.Log($"Master: Send RoundData: {netRound} to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveRoundData, netRound, "RFS");
@@ -76,6 +76,18 @@ namespace Victorina
         {
             Debug.Log($"Master: Send selected question: {netQuestion} to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveSelectedQuestion, netQuestion);
+            
+            foreach (StoryDot storyDot in netQuestion.QuestionStory)
+            {
+                Debug.Log($"Master: Send question story dot to All: {storyDot}");
+                SendStoryDot(storyDot, isQuestion: true);
+            }
+
+            foreach (StoryDot storyDot in netQuestion.AnswerStory)
+            {
+                Debug.Log($"Master: Send answer story dot to All: {storyDot}");
+                SendStoryDot(storyDot, isQuestion: false);
+            }
         }
 
         [ClientRPC]

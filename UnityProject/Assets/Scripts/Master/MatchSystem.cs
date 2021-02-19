@@ -41,7 +41,7 @@ namespace Victorina
             SendToPlayersService.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
 
             MatchData.Phase.Value = MatchPhase.Question;
-            SendToPlayersService.Send(MatchData.Phase.Value);
+            SendToPlayersService.SendMatchPhase(MatchData.Phase.Value);
 
             NetQuestion netQuestion = BuildNetQuestion(netRoundQuestion);
             QuestionAnswerSystem.StartAnswer(netQuestion);
@@ -71,14 +71,14 @@ namespace Victorina
 
             MatchData.RoundsInfo.Value.RoundsAmount = PackageData.Package.Rounds.Count;
             MatchData.RoundsInfo.Value.CurrentRoundNumber = number;
-            SendToPlayersService.Send(MatchData.RoundsInfo.Value);
+            SendToPlayersService.SendNetRoundsInfo(MatchData.RoundsInfo.Value);
 
             Round round = PackageData.Package.Rounds[number - 1];
             MatchData.RoundData.Value = BuildNetRound(round, PackageData.PackageProgress);
-            SendToPlayersService.Send(MatchData.RoundData.Value);
+            SendToPlayersService.SendNetRound(MatchData.RoundData.Value);
 
             MatchData.Phase.Value = MatchPhase.Round;
-            SendToPlayersService.Send(MatchData.Phase.Value);
+            SendToPlayersService.SendMatchPhase(MatchData.Phase.Value);
 
             (int[] fileIds, int[] chunksAmounts) info = PackageSystem.GetRoundFileIds(round);
             SendToPlayersService.SendRoundFileIds(info.fileIds, info.chunksAmounts);

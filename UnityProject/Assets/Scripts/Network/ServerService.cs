@@ -75,7 +75,10 @@ namespace Victorina
             MetagameEvents.PlayerConnected.Publish(networkPlayer);
 
             if (NetworkingManager.IsServer)
+            {
                 UpdatePlayersBoard(MatchData.PlayersBoard.Value);
+                SendToPlayersService.SendAll(networkPlayer);
+            }
         }
 
         private void UpdatePlayersBoard(PlayersBoard playersBoard)
@@ -94,7 +97,7 @@ namespace Victorina
             MatchData.PlayersBoard.NotifyChanged();
             SendToPlayersService.Send(playersBoard);
         }
-
+        
         private void OnClientDisconnect(ulong clientId)
         {
             if (NetworkingManager.IsServer)
