@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Injection;
 
 namespace Victorina
@@ -47,12 +48,18 @@ namespace Victorina
         public bool CanSendAnswerIntention()
         {
             return NetworkData.IsClient && MatchData.Phase.Value == MatchPhase.Question &&
-                   QuestionAnswerData.Phase.Value == QuestionPhase.ShowQuestion && !WasWrongAnswer();
+                   QuestionAnswerData.Phase.Value == QuestionPhase.ShowQuestion &&
+                   !WasIntentionSent() && !WasWrongAnswer();
         }
 
         public bool WasWrongAnswer()
         {
             return QuestionAnswerData.WrongAnsweredIds.Contains(NetworkData.PlayerId);
+        }
+
+        public bool WasIntentionSent()
+        {
+            return QuestionAnswerData.PlayersButtonClickData.Value.Players.Any(_ => _.PlayerId == NetworkData.PlayerId);
         }
     }
 }
