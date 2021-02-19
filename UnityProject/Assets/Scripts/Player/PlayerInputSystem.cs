@@ -9,7 +9,7 @@ namespace Victorina
         
         public void Update()
         {
-            if (Input.anyKeyDown)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 PlayerAnswerSystem.OnAnyKeyDown();
             }

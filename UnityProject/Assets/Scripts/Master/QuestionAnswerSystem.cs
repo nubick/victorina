@@ -64,7 +64,8 @@ namespace Victorina
         private void StartTimer()
         {
             QuestionTimer.Start();
-
+            MetagameEvents.QuestionTimerStarted.Publish();
+            
             Data.TimerResetSeconds = Static.TimeForAnswer;
             Data.TimerLeftSeconds = QuestionTimer.LeftSeconds;
             Data.TimerState = QuestionTimerState.Running;
@@ -77,6 +78,8 @@ namespace Victorina
         public void PauseTimer()
         {
             QuestionTimer.Stop();
+            MetagameEvents.QuestionTimerPaused.Publish();
+            
             Data.TimerState = QuestionTimerState.Paused;
             SendData(MasterIntention.PauseTimer);
         }
@@ -90,7 +93,8 @@ namespace Victorina
         public void ShowAnswer()
         {
             QuestionTimer.Stop();
-
+            MetagameEvents.QuestionTimerPaused.Publish();
+            
             Data.TimerState = QuestionTimerState.Paused;
             Data.Phase.Value = QuestionPhase.ShowAnswer;
             Data.CurrentStoryDotIndex = 0;

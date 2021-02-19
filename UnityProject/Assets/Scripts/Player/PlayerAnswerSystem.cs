@@ -30,8 +30,6 @@ namespace Victorina
             if (!CanSendAnswerIntention())
                 return;
             
-            QuestionTimer.Stop();
-
             float spentSeconds = (float) (DateTime.UtcNow - MatchData.Player.EnableAnswerTime).TotalSeconds;
             SendToMasterService.SendPlayerButton(spentSeconds);
         }

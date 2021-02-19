@@ -68,7 +68,7 @@ namespace Victorina
         [ClientRPC]
         private void ReceiveQuestionAnswerData(QuestionAnswerData questionAnswerData)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive question answer data: {questionAnswerData}");
+            Debug.Log($"Player {OwnerClientId}: Receive question answer data: {questionAnswerData}, {Time.time}");
             PlayerDataReceiver.OnReceive(questionAnswerData);
         }
         
@@ -242,7 +242,7 @@ namespace Victorina
         [ClientRPC]
         private void ReceivePlayersButtonClickData(PlayersButtonClickData playersButtonClickData)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive players button click data");
+            Debug.Log($"Player {OwnerClientId}: Receive players button click data: {playersButtonClickData}, {Time.time}");
             PlayerDataReceiver.OnReceive(playersButtonClickData);
         }
         

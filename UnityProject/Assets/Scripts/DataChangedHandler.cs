@@ -1,4 +1,5 @@
 using Injection;
+using UnityEngine;
 
 namespace Victorina
 {
@@ -28,12 +29,19 @@ namespace Victorina
                 return;
             
             //Player
-            
-            if(PlayerAnswerSystem.IsTimerRunning && data.TimerState != QuestionTimerState.Running)
+            if (PlayerAnswerSystem.IsTimerRunning && data.TimerState != QuestionTimerState.Running)
+            {
+                Debug.Log($"Player: StopTimer, {data.TimerState}");
                 PlayerAnswerSystem.StopTimer();
+                MetagameEvents.QuestionTimerPaused.Publish();
+            }
 
             if (!PlayerAnswerSystem.IsTimerRunning && data.TimerState == QuestionTimerState.Running)
+            {
+                Debug.Log($"Player: StartTimer, {data.TimerState}, {data.TimerResetSeconds}, {data.TimerLeftSeconds}");
                 PlayerAnswerSystem.StartTimer(data.TimerResetSeconds, data.TimerLeftSeconds);
+                MetagameEvents.QuestionTimerStarted.Publish();
+            }
         }
     }
 }

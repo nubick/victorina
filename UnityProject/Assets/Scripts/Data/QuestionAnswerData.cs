@@ -33,5 +33,10 @@ namespace Victorina
         {
             PlayersButtonClickData.Value = new PlayersButtonClickData();
         }
+
+        public override string ToString()
+        {
+            return $"{MasterIntention}, {Phase.Value}, {CurrentStoryDotIndex}, {TimerState}";
+        }
     }
 }

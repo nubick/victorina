@@ -13,14 +13,14 @@ namespace Victorina
 
         public void Show()
         {
-            Debug.Log($"Show '{name}' view");
+            Debug.Log($"Show '{name}' view, {Time.time}");
             Content.SetActive(true);
             OnShown();
         }
 
         public void Hide()
         {
-            Debug.Log($"Hide '{name}' view");
+            Debug.Log($"Hide '{name}' view, {Time.time}");
             Content.SetActive(false);
             OnHide();
         }
