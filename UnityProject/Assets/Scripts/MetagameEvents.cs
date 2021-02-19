@@ -5,7 +5,8 @@ namespace Victorina
     public static class MetagameEvents
     {
         public static GameEvent<NetworkPlayer> PlayerConnected { get; } = new GameEvent<NetworkPlayer>();
-        public static GameEvent<ulong> PlayerDisconnect { get; } = new GameEvent<ulong>();
+        public static GameEvent PlayerDisconnected { get; } = new GameEvent();
+        public static GameEvent ServerStopped { get; } = new GameEvent();
 
         public static GameEvent<NetRoundQuestion> RoundQuestionClicked { get; } = new GameEvent<NetRoundQuestion>();
         public static GameEvent<int> RoundInfoClicked { get; } = new GameEvent<int>();

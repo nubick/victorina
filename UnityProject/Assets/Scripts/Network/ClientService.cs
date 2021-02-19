@@ -13,6 +13,7 @@ namespace Victorina
         [Inject] private NetworkingManager NetworkingManager { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private IpCodeSystem IpCodeSystem { get; set; }
+        [Inject] private ViewsSystem ViewsSystem { get; set; }
 
         public void Initialize()
         {
@@ -68,6 +69,7 @@ namespace Victorina
             
             Debug.Log($"OnClientDisconnect: {clientId}");
             NetworkData.ClientConnectingState = ClientConnectingState.Fail;
+            ViewsSystem.OnClientDisconnected();
         }
     }
 }

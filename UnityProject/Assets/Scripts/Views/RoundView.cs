@@ -11,7 +11,8 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private PlayersBoardView PlayersBoardView { get; set; }
-
+        [Inject] private ServerService ServerService { get; set; }
+        
         public RectTransform ThemeWidgetsRoot;
         public ThemeWidget ThemeWidgetPrefab;
 
@@ -84,6 +85,7 @@ namespace Victorina
 
         public void OnBackButtonClicked()
         {
+            ServerService.StopServer();
             SwitchTo(StartupView);
         }
         

@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text;
 using Injection;
 using MLAPI;
@@ -14,7 +13,6 @@ namespace Victorina
         [Inject] private NetworkingManager NetworkingManager { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private ExternalIpData ExternalIpData { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         
@@ -48,7 +46,7 @@ namespace Victorina
             string playerName = Encoding.UTF32.GetString(connectionData);
             Debug.Log($"PlayerName: {playerName}");
 
-            ConnectedPlayersData.PlayersIdNameMap[clientId] = playerName;
+            ConnectedPlayersData.PlayersIdToNameMap[clientId] = playerName;
             
             ulong? prefabHash = SpawnManager.GetPrefabHashFromGenerator("NetworkPlayer");
 
@@ -72,41 +70,23 @@ namespace Victorina
                 return;
             }
             
+            if (NetworkData.IsMaster)
+                ConnectedPlayersData.ConnectedClientsIds.Rewrite(NetworkingManager.ConnectedClients.Keys);
+            
             MetagameEvents.PlayerConnected.Publish(networkPlayer);
-
-            if (NetworkingManager.IsServer)
-            {
-                UpdatePlayersBoard(MatchData.PlayersBoard.Value);
+            
+            if(NetworkData.IsMaster)
                 SendToPlayersService.SendAll(networkPlayer);
-            }
         }
 
-        private void UpdatePlayersBoard(PlayersBoard playersBoard)
-        {
-            foreach (ulong connectedClientId in NetworkingManager.ConnectedClients.Keys)
-            {
-                PlayerData player = playersBoard.Players.SingleOrDefault(_ => _.Id == connectedClientId);
-                if (player == null)
-                {
-                    player = new PlayerData(connectedClientId);
-                    player.Name = ConnectedPlayersData.PlayersIdNameMap[connectedClientId];
-                    playersBoard.Players.Add(player);
-                }
-                
-            }
-            MatchData.PlayersBoard.NotifyChanged();
-            SendToPlayersService.Send(playersBoard);
-        }
-        
         private void OnClientDisconnect(ulong clientId)
         {
-            if (NetworkingManager.IsServer)
+            if (NetworkData.IsMaster)
             {
                 Debug.Log($"OnClientDisconnect, clientId: {clientId}, connected clients: {GetConnectedClients()}");
-                UpdatePlayersBoard(MatchData.PlayersBoard.Value);
+                ConnectedPlayersData.ConnectedClientsIds.Rewrite(NetworkingManager.ConnectedClients.Keys);
+                MetagameEvents.PlayerDisconnected.Publish();
             }
-
-            MetagameEvents.PlayerDisconnect.Publish(clientId);
         }
 
         private string GetConnectedClients()
@@ -121,8 +101,12 @@ namespace Victorina
 
         public void StopServer()
         {
-            NetworkingManager.StopServer();
-            NetworkData.IsMaster = false;
+            if (NetworkData.IsMaster)
+            {
+                NetworkingManager.StopServer();
+                NetworkData.IsMaster = false;
+                MetagameEvents.ServerStopped.Publish();
+            }
         }
     }
 }

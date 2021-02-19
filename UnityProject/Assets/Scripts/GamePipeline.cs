@@ -62,6 +62,7 @@ namespace Victorina
             //Master only
             _injector.Bind(new ServerService());
             _injector.Bind(new ConnectedPlayersData());
+            _injector.Bind(new PlayersBoardSystem());
             _injector.Bind(new QuestionAnswerSystem());
             _injector.Bind(new MasterDataReceiver());
             _injector.Bind(FindObjectOfType<MasterQuestionPanelView>());
@@ -98,7 +99,10 @@ namespace Victorina
             _injector.Get<SaveSystem>().LoadAll();
             
             StartCoroutine(_injector.Get<ExternalIpSystem>().Initialize());
+            
             _injector.Get<ServerService>().Initialize();
+            _injector.Get<PlayersBoardSystem>().Initialize();
+            
             _injector.Get<ClientService>().Initialize();
             
             _injector.Get<ViewsSystem>().Initialize();

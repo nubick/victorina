@@ -89,5 +89,11 @@ namespace Victorina
             else
                 PlayerButtonView.Show();
         }
+
+        public void OnClientDisconnected()
+        {
+            HideAll();
+            StartupView.Show();
+        }
     }
 }

@@ -114,7 +114,7 @@ namespace Victorina
             
             PlayerButtonClickData clickData = new PlayerButtonClickData();
             clickData.PlayerId = playerId;
-            clickData.Name = ConnectedPlayersData.PlayersIdNameMap[playerId];
+            clickData.Name = ConnectedPlayersData.PlayersIdToNameMap[playerId];
             clickData.Time = spentSeconds;
             Data.PlayersButtonClickData.Value.Players.Add(clickData);
 
@@ -138,7 +138,7 @@ namespace Victorina
             if (NetworkData.IsClient)
                 return;
             
-            Data.AnsweringPlayerName = ConnectedPlayersData.PlayersIdNameMap[playerId];
+            Data.AnsweringPlayerName = ConnectedPlayersData.PlayersIdToNameMap[playerId];
             Data.AnsweringPlayerId = playerId;
             Data.AnswerTip = GetAnswerTip(Data.SelectedQuestion.Value);
             Data.Phase.Value = QuestionPhase.AcceptingAnswer;

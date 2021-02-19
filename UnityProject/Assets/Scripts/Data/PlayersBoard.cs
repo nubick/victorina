@@ -4,6 +4,6 @@ namespace Victorina
 {
     public class PlayersBoard
     {
-        public readonly List<PlayerData> Players = new List<PlayerData>();
+        public List<PlayerData> Players { get; } = new List<PlayerData>();
     }
 }
