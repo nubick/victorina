@@ -12,8 +12,6 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         
-        public bool IsTimerRunning => QuestionTimer.IsRunning;
-        
         public void StartTimer(float resetSeconds, float leftSeconds)
         {
             MatchData.Player.EnableAnswerTime = DateTime.UtcNow;

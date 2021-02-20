@@ -1,3 +1,4 @@
+using Assets.Scripts.Utils;
 using Injection;
 using MLAPI;
 using UnityEngine;
@@ -33,7 +34,6 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<RoundView>());
             _injector.Bind(FindObjectOfType<PlayersButtonClickPanelView>());
             _injector.Bind(FindObjectOfType<PlayersBoardView>());
-            _injector.Bind(viewsData.ViewsRoot.GetComponentInChildren<VolumeSettingsWidget>(includeInactive: true));
             
             _injector.Bind(new QuestionTimer());
             
@@ -57,7 +57,7 @@ namespace Victorina
             
             _injector.Bind(NetworkingManager.Singleton);
             
-            _injector.Bind(new DataChangedHandler());
+            _injector.Bind(new DataChangeHandler());
             
             //Master only
             _injector.Bind(new ServerService());
@@ -92,6 +92,9 @@ namespace Victorina
             _injector.Bind(new EncodingFixSystem());
             
             _injector.CommitBindings();
+            
+            VolumeSettingsWidget[] widgets = viewsData.ViewsRoot.GetComponentsInChildren<VolumeSettingsWidget>(includeInactive: true);
+            widgets.ForEach(_ => _injector.InjectTo(_));
         }
 
         private void Initialize()

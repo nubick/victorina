@@ -15,6 +15,7 @@ namespace Victorina
         public GameObject NextQuestionDotButton;
         public GameObject StartTimerButton;
         public GameObject StopTimerButton;
+        public GameObject RestartMediaButton;
         public GameObject ShowAnswerButton;
         public GameObject ShowRoundButton;
 
@@ -33,6 +34,7 @@ namespace Victorina
             bool isLastDot = Data.CurrentStoryDot == Data.CurrentStory.Last();
             NextQuestionDotButton.SetActive(!isLastDot);
 
+            RestartMediaButton.SetActive(false);
             StartTimerButton.SetActive(CanStartTimer(Data.Phase.Value, Data.TimerState, isLastDot)); 
             StopTimerButton.SetActive(Data.TimerState == QuestionTimerState.Running);
 
@@ -54,9 +56,23 @@ namespace Victorina
         
         public void Update()
         {
-            if (IsActive)
+            if (IsActive && Data.TimerState == QuestionTimerState.Running)
             {
+                float leftSecondsPercentage = QuestionTimer.GetLeftSecondsPercentage();
                 TimerStrip.fillAmount = QuestionTimer.GetLeftSecondsPercentage();
+                bool isRunOutOfTime = Mathf.Approximately(leftSecondsPercentage, 0f);
+
+                if (isRunOutOfTime)
+                {
+                    if (StartTimerButton.activeSelf)
+                        StartTimerButton.SetActive(false);
+
+                    if (StopTimerButton.activeSelf)
+                        StopTimerButton.SetActive(false);
+
+                    if (!RestartMediaButton.activeSelf)
+                        RestartMediaButton.SetActive(true);
+                }
             }
         }
 
@@ -70,6 +86,12 @@ namespace Victorina
             QuestionAnswerSystem.ShowNext();
         }
 
+        public void OnRestartMediaButtonClicked()
+        {
+            QuestionAnswerSystem.RestartMedia();
+            RefreshUI();
+        }
+        
         public void OnStartTimerButtonClicked()
         {
             QuestionAnswerSystem.ContinueTimer();

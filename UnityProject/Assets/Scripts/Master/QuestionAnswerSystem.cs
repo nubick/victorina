@@ -13,7 +13,7 @@ namespace Victorina
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
-        [Inject] private DataChangedHandler DataChangedHandler { get; set; }
+        [Inject] private DataChangeHandler DataChangeHandler { get; set; }
         
         private bool IsLastQuestionStoryDot() => Data.TimerState == QuestionTimerState.NotStarted &&
                                                  Data.Phase.Value == QuestionPhase.ShowQuestion &&
@@ -41,7 +41,7 @@ namespace Victorina
         {
             Data.MasterIntention = intention;
             SendToPlayersService.Send(Data);
-            DataChangedHandler.HandleMasterIntention(Data);
+            DataChangeHandler.HandleMasterIntention(Data);
             MasterQuestionPanelView.RefreshUI();
         }
         
@@ -63,9 +63,6 @@ namespace Victorina
         
         private void StartTimer()
         {
-            QuestionTimer.Start();
-            MetagameEvents.QuestionTimerStarted.Publish();
-            
             Data.TimerResetSeconds = Static.TimeForAnswer;
             Data.TimerLeftSeconds = QuestionTimer.LeftSeconds;
             Data.TimerState = QuestionTimerState.Running;
@@ -77,9 +74,6 @@ namespace Victorina
 
         public void PauseTimer()
         {
-            QuestionTimer.Stop();
-            MetagameEvents.QuestionTimerPaused.Publish();
-            
             Data.TimerState = QuestionTimerState.Paused;
             SendData(MasterIntention.PauseTimer);
         }
@@ -89,12 +83,16 @@ namespace Victorina
             StartTimer();
             SendData(MasterIntention.ContinueTimer);
         }
+
+        public void RestartMedia()
+        {
+            QuestionTimer.Reset(Static.TimeForAnswer);
+            StartTimer();
+            SendData(MasterIntention.RestartMedia);
+        }
         
         public void ShowAnswer()
         {
-            QuestionTimer.Stop();
-            MetagameEvents.QuestionTimerPaused.Publish();
-            
             Data.TimerState = QuestionTimerState.Paused;
             Data.Phase.Value = QuestionPhase.ShowAnswer;
             Data.CurrentStoryDotIndex = 0;
@@ -159,7 +157,7 @@ namespace Victorina
         {
             Data.Phase.Value = QuestionPhase.ShowQuestion;
             StartTimer();
-            SendData(MasterIntention.ShowStoryDot);
+            SendData(MasterIntention.ContinueTimer);
         }
 
         public void AcceptAnswerAsCorrect()
@@ -173,7 +171,7 @@ namespace Victorina
             Data.WrongAnsweredIds.Add(Data.AnsweringPlayerId);
             Data.Phase.Value = QuestionPhase.ShowQuestion;
             StartTimer();
-            SendData(MasterIntention.ShowStoryDot);
+            SendData(MasterIntention.ContinueTimer);
             MatchSystem.FinePlayer(Data.AnsweringPlayerId);
         }
         

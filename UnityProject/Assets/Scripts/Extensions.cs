@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Video;
 
 namespace Victorina
 {
@@ -13,6 +15,12 @@ namespace Victorina
         {
             list.Clear();
             list.AddRange(items);
+        }
+
+        public static bool IsFinished(this VideoPlayer videoPlayer)
+        {
+            Debug.Log($"frame: {videoPlayer.frame}, count: {videoPlayer.frameCount}");
+            return videoPlayer.frame >= (long) videoPlayer.frameCount - 1;
         }
     }
 }

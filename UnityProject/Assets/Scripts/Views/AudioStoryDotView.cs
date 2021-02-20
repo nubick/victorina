@@ -12,13 +12,14 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private AppState AppState { get; set; }
+        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
 
         public AudioSource AudioSource;
         
         public void Initialize()
         {
             MetagameEvents.ClientFileDownloaded.Subscribe(OnClientFileDownloaded);
-            MetagameEvents.QuestionTimerStarted.Subscribe(OnQuestionTimeStarted);
+            MetagameEvents.QuestionTimerStarted.Subscribe(OnQuestionTimerStarted);
             MetagameEvents.QuestionTimerPaused.Subscribe(OnQuestionTimerPaused);
             
             AppState.Volume.SubscribeChanged(SetVolume);
@@ -79,12 +80,15 @@ namespace Victorina
                 StartCoroutine(LoadAndPlay(fileId));
         }
 
-        private void OnQuestionTimeStarted()
+        private void OnQuestionTimerStarted()
         {
             if (IsActive)
             {
-                Debug.Log("UnPause: AudioStoryDotView");
-                AudioSource.UnPause();
+                Debug.Log($"AudioView: TimerStarted, isPlaying: {AudioSource.isPlaying}, playback pos: {AudioSource.time}, {Time.time}");
+                if (QuestionAnswerData.MasterIntention == MasterIntention.RestartMedia)
+                    AudioSource.Play();
+                else
+                    AudioSource.UnPause();
             }
         }
 
@@ -92,7 +96,7 @@ namespace Victorina
         {
             if (IsActive)
             {
-                Debug.Log("Pause: AudioStoryDotView");
+                Debug.Log($"AudioView: TimerPaused, isPlaying: {AudioSource.isPlaying}, playback pos: {AudioSource.time}, {Time.time}");
                 AudioSource.Pause();
             }
         }

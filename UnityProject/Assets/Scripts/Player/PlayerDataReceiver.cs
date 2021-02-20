@@ -6,7 +6,7 @@ namespace Victorina
     {
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
-        [Inject] private DataChangedHandler DataChangedHandler { get; set; }
+        [Inject] private DataChangeHandler DataChangeHandler { get; set; }
 
         public void OnReceive(MatchPhase matchPhase)
         {
@@ -36,7 +36,7 @@ namespace Victorina
             
             QuestionAnswerData.CurrentStoryDotIndex = data.CurrentStoryDotIndex;
             
-            DataChangedHandler.HandleMasterIntention(QuestionAnswerData);
+            DataChangeHandler.HandleMasterIntention(QuestionAnswerData);
         }
     }
 }

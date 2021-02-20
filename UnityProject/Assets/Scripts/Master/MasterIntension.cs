@@ -6,6 +6,7 @@ namespace Victorina
         ShowStoryDot,
         PauseTimer,
         ContinueTimer,
+        RestartMedia,
         ShowAnswer
     }
 }

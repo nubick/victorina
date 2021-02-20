@@ -9,8 +9,8 @@ namespace Victorina
         private DateTime? _startTime;
         
         public float LeftSeconds { get; set; }
-        
-        public bool IsRunning => _startTime != null;
+
+        public bool IsRunning => _startTime != null && GetNowLeftSeconds() > 0f;
         
         public void Reset(float resetSeconds)
         {
@@ -19,6 +19,7 @@ namespace Victorina
 
         public void Reset(float resetSeconds, float leftSeconds)
         {
+            _startTime = null;
             _resetSeconds = resetSeconds;
             LeftSeconds = leftSeconds;
         }
