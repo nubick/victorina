@@ -30,7 +30,10 @@ namespace Victorina
                     if (unescapedFilePath != filePath)
                     {
                         Debug.Log($"Unescape file name '{filePath}' to '{unescapedFilePath}'");
-                        File.Move(filePath, unescapedFilePath);
+                        if (File.Exists(unescapedFilePath))
+                            Debug.LogWarning($"Can't move, file with such name exists: {unescapedFilePath}");
+                        else
+                            File.Move(filePath, unescapedFilePath);
                     }
                 }
             }
