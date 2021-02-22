@@ -24,6 +24,12 @@ namespace Victorina
             string[] fileNames = Directory.GetFiles(folder);
             foreach (string filePath in fileNames)
             {
+                if (!File.Exists(filePath))
+                {
+                    Debug.LogWarning($"SKIP: Can't find file by path: {filePath}");
+                    continue;
+                }
+
                 if (filePath.Contains("%"))
                 {
                     string unescapedFilePath = UnityWebRequest.UnEscapeURL(filePath);
