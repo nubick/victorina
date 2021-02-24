@@ -11,6 +11,8 @@ namespace Victorina
         
         public void Start()
         {
+            Application.targetFrameRate = 60;
+            
             _injector = new Injector();
             InjectAll();//InjectAll from Start as from Awake NetworkingManager.Singleton is still null
             Initialize();
