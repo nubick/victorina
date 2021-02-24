@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Victorina
@@ -8,6 +9,8 @@ namespace Victorina
         public static string LocalhostGameCode = "XEAAAABA";
         public static float TimeForAnswer = 15f;
 
+        public static Version Version = new Version(0, 1);
+        
 #if UNITY_EDITOR
         public static string DataPath => $"{Application.persistentDataPath}/Editor";
 #else
