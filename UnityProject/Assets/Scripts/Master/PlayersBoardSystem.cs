@@ -1,5 +1,6 @@
 using System.Linq;
 using Injection;
+using UnityEngine;
 
 namespace Victorina
 {
@@ -8,6 +9,7 @@ namespace Victorina
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private MatchData MatchData { get; set; }
+        [Inject] private MatchSystem MatchSystem { get; set; }
         
         public void Initialize()
         {
@@ -37,6 +39,23 @@ namespace Victorina
         private void OnServerStopped()
         {
             MatchData.PlayersBoard.Value.Players.Clear();
+        }
+
+        public void MakePlayerCurrent(ulong playerId)
+        {
+            PlayerData playerData = MatchSystem.GetPlayer(playerId);
+            MakePlayerCurrent(playerData);
+        }
+        
+        public void MakePlayerCurrent(PlayerData playerData)
+        {
+            if (MatchData.PlayersBoard.Value.Current == playerData)
+                return;
+            
+            Debug.Log($"MakePlayerCurrent: {playerData}");
+            MatchData.PlayersBoard.Value.Current = playerData;
+            MatchData.PlayersBoard.NotifyChanged();
+            SendToPlayersService.Send(MatchData.PlayersBoard.Value);
         }
     }
 }

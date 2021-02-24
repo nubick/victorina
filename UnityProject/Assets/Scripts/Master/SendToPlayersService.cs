@@ -42,9 +42,14 @@ namespace Victorina
             networkPlayer.SendMatchPhase(MatchData.Phase.Value);
         }
 
+        private string GetPlayersInfo()
+        {
+            return string.Join(",", GetPlayers().Select(_ => _.OwnerClientId.ToString()));
+        }
+        
         public void Send(PlayersBoard playersBoard)
         {
-            Debug.Log($"Master: Send PlayersBoard to All: {playersBoard}");
+            Debug.Log($"Master: Send PlayersBoard to All ({GetPlayersInfo()}): {playersBoard}");
             GetPlayers().ForEach(player => player.SendPlayersBoard(playersBoard));
         }
 

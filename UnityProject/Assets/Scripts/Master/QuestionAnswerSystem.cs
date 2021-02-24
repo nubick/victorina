@@ -11,6 +11,7 @@ namespace Victorina
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
@@ -163,6 +164,7 @@ namespace Victorina
         public void AcceptAnswerAsCorrect()
         {
             ShowAnswer();
+            PlayersBoardSystem.MakePlayerCurrent(Data.AnsweringPlayerId);
             MatchSystem.RewardPlayer(Data.AnsweringPlayerId);
         }
 

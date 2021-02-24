@@ -67,6 +67,7 @@ namespace Victorina
             _injector.Bind(new MasterDataReceiver());
             _injector.Bind(FindObjectOfType<MasterQuestionPanelView>());
             _injector.Bind(FindObjectOfType<MasterAcceptAnswerView>());
+            _injector.Bind(FindObjectOfType<MasterPlayerSettingsView>());
             
             //Client only
             _injector.Bind(FindObjectOfType<DownloadingFilesPanelView>());

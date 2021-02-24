@@ -8,6 +8,7 @@ namespace Victorina
     public class MatchSystem
     {
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
+        [Inject] private SendToMasterService SendToMasterService { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private PackageData PackageData { get; set; }
@@ -18,7 +19,7 @@ namespace Victorina
         {
             SelectRound(1);
         }
-        
+
         public void TrySelectQuestion(NetRoundQuestion netRoundQuestion)
         {
             if (netRoundQuestion.IsAnswered)
@@ -29,13 +30,26 @@ namespace Victorina
             {
                 SelectQuestion(netRoundQuestion);
             }
-            else
+            else // if (NetworkData.IsClient)
             {
-                Debug.Log($"Not admin can't select question: {netRoundQuestion}");
+                if (IsCurrentPlayer(NetworkData.PlayerId))
+                {
+                    Debug.Log($"Player: Current player selected round question: {netRoundQuestion}");
+                    SendToMasterService.SendSelectRoundQuestion(netRoundQuestion);
+                }
+                else
+                {
+                    Debug.Log($"Only Master or Current player can select question: {netRoundQuestion}");
+                }
             }
         }
 
-        private void SelectQuestion(NetRoundQuestion netRoundQuestion)
+        public bool IsCurrentPlayer(ulong playerId)
+        {
+            return MatchData.PlayersBoard.Value.Current != null && MatchData.PlayersBoard.Value.Current.Id == playerId;
+        }
+
+        public void SelectQuestion(NetRoundQuestion netRoundQuestion)
         {
             MatchData.SelectedRoundQuestion = netRoundQuestion;
             SendToPlayersService.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
@@ -121,7 +135,7 @@ namespace Victorina
             SendToPlayersService.Send(MatchData.PlayersBoard.Value);
         }
 
-        private PlayerData GetPlayer(ulong playerId)
+        public PlayerData GetPlayer(ulong playerId)
         {
             PlayerData player = MatchData.PlayersBoard.Value.Players.SingleOrDefault(_ => _.Id == playerId);
             if (player == null)

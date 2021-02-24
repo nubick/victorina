@@ -22,7 +22,7 @@ namespace Victorina
         
         public void SendPlayersBoard(PlayersBoard playersBoard)
         {
-            Debug.Log($"Master: Send PlayersBoard: {playersBoard} to {OwnerClientId}");
+            //Debug.Log($"Master: Send PlayersBoard: {playersBoard} to {OwnerClientId}");
             InvokeClientRpcOnOwner(UpdatePlayersBoardRPC, playersBoard);
         }
         
@@ -259,5 +259,18 @@ namespace Victorina
         }
         
         #endregion
+        
+        public void SendSelectRoundQuestionToMaster(NetRoundQuestion netRoundQuestion)
+        {
+            Debug.Log($"Player {OwnerClientId}: send select round question to Master: {netRoundQuestion}");
+            InvokeServerRpc(MasterReceiveSelectRoundQuestion, netRoundQuestion);
+        }
+        
+        [ServerRPC]
+        private void MasterReceiveSelectRoundQuestion(NetRoundQuestion netRoundQuestion)
+        {
+            Debug.Log($"Master: Receive select round question, Player {OwnerClientId}, netRoundQuestion: {netRoundQuestion}");
+            MasterDataReceiver.OnCurrentPlayerSelectRoundQuestionReceived(OwnerClientId, netRoundQuestion);
+        }
     }
 }

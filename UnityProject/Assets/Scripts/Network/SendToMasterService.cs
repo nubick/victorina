@@ -28,5 +28,10 @@ namespace Victorina
         {
             Player.SendPlayerButtonClickToMaster(spentSeconds);
         }
+
+        public void SendSelectRoundQuestion(NetRoundQuestion netRoundQuestion)
+        {
+            Player.SendSelectRoundQuestionToMaster(netRoundQuestion);
+        }
     }
 }

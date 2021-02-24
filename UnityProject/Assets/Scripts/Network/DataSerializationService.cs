@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using MLAPI.Serialization;
 using MLAPI.Serialization.Pooled;
 
@@ -35,6 +36,11 @@ namespace Victorina
                 writer.WriteString(player.Name);
                 writer.WriteInt32(player.Score);
             }
+
+            bool isCurrentSelected = playersBoard.Current != null;
+            writer.WriteBool(isCurrentSelected);
+            if (isCurrentSelected)
+                writer.WriteUInt64(playersBoard.Current.Id);
         }
 
         private PlayersBoard DeserializePlayersBoard(Stream stream)
@@ -50,6 +56,14 @@ namespace Victorina
                 player.Score = reader.ReadInt32();
                 playersBoard.Players.Add(player);
             }
+
+            bool isCurrentSelected = reader.ReadBool();
+            if (isCurrentSelected)
+            {
+                ulong currentId = reader.ReadUInt64();
+                playersBoard.Current = playersBoard.Players.SingleOrDefault(_ => _.Id == currentId);
+            }
+            
             return playersBoard;
         }
 
