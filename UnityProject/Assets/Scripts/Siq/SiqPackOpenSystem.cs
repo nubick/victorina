@@ -7,6 +7,13 @@ namespace Victorina
 {
     public class SiqPackOpenSystem
     {
+#if UNITY_ANDROID
+        public string Open(string path)
+        {
+            Debug.Log($"Not supported for Android.");
+            return string.Empty;
+        }
+#else
         public string Open(string path)
         {
             Debug.Log($"Open siq pack by path: {path}");
@@ -27,5 +34,6 @@ namespace Victorina
             Debug.Log($"Unzip from '{sourceFileName}' to '{destinationDirectoryName}'");
             ZipFile.ExtractToDirectory(sourceFileName, destinationDirectoryName, true);
         }
+#endif
     }
 }
