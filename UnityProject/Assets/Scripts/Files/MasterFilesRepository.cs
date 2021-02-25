@@ -10,13 +10,16 @@ namespace Victorina
     {
         private const int ChunkSize = 60 * 1024;
 
-        private HashSet<int> _fileIds = new HashSet<int>();
-        private Dictionary<int, string> _hashMap = new Dictionary<int, string>();
+        private readonly HashSet<int> _fileIds = new HashSet<int>();
+        private readonly Dictionary<int, string> _hashMap = new Dictionary<int, string>();
+        
+        private readonly Dictionary<int, byte[]> _fileBytesCache = new Dictionary<int, byte[]>();
         
         public void AddPackageFiles(Package package)
         {
             _fileIds.Clear();
             _hashMap.Clear();
+            _fileBytesCache.Clear();
             
             EnsurePackageFilesDirectory();
             
@@ -77,11 +80,16 @@ namespace Victorina
         {
             return File.Exists(GetPath(fileId));
         }
-
+        
         public byte[] GetBytes(int fileId)
         {
             if (Has(fileId))
-                return File.ReadAllBytes(GetPath(fileId));
+            {
+                if (!_fileBytesCache.ContainsKey(fileId))
+                    _fileBytesCache.Add(fileId, File.ReadAllBytes(GetPath(fileId)));
+
+                return _fileBytesCache[fileId];
+            }
 
             throw new Exception($"Request bytes when file doesn't exist, fileId: {fileId}");
         }
