@@ -9,7 +9,8 @@ namespace Victorina
         public static string LocalhostGameCode = "XEAAAABA";
         public static float TimeForAnswer = 15f;
 
-        public static Version Version = new Version(0, 1);
+        public static readonly Version Version = new Version(0, 1);
+        public static BuildMode BuildMode => BuildMode.Development;
         
 #if UNITY_EDITOR
         public static string DataPath => $"{Application.persistentDataPath}/Editor";
@@ -17,6 +18,6 @@ namespace Victorina
         public static string DataPath => Application.persistentDataPath;
 #endif
 
-        public static BuildMode BuildMode => BuildMode.Development;
+        
     }
 }

@@ -11,6 +11,7 @@ namespace Victorina
         public Text PlayerName;
         public Text Score;
         public GameObject CurrentBorder;
+        public Image FilesLoadingStrip;
 
         public void Bind(PlayerData playerData, bool isCurrent)
         {
@@ -18,6 +19,7 @@ namespace Victorina
             PlayerName.text = playerData.Name;
             Score.text = playerData.Score.ToString();
             CurrentBorder.SetActive(isCurrent);
+            FilesLoadingStrip.fillAmount = playerData.FilesLoadingPercentage * 1f / 100f;
         }
         
         public void OnPointerClick(PointerEventData eventData)

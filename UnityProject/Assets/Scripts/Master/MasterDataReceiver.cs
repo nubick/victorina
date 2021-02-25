@@ -10,6 +10,7 @@ namespace Victorina
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
 
         public void OnPlayerButtonClickReceived(ulong playerId, float spentSeconds)
         {
@@ -46,6 +47,11 @@ namespace Victorina
             }
             
             MatchSystem.SelectQuestion(netRoundQuestion);
+        }
+
+        public void OnFilesLoadingPercentageReceived(ulong playerId, byte percentage)
+        {
+            PlayersBoardSystem.UpdateFilesLoadingPercentage(playerId, percentage);
         }
     }
 }

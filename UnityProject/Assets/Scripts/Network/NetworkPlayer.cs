@@ -14,18 +14,18 @@ namespace Victorina
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         [Inject] private PlayerDataReceiver PlayerDataReceiver { get; set; }
         [Inject] private MasterDataReceiver MasterDataReceiver { get; set; }
-        
+
         public void Awake()
         {
             Debug.Log("Network player created");
         }
-        
+
         public void SendPlayersBoard(PlayersBoard playersBoard)
         {
             //Debug.Log($"Master: Send PlayersBoard: {playersBoard} to {OwnerClientId}");
             InvokeClientRpcOnOwner(UpdatePlayersBoardRPC, playersBoard);
         }
-        
+
         [ClientRPC]
         private void UpdatePlayersBoardRPC(PlayersBoard playersBoard)
         {
@@ -45,7 +45,7 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive match phase: {matchPhase}");
             PlayerDataReceiver.OnReceive(matchPhase);
         }
-        
+
         public void SendNetRound(NetRound netRound)
         {
             Debug.Log($"Master: Send RoundData: {netRound} to {OwnerClientId}");
@@ -71,12 +71,12 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive question answer data: {questionAnswerData}, {Time.time}");
             PlayerDataReceiver.OnReceive(questionAnswerData);
         }
-        
+
         public void SendSelectedQuestion(NetQuestion netQuestion)
         {
             Debug.Log($"Master: Send selected question: {netQuestion} to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveSelectedQuestion, netQuestion);
-            
+
             foreach (StoryDot storyDot in netQuestion.QuestionStory)
             {
                 Debug.Log($"Master: Send question story dot to All: {storyDot}");
@@ -102,11 +102,11 @@ namespace Victorina
         public void SendStoryDot(StoryDot storyDot, bool isQuestion)
         {
             Debug.Log($"Master: Send story dot: {storyDot} to {OwnerClientId}");
-            if(storyDot is TextStoryDot textStoryDot)
+            if (storyDot is TextStoryDot textStoryDot)
                 InvokeClientRpcOnOwner(ReceiveTextStoryDot, textStoryDot, isQuestion);
             else if (storyDot is ImageStoryDot imageStoryDot)
                 InvokeClientRpcOnOwner(ReceiveImageStoryDot, imageStoryDot, isQuestion);
-            else if(storyDot is AudioStoryDot audioStoryDot)
+            else if (storyDot is AudioStoryDot audioStoryDot)
                 InvokeClientRpcOnOwner(ReceiveAudioStoryDot, audioStoryDot, isQuestion);
             else if (storyDot is VideoStoryDot videoStoryDot)
                 InvokeClientRpcOnOwner(ReceiveVideoStoryDot, videoStoryDot, isQuestion);
@@ -121,7 +121,7 @@ namespace Victorina
             else
                 MatchData.QuestionAnswerData.SelectedQuestion.Value.AnswerStory[storyDot.Index] = storyDot;
         }
-        
+
         [ClientRPC]
         private void ReceiveTextStoryDot(TextStoryDot textStoryDot, bool isQuestion)
         {
@@ -136,7 +136,7 @@ namespace Victorina
             SetStoryDot(imageStoryDot, isQuestion);
             PlayerFilesRepository.Register(imageStoryDot.FileId, imageStoryDot.ChunksAmount);
         }
-        
+
         [ClientRPC]
         private void ReceiveAudioStoryDot(AudioStoryDot audioStoryDot, bool isQuestion)
         {
@@ -165,7 +165,7 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive selected round question: {netRoundQuestion}");
             MatchData.SelectedRoundQuestion = netRoundQuestion;
         }
-        
+
         public void SendNetRoundsInfo(NetRoundsInfo netRoundsInfo)
         {
             Debug.Log($"Master: Send rounds info: {netRoundsInfo} to {OwnerClientId}");
@@ -178,14 +178,14 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive rounds info: {netRoundsInfo}");
             MatchData.RoundsInfo.Value = netRoundsInfo;
         }
-        
+
         #region Files
 
         private void SendFileChunk(int fileId, int chunkIndex)
         {
             if (MasterFilesRepository.Has(fileId))
             {
-                Debug.Log($"Master: Send file chunk [{fileId};{chunkIndex}] to Player {OwnerClientId}");
+                //Debug.Log($"Master: Send file chunk [{fileId};{chunkIndex}] to Player {OwnerClientId}");
                 byte[] bytes = MasterFilesRepository.GetFileChunk(fileId, chunkIndex);
                 InvokeClientRpcOnOwner(ReceiveFileChunk, fileId, chunkIndex, bytes, "RFS");
             }
@@ -198,20 +198,20 @@ namespace Victorina
         [ClientRPC]
         private void ReceiveFileChunk(int fileId, int chunkIndex, byte[] bytes)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive file chunk [{fileId};{chunkIndex}], bytes: {bytes.SizeKb()}, ({Time.time:0.000})");
-            PlayerFilesRepository.AddChunk(fileId, chunkIndex, bytes);
+            //Debug.Log($"Player {OwnerClientId}: Receive file chunk [{fileId};{chunkIndex}], bytes: {bytes.SizeKb()}, ({Time.time:0.000})");
+            PlayerDataReceiver.OnFileChunkReceived(fileId, chunkIndex, bytes);
         }
-        
+
         public void SendFileChunkRequestToMaster(int fileId, int chunkIndex)
         {
-            Debug.Log($"Player {OwnerClientId}: Request file chunk [{fileId};{chunkIndex}], ({Time.time:0.000})");
+            //Debug.Log($"Player {OwnerClientId}: Request file chunk [{fileId};{chunkIndex}], ({Time.time:0.000})");
             InvokeServerRpc(MasterReceiveClientFileRequest, fileId, chunkIndex);
         }
-        
+
         [ServerRPC]
         private void MasterReceiveClientFileRequest(int fileId, int chunkIndex)
         {
-            Debug.Log($"Master: Receive Player {OwnerClientId} file chunk request: [{fileId};{chunkIndex}]");
+            //Debug.Log($"Master: Receive Player {OwnerClientId} file chunk request: [{fileId};{chunkIndex}]");
             SendFileChunk(fileId, chunkIndex);
         }
 
@@ -227,17 +227,17 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive round file ids, amount: {fileIds.Length}");
             PlayerFilesRepository.Register(fileIds, chunksAmounts);
         }
-        
+
         #endregion
 
         #region Timer and button
-        
+
         public void SendPlayerButtonClickToMaster(float spentSeconds)
         {
             Debug.Log($"Player {OwnerClientId}: send button click to Master, thoughtSeconds: {spentSeconds}");
             InvokeServerRpc(MasterReceivePlayerButtonClick, spentSeconds);
         }
-        
+
         [ServerRPC]
         private void MasterReceivePlayerButtonClick(float spentSeconds)
         {
@@ -257,20 +257,41 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive players button click data: {playersButtonClickData}, {Time.time}");
             PlayerDataReceiver.OnReceive(playersButtonClickData);
         }
-        
+
         #endregion
+
+        #region Send Select Round Question to MASTER
         
         public void SendSelectRoundQuestionToMaster(NetRoundQuestion netRoundQuestion)
         {
             Debug.Log($"Player {OwnerClientId}: send select round question to Master: {netRoundQuestion}");
             InvokeServerRpc(MasterReceiveSelectRoundQuestion, netRoundQuestion);
         }
-        
+
         [ServerRPC]
         private void MasterReceiveSelectRoundQuestion(NetRoundQuestion netRoundQuestion)
         {
             Debug.Log($"Master: Receive select round question, Player {OwnerClientId}, netRoundQuestion: {netRoundQuestion}");
             MasterDataReceiver.OnCurrentPlayerSelectRoundQuestionReceived(OwnerClientId, netRoundQuestion);
         }
+        
+        #endregion
+
+        #region Files Loading Percentage to MASTER
+
+        public void SendFilesLoadingPercentageToMaster(byte percentage)
+        {
+            Debug.Log($"Player {OwnerClientId}: send files loading percentage to Master: {percentage}");
+            InvokeServerRpc(MasterReceiveFilesLoadingPercentage, percentage);
+        }
+        
+        [ServerRPC]
+        private void MasterReceiveFilesLoadingPercentage(byte percentage)
+        {
+            Debug.Log($"Master: Receive files loading percentage '{percentage}' from Player {OwnerClientId}");
+            MasterDataReceiver.OnFilesLoadingPercentageReceived(OwnerClientId, percentage);
+        }
+        
+        #endregion
     }
 }

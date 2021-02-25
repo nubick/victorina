@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace Victorina
@@ -13,7 +14,7 @@ namespace Victorina
             for (int i = 0; i < fileIds.Length; i++)
                 Register(fileIds[i], chunksAmounts[i]);
         }
-        
+
         public void Register(int fileId, int chunksAmount)
         {
             if (Files.ContainsKey(fileId))
@@ -29,12 +30,12 @@ namespace Victorina
             }
         }
 
-        public void AddChunk(int fileId, int chunkIndex,  byte[] bytes)
+        public void AddChunk(int fileId, int chunkIndex, byte[] bytes)
         {
             if (Files.ContainsKey(fileId))
             {
                 DownloadingFile file = Files[fileId];
-                if(file.IsEmpty(chunkIndex))
+                if (file.IsEmpty(chunkIndex))
                 {
                     file.SetChunk(chunkIndex, bytes);
 
@@ -66,6 +67,13 @@ namespace Victorina
                 Debug.Log($"File [{file.FileId}] was downloaded before. Load from disk.");
                 file.IsSavedToDisk = true;
             }
+        }
+
+        public (int Downloaded, int Total) GetDownloadingProgress()
+        {
+            int total = Files.Count;
+            int downloaded = Files.Values.Count(_ => _.IsDownloaded());
+            return (downloaded, total);
         }
     }
 }

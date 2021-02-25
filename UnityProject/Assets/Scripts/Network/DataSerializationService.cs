@@ -35,6 +35,7 @@ namespace Victorina
                 writer.WriteUInt64(player.Id);
                 writer.WriteString(player.Name);
                 writer.WriteInt32(player.Score);
+                writer.WriteByte(player.FilesLoadingPercentage);
             }
 
             bool isCurrentSelected = playersBoard.Current != null;
@@ -54,6 +55,7 @@ namespace Victorina
                 PlayerData player = new PlayerData(playerId);
                 player.Name = reader.ReadString().ToString();
                 player.Score = reader.ReadInt32();
+                player.FilesLoadingPercentage = (byte) reader.ReadByte();
                 playersBoard.Players.Add(player);
             }
 

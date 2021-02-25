@@ -10,6 +10,8 @@ namespace Victorina
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
+
+        private PlayersBoard PlayersBoard => MatchData.PlayersBoard.Value;
         
         public void Initialize()
         {
@@ -20,25 +22,24 @@ namespace Victorina
         
         private void UpdatePlayersBoard()
         {
-            PlayersBoard playersBoard = MatchData.PlayersBoard.Value;
             foreach (ulong connectedClientId in ConnectedPlayersData.ConnectedClientsIds)
             {
-                PlayerData player = playersBoard.Players.SingleOrDefault(_ => _.Id == connectedClientId);
+                PlayerData player = PlayersBoard.Players.SingleOrDefault(_ => _.Id == connectedClientId);
                 if (player == null)
                 {
                     player = new PlayerData(connectedClientId);
                     player.Name = ConnectedPlayersData.PlayersIdToNameMap[connectedClientId];
-                    playersBoard.Players.Add(player);
+                    PlayersBoard.Players.Add(player);
                 }
                 
             }
             MatchData.PlayersBoard.NotifyChanged();
-            SendToPlayersService.Send(playersBoard);
+            SendToPlayersService.Send(PlayersBoard);
         }
 
         private void OnServerStopped()
         {
-            MatchData.PlayersBoard.Value.Players.Clear();
+            PlayersBoard.Players.Clear();
         }
 
         public void MakePlayerCurrent(ulong playerId)
@@ -49,13 +50,28 @@ namespace Victorina
         
         public void MakePlayerCurrent(PlayerData playerData)
         {
-            if (MatchData.PlayersBoard.Value.Current == playerData)
+            if (PlayersBoard.Current == playerData)
                 return;
             
             Debug.Log($"MakePlayerCurrent: {playerData}");
-            MatchData.PlayersBoard.Value.Current = playerData;
+            PlayersBoard.Current = playerData;
             MatchData.PlayersBoard.NotifyChanged();
             SendToPlayersService.Send(MatchData.PlayersBoard.Value);
+        }
+
+        public void UpdateFilesLoadingPercentage(ulong playerId, byte percentage)
+        {
+            PlayerData playerData = PlayersBoard.Players.SingleOrDefault(_ => _.Id == playerId);
+            if (playerData == null)
+            {
+                Debug.Log($"Master. Validation Error. Can't find player by id '{playerId}' to set files loading percentage: {percentage}");
+            }
+            else
+            {
+                playerData.FilesLoadingPercentage = percentage;
+                MatchData.PlayersBoard.NotifyChanged();
+                SendToPlayersService.Send(PlayersBoard);
+            }
         }
     }
 }

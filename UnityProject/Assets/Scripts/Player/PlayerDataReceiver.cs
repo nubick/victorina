@@ -7,6 +7,7 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
+        [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
 
         public void OnReceive(MatchPhase matchPhase)
         {
@@ -37,6 +38,11 @@ namespace Victorina
             QuestionAnswerData.CurrentStoryDotIndex = data.CurrentStoryDotIndex;
             
             DataChangeHandler.HandleMasterIntention(QuestionAnswerData);
+        }
+
+        public void OnFileChunkReceived(int fileId, int chunkIndex, byte[] bytes)
+        {
+            PlayerFilesRepository.AddChunk(fileId, chunkIndex, bytes);
         }
     }
 }

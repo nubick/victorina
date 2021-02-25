@@ -120,6 +120,7 @@ namespace Victorina
             _injector.Get<AudioStoryDotView>().Initialize();
             _injector.Get<VideoStoryDotView>().Initialize();
 
+            _injector.Get<PlayerFilesRequestSystem>().Initialize();
             StartCoroutine(_injector.Get<PlayerFilesRequestSystem>().RequestCoroutine());
             _injector.Get<PlayersButtonClickPanelView>().Initialize();
             

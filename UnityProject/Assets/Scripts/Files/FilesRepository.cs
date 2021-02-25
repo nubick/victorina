@@ -1,22 +1,47 @@
 using System.IO;
+using UnityEngine;
 
 namespace Victorina
 {
     public abstract class FilesRepository
     {
+        private static string _folderPrefix;
+
+        private string GetPackageFilesPath()
+        {
+#if UNITY_EDITOR
+            return $"{Static.DataPath}/PackageFiles";
+#endif
+
+            if (Static.BuildMode == BuildMode.Development)
+            {
+                if (_folderPrefix == null)
+                {
+                    int randomNumber = Random.Range(100, 1000);
+                    _folderPrefix = $"test{randomNumber}";
+                }
+
+                return $"{Static.DataPath}/{_folderPrefix}/PackageFiles";
+            }
+            else
+            {
+                return $"{Static.DataPath}/PackageFiles";
+            }
+        }
+
         public string GetPath(int fileId)
         {
-            return $"{Static.DataPath}/PackageFiles/{fileId.ToString()}.dat";
+            return $"{GetPackageFilesPath()}/{fileId.ToString()}.dat";
         }
 
         public string GetTempVideoFilePath()
         {
-            return $"{Static.DataPath}/PackageFiles/TempVideo.mp4";
+            return $"{GetPackageFilesPath()}/TempVideo.mp4";
         }
         
         protected void EnsurePackageFilesDirectory()
         {
-            string directoryPath = $"{Static.DataPath}/PackageFiles";
+            string directoryPath = GetPackageFilesPath();
             if (!Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
         }

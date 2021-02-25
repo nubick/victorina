@@ -1,6 +1,5 @@
 using Injection;
 using UnityEngine.UI;
-using System.Linq;
 
 namespace Victorina
 {
@@ -25,12 +24,11 @@ namespace Victorina
         {
             if (IsActive)
             {
-                int total = PlayerFilesRepository.Files.Count;
-                int downloaded = PlayerFilesRepository.Files.Values.Count(_ => _.IsDownloaded());
-                ProgressText.text = $"{downloaded}/{total}";
-                ProgressStrip.fillAmount = downloaded * 1f / total;
+                var progress = PlayerFilesRepository.GetDownloadingProgress();
+                ProgressText.text = $"{progress.Downloaded}/{progress.Total}";
+                ProgressStrip.fillAmount = progress.Downloaded * 1f / progress.Total;
                 
-                if (total == downloaded)
+                if (progress.Total == progress.Downloaded)
                     Hide();
             }
         }

@@ -33,5 +33,10 @@ namespace Victorina
         {
             Player.SendSelectRoundQuestionToMaster(netRoundQuestion);
         }
+
+        public void SendFilesLoadingPercentage(byte percentage)
+        {
+            Player.SendFilesLoadingPercentageToMaster(percentage);
+        }
     }
 }

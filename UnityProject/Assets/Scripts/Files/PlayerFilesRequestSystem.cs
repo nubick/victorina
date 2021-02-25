@@ -10,6 +10,11 @@ namespace Victorina
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         [Inject] private SendToMasterService SendToMasterService { get; set; }
 
+        public void Initialize()
+        {
+            MetagameEvents.ClientFileDownloaded.Subscribe(OnFileDownloaded);
+        }
+        
         public IEnumerator RequestCoroutine()
         {
             WaitForSeconds delay = new WaitForSeconds(0.10f);
@@ -38,6 +43,13 @@ namespace Victorina
                     }
                 }
             }
+        }
+
+        private void OnFileDownloaded(int fileId)
+        {
+            var progress = PlayerFilesRepository.GetDownloadingProgress();
+            byte percentage = (byte) (progress.Downloaded * 100f / progress.Total);
+            SendToMasterService.SendFilesLoadingPercentage(percentage);
         }
     }
 }
