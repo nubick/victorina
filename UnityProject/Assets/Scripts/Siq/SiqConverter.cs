@@ -100,8 +100,36 @@ namespace Victorina
             Question question = new Question();
             int price = int.Parse(xmlReader.GetAttribute("price"));
             question.Price = price;
+
+            while (xmlReader.Read())
+            {
+                if (xmlReader.NodeType == XmlNodeType.Element)
+                {
+                    if (xmlReader.Name == "type")
+                    {
+                        string typeName = xmlReader.GetAttribute("name");
+                        if (typeName == "sponsored")
+                        {
+                            question.Type = QuestionType.NoRisk;
+                            NoRiskStoryDot noRiskStoryDot = new NoRiskStoryDot();
+                            AddStoryDot(question, noRiskStoryDot, isAfterMarker: false);
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Not supported question type name: {typeName}");
+                        }
             
-            xmlReader.ReadToFollowing("scenario");
+                        xmlReader.ReadToFollowing("scenario");
+                        break;
+                    }
+                    else if (xmlReader.Name == "scenario")
+                        break;
+                    else
+                        Debug.LogWarning($"Not supported question element Name: {xmlReader.Name}");
+                }
+            }
+
+            //xmlReader.ReadToFollowing("scenario");
             ReadScenario(xmlReader, question);
             
             xmlReader.ReadToFollowing("answer");

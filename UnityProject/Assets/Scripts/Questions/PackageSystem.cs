@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Injection;
+using UnityEngine;
 using UnityEngine.Animations;
 
 namespace Victorina
@@ -14,10 +15,20 @@ namespace Victorina
         public void Initialize(string packageName)
         {
             Data.Package = SiqConverter.Convert(packageName);
+            WritePackageStatistics(Data.Package);
             Data.PackageProgress = new PackageProgress();
             MasterFilesRepository.AddPackageFiles(Data.Package);
         }
 
+        private void WritePackageStatistics(Package package)
+        {
+            int themesAmount = package.Rounds.Sum(round => round.Themes.Count);
+            List<Question> questions = package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions)).ToList();
+            int questionsAmount = questions.Count;
+            int noRiskAmount = questions.Count(_ => _.Type == QuestionType.NoRisk);
+            Debug.Log($"Rounds: {package.Rounds.Count}, Themes: {themesAmount}, Questions: {questionsAmount}, NoRisk: {noRiskAmount}");
+        }
+        
         public Question GetQuestion(string questionId)
         {
             var questions = Data.Package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions));

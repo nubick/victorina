@@ -29,7 +29,7 @@ namespace Victorina
                     break;
             }
 
-            Debug.Log($"Timer LOGS, state: {data.TimerState}, timer.IsRunning: {QuestionTimer.IsRunning}, {data.TimerResetSeconds}, {data.TimerLeftSeconds}");
+            //Debug.Log($"Timer LOGS, state: {data.TimerState}, timer.IsRunning: {QuestionTimer.IsRunning}, {data.TimerResetSeconds}, {data.TimerLeftSeconds}");
             
             if (QuestionTimer.IsRunning && data.TimerState != QuestionTimerState.Running)
             {

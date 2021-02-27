@@ -1,3 +1,4 @@
+using System;
 using Assets.Scripts.Utils;
 using Injection;
 using MLAPI;
@@ -33,6 +34,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<ImageStoryDotView>());
             _injector.Bind(FindObjectOfType<AudioStoryDotView>());
             _injector.Bind(FindObjectOfType<VideoStoryDotView>());
+            _injector.Bind(FindObjectOfType<NoRiskStoryDotView>());
             _injector.Bind(FindObjectOfType<RoundView>());
             _injector.Bind(FindObjectOfType<PlayersButtonClickPanelView>());
             _injector.Bind(FindObjectOfType<PlayersBoardView>());
@@ -66,6 +68,7 @@ namespace Victorina
             _injector.Bind(new ConnectedPlayersData());
             _injector.Bind(new PlayersBoardSystem());
             _injector.Bind(new QuestionAnswerSystem());
+            _injector.Bind(new TimerRunOutDetectSystem());
             _injector.Bind(new MasterDataReceiver());
             _injector.Bind(FindObjectOfType<MasterQuestionPanelView>());
             _injector.Bind(FindObjectOfType<MasterAcceptAnswerView>());
@@ -127,6 +130,7 @@ namespace Victorina
             _injector.Get<DownloadingFilesPanelView>().Initialize();
             _injector.Get<PlayerButtonView>().Initialize();
             
+            _injector.Get<MasterQuestionPanelView>().Initialize();
             _injector.Get<MasterAcceptAnswerView>().Initialize();
         }
         
@@ -134,6 +138,11 @@ namespace Victorina
         {
             Debug.Log($"Pipeline: OnPlayerConnected, inject to networkPlayer:{networkPlayer.OwnerClientId}");
             _injector.InjectTo(networkPlayer);
+        }
+
+        public void Update()
+        {
+            _injector.Get<TimerRunOutDetectSystem>().OnUpdate();
         }
     }
 }

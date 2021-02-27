@@ -16,9 +16,13 @@ namespace Victorina
         
         public static GameEvent QuestionTimerStarted { get; } = new GameEvent();
         public static GameEvent QuestionTimerPaused { get; } = new GameEvent();
+        
 
         public static GameEvent MediaRestarted { get; } = new GameEvent();
 
+        //Master events
+        public static GameEvent TimerRunOut { get; } = new GameEvent();
+        
         //Client events
         public static GameEvent<int> ClientFileDownloaded { get; } = new GameEvent<int>();
         public static GameEvent ClientFileRequested { get; } = new GameEvent();

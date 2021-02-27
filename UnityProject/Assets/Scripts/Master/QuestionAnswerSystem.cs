@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Injection;
+using UnityEngine;
 
 namespace Victorina
 {
@@ -10,6 +11,7 @@ namespace Victorina
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private QuestionTimer QuestionTimer { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
@@ -36,6 +38,15 @@ namespace Victorina
                 StartTimer();
         
             SendData(MasterIntention.StartAnswering);
+
+            Debug.Log($"");
+            Debug.Log($"");
+            Debug.Log($"");
+            string tip = GetAnswerTip(netQuestion);
+            Debug.Log($"{tip}");
+            Debug.Log($"");
+            Debug.Log($"");
+            Debug.Log($"");
         }
         
         private void SendData(MasterIntention intention)
@@ -107,6 +118,12 @@ namespace Victorina
             if (wasReceivedBefore)
                 return;
 
+            bool isNotCurrentForNoRiskQuestion = Data.QuestionType == QuestionType.NoRisk &&
+                                                 MatchData.PlayersBoard.Value.Current != null &&
+                                                 MatchData.PlayersBoard.Value.Current.Id != playerId;
+            if (isNotCurrentForNoRiskQuestion)
+                return;
+
             bool wrongAnsweredBefore = Data.WrongAnsweredIds.Contains(playerId);
             if (wrongAnsweredBefore)
                 return;
@@ -143,6 +160,19 @@ namespace Victorina
             Data.Phase.Value = QuestionPhase.AcceptingAnswer;
             SendToPlayersService.Send(Data);
         }
+
+        public void AcceptNoRiskAnswer()
+        {
+            if (MatchData.PlayersBoard.Value.Current == null)
+            {
+                Debug.Log("Master. Error. Can't accept no risk answer. Current player is null.");
+            }
+            else
+            {
+                PauseTimer();
+                SelectPlayerForAnswer(MatchData.PlayersBoard.Value.Current.Id);
+            }
+        }
         
         private string GetAnswerTip(NetQuestion netQuestion)
         {
@@ -170,11 +200,18 @@ namespace Victorina
 
         public void AcceptAnswerAsWrong()
         {
-            Data.WrongAnsweredIds.Add(Data.AnsweringPlayerId);
-            Data.Phase.Value = QuestionPhase.ShowQuestion;
-            StartTimer();
-            SendData(MasterIntention.ContinueTimer);
-            MatchSystem.FinePlayer(Data.AnsweringPlayerId);
+            if (Data.SelectedQuestion.Value.Type == QuestionType.Simple)
+            {
+                Data.WrongAnsweredIds.Add(Data.AnsweringPlayerId);
+                Data.Phase.Value = QuestionPhase.ShowQuestion;
+                StartTimer();
+                SendData(MasterIntention.ContinueTimer);
+                MatchSystem.FinePlayer(Data.AnsweringPlayerId);
+            }
+            else if (Data.SelectedQuestion.Value.Type == QuestionType.NoRisk)
+            {
+                ShowAnswer();
+            }
         }
         
         #endregion

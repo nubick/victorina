@@ -3,6 +3,8 @@ namespace Victorina
 {
     public class NetQuestion
     {
+        public QuestionType Type { get; set; }
+        
         public int QuestionStoryDotsAmount { get; set; }
         public StoryDot[] QuestionStory { get; set; }
         

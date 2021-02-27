@@ -15,6 +15,7 @@ namespace Victorina
         [Inject] private ImageStoryDotView ImageStoryDotView { get; set; }
         [Inject] private AudioStoryDotView AudioStoryDotView { get; set; }
         [Inject] private VideoStoryDotView VideoStoryDotView { get; set; }
+        [Inject] private NoRiskStoryDotView NoRiskStoryDotView { get; set; }
 
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private PlayerButtonView PlayerButtonView { get; set; }
@@ -81,13 +82,21 @@ namespace Victorina
                 AudioStoryDotView.Show();
             else if (data.CurrentStoryDot is VideoStoryDot)
                 VideoStoryDotView.Show();
+            else if (data.CurrentStoryDot is NoRiskStoryDot)
+                NoRiskStoryDotView.Show();
             else
                 TextStoryDotView.Show();
-            
-            if(NetworkData.IsMaster)
+
+            if (NetworkData.IsMaster)
                 MasterQuestionPanelView.Show();
-            else
-                PlayerButtonView.Show();
+
+            if (NetworkData.IsClient)
+            {
+                if (data.CurrentStoryDot is NoRiskStoryDot)
+                    ;
+                else
+                    PlayerButtonView.Show();
+            }
         }
 
         public void OnClientDisconnected()

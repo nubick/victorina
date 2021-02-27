@@ -35,7 +35,7 @@ namespace Victorina
 
         public void SendMatchPhase(MatchPhase matchPhase)
         {
-            Debug.Log($"Master: Send match phase: {matchPhase} to {OwnerClientId}");
+            //Debug.Log($"Master: Send match phase: {matchPhase} to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveMatchPhase, matchPhase);
         }
 
@@ -45,7 +45,7 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive match phase: {matchPhase}");
             PlayerDataReceiver.OnReceive(matchPhase);
         }
-
+        
         public void SendNetRound(NetRound netRound)
         {
             Debug.Log($"Master: Send RoundData: {netRound} to {OwnerClientId}");
@@ -61,7 +61,7 @@ namespace Victorina
 
         public void SendQuestionAnswerData(QuestionAnswerData questionAnswerData)
         {
-            Debug.Log($"Master: Send question answer data: {questionAnswerData} to {OwnerClientId}");
+            //Debug.Log($"Master: Send question answer data: {questionAnswerData} to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveQuestionAnswerData, questionAnswerData);
         }
 
@@ -110,6 +110,8 @@ namespace Victorina
                 InvokeClientRpcOnOwner(ReceiveAudioStoryDot, audioStoryDot, isQuestion);
             else if (storyDot is VideoStoryDot videoStoryDot)
                 InvokeClientRpcOnOwner(ReceiveVideoStoryDot, videoStoryDot, isQuestion);
+            else if (storyDot is NoRiskStoryDot noRiskStoryDot)
+                InvokeClientRpcOnOwner(ReceiveNoRiskStoryDot, noRiskStoryDot);
             else
                 throw new Exception($"Not supported story dot: {storyDot}");
         }
@@ -151,6 +153,13 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive video story dot: {videoStoryDot}");
             SetStoryDot(videoStoryDot, isQuestion);
             PlayerFilesRepository.Register(videoStoryDot.FileId, videoStoryDot.ChunksAmount);
+        }
+
+        [ClientRPC]
+        private void ReceiveNoRiskStoryDot(NoRiskStoryDot noRiskStoryDot)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive no risk story dot");
+            SetStoryDot(noRiskStoryDot, true);
         }
 
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
@@ -217,7 +226,7 @@ namespace Victorina
 
         public void SendRoundFileIds(int[] fileIds, int[] chunksAmounts)
         {
-            Debug.Log($"Master: Send round of file ids ({fileIds.Length}) to {IsOwner}");
+            //Debug.Log($"Master: Send round of file ids ({fileIds.Length}) to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveRoundFileIds, fileIds, chunksAmounts);
         }
 
@@ -247,7 +256,7 @@ namespace Victorina
 
         public void SendPlayersButtonClickData(PlayersButtonClickData playerButtonClickData)
         {
-            Debug.Log($"Master: Send players button click data to {OwnerClientId}");
+            //Debug.Log($"Master: Send players button click data to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceivePlayersButtonClickData, playerButtonClickData);
         }
 

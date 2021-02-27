@@ -20,6 +20,7 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeImageStoryDot, DeserializeImageStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeAudioStoryDot, DeserializeAudioStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeVideoStoryDot, DeserializeVideoStoryDot);
+            SerializationManager.RegisterSerializationHandlers(SerializeNoRiskStoryDot, DeserializeNoRiskStoryDot);
             
             SerializationManager.RegisterSerializationHandlers(SerializePlayersButtonClickData, DeserializePlayersButtonClickData);
         }
@@ -141,6 +142,7 @@ namespace Victorina
             writer.WriteString(netRoundQuestion.QuestionId);
             writer.WriteInt32(netRoundQuestion.Price);
             writer.WriteBool(netRoundQuestion.IsAnswered);
+            writer.WriteInt32((int) netRoundQuestion.Type);
         }
         
         private NetRoundQuestion DeserializeNetRoundQuestion(PooledBitReader reader)
@@ -149,6 +151,7 @@ namespace Victorina
             NetRoundQuestion netRoundQuestion = new NetRoundQuestion(questionId);
             netRoundQuestion.Price = reader.ReadInt32();
             netRoundQuestion.IsAnswered = reader.ReadBool();
+            netRoundQuestion.Type = (QuestionType) reader.ReadInt32();
             return netRoundQuestion;
         }
         
@@ -159,6 +162,7 @@ namespace Victorina
         private void SerializeNetQuestion(Stream stream, NetQuestion netQuestion)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32((int) netQuestion.Type);
             writer.WriteInt32(netQuestion.QuestionStoryDotsAmount);
             writer.WriteInt32(netQuestion.AnswerStoryDotsAmount);
         }
@@ -167,6 +171,7 @@ namespace Victorina
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             NetQuestion netQuestion = new NetQuestion();
+            netQuestion.Type = (QuestionType) reader.ReadInt32();
             netQuestion.QuestionStoryDotsAmount = reader.ReadInt32();
             netQuestion.AnswerStoryDotsAmount = reader.ReadInt32();
             return netQuestion;
@@ -213,6 +218,12 @@ namespace Victorina
         {
             SerializeFileStoryDot(stream, videoStoryDot);
         }
+
+        private void SerializeNoRiskStoryDot(Stream stream, NoRiskStoryDot noRiskStoryDot)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32(noRiskStoryDot.Index);
+        }
         
         private void DeserializeFileStoryDot(Stream stream, FileStoryDot fileStoryDot)
         {
@@ -241,6 +252,14 @@ namespace Victorina
             VideoStoryDot videoStoryDot = new VideoStoryDot();
             DeserializeFileStoryDot(stream, videoStoryDot);
             return videoStoryDot;
+        }
+
+        private NoRiskStoryDot DeserializeNoRiskStoryDot(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            NoRiskStoryDot noRiskStoryDot = new NoRiskStoryDot();
+            noRiskStoryDot.Index = reader.ReadInt32();
+            return noRiskStoryDot;
         }
         
         #endregion

@@ -7,6 +7,7 @@ namespace Victorina
         public MasterIntention MasterIntention { get; set; }
         public ReactiveProperty<QuestionPhase> Phase { get; } = new ReactiveProperty<QuestionPhase>();
         public ReactiveProperty<NetQuestion> SelectedQuestion { get; } = new ReactiveProperty<NetQuestion>();
+        public QuestionType QuestionType => SelectedQuestion.Value.Type;
         
         public int CurrentStoryDotIndex { get; set; }
         

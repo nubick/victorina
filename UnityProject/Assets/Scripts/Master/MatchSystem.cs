@@ -53,7 +53,7 @@ namespace Victorina
         {
             MatchData.SelectedRoundQuestion = netRoundQuestion;
             SendToPlayersService.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
-
+            
             MatchData.Phase.Value = MatchPhase.Question;
             SendToPlayersService.SendMatchPhase(MatchData.Phase.Value);
 
@@ -65,6 +65,7 @@ namespace Victorina
         {
             Question question = PackageSystem.GetQuestion(netRoundQuestion.QuestionId);
             NetQuestion netQuestion = new NetQuestion();
+            netQuestion.Type = netRoundQuestion.Type;
             netQuestion.QuestionStory = question.QuestionStory.ToArray();
             netQuestion.QuestionStoryDotsAmount = netQuestion.QuestionStory.Length;
             netQuestion.AnswerStory = question.AnswerStory.ToArray();
@@ -110,6 +111,7 @@ namespace Victorina
                     NetRoundQuestion netRoundQuestion = new NetRoundQuestion(question.Id);
                     netRoundQuestion.Price = question.Price;
                     netRoundQuestion.IsAnswered = packageProgress.IsAnswered(question.Id);
+                    netRoundQuestion.Type = question.Type;
                     netRoundTheme.Questions.Add(netRoundQuestion);
                 }
                 netRound.Themes.Add(netRoundTheme);

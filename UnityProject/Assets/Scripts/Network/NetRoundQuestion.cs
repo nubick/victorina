@@ -5,7 +5,8 @@ namespace Victorina
         public string QuestionId { get; }
         public int Price { get; set; }
         public bool IsAnswered { get; set; }
-        
+        public QuestionType Type { get; set; }
+
         public NetRoundQuestion(string questionId)
         {
             QuestionId = questionId;

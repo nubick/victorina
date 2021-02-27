@@ -16,10 +16,16 @@ namespace Victorina
         public GameObject StartTimerButton;
         public GameObject StopTimerButton;
         public GameObject RestartMediaButton;
+        public GameObject AcceptAnswer;
         public GameObject ShowAnswerButton;
         public GameObject ShowRoundButton;
 
         public Image TimerStrip;
+
+        public void Initialize()
+        {
+            MetagameEvents.TimerRunOut.Subscribe(OnTimerRunOut);
+        }
         
         protected override void OnShown()
         {
@@ -28,6 +34,9 @@ namespace Victorina
         
         public void RefreshUI()
         {
+            QuestionType questionType = Data.SelectedQuestion.Value.Type;
+            QuestionPhase phase = Data.Phase.Value;
+
             bool canNavigateToPreviousQuestionDot = Data.CurrentStoryDotIndex > 0;
             PreviousQuestionDotButton.SetActive(canNavigateToPreviousQuestionDot);
 
@@ -35,12 +44,15 @@ namespace Victorina
             NextQuestionDotButton.SetActive(!isLastDot);
 
             RestartMediaButton.SetActive(false);
-            StartTimerButton.SetActive(CanStartTimer(Data.Phase.Value, Data.TimerState, isLastDot)); 
+            StartTimerButton.SetActive(CanStartTimer(phase, Data.TimerState, isLastDot)); 
             StopTimerButton.SetActive(Data.TimerState == QuestionTimerState.Running);
+            
+            //only for No Risk questions
+            AcceptAnswer.SetActive(questionType == QuestionType.NoRisk && phase == QuestionPhase.ShowQuestion && !(Data.CurrentStoryDot is NoRiskStoryDot));
+            
+            ShowAnswerButton.SetActive(questionType == QuestionType.Simple && phase == QuestionPhase.ShowQuestion && Data.TimerState != QuestionTimerState.NotStarted);
 
-            ShowAnswerButton.SetActive(Data.Phase.Value == QuestionPhase.ShowQuestion && Data.TimerState != QuestionTimerState.NotStarted);
-
-            ShowRoundButton.SetActive(Data.Phase.Value == QuestionPhase.ShowAnswer && isLastDot);
+            ShowRoundButton.SetActive(phase == QuestionPhase.ShowAnswer && isLastDot);
         }
 
         private bool CanStartTimer(QuestionPhase phase, QuestionTimerState timerState, bool isLastDot)
@@ -58,22 +70,15 @@ namespace Victorina
         {
             if (IsActive && Data.TimerState == QuestionTimerState.Running)
             {
-                float leftSecondsPercentage = QuestionTimer.GetLeftSecondsPercentage();
                 TimerStrip.fillAmount = QuestionTimer.GetLeftSecondsPercentage();
-                bool isRunOutOfTime = Mathf.Approximately(leftSecondsPercentage, 0f);
-
-                if (isRunOutOfTime)
-                {
-                    if (StartTimerButton.activeSelf)
-                        StartTimerButton.SetActive(false);
-
-                    if (StopTimerButton.activeSelf)
-                        StopTimerButton.SetActive(false);
-
-                    if (!RestartMediaButton.activeSelf)
-                        RestartMediaButton.SetActive(true);
-                }
             }
+        }
+
+        private void OnTimerRunOut()
+        {
+            StartTimerButton.SetActive(false);
+            StopTimerButton.SetActive(false);
+            RestartMediaButton.SetActive(true);
         }
 
         public void OnPreviousQuestionDotButtonClicked()
@@ -112,6 +117,11 @@ namespace Victorina
         public void OnShowRoundButtonClicked()
         {
             QuestionAnswerSystem.BackToRound();
+        }
+
+        public void OnAcceptAnswerButtonClicked()
+        {
+            QuestionAnswerSystem.AcceptNoRiskAnswer();
         }
     }
 }

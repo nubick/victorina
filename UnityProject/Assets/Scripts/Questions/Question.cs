@@ -7,6 +7,7 @@ namespace Victorina
     {
         public string Id { get; }
         public int Price { get; set; }
+        public QuestionType Type { get; set; }
 
         public List<StoryDot> QuestionStory { get; } = new List<StoryDot>();
         public List<StoryDot> AnswerStory { get; } = new List<StoryDot>();
@@ -18,6 +19,7 @@ namespace Victorina
         public Question(string id)
         {
             Id = id;
+            Type = QuestionType.Simple;
         }
         
         public override string ToString()

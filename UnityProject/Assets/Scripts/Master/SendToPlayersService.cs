@@ -55,7 +55,7 @@ namespace Victorina
 
         public void SendMatchPhase(MatchPhase matchPhase)
         {
-            Debug.Log($"Master: Send match phase to All: {matchPhase}");
+            Debug.Log($"Master: Send match phase to All ({GetPlayersInfo()}): {matchPhase}");
             GetPlayers().ForEach(player => player.SendMatchPhase(matchPhase));
         }
         
@@ -79,7 +79,7 @@ namespace Victorina
 
         public void Send(QuestionAnswerData questionAnswerData)
         {
-            Debug.Log($"Master: Send question answer data to All: {questionAnswerData}");
+            Debug.Log($"Master: Send question answer data to All ({GetPlayersInfo()}): {questionAnswerData}");
             GetPlayers().ForEach(player => player.SendQuestionAnswerData(questionAnswerData));
         }
         
@@ -91,13 +91,13 @@ namespace Victorina
 
         public void SendRoundFileIds(int[] fileIds, int[] chunksAmounts)
         {
-            Debug.Log($"Master: Send round file ids ({fileIds.Length}) to All");
+            Debug.Log($"Master: Send round file ids ({fileIds.Length}) to All: ({GetPlayersInfo()})");
             GetPlayers().ForEach(player => player.SendRoundFileIds(fileIds, chunksAmounts));
         }
 
         public void SendPlayersButtonClickData(PlayersButtonClickData playersButtonClickData)
         {
-            Debug.Log($"Master: Send players button click data to All, ({playersButtonClickData.Players.Count})");
+            Debug.Log($"Master: Send players button click data to All ({GetPlayersInfo()}), ({playersButtonClickData.Players.Count})");
             GetPlayers().ForEach(player => player.SendPlayersButtonClickData(playersButtonClickData));
         }
     }

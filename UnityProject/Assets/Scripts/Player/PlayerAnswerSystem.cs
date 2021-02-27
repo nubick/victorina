@@ -8,6 +8,7 @@ namespace Victorina
     {
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private SendToMasterService SendToMasterService { get; set; }
+        [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
@@ -45,9 +46,20 @@ namespace Victorina
 
         public bool CanSendAnswerIntention()
         {
-            return NetworkData.IsClient && MatchData.Phase.Value == MatchPhase.Question &&
-                   QuestionAnswerData.Phase.Value == QuestionPhase.ShowQuestion &&
-                   !WasIntentionSent() && !WasWrongAnswer();
+            if (NetworkData.IsMaster ||
+                MatchData.Phase.Value != MatchPhase.Question ||
+                QuestionAnswerData.Phase.Value != QuestionPhase.ShowQuestion ||
+                WasIntentionSent())
+                return false;
+
+            if (QuestionAnswerData.QuestionType == QuestionType.Simple)
+            {
+                return !WasWrongAnswer();
+            }
+            else
+            {
+                return IsMeCurrentUser();
+            }
         }
 
         public bool WasWrongAnswer()
@@ -58,6 +70,11 @@ namespace Victorina
         public bool WasIntentionSent()
         {
             return QuestionAnswerData.PlayersButtonClickData.Value.Players.Any(_ => _.PlayerId == NetworkData.PlayerId);
+        }
+
+        public bool IsMeCurrentUser()
+        {
+            return MatchSystem.IsCurrentPlayer(NetworkData.PlayerId);
         }
     }
 }
