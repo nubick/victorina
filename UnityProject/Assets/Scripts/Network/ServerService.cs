@@ -29,7 +29,8 @@ namespace Victorina
             Debug.Log($"Master: StartServer, IP: {ExternalIpData.Ip}");
             UnetTransport transport = NetworkingManager.GetComponent<UnetTransport>();
             transport.ConnectAddress = ExternalIpData.Ip;
-            transport.ConnectPort = Static.Port;
+            transport.ServerListenPort = Static.Port;
+            
             NetworkingManager.StartServer();
             NetworkData.IsMaster = true;
         }
