@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace Victorina
@@ -9,8 +10,10 @@ namespace Victorina
         public static string LocalhostGameCode = "XEAAAABA";
         public static float TimeForAnswer = 15f;
 
-        public static readonly Version Version = new Version(0, 1, 4);
-        public static BuildMode BuildMode => BuildMode.Development;
+        public static int MajorVersion = 0;
+        public static int MinorVersion = 1;
+
+        public static BuildMode BuildMode => BuildMode.Production;
         
 #if UNITY_EDITOR
         public static string DataPath => $"{Application.persistentDataPath}/Editor";
@@ -18,6 +21,16 @@ namespace Victorina
         public static string DataPath => Application.persistentDataPath;
 #endif
 
-        
+
+        private static DevSettings _devSettings;
+        public static DevSettings DevSettings
+        {
+            get
+            {
+                if (_devSettings == null)
+                    _devSettings = Resources.LoadAll<DevSettings>(string.Empty).Single();
+                return _devSettings;
+            }
+        }
     }
 }
