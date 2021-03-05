@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Text;
 using Injection;
 using MLAPI;
 using MLAPI.Transports.UNET;
@@ -14,6 +13,7 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private IpCodeSystem IpCodeSystem { get; set; }
         [Inject] private ViewsSystem ViewsSystem { get; set; }
+        [Inject] private AppState AppState { get; set; }
 
         public void Initialize()
         {
@@ -33,9 +33,14 @@ namespace Victorina
             UnetTransport transport = NetworkingManager.GetComponent<UnetTransport>();
             transport.ConnectAddress = ip;
             transport.ConnectPort = Static.Port;
+
+            ConnectionMessage connectionMessage = new ConnectionMessage
+            {
+                Name = playerName,
+                Guid = AppState.PlayerGuid
+            };
             
-            byte[] playerNameBytes = Encoding.UTF32.GetBytes(playerName);
-            NetworkingManager.NetworkConfig.ConnectionData = playerNameBytes;
+            NetworkingManager.NetworkConfig.ConnectionData = connectionMessage.ToBytes();
 
             NetworkData.ClientConnectingState = ClientConnectingState.Connecting;
             NetworkingManager.StartClient();
@@ -44,6 +49,14 @@ namespace Victorina
                 yield return null;
         }
 
+        public void LeaveGame()
+        {
+            if (NetworkData.IsClient)
+            {
+                NetworkingManager.StopClient();
+            }
+        }
+        
         private void OnClientConnected(ulong clientId)
         {
             if (NetworkingManager.IsServer)

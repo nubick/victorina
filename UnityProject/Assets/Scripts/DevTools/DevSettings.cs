@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Victorina
 {
-    [CreateAssetMenu]
     public class DevSettings : ScriptableObject
     {
         public int LastMajorVersion;

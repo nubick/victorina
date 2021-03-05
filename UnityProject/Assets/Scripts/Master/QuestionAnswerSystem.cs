@@ -8,7 +8,6 @@ namespace Victorina
     public class QuestionAnswerSystem
     {
         [Inject] private QuestionAnswerData Data { get; set; }
-        [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private MatchData MatchData { get; set; }
@@ -130,7 +129,7 @@ namespace Victorina
             
             PlayerButtonClickData clickData = new PlayerButtonClickData();
             clickData.PlayerId = playerId;
-            clickData.Name = ConnectedPlayersData.PlayersIdToNameMap[playerId];
+            clickData.Name = MatchSystem.GetPlayer(playerId).Name;
             clickData.Time = spentSeconds;
             Data.PlayersButtonClickData.Value.Players.Add(clickData);
 
@@ -154,7 +153,7 @@ namespace Victorina
             if (NetworkData.IsClient)
                 return;
             
-            Data.AnsweringPlayerName = ConnectedPlayersData.PlayersIdToNameMap[playerId];
+            Data.AnsweringPlayerName = MatchSystem.GetPlayer(playerId).Name;
             Data.AnsweringPlayerId = playerId;
             Data.AnswerTip = GetAnswerTip(Data.SelectedQuestion.Value);
             Data.Phase.Value = QuestionPhase.AcceptingAnswer;

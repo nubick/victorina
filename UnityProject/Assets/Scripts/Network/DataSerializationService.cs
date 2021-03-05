@@ -35,6 +35,7 @@ namespace Victorina
             {
                 writer.WriteUInt64(player.Id);
                 writer.WriteString(player.Name);
+                writer.WriteBool(player.IsConnected);
                 writer.WriteInt32(player.Score);
                 writer.WriteByte(player.FilesLoadingPercentage);
             }
@@ -52,9 +53,10 @@ namespace Victorina
             int amount = reader.ReadInt32();
             for (int i = 0; i < amount; i++)
             {
-                ulong playerId = reader.ReadUInt64();
-                PlayerData player = new PlayerData(playerId);
+                PlayerData player = new PlayerData();
+                player.Id = reader.ReadUInt64();
                 player.Name = reader.ReadString().ToString();
+                player.IsConnected = reader.ReadBool();
                 player.Score = reader.ReadInt32();
                 player.FilesLoadingPercentage = (byte) reader.ReadByte();
                 playersBoard.Players.Add(player);

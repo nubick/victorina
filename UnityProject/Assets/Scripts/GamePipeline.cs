@@ -107,6 +107,8 @@ namespace Victorina
         {
             _injector.Get<SaveSystem>().LoadAll();
             
+            GeneratePlayerGuid();//after load app state
+            
             StartCoroutine(_injector.Get<ExternalIpSystem>().Initialize());
             
             _injector.Get<ServerService>().Initialize();
@@ -143,6 +145,24 @@ namespace Victorina
         public void Update()
         {
             _injector.Get<TimerRunOutDetectSystem>().OnUpdate();
+        }
+
+        private void GeneratePlayerGuid()
+        {
+            AppState appState = _injector.Get<AppState>();
+            if (Static.BuildMode == BuildMode.Development)
+            {
+                appState.PlayerGuid = Guid.NewGuid().ToString();
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(appState.PlayerGuid))
+                {
+                    appState.PlayerGuid = Guid.NewGuid().ToString();
+                    Debug.Log($"Generate player guid: {appState.PlayerGuid}");
+                    _injector.Get<SaveSystem>().Save();
+                }
+            }
         }
     }
 }

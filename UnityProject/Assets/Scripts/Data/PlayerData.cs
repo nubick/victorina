@@ -2,16 +2,14 @@ namespace Victorina
 {
     public class PlayerData
     {
-        public ulong Id { get; }
+        public string ServerGuid { get; set; }
+        
+        public ulong Id { get; set; }
         public string Name { get; set; }
+        public bool IsConnected { get; set; }
         public int Score { get; set; }
         public byte FilesLoadingPercentage { get; set; }
         
-        public PlayerData(ulong id)
-        {
-            Id = id;
-        }
-
         public override string ToString()
         {
             return $"{Id}:{Name}:{Score}";

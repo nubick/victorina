@@ -42,15 +42,11 @@ namespace Victorina
         
         private void OnConnectionApprovalCallback(byte[] connectionData, ulong clientId, NetworkingManager.ConnectionApprovedDelegate callback)
         {
-            Debug.Log($"Server.OnConnectionApproval, clientId: {clientId}");
-
-            string playerName = Encoding.UTF32.GetString(connectionData);
-            Debug.Log($"PlayerName: {playerName}");
-
-            ConnectedPlayersData.PlayersIdToNameMap[clientId] = playerName;
-            
+            Debug.Log($"OnConnectionApproval, clientId: {clientId}");
+            ConnectionMessage connectionMessage = ConnectionMessage.FromBytes(connectionData);
+            Debug.Log($"PlayerName: {connectionMessage.Name}, guid: {connectionMessage.Guid}");
+            ConnectedPlayersData.PlayersIdToConnectionMessageMap[clientId] = connectionMessage;
             ulong? prefabHash = SpawnManager.GetPrefabHashFromGenerator("NetworkPlayer");
-
             callback(createPlayerObject: true, prefabHash, approved: true, Vector3.zero, Quaternion.identity);
         }
 
@@ -85,6 +81,7 @@ namespace Victorina
             if (NetworkData.IsMaster)
             {
                 Debug.Log($"OnClientDisconnect, clientId: {clientId}, connected clients: {GetConnectedClients()}");
+                ConnectedPlayersData.PlayersIdToConnectionMessageMap.Remove(clientId);
                 ConnectedPlayersData.ConnectedClientsIds.Rewrite(NetworkingManager.ConnectedClients.Keys);
                 MetagameEvents.PlayerDisconnected.Publish();
             }

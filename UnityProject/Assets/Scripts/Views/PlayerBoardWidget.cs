@@ -12,6 +12,8 @@ namespace Victorina
         public Text Score;
         public GameObject CurrentBorder;
         public Image FilesLoadingStrip;
+        public GameObject OnlineStatus;
+        public GameObject OfflineStatus;
 
         public void Bind(PlayerData playerData, bool isCurrent)
         {
@@ -20,6 +22,8 @@ namespace Victorina
             Score.text = playerData.Score.ToString();
             CurrentBorder.SetActive(isCurrent);
             FilesLoadingStrip.fillAmount = playerData.FilesLoadingPercentage * 1f / 100f;
+            OnlineStatus.SetActive(playerData.IsConnected);
+            OfflineStatus.SetActive(!playerData.IsConnected);
         }
         
         public void OnPointerClick(PointerEventData eventData)

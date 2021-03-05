@@ -10,6 +10,7 @@ namespace Victorina
         private const string LastJoinPlayerNameKey = "LastJoinPlayerNameKey";
         private const string LastJoinGameCodeKey = "LastJoinGameCodeKey";
         private const string VolumeKey = "VolumeKey";
+        private const string PlayerGuidKey = "PlayerGuidKey";
         
         public void LoadAll()
         {
@@ -21,6 +22,7 @@ namespace Victorina
             appState.LastJoinPlayerName = PlayerPrefs.GetString(LastJoinPlayerNameKey);
             appState.LastJoinGameCode = PlayerPrefs.GetString(LastJoinGameCodeKey);
             appState.Volume.Value = PlayerPrefs.GetFloat(VolumeKey, 1f);
+            appState.PlayerGuid = PlayerPrefs.GetString(PlayerGuidKey);
         }
         
         private void Save(AppState appState)
@@ -28,6 +30,7 @@ namespace Victorina
             PlayerPrefs.SetString(LastJoinPlayerNameKey, appState.LastJoinPlayerName);
             PlayerPrefs.SetString(LastJoinGameCodeKey, appState.LastJoinGameCode);
             PlayerPrefs.SetFloat(VolumeKey, appState.Volume.Value);
+            PlayerPrefs.SetString(PlayerGuidKey, appState.PlayerGuid);
         }
 
         public void Save()
