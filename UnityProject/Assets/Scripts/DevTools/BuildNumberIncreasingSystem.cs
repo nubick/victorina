@@ -19,7 +19,7 @@ namespace Victorina
         private void IncreaseBuildNumber(DevSettings devSettings)
         {
             Version currentVersion = new Version(Static.MajorVersion, Static.MinorVersion);
-            Version lastBuildVersion = new Version(devSettings.LastMajorVersion, devSettings.LastMajorVersion);
+            Version lastBuildVersion = new Version(devSettings.LastMajorVersion, devSettings.LastMinorVersion);
 
             if (currentVersion > lastBuildVersion)
             {
