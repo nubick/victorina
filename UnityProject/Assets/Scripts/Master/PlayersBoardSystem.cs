@@ -39,11 +39,6 @@ namespace Victorina
                     player.ServerGuid = msg.Guid;
                     PlayersBoard.Players.Add(player);
                 }
-                else
-                {
-                    if (player.Id != connectedClientId)
-                        Debug.Log($"!!!!OGA! Player.Id '{player.Id}' is not equal connectedClientId: {connectedClientId}");
-                }
                 
                 player.Id = connectedClientId;
                 player.Name = msg.Name;

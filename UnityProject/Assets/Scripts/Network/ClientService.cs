@@ -51,8 +51,9 @@ namespace Victorina
 
         public void LeaveGame()
         {
-            if (NetworkData.IsClient)
+            if (NetworkingManager.IsClient)
             {
+                Debug.Log($"Client. StopClient: {NetworkingManager.LocalClientId}");
                 NetworkingManager.StopClient();
             }
         }

@@ -99,8 +99,9 @@ namespace Victorina
 
         public void StopServer()
         {
-            if (NetworkData.IsMaster)
+            if (NetworkingManager.IsServer)
             {
+                Debug.Log("Server. StopServer");
                 NetworkingManager.StopServer();
                 NetworkData.IsMaster = false;
                 MetagameEvents.ServerStopped.Publish();
