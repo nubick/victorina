@@ -108,7 +108,7 @@ namespace Victorina
         private void StartPackage(string packageName)
         {
             PackageSystem.Initialize(packageName);
-            MatchSystem.Start();
+            MatchSystem.StartMatch();
             SwitchTo(RoundView);
         }
 

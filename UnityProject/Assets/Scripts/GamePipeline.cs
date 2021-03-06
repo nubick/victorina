@@ -131,7 +131,8 @@ namespace Victorina
             
             _injector.Get<DownloadingFilesPanelView>().Initialize();
             _injector.Get<PlayerButtonView>().Initialize();
-            
+
+            _injector.Get<MatchSystem>().Initialize();
             _injector.Get<MasterQuestionPanelView>().Initialize();
             _injector.Get<MasterAcceptAnswerView>().Initialize();
         }

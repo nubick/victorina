@@ -32,12 +32,13 @@ namespace Victorina
             transport.ServerListenPort = Static.Port;
             
             NetworkingManager.StartServer();
-            NetworkData.IsMaster = true;
         }
         
         private void OnServerStarted()
         {
-            Debug.Log("OnServerStarted");
+            Debug.Log("Master: Server started");
+            NetworkData.IsMaster = true;
+            MetagameEvents.ServerStarted.Publish();
         }
         
         private void OnConnectionApprovalCallback(byte[] connectionData, ulong clientId, NetworkingManager.ConnectionApprovedDelegate callback)

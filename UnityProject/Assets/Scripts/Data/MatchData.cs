@@ -1,4 +1,6 @@
 
+using UnityEngine;
+
 namespace Victorina
 {
     public class MatchData
@@ -20,9 +22,19 @@ namespace Victorina
         public MatchData()
         {
             PlayersBoard.Value = new PlayersBoard();
-            RoundData.Value = new NetRound();
             RoundsInfo.Value = new NetRoundsInfo();
+            RoundData.Value = new NetRound();
             Player = new PlayerMatchData();
+        }
+
+        public void Clear()
+        {
+            Debug.Log("Master. Clear MatchData");
+            Phase.Value = MatchPhase.WaitingInLobby;
+            PlayersBoard.Value = new PlayersBoard();
+            RoundsInfo.Value = new NetRoundsInfo();
+            RoundData.Value = new NetRound();
+            SelectedRoundQuestion = null;
         }
         
         public override string ToString()

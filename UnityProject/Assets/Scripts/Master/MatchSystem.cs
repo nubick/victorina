@@ -15,7 +15,17 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
 
-        public void Start()
+        public void Initialize()
+        {
+            MetagameEvents.ServerStarted.Subscribe(OnServerStarted);
+        }
+
+        private void OnServerStarted()
+        {
+            MatchData.Clear();
+        }
+        
+        public void StartMatch()
         {
             SelectRound(1);
         }

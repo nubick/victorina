@@ -18,25 +18,37 @@ namespace Victorina
                 return networkPlayer;
             }
         }
-        
+
         public void SendFileChunkRequest(int fileId, int chunkIndex)
         {
-            Player.SendFileChunkRequestToMaster(fileId, chunkIndex);
+            if (NetworkingManager.IsConnectedClient)
+                Player.SendFileChunkRequestToMaster(fileId, chunkIndex);
+            else
+                Debug.Log("Client is not connected: SendFileChunkRequest");
         }
 
         public void SendPlayerButton(float spentSeconds)
         {
-            Player.SendPlayerButtonClickToMaster(spentSeconds);
+            if (NetworkingManager.IsConnectedClient)
+                Player.SendPlayerButtonClickToMaster(spentSeconds);
+            else
+                Debug.Log("Client is not connected: SendPlayerButton");
         }
 
         public void SendSelectRoundQuestion(NetRoundQuestion netRoundQuestion)
         {
-            Player.SendSelectRoundQuestionToMaster(netRoundQuestion);
+            if (NetworkingManager.IsConnectedClient)
+                Player.SendSelectRoundQuestionToMaster(netRoundQuestion);
+            else
+                Debug.Log("Client is not connected: SendSelectRoundQuestion");
         }
 
         public void SendFilesLoadingPercentage(byte percentage)
         {
-            Player.SendFilesLoadingPercentageToMaster(percentage);
+            if (NetworkingManager.IsConnectedClient)
+                Player.SendFilesLoadingPercentageToMaster(percentage);
+            else
+                Debug.Log("Client is not connected: SendFilesLoadingPercentage");
         }
     }
 }

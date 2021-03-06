@@ -6,7 +6,7 @@ namespace Victorina
     {
         public static GameEvent<NetworkPlayer> PlayerConnected { get; } = new GameEvent<NetworkPlayer>();
         public static GameEvent PlayerDisconnected { get; } = new GameEvent();
-        public static GameEvent ServerStopped { get; } = new GameEvent();
+        
 
         public static GameEvent<NetRoundQuestion> RoundQuestionClicked { get; } = new GameEvent<NetRoundQuestion>();
         public static GameEvent<int> RoundInfoClicked { get; } = new GameEvent<int>();
@@ -21,6 +21,9 @@ namespace Victorina
         public static GameEvent MediaRestarted { get; } = new GameEvent();
 
         //Master events
+        public static GameEvent ServerStarted { get; } = new GameEvent();
+        public static GameEvent ServerStopped { get; } = new GameEvent();
+        
         public static GameEvent TimerRunOut { get; } = new GameEvent();
         
         //Client events
