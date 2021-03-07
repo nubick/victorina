@@ -12,14 +12,15 @@ namespace Victorina
 
         private readonly HashSet<int> _fileIds = new HashSet<int>();
         private readonly Dictionary<int, string> _hashMap = new Dictionary<int, string>();
-        
         private readonly Dictionary<int, byte[]> _fileBytesCache = new Dictionary<int, byte[]>();
+        private readonly Dictionary<int, byte[][]> _chunksCache = new Dictionary<int, byte[][]>();
         
         public void AddPackageFiles(Package package)
         {
             _fileIds.Clear();
             _hashMap.Clear();
             _fileBytesCache.Clear();
+            _chunksCache.Clear();
             
             EnsurePackageFilesDirectory();
             
@@ -30,7 +31,7 @@ namespace Victorina
                 AddStoryFiles(question.AnswerStory);
             }
 
-            Debug.Log($"Master Files were added, amount: {_fileIds.Count}");
+            Debug.Log($"Master files are added, amount: {_fileIds.Count}");
         }
 
         private void AddStoryFiles(List<StoryDot> story)
@@ -41,7 +42,10 @@ namespace Victorina
                 {
                     fileStoryDot.FileId = AddFile(fileStoryDot.SiqPath);
                     if (fileStoryDot.FileId != 0)
+                    {
                         fileStoryDot.ChunksAmount = GetFileChunksAmount(fileStoryDot.FileId);
+                        BuildChunksCache(fileStoryDot.FileId, fileStoryDot.ChunksAmount);
+                    }
                 }
             }
         }
@@ -75,7 +79,18 @@ namespace Victorina
             }
             return hash;
         }
-        
+
+        private void BuildChunksCache(int fileId, int chunksAmount)
+        {
+            string path = GetPath(fileId);
+            byte[] bytes = File.ReadAllBytes(path);
+            _fileBytesCache.Add(fileId, bytes);
+            byte[][] chunks = new byte[chunksAmount][];
+            _chunksCache.Add(fileId, chunks);
+            for (int chunkIndex = 0; chunkIndex < chunksAmount; chunkIndex++)
+                chunks[chunkIndex] = FetchChunk(bytes, chunkIndex);
+        }
+
         public bool Has(int fileId)
         {
             return File.Exists(GetPath(fileId));
@@ -93,15 +108,19 @@ namespace Victorina
 
             throw new Exception($"Request bytes when file doesn't exist, fileId: {fileId}");
         }
-
-        public byte[] GetFileChunk(int fileId, int chunkIndex)
+        
+        private byte[] FetchChunk(byte[] bytes, int chunkIndex)
         {
-            byte[] bytes = GetBytes(fileId);
             int sourceStartIndex = chunkIndex * ChunkSize;
             int size = Mathf.Min(bytes.Length - sourceStartIndex, ChunkSize);
             byte[] chunk = new byte[size];
             Array.Copy(bytes, sourceStartIndex, chunk, 0, size);
             return chunk;
+        }
+        
+        public byte[] GetFileChunk(int fileId, int chunkIndex)
+        {
+            return _chunksCache[fileId][chunkIndex];
         }
 
         private int GetFileChunksAmount(int fileId)
