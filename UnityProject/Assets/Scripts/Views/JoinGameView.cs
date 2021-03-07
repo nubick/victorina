@@ -12,6 +12,7 @@ namespace Victorina
         [Inject] private AppState AppState { get; set; }
         [Inject] private SaveSystem SaveSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private ServerService ServerService { get; set; }
 
         public ValidatedInputField PlayerNameInputField;
         public ValidatedInputField GameCodeInputField;
@@ -39,7 +40,7 @@ namespace Victorina
             bool hasValidationError = false;
             
             string playerName = PlayerNameInputField.Text;
-            if (!IsPlayerNameValid(playerName))
+            if (!ServerService.IsPlayerNameValid(playerName))
             {
                 PlayerNameInputField.MarkInvalid();
                 hasValidationError = true;
@@ -80,12 +81,7 @@ namespace Victorina
                 Debug.Log($"Join game error, client connecting state: {NetworkData.ClientConnectingState}");
             }
         }
-
-        private bool IsPlayerNameValid(string playerName)
-        {
-            return !string.IsNullOrWhiteSpace(playerName);
-        }
-
+        
         private bool IsGameCodeValid(string gameCode)
         {
             return IpCodeSystem.IsValidGameCode(gameCode);

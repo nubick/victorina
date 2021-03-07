@@ -12,6 +12,7 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private ServerService ServerService { get; set; }
 
         private PlayersBoard PlayersBoard => MatchData.PlayersBoard.Value;
         
@@ -100,6 +101,21 @@ namespace Victorina
                 playerData.FilesLoadingPercentage = percentage;
                 MatchData.PlayersBoard.NotifyChanged();
                 SendToPlayersService.Send(PlayersBoard);
+            }
+        }
+
+        public void UpdatePlayerName(PlayerData playerData, string newPlayerName)
+        {
+            Debug.Log($"Update player name from '{playerData.Name}' to '{newPlayerName}'");
+            if (ServerService.IsPlayerNameValid(newPlayerName))
+            {
+                ConnectionMessage msg = ConnectedPlayersData.PlayersIdToConnectionMessageMap.Values.Single(_ => _.Guid == playerData.ServerGuid);
+                msg.Name = newPlayerName;
+                UpdatePlayersBoard();
+            }
+            else
+            {
+                Debug.LogError($"New player name '{newPlayerName}' is not valid/");
             }
         }
     }

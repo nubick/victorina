@@ -1,8 +1,6 @@
 using System.Linq;
-using System.Text;
 using Injection;
 using MLAPI;
-using MLAPI.Connection;
 using MLAPI.Spawning;
 using MLAPI.Transports.UNET;
 using UnityEngine;
@@ -105,5 +103,11 @@ namespace Victorina
                 MetagameEvents.ServerStopped.Publish();
             }
         }
+        
+        public bool IsPlayerNameValid(string playerName)
+        {
+            return !string.IsNullOrWhiteSpace(playerName);
+        }
+
     }
 }
