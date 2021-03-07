@@ -12,7 +12,9 @@ namespace Victorina
         [Inject] private NetworkingManager NetworkingManager { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
-
+        [Inject] private PackageSystem PackageSystem { get; set; }
+        [Inject] private PackageData PackageData { get; set; }
+        
         private string All => $"All: ({GetPlayersInfo()})";
         
         private List<NetworkPlayer> GetPlayers()
@@ -32,6 +34,11 @@ namespace Victorina
             {
                 networkPlayer.SendNetRound(MatchData.RoundData.Value);
                 networkPlayer.SendNetRoundsInfo(MatchData.RoundsInfo.Value);
+                
+                Round round = PackageData.Package.Rounds[MatchData.RoundsInfo.Value.CurrentRoundNumber - 1];
+                (int[] fileIds, int[] chunksAmounts) info = PackageSystem.GetRoundFileIds(round);
+                networkPlayer.SendRoundFileIds(info.fileIds, info.chunksAmounts);
+                
             }
             else if (MatchData.Phase.Value == MatchPhase.Question)
             {
