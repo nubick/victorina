@@ -55,6 +55,7 @@ namespace Victorina
             {
                 Debug.Log($"Client. StopClient: {NetworkingManager.LocalClientId}");
                 NetworkingManager.StopClient();
+                MetagameEvents.DisconnectedAsClient.Publish();
             }
         }
         
@@ -68,6 +69,7 @@ namespace Victorina
                 Debug.Log($"Client connection success, clientId: {clientId}");
                 NetworkData.ClientConnectingState = ClientConnectingState.Success;
                 NetworkData.PlayerId = clientId;
+                MetagameEvents.ConnectedAsClient.Publish();
             }
             else
             {
@@ -81,9 +83,10 @@ namespace Victorina
             if (NetworkingManager.IsServer)
                 return;
             
-            Debug.Log($"OnClientDisconnect: {clientId}");
+            Debug.Log($"Player. OnClientDisconnect: {clientId}");
             NetworkData.ClientConnectingState = ClientConnectingState.Fail;
             ViewsSystem.OnClientDisconnected();
+            MetagameEvents.DisconnectedAsClient.Publish();
         }
     }
 }

@@ -40,6 +40,16 @@ namespace Victorina
             DataChangeHandler.HandleMasterIntention(QuestionAnswerData);
         }
 
+        public void OnRoundFileIdsReceived(int[] fileIds, int[] chunksAmounts)
+        {
+            PlayerFilesRepository.Register(fileIds, chunksAmounts);
+        }
+        
+        public void OnFileStoryDotReceived(FileStoryDot fileStoryDot)
+        {
+            PlayerFilesRepository.Register(fileStoryDot.FileId, fileStoryDot.ChunksAmount);
+        }
+        
         public void OnFileChunkReceived(int fileId, int chunkIndex, byte[] bytes)
         {
             PlayerFilesRepository.AddChunk(fileId, chunkIndex, bytes);

@@ -17,8 +17,8 @@ namespace Victorina
         
         public void Initialize()
         {
-            MetagameEvents.PlayerConnected.Subscribe(_ => UpdatePlayersBoard());
-            MetagameEvents.PlayerDisconnected.Subscribe(UpdatePlayersBoard);
+            MetagameEvents.MasterClientConnected.Subscribe(UpdatePlayersBoard);
+            MetagameEvents.MasterClientDisconnected.Subscribe(UpdatePlayersBoard);
             MetagameEvents.ServerStopped.Subscribe(OnServerStopped);
         }
         

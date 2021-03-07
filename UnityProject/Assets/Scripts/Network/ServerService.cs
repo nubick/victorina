@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using Injection;
 using MLAPI;
@@ -43,7 +44,7 @@ namespace Victorina
         
         private void OnConnectionApprovalCallback(byte[] connectionData, ulong clientId, NetworkingManager.ConnectionApprovedDelegate callback)
         {
-            Debug.Log($"OnConnectionApproval, clientId: {clientId}");
+            Debug.Log($"Master: OnConnectionApproval, clientId: {clientId}");
             ConnectionMessage connectionMessage = ConnectionMessage.FromBytes(connectionData);
             Debug.Log($"PlayerName: {connectionMessage.Name}, guid: {connectionMessage.Guid}");
             ConnectedPlayersData.PlayersIdToConnectionMessageMap[clientId] = connectionMessage;
@@ -53,49 +54,45 @@ namespace Victorina
 
         private void OnClientConnected(ulong clientId)
         {
-            Debug.Log($"OnClientConnected, clientId: {clientId}, connected clients: {GetConnectedClients()}");
+            Debug.Log($"{(NetworkData.IsMaster ? "Master" : "Client")}: OnClientConnected, clientId: {clientId}, connected clients: {GetConnectedClients()}");
             NetworkedObject networkedObject = SpawnManager.GetPlayerObject(clientId);
             if (networkedObject == null)
             {
                 Debug.Log($"Can't get spawned object by id {clientId}");
                 return;
             }
-
+            
             NetworkPlayer networkPlayer = networkedObject.GetComponent<NetworkPlayer>();
             if (networkPlayer == null)
             {
                 Debug.Log("Can't get NetworkPlayer component from spawned NetworkedObject");
                 return;
             }
+
+            MetagameEvents.NetworkPlayerSpawned.Publish(networkPlayer);
             
             if (NetworkData.IsMaster)
+            {
                 ConnectedPlayersData.ConnectedClientsIds.Rewrite(NetworkingManager.ConnectedClients.Keys);
-            
-            MetagameEvents.PlayerConnected.Publish(networkPlayer);
-            
-            if(NetworkData.IsMaster)
+                MetagameEvents.MasterClientConnected.Publish();
                 SendToPlayersService.SendAll(networkPlayer);
+            }
         }
 
         private void OnClientDisconnect(ulong clientId)
         {
             if (NetworkData.IsMaster)
             {
-                Debug.Log($"OnClientDisconnect, clientId: {clientId}, connected clients: {GetConnectedClients()}");
+                Debug.Log($"Master. OnClientDisconnect, clientId: {clientId}, connected clients: {GetConnectedClients()}");
                 ConnectedPlayersData.PlayersIdToConnectionMessageMap.Remove(clientId);
                 ConnectedPlayersData.ConnectedClientsIds.Rewrite(NetworkingManager.ConnectedClients.Keys);
-                MetagameEvents.PlayerDisconnected.Publish();
+                MetagameEvents.MasterClientDisconnected.Publish();
             }
         }
 
         private string GetConnectedClients()
         {
-            string str = string.Empty;
-            foreach (NetworkedClient client in NetworkingManager.ConnectedClients.Values)
-            {
-                str += $"clientId: {client.ClientId}, ";
-            }
-            return str;
+            return $"({string.Join(",", NetworkingManager.ConnectedClients.Values.Select(_ => _.ClientId))})";
         }
 
         public void StopServer()

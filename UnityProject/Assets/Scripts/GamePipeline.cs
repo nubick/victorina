@@ -12,12 +12,13 @@ namespace Victorina
         
         public void Start()
         {
+            QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = 60;
             
             _injector = new Injector();
             InjectAll();//InjectAll from Start as from Awake NetworkingManager.Singleton is still null
             Initialize();
-            MetagameEvents.PlayerConnected.Subscribe(OnPlayerConnected);
+            MetagameEvents.NetworkPlayerSpawned.Subscribe(OnNetworkPlayerSpawned);
         }
         
         private void InjectAll()
@@ -90,6 +91,7 @@ namespace Victorina
             _injector.Bind(new MasterFilesRepository());
             _injector.Bind(new PlayerFilesRepository());
             _injector.Bind(new PlayerFilesRequestSystem());
+            _injector.Bind(FindObjectOfType<PlayerFilesRequestData>());
             
             _injector.Bind(new SiqPackOpenSystem());
             _injector.Bind(new SiqLoadedPackageSystem());
@@ -126,7 +128,6 @@ namespace Victorina
             _injector.Get<VideoStoryDotView>().Initialize();
 
             _injector.Get<PlayerFilesRequestSystem>().Initialize();
-            StartCoroutine(_injector.Get<PlayerFilesRequestSystem>().RequestCoroutine());
             _injector.Get<PlayersButtonClickPanelView>().Initialize();
             
             _injector.Get<DownloadingFilesPanelView>().Initialize();
@@ -137,9 +138,9 @@ namespace Victorina
             _injector.Get<MasterAcceptAnswerView>().Initialize();
         }
         
-        private void OnPlayerConnected(NetworkPlayer networkPlayer)
+        private void OnNetworkPlayerSpawned(NetworkPlayer networkPlayer)
         {
-            Debug.Log($"Pipeline: OnPlayerConnected, inject to networkPlayer:{networkPlayer.OwnerClientId}");
+            Debug.Log($"Pipeline: NetworkPlayer spawned, inject to networkPlayer:{networkPlayer.OwnerClientId}");
             _injector.InjectTo(networkPlayer);
         }
 

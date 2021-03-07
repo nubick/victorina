@@ -9,6 +9,11 @@ namespace Victorina
     {
         public Dictionary<int, DownloadingFile> Files { get; } = new Dictionary<int, DownloadingFile>();
 
+        public void Clear()
+        {
+            Files.Clear();
+        }
+        
         public void Register(int[] fileIds, int[] chunksAmounts)
         {
             for (int i = 0; i < fileIds.Length; i++)

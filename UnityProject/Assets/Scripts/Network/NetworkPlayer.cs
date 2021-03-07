@@ -11,7 +11,6 @@ namespace Victorina
     {
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
-        [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         [Inject] private PlayerDataReceiver PlayerDataReceiver { get; set; }
         [Inject] private MasterDataReceiver MasterDataReceiver { get; set; }
 
@@ -48,7 +47,7 @@ namespace Victorina
         
         public void SendNetRound(NetRound netRound)
         {
-            Debug.Log($"Master: Send RoundData: {netRound} to {OwnerClientId}");
+            //Debug.Log($"Master: Send RoundData: {netRound} to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveRoundData, netRound, "RFS");
         }
 
@@ -74,18 +73,18 @@ namespace Victorina
 
         public void SendSelectedQuestion(NetQuestion netQuestion)
         {
-            Debug.Log($"Master: Send selected question: {netQuestion} to {OwnerClientId}");
+            //Debug.Log($"Master: Send selected question: {netQuestion} to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveSelectedQuestion, netQuestion);
 
             foreach (StoryDot storyDot in netQuestion.QuestionStory)
             {
-                Debug.Log($"Master: Send question story dot to All: {storyDot}");
+                //Debug.Log($"Master: Send question story dot to All: {storyDot}");
                 SendStoryDot(storyDot, isQuestion: true);
             }
 
             foreach (StoryDot storyDot in netQuestion.AnswerStory)
             {
-                Debug.Log($"Master: Send answer story dot to All: {storyDot}");
+                //Debug.Log($"Master: Send answer story dot to All: {storyDot}");
                 SendStoryDot(storyDot, isQuestion: false);
             }
         }
@@ -101,7 +100,7 @@ namespace Victorina
 
         public void SendStoryDot(StoryDot storyDot, bool isQuestion)
         {
-            Debug.Log($"Master: Send story dot: {storyDot} to {OwnerClientId}");
+            //Debug.Log($"Master: Send story dot: {storyDot} to {OwnerClientId}");
             if (storyDot is TextStoryDot textStoryDot)
                 InvokeClientRpcOnOwner(ReceiveTextStoryDot, textStoryDot, isQuestion);
             else if (storyDot is ImageStoryDot imageStoryDot)
@@ -136,7 +135,7 @@ namespace Victorina
         {
             Debug.Log($"Player {OwnerClientId}: Receive image story dot: {imageStoryDot}");
             SetStoryDot(imageStoryDot, isQuestion);
-            PlayerFilesRepository.Register(imageStoryDot.FileId, imageStoryDot.ChunksAmount);
+            PlayerDataReceiver.OnFileStoryDotReceived(imageStoryDot);
         }
 
         [ClientRPC]
@@ -144,7 +143,7 @@ namespace Victorina
         {
             Debug.Log($"Player {OwnerClientId}: Receive audio story dot: {audioStoryDot}");
             SetStoryDot(audioStoryDot, isQuestion);
-            PlayerFilesRepository.Register(audioStoryDot.FileId, audioStoryDot.ChunksAmount);
+            PlayerDataReceiver.OnFileStoryDotReceived(audioStoryDot);
         }
 
         [ClientRPC]
@@ -152,7 +151,7 @@ namespace Victorina
         {
             Debug.Log($"Player {OwnerClientId}: Receive video story dot: {videoStoryDot}");
             SetStoryDot(videoStoryDot, isQuestion);
-            PlayerFilesRepository.Register(videoStoryDot.FileId, videoStoryDot.ChunksAmount);
+            PlayerDataReceiver.OnFileStoryDotReceived(videoStoryDot);
         }
 
         [ClientRPC]
@@ -164,7 +163,7 @@ namespace Victorina
 
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
         {
-            Debug.Log($"Master: Send selected round question: {netRoundQuestion} to {OwnerClientId}");
+            //Debug.Log($"Master: Send selected round question: {netRoundQuestion} to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveSelectedRoundQuestion, netRoundQuestion);
         }
 
@@ -177,7 +176,7 @@ namespace Victorina
 
         public void SendNetRoundsInfo(NetRoundsInfo netRoundsInfo)
         {
-            Debug.Log($"Master: Send rounds info: {netRoundsInfo} to {OwnerClientId}");
+            //Debug.Log($"Master: Send rounds info: {netRoundsInfo} to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveNetRoundsInfo, netRoundsInfo);
         }
 
@@ -234,7 +233,7 @@ namespace Victorina
         private void ReceiveRoundFileIds(int[] fileIds, int[] chunksAmounts)
         {
             Debug.Log($"Player {OwnerClientId}: Receive round file ids, amount: {fileIds.Length}");
-            PlayerFilesRepository.Register(fileIds, chunksAmounts);
+            PlayerDataReceiver.OnRoundFileIdsReceived(fileIds, chunksAmounts);
         }
 
         #endregion
