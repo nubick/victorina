@@ -14,7 +14,7 @@ namespace Victorina
             Data.PackageNames.Clear();
             string[] fullPaths = Directory.GetDirectories(Static.DataPath);
             Data.PackageNames.AddRange(fullPaths.Select(Path.GetFileName));
-            Debug.Log($"Converted packs amount: {Data.PackageNames.Count}");
+            Debug.Log($"Detected (converted before) packs amount: {Data.PackageNames.Count}");
         }
 
         public void Delete(string packageName)

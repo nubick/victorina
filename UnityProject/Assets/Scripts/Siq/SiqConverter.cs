@@ -238,7 +238,7 @@ namespace Victorina
                 InitializeStory(question.QuestionStory, package.Name);
                 InitializeStory(question.AnswerStory, package.Name);
             }
-            Debug.Log("Files are loaded");
+            Debug.Log($"Package '{package.Name}' files are loaded");
         }
 
         private void InitializeStory(List<StoryDot> story, string packageName)

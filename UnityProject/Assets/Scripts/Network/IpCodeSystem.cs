@@ -12,7 +12,7 @@ namespace Victorina
         {
             byte[] ipBytes = GetIpBytes(ipString);
             string code = GetCode(ipBytes);
-            Debug.Log($"{ipString} {code}");
+            Debug.Log($"Get code: {ipString} {code}");
             return code;
         }
         

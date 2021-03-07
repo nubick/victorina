@@ -12,7 +12,7 @@ namespace Victorina
         
         public override string ToString()
         {
-            return $"{Id}:{Name}:{Score}";
+            return $"[{Id}:{Name}:{Score}]";
         }
     }
 }
