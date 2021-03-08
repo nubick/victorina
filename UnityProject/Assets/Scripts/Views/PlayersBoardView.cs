@@ -58,8 +58,7 @@ namespace Victorina
         {
             if (NetworkData.IsMaster)
             {
-                MasterPlayerSettingsView.Bind(playerData);
-                MasterPlayerSettingsView.Show();
+                MasterPlayerSettingsView.Show(playerData);
             }
         }
     }

@@ -13,13 +13,18 @@ namespace Victorina
         public Text PlayerId;
         public ValidatedInputField PlayerNameInputField;
         
-        public void Bind(PlayerData playerData)
+        public void Show(PlayerData playerData)
         {
             _playerData = playerData;
-            PlayerId.text = $"ID игрока: {playerData.Id}";
-            PlayerNameInputField.Text = playerData.Name;
+            Show();
         }
         
+        protected override void OnShown()
+        {
+            PlayerId.text = $"ID игрока: {_playerData.Id}";
+            PlayerNameInputField.Text = _playerData.Name;
+        }
+
         public void OnMakeCurrentButtonClicked()
         {
             PlayersBoardSystem.MakePlayerCurrent(_playerData);
