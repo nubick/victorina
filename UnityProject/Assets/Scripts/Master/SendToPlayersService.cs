@@ -109,5 +109,11 @@ namespace Victorina
             Debug.Log($"Master: Send players button click data to {All}, ({playersButtonClickData.Players.Count})");
             GetPlayers().ForEach(player => player.SendPlayersButtonClickData(playersButtonClickData));
         }
+
+        public void SendPlaySoundEffectCommand(int number)
+        {
+            Debug.Log($"Master: Send play sound effect command to {All}, number: {number}");
+            GetPlayers().ForEach(player => player.SendPlaySoundEffectCommand(number));
+        }
     }
 }

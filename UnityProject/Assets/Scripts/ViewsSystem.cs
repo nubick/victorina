@@ -18,8 +18,10 @@ namespace Victorina
         [Inject] private NoRiskStoryDotView NoRiskStoryDotView { get; set; }
 
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
-        [Inject] private PlayerButtonView PlayerButtonView { get; set; }
+        [Inject] private MasterEffectsView MasterEffectsView { get; set; }
         
+        [Inject] private PlayerButtonView PlayerButtonView { get; set; }
+
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
@@ -47,12 +49,10 @@ namespace Victorina
             switch (phase)
             {
                 case MatchPhase.WaitingInLobby:
-                    HideAll();
-                    LobbyView.Show();
+                    ShowLobbyViews();
                     break;
                 case MatchPhase.Round:
-                    HideAll();
-                    RoundView.Show();
+                    ShowRoundViews();
                     break;
                 case MatchPhase.Question:
                     break;
@@ -72,6 +72,22 @@ namespace Victorina
             UpdateStoryDot(data);
         }
 
+        private void ShowLobbyViews()
+        {
+            HideAll();
+            LobbyView.Show();
+            if (NetworkData.IsMaster)
+                MasterEffectsView.Show();
+        }
+
+        private void ShowRoundViews()
+        {
+            HideAll();   
+            RoundView.Show();
+            if (NetworkData.IsMaster)
+                MasterEffectsView.Show();
+        }
+        
         public void UpdateStoryDot(QuestionAnswerData data)
         {
             HideAll();
@@ -88,7 +104,10 @@ namespace Victorina
                 TextStoryDotView.Show();
 
             if (NetworkData.IsMaster)
+            {
                 MasterQuestionPanelView.Show();
+                MasterEffectsView.Show();
+            }
 
             if (NetworkData.IsClient)
             {

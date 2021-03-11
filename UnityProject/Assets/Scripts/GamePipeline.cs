@@ -63,6 +63,8 @@ namespace Victorina
             _injector.Bind(NetworkingManager.Singleton);
             
             _injector.Bind(new DataChangeHandler());
+            _injector.Bind(new PlayEffectsSystem());
+            _injector.Bind(FindObjectOfType<PlayEffectsData>());
             
             //Master only
             _injector.Bind(new ServerService());
@@ -71,9 +73,11 @@ namespace Victorina
             _injector.Bind(new QuestionAnswerSystem());
             _injector.Bind(new TimerRunOutDetectSystem());
             _injector.Bind(new MasterDataReceiver());
+            _injector.Bind(new MasterEffectsSystem());
             _injector.Bind(FindObjectOfType<MasterQuestionPanelView>());
             _injector.Bind(FindObjectOfType<MasterAcceptAnswerView>());
             _injector.Bind(FindObjectOfType<MasterPlayerSettingsView>());
+            _injector.Bind(FindObjectOfType<MasterEffectsView>());
             
             //Client only
             _injector.Bind(FindObjectOfType<DownloadingFilesPanelView>());
@@ -126,6 +130,8 @@ namespace Victorina
             _injector.Get<ImageStoryDotView>().Initialize();
             _injector.Get<AudioStoryDotView>().Initialize();
             _injector.Get<VideoStoryDotView>().Initialize();
+            
+            _injector.Get<PlayEffectsSystem>().Initialize();
 
             _injector.Get<PlayerFilesRequestSystem>().Initialize();
             _injector.Get<PlayersButtonClickPanelView>().Initialize();
@@ -136,6 +142,7 @@ namespace Victorina
             _injector.Get<MatchSystem>().Initialize();
             _injector.Get<MasterQuestionPanelView>().Initialize();
             _injector.Get<MasterAcceptAnswerView>().Initialize();
+            _injector.Get<MasterEffectsView>().Initialize();
         }
         
         private void OnNetworkPlayerSpawned(NetworkPlayer networkPlayer)

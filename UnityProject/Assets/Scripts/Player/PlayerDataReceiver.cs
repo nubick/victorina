@@ -8,6 +8,7 @@ namespace Victorina
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
+        [Inject] private PlayEffectsSystem PlayEffectsSystem { get; set; }
 
         public void OnReceive(MatchPhase matchPhase)
         {
@@ -53,6 +54,11 @@ namespace Victorina
         public void OnFileChunkReceived(int fileId, int chunkIndex, byte[] bytes)
         {
             PlayerFilesRepository.AddChunk(fileId, chunkIndex, bytes);
+        }
+
+        public void OnReceivePlaySoundEffectCommand(int number)
+        {
+            PlayEffectsSystem.PlaySound(number);
         }
     }
 }

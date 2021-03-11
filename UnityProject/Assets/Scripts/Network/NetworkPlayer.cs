@@ -301,5 +301,21 @@ namespace Victorina
         }
         
         #endregion
+        
+        #region Effects
+
+        public void SendPlaySoundEffectCommand(int number)
+        {
+            InvokeClientRpcOnOwner(ReceivePlaySoundEffectCommand, number);
+        }
+
+        [ClientRPC]
+        private void ReceivePlaySoundEffectCommand(int number)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive play sound effect command");
+            PlayerDataReceiver.OnReceivePlaySoundEffectCommand(number);
+        }
+        
+        #endregion
     }
 }
