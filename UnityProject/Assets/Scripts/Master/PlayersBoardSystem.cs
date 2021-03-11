@@ -118,5 +118,12 @@ namespace Victorina
                 Debug.LogError($"New player name '{newPlayerName}' is not valid/");
             }
         }
+
+        public void UpdatePlayerScore(PlayerData playerData, int newScore)
+        {
+            Debug.Log($"Update player score from '{playerData.Score}' to '{newScore}'");
+            playerData.Score = newScore;
+            UpdatePlayersBoard();
+        }
     }
 }
