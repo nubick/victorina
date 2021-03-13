@@ -23,6 +23,8 @@ namespace Victorina
 
         public Image TimerStrip;
 
+        private StoryDot PreviousStoryDot => Data.CurrentStory[Data.CurrentStoryDotIndex - 1];
+        
         public void Initialize()
         {
             MetagameEvents.TimerRunOut.Subscribe(OnTimerRunOut);
@@ -39,7 +41,7 @@ namespace Victorina
             QuestionType questionType = Data.SelectedQuestion.Value.Type;
             QuestionPhase phase = Data.Phase.Value;
 
-            bool canNavigateToPreviousQuestionDot = Data.CurrentStoryDotIndex > 0;
+            bool canNavigateToPreviousQuestionDot = Data.CurrentStoryDotIndex > 0 && !(PreviousStoryDot is CatInBagStoryDot) && !(PreviousStoryDot is NoRiskStoryDot);
             PreviousQuestionDotButton.SetActive(canNavigateToPreviousQuestionDot);
 
             bool isLastDot = Data.CurrentStoryDot == Data.CurrentStory.Last();
