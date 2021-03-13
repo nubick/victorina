@@ -114,7 +114,7 @@ namespace Victorina
                             NoRiskStoryDot noRiskStoryDot = new NoRiskStoryDot();
                             AddStoryDot(question, noRiskStoryDot, isAfterMarker: false);
                         }
-                        else if (typeName == "cat")
+                        else if (typeName == "cat" || typeName == "bagcat")
                         {
                             ReadCatInBag(xmlReader, question);
                         }
@@ -155,6 +155,7 @@ namespace Victorina
             
             string theme = string.Empty;
             int catPrice = 0;
+            bool canGiveYourself = false;
             
             if (!xmlReader.IsEmptyElement)
             {
@@ -177,6 +178,17 @@ namespace Victorina
                             string priceString = xmlReader.Value;
                             catPrice = int.Parse(priceString);
                         }
+                        else if (paramName == "self")
+                        {
+                            xmlReader.Read();
+                            string boolString = xmlReader.Value;
+                            canGiveYourself = boolString == "true";
+                        }
+                        else if (paramName == "knows")
+                        {
+                            //<param name="knows">after</param>
+                            //I ignore this settings
+                        }
                         else
                         {
                             Debug.LogWarning($"Not supported cat param: {paramName}");
@@ -187,7 +199,7 @@ namespace Victorina
             
             //Debug.Log($"Cat in bag, theme: {theme}, price: {catPrice}");
             question.Type = QuestionType.CatInBag;
-            CatInBagStoryDot catInBagStoryDot = new CatInBagStoryDot(theme, catPrice);
+            CatInBagStoryDot catInBagStoryDot = new CatInBagStoryDot(theme, catPrice, canGiveYourself);
             AddStoryDot(question, catInBagStoryDot, isAfterMarker: false);
         }
         

@@ -20,8 +20,13 @@ namespace Victorina
             NetRoundQuestion = netRoundQuestion;
             Price.text = netRoundQuestion.IsAnswered ? string.Empty : netRoundQuestion.Price.ToString();
 
-            if (netRoundQuestion.Type == QuestionType.CatInBag)
-                Price.text += "*";
+            if(Static.BuildMode == BuildMode.Development)
+            {
+                if (netRoundQuestion.Type == QuestionType.CatInBag)
+                    Price.text += "*";
+                else if (netRoundQuestion.Type == QuestionType.NoRisk)
+                    Price.text += "=";
+            }
         }
 
         public void BindEmpty()
