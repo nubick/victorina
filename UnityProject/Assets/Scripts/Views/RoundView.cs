@@ -13,6 +13,7 @@ namespace Victorina
         [Inject] private ServerService ServerService { get; set; }
         [Inject] private ClientService ClientService { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private MatchSettingsView MatchSettingsView { get; set; }
         
         public RectTransform ThemeWidgetsRoot;
         public ThemeWidget ThemeWidgetPrefab;
@@ -116,7 +117,7 @@ namespace Victorina
 
         public void OnMatchSettingsButtonClicked()
         {
-            
+            MatchSettingsView.Show();
         }
     }
 }

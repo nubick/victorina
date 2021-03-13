@@ -39,6 +39,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<RoundView>());
             _injector.Bind(FindObjectOfType<PlayersButtonClickPanelView>());
             _injector.Bind(FindObjectOfType<PlayersBoardView>());
+            _injector.Bind(FindObjectOfType<MatchSettingsView>());
             
             _injector.Bind(new QuestionTimer());
             
@@ -46,11 +47,8 @@ namespace Victorina
             
             _injector.Bind(new AppState());
             _injector.Bind(new SaveSystem());
-
-            MatchSettingsData settings = new MatchSettingsData();
-            settings.IsLimitAnsweringSeconds = true;
-            settings.MaxAnsweringSeconds = 5f;
-            _injector.Bind(settings);
+            
+            _injector.Bind(new MatchSettingsData());
             
             _injector.Bind(new ExternalIpSystem());
             _injector.Bind(new ExternalIpData());
