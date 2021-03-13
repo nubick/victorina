@@ -355,5 +355,17 @@ namespace Victorina
         }
         
         #endregion
+
+        public void SendAnsweringTimerData(AnsweringTimerData data)
+        {
+            InvokeClientRpcOnOwner(ReceiveAnsweringTimerData, data.IsRunning, data.MaxSeconds, data.LeftSeconds);
+        }
+
+        [ClientRPC]
+        private void ReceiveAnsweringTimerData(bool isRunning, float maxSeconds, float leftSeconds)
+        {
+            //Debug.Log($"Player {OwnerClientId}: Receive answering timer data, isRunning: {isRunning}, startSeconds: {maxSeconds}, leftSeconds: {leftSeconds}");
+            PlayerDataReceiver.OnReceiveAnsweringTimerData(isRunning, maxSeconds, leftSeconds);
+        }
     }
 }

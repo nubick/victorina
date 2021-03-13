@@ -12,6 +12,7 @@ namespace Victorina
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         [Inject] private PlayEffectsSystem PlayEffectsSystem { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
+        [Inject] private AnsweringTimerData AnsweringTimerData { get; set; }
 
         public void OnReceive(MatchPhase matchPhase)
         {
@@ -73,6 +74,13 @@ namespace Victorina
         public void OnReceivePlaySoundEffectCommand(int number)
         {
             PlayEffectsSystem.PlaySound(number);
+        }
+
+        public void OnReceiveAnsweringTimerData(bool isRunning, float maxSeconds, float leftSeconds)
+        {
+            AnsweringTimerData.IsRunning = isRunning;
+            AnsweringTimerData.MaxSeconds = maxSeconds;
+            AnsweringTimerData.LeftSeconds = leftSeconds;
         }
     }
 }

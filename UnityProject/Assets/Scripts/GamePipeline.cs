@@ -46,6 +46,11 @@ namespace Victorina
             
             _injector.Bind(new AppState());
             _injector.Bind(new SaveSystem());
+
+            MatchSettingsData settings = new MatchSettingsData();
+            settings.IsLimitAnsweringSeconds = true;
+            settings.MaxAnsweringSeconds = 5f;
+            _injector.Bind(settings);
             
             _injector.Bind(new ExternalIpSystem());
             _injector.Bind(new ExternalIpData());
@@ -61,6 +66,10 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<CatInBagStoryDotView>());
             _injector.Bind(FindObjectOfType<CatInBagData>());
 
+            _injector.Bind(new AnsweringTimerSystem());
+            _injector.Bind(new AnsweringTimerData());
+            _injector.Bind(FindObjectOfType<AnsweringTimerView>());
+            
             _injector.Bind(new PackageSystem());
             _injector.Bind(new PackageData());
             
@@ -145,11 +154,12 @@ namespace Victorina
 
             _injector.Get<MatchSystem>().Initialize();
             _injector.Get<MasterQuestionPanelView>().Initialize();
-            _injector.Get<MasterAcceptAnswerView>().Initialize();
             _injector.Get<MasterEffectsView>().Initialize();
             
             _injector.Get<CatInBagSystem>().Initialize();
             _injector.Get<CatInBagStoryDotView>().Initialize();
+            
+            _injector.Get<AnsweringTimerSystem>().Initialize();
         }
         
         private void OnNetworkPlayerSpawned(NetworkPlayer networkPlayer)
@@ -161,6 +171,7 @@ namespace Victorina
         public void Update()
         {
             _injector.Get<TimerRunOutDetectSystem>().OnUpdate();
+            _injector.Get<AnsweringTimerSystem>().OnUpdate();
         }
 
         private void GeneratePlayerGuid()

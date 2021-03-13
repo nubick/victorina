@@ -5,30 +5,13 @@ namespace Victorina
 {
     public class MasterAcceptAnswerView : ViewBase
     {
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; } 
-        [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         
         public Text Header;
         public Text AnswerTip;
 
-        public void Initialize()
-        {
-            QuestionAnswerData.Phase.SubscribeChanged(OnPhaseChanged);
-        }
-
-        private void OnPhaseChanged()
-        {
-            if (QuestionAnswerData.Phase.Value == QuestionPhase.AcceptingAnswer && NetworkData.IsMaster)
-            {
-                RefreshUI();
-
-                if (!IsActive)
-                    Show();
-            }
-        }
-
-        private void RefreshUI()
+        protected override void OnShown()
         {
             Header.text = $"Отвечает: {QuestionAnswerData.AnsweringPlayerName}";
             AnswerTip.text = $"Ответ: \n{QuestionAnswerData.AnswerTip}";

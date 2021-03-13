@@ -21,6 +21,8 @@ namespace Victorina
         public Transform RoundQuestionsLinePrefab;
         public RoundQuestionWidget RoundQuestionWidgetPrefab;
 
+        public GameObject MatchSettingsButton;
+        
         [Header("Rounds Info")] 
         public RectTransform RoundsInfoRoot;
         public RoundInfoWidget RoundInfoWidgetPrefab;
@@ -63,6 +65,8 @@ namespace Victorina
             }
             
             RefreshRoundsInfo(MatchData.RoundsInfo.Value);
+
+            MatchSettingsButton.SetActive(NetworkData.IsMaster);
         }
 
         private void RefreshRoundsInfo(NetRoundsInfo roundsInfo)
@@ -108,6 +112,11 @@ namespace Victorina
         private void OnRoundInfoClicked(int number)
         {
             MatchSystem.SelectRound(number);
+        }
+
+        public void OnMatchSettingsButtonClicked()
+        {
+            
         }
     }
 }

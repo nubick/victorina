@@ -121,5 +121,11 @@ namespace Victorina
             Debug.Log($"Master: Send play sound effect command to {All}, number: {number}");
             GetPlayers().ForEach(player => player.SendPlaySoundEffectCommand(number));
         }
+
+        public void SendAnsweringTimerData(AnsweringTimerData data)
+        {
+            //Debug.Log($"Master: Send answering timer data to {All}, {data}");
+            GetPlayers().ForEach(player => player.SendAnsweringTimerData(data));
+        }
     }
 }

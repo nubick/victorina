@@ -18,8 +18,10 @@ namespace Victorina
         [Inject] private VideoStoryDotView VideoStoryDotView { get; set; }
         [Inject] private NoRiskStoryDotView NoRiskStoryDotView { get; set; }
         [Inject] private CatInBagStoryDotView CatInBagStoryDotView { get; set; }
+        [Inject] private AnsweringTimerView AnsweringTimerView { get; set; }
 
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
+        [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
         [Inject] private MasterEffectsView MasterEffectsView { get; set; }
         
         [Inject] private PlayerButtonView PlayerButtonView { get; set; }
@@ -28,6 +30,7 @@ namespace Victorina
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
+        [Inject] private AnsweringTimerData AnsweringTimerData { get; set; }
         
         public void Initialize()
         {
@@ -36,6 +39,7 @@ namespace Victorina
             StartupView.Show();
 
             MatchData.Phase.SubscribeChanged(OnMatchPhaseChanged);
+            QuestionAnswerData.Phase.SubscribeChanged(OnQuestionAnswerPhaseChanged);
             CatInBagData.IsPlayerSelected.SubscribeChanged(OnCatInBagIsPlayerSelectedChanged);
         }
         
@@ -138,6 +142,15 @@ namespace Victorina
         {
             HideAll();
             StartupView.Show();
+        }
+
+        private void OnQuestionAnswerPhaseChanged()
+        {
+            if (QuestionAnswerData.Phase.Value == QuestionPhase.AcceptingAnswer)
+            {
+                if (NetworkData.IsMaster)
+                    MasterAcceptAnswerView.Show();
+            }
         }
         
         private void OnCatInBagIsPlayerSelectedChanged()
