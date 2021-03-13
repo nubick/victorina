@@ -1,4 +1,4 @@
-
+using System;
 using UnityEngine;
 
 namespace Victorina
@@ -17,14 +17,14 @@ namespace Victorina
         //Master only data
         
         //Player only data
-        public PlayerMatchData Player { get; }
+        public DateTime EnableAnswerTime { get; set; }
+        public bool IsMeCurrentPlayer { get; set; }
         
         public MatchData()
         {
             PlayersBoard.Value = new PlayersBoard();
             RoundsInfo.Value = new NetRoundsInfo();
             RoundData.Value = new NetRound();
-            Player = new PlayerMatchData();
         }
 
         public void Clear()
@@ -35,6 +35,11 @@ namespace Victorina
             RoundsInfo.Value = new NetRoundsInfo();
             RoundData.Value = new NetRound();
             SelectedRoundQuestion = null;
+        }
+
+        public string GetCurrentPlayerName()
+        {
+            return PlayersBoard.Value.Current == null ? "Баба-Яга" : PlayersBoard.Value.Current.Name;
         }
         
         public override string ToString()

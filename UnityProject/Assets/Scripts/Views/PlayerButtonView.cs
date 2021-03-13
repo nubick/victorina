@@ -45,10 +45,11 @@ namespace Victorina
                 AnsweringPanel.SetActive(phase == QuestionPhase.AcceptingAnswer);
                 AnsweringText.text = $"Отвечает: {QuestionAnswerData.AnsweringPlayerName}";
             }
-            else if (QuestionAnswerData.QuestionType == QuestionType.NoRisk)
+            else if (QuestionAnswerData.QuestionType == QuestionType.NoRisk ||
+                     QuestionAnswerData.QuestionType == QuestionType.CatInBag)
             {
                 WasWrongAnswerPanel.SetActive(false);
-                AnsweringPanel.SetActive(!PlayerAnswerSystem.IsMeCurrentUser() || phase == QuestionPhase.AcceptingAnswer);
+                AnsweringPanel.SetActive(!MatchData.IsMeCurrentPlayer || phase == QuestionPhase.AcceptingAnswer);
                 AnsweringText.text = $"Отвечает: {MatchData.PlayersBoard.Value.Current.Name}";
             }
             else

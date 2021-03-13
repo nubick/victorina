@@ -21,6 +21,7 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeAudioStoryDot, DeserializeAudioStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeVideoStoryDot, DeserializeVideoStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeNoRiskStoryDot, DeserializeNoRiskStoryDot);
+            SerializationManager.RegisterSerializationHandlers(SerializeCatInBagStoryDot, DeserializeCatInBagStoryDot);
             
             SerializationManager.RegisterSerializationHandlers(SerializePlayersButtonClickData, DeserializePlayersButtonClickData);
         }
@@ -226,6 +227,15 @@ namespace Victorina
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
             writer.WriteInt32(noRiskStoryDot.Index);
         }
+
+        private void SerializeCatInBagStoryDot(Stream stream, CatInBagStoryDot storyDot)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32(storyDot.Index);
+            writer.WriteString(storyDot.Theme);
+            writer.WriteInt32(storyDot.Price);
+            writer.WriteBool(storyDot.CanGiveYourself);
+        }
         
         private void DeserializeFileStoryDot(Stream stream, FileStoryDot fileStoryDot)
         {
@@ -262,6 +272,17 @@ namespace Victorina
             NoRiskStoryDot noRiskStoryDot = new NoRiskStoryDot();
             noRiskStoryDot.Index = reader.ReadInt32();
             return noRiskStoryDot;
+        }
+
+        private CatInBagStoryDot DeserializeCatInBagStoryDot(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            CatInBagStoryDot storyDot = new CatInBagStoryDot();
+            storyDot.Index = reader.ReadInt32();
+            storyDot.Theme = reader.ReadString().ToString();
+            storyDot.Price = reader.ReadInt32();
+            storyDot.CanGiveYourself = reader.ReadBool();
+            return storyDot;
         }
         
         #endregion
@@ -353,6 +374,5 @@ namespace Victorina
             }
             return data;
         }
-        
     }
 }

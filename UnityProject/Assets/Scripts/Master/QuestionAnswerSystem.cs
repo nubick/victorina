@@ -16,6 +16,7 @@ namespace Victorina
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
+        [Inject] private CatInBagData CatInBagData { get; set; }
         
         private bool IsLastQuestionStoryDot() => Data.TimerState == QuestionTimerState.NotStarted &&
                                                  Data.Phase.Value == QuestionPhase.ShowQuestion &&
@@ -35,7 +36,13 @@ namespace Victorina
             
             if (IsLastQuestionStoryDot())
                 StartTimer();
-        
+
+            if (Data.CurrentStoryDot is CatInBagStoryDot)
+            {
+                CatInBagData.IsPlayerSelected.Value = false;
+                SendToPlayersService.SendCatInBagData(CatInBagData);
+            }
+            
             SendData(MasterIntention.StartAnswering);
 
             Debug.Log($"");
@@ -209,6 +216,11 @@ namespace Victorina
             }
             else if (Data.SelectedQuestion.Value.Type == QuestionType.NoRisk)
             {
+                ShowAnswer();
+            }
+            else if (Data.SelectedQuestion.Value.Type == QuestionType.CatInBag)
+            {
+                MatchSystem.FinePlayer(Data.AnsweringPlayerId);
                 ShowAnswer();
             }
         }

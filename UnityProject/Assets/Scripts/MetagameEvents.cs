@@ -1,3 +1,4 @@
+using Assets.Scripts.Data;
 using Assets.Scripts.Utils;
 
 namespace Victorina
@@ -32,5 +33,8 @@ namespace Victorina
         
         public static GameEvent<int> ClientFileDownloaded { get; } = new GameEvent<int>();
         public static GameEvent ClientFileRequested { get; } = new GameEvent();
+        
+        //Commands
+        public static GameEvent<SoundEffect> PlaySoundEffectCommand = new GameEvent<SoundEffect>();
     }
 }

@@ -19,7 +19,7 @@ namespace Victorina
             
             EncodingFixSystem.TryFix(packageName);
             
-            LoadFiles(package);
+            InitializeStoryDots(package);
             return package;
         }
 
@@ -114,6 +114,10 @@ namespace Victorina
                             NoRiskStoryDot noRiskStoryDot = new NoRiskStoryDot();
                             AddStoryDot(question, noRiskStoryDot, isAfterMarker: false);
                         }
+                        else if (typeName == "cat")
+                        {
+                            ReadCatInBag(xmlReader, question);
+                        }
                         else
                         {
                             Debug.LogWarning($"Not supported question type name: {typeName}");
@@ -128,8 +132,7 @@ namespace Victorina
                         Debug.LogWarning($"Not supported question element Name: {xmlReader.Name}");
                 }
             }
-
-            //xmlReader.ReadToFollowing("scenario");
+            
             ReadScenario(xmlReader, question);
             
             xmlReader.ReadToFollowing("answer");
@@ -139,6 +142,55 @@ namespace Victorina
             return question;
         }
 
+        private void ReadCatInBag(XmlReader xmlReader, Question question)
+        {
+            //Example 1:
+            //<type name="cat"/>
+            
+            //Example 2:
+            //<type name="cat">
+            //  <param name="theme">Биология</param>
+            //  <param name="cost">1000</param>
+            //</type>
+            
+            string theme = string.Empty;
+            int catPrice = 0;
+            
+            if (!xmlReader.IsEmptyElement)
+            {
+                while (xmlReader.Read())
+                {
+                    if (xmlReader.NodeType == XmlNodeType.EndElement && xmlReader.Name == "type")
+                        break;
+
+                    if (xmlReader.NodeType == XmlNodeType.Element && xmlReader.Name == "param")
+                    {
+                        string paramName = xmlReader.GetAttribute("name");
+                        if (paramName == "theme")
+                        {
+                            xmlReader.Read();
+                            theme = xmlReader.Value;
+                        }
+                        else if (paramName == "cost")
+                        {
+                            xmlReader.Read();
+                            string priceString = xmlReader.Value;
+                            catPrice = int.Parse(priceString);
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Not supported cat param: {paramName}");
+                        }
+                    }
+                }
+            }
+            
+            //Debug.Log($"Cat in bag, theme: {theme}, price: {catPrice}");
+            question.Type = QuestionType.CatInBag;
+            CatInBagStoryDot catInBagStoryDot = new CatInBagStoryDot(theme, catPrice);
+            AddStoryDot(question, catInBagStoryDot, isAfterMarker: false);
+        }
+        
         private void ReadScenario(XmlReader xmlReader, Question question)
         {
             bool isAfterMarker = false;
@@ -230,18 +282,21 @@ namespace Victorina
             return question.Price == 0;
         }
 
-        private void LoadFiles(Package package)
+        private void InitializeStoryDots(Package package)
         {
-            List<Question> allQuestions = package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions)).ToList();
-            foreach (Question question in allQuestions)
+            List<Theme> allThemes = package.Rounds.SelectMany(round => round.Themes).ToList();
+            foreach (Theme theme in allThemes)
             {
-                InitializeStory(question.QuestionStory, package.Name);
-                InitializeStory(question.AnswerStory, package.Name);
+                foreach (Question question in theme.Questions)
+                {
+                    InitializeStory(question.QuestionStory, package.Name, question, theme);
+                    InitializeStory(question.AnswerStory, package.Name, question, theme);
+                }
             }
             Debug.Log($"Package '{package.Name}' files are loaded");
         }
 
-        private void InitializeStory(List<StoryDot> story, string packageName)
+        private void InitializeStory(List<StoryDot> story, string packageName, Question question, Theme theme)
         {
             int index = 0;
             foreach (StoryDot storyDot in story)
@@ -255,6 +310,14 @@ namespace Victorina
                     audioStoryDot.SiqPath = $"{GetAudioPath(packageName)}/{audioStoryDot.SiqPath}";
                 else if (storyDot is VideoStoryDot videoStoryDot)
                     videoStoryDot.SiqPath = $"{GetVideoPath(packageName)}/{videoStoryDot.SiqPath}";
+                else if (storyDot is CatInBagStoryDot catInBagStoryDot)
+                {
+                    if (catInBagStoryDot.Price == 0)
+                        catInBagStoryDot.Price = question.Price;
+
+                    if (string.IsNullOrEmpty(catInBagStoryDot.Theme))
+                        catInBagStoryDot.Theme = theme.Name;
+                }
             }
         }
         
@@ -271,6 +334,11 @@ namespace Victorina
         public string GetVideoPath(string packageName)
         {
             return $"{Static.DataPath}/{packageName}/Video";
+        }
+
+        private void Log(XmlReader xmlReader)
+        {
+            Debug.Log($"NodeType: {xmlReader.NodeType}, Name: {xmlReader.Name}, ValueType: {xmlReader.ValueType}, Value: {xmlReader.Value}");
         }
     }
 }

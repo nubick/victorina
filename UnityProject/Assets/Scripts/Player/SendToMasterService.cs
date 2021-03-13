@@ -50,5 +50,13 @@ namespace Victorina
             else
                 Debug.Log("Client is not connected: SendFilesLoadingPercentage");
         }
+
+        public void SendWhoWillGetCatInBag(ulong playerId)
+        {
+            if (NetworkingManager.IsConnectedClient)
+                Player.SendWhoWillGetCatInBag(playerId);
+            else
+                Debug.Log("Client is not connected: SendWhoWillGetCatInBag");
+        }
     }
 }

@@ -22,14 +22,14 @@ namespace Victorina
         public void SendPlayersBoard(PlayersBoard playersBoard)
         {
             //Debug.Log($"Master: Send PlayersBoard: {playersBoard} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(UpdatePlayersBoardRPC, playersBoard);
+            InvokeClientRpcOnOwner(ReceivePlayersBoard, playersBoard);
         }
 
         [ClientRPC]
-        private void UpdatePlayersBoardRPC(PlayersBoard playersBoard)
+        private void ReceivePlayersBoard(PlayersBoard playersBoard)
         {
             Debug.Log($"Player {OwnerClientId}: Receive PlayersBoard: {playersBoard}");
-            MatchData.PlayersBoard.Value = playersBoard;
+            PlayerDataReceiver.OnReceive(playersBoard);
         }
 
         public void SendMatchPhase(MatchPhase matchPhase)
@@ -67,10 +67,22 @@ namespace Victorina
         [ClientRPC]
         private void ReceiveQuestionAnswerData(QuestionAnswerData questionAnswerData)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive question answer data: {questionAnswerData}, {Time.time}");
+            Debug.Log($"Player {OwnerClientId}: Receive question answer data: {questionAnswerData}");
             PlayerDataReceiver.OnReceive(questionAnswerData);
         }
 
+        public void SendCatInBagData(CatInBagData data)
+        {
+            InvokeClientRpcOnOwner(ReceiveCatInBagData, data.IsPlayerSelected.Value);
+        }
+
+        [ClientRPC]
+        private void ReceiveCatInBagData(bool isPlayerSelected)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive cat in bag data, isPlayerSelected: {isPlayerSelected}");
+            PlayerDataReceiver.OnReceiveCatInBagData(isPlayerSelected);
+        }
+        
         public void SendSelectedQuestion(NetQuestion netQuestion)
         {
             //Debug.Log($"Master: Send selected question: {netQuestion} to {OwnerClientId}");
@@ -102,7 +114,7 @@ namespace Victorina
         {
             //Debug.Log($"Master: Send story dot: {storyDot} to {OwnerClientId}");
             if (storyDot is TextStoryDot textStoryDot)
-                InvokeClientRpcOnOwner(ReceiveTextStoryDot, textStoryDot, isQuestion);
+                InvokeClientRpcOnOwner(ReceiveTextStoryDot, textStoryDot, isQuestion, "RFS");
             else if (storyDot is ImageStoryDot imageStoryDot)
                 InvokeClientRpcOnOwner(ReceiveImageStoryDot, imageStoryDot, isQuestion);
             else if (storyDot is AudioStoryDot audioStoryDot)
@@ -111,6 +123,8 @@ namespace Victorina
                 InvokeClientRpcOnOwner(ReceiveVideoStoryDot, videoStoryDot, isQuestion);
             else if (storyDot is NoRiskStoryDot noRiskStoryDot)
                 InvokeClientRpcOnOwner(ReceiveNoRiskStoryDot, noRiskStoryDot);
+            else if (storyDot is CatInBagStoryDot catInBagStoryDot)
+                InvokeClientRpcOnOwner(ReceiveCatInBagStoryDot, catInBagStoryDot);
             else
                 throw new Exception($"Not supported story dot: {storyDot}");
         }
@@ -159,6 +173,13 @@ namespace Victorina
         {
             Debug.Log($"Player {OwnerClientId}: Receive no risk story dot");
             SetStoryDot(noRiskStoryDot, true);
+        }
+
+        [ClientRPC]
+        private void ReceiveCatInBagStoryDot(CatInBagStoryDot catInBagStoryDot)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive cat in bag story dot: {catInBagStoryDot}");
+            SetStoryDot(catInBagStoryDot, true);
         }
 
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
@@ -298,6 +319,23 @@ namespace Victorina
         {
             Debug.Log($"Master: Receive files loading percentage '{percentage}' from Player {OwnerClientId}");
             MasterDataReceiver.OnFilesLoadingPercentageReceived(OwnerClientId, percentage);
+        }
+        
+        #endregion
+        
+        #region Send Who Will Get Cat In Bag to MASTER
+
+        public void SendWhoWillGetCatInBag(ulong playerId)
+        {
+            Debug.Log($"Player {OwnerClientId}: send who will get cat in bag to Master: {playerId}");
+            InvokeServerRpc(MasterReceiveWhoWillGetCatInBag, playerId);
+        }
+
+        [ServerRPC]
+        private void MasterReceiveWhoWillGetCatInBag(ulong playerId)
+        {
+            Debug.Log($"Master: Receive who will get cat in bag: {playerId} from Player {OwnerClientId}");
+            MasterDataReceiver.OnReceiveWhoWillGetCatInBag(senderPlayerId: OwnerClientId, whoGetPlayerId: playerId);
         }
         
         #endregion

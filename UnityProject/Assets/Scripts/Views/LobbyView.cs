@@ -19,8 +19,7 @@ namespace Victorina
         [Inject] private SiqLoadedPackageData SiqLoadedPackageData { get; set; }
         [Inject] private ExternalIpData ExternalIpData { get; set; }
         [Inject] private IpCodeSystem IpCodeSystem { get; set; }
-        [Inject] private PlayersBoardView PlayersBoardView { get; set; }
-        
+
         public GameObject AdminPart;
 
         public GameObject[] OpenPackButtons;
@@ -32,14 +31,12 @@ namespace Victorina
         protected override void OnShown()
         {
             AdminPart.SetActive(NetworkData.IsMaster);
-            PlayersBoardView.Show();
             RefreshUI();
             StartCoroutine(RefreshCode());
         }
 
         protected override void OnHide()
         {
-            PlayersBoardView.Hide();
             StopAllCoroutines();
         }
 

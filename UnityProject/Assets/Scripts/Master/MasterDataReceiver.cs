@@ -11,7 +11,8 @@ namespace Victorina
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-
+        [Inject] private CatInBagSystem CatInBagSystem { get; set; }
+        
         public void OnPlayerButtonClickReceived(ulong playerId, float spentSeconds)
         {
             QuestionAnswerSystem.OnPlayerButtonClickReceived(playerId, spentSeconds);
@@ -49,6 +50,11 @@ namespace Victorina
             MatchSystem.SelectQuestion(netRoundQuestion);
         }
 
+        public void OnReceiveWhoWillGetCatInBag(ulong senderPlayerId, ulong whoGetPlayerId)
+        {
+            CatInBagSystem.OnMasterReceiveWhoWillGetCatInBag(senderPlayerId: senderPlayerId, whoGetPlayerId: whoGetPlayerId);
+        }
+        
         public void OnFilesLoadingPercentageReceived(ulong playerId, byte percentage)
         {
             PlayersBoardSystem.UpdateFilesLoadingPercentage(playerId, percentage);

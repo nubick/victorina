@@ -15,7 +15,7 @@ namespace Victorina
         
         public void StartTimer(float resetSeconds, float leftSeconds)
         {
-            MatchData.Player.EnableAnswerTime = DateTime.UtcNow;
+            MatchData.EnableAnswerTime = DateTime.UtcNow;
             QuestionTimer.Reset(resetSeconds, leftSeconds);
             QuestionTimer.Start();
         }
@@ -30,7 +30,7 @@ namespace Victorina
             if (!CanSendAnswerIntention())
                 return;
             
-            float spentSeconds = (float) (DateTime.UtcNow - MatchData.Player.EnableAnswerTime).TotalSeconds;
+            float spentSeconds = (float) (DateTime.UtcNow - MatchData.EnableAnswerTime).TotalSeconds;
             SendToMasterService.SendPlayerButton(spentSeconds);
         }
 
@@ -52,13 +52,15 @@ namespace Victorina
                 WasIntentionSent())
                 return false;
 
-            if (QuestionAnswerData.QuestionType == QuestionType.Simple)
+            switch (QuestionAnswerData.QuestionType)
             {
-                return !WasWrongAnswer();
-            }
-            else
-            {
-                return IsMeCurrentUser();
+                case QuestionType.Simple:
+                    return !WasWrongAnswer();
+                case QuestionType.NoRisk:
+                case QuestionType.CatInBag:
+                    return MatchData.IsMeCurrentPlayer;
+                default:
+                    throw new Exception($"Not supported QuestionType: {QuestionAnswerData.QuestionType}");
             }
         }
 
@@ -70,11 +72,6 @@ namespace Victorina
         public bool WasIntentionSent()
         {
             return QuestionAnswerData.PlayersButtonClickData.Value.Players.Any(_ => _.PlayerId == NetworkData.PlayerId);
-        }
-
-        public bool IsMeCurrentUser()
-        {
-            return MatchSystem.IsCurrentPlayer(NetworkData.PlayerId);
         }
     }
 }

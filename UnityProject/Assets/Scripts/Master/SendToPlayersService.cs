@@ -85,12 +85,6 @@ namespace Victorina
             Debug.Log($"Master: Send selected round question to {All} {netRoundQuestion}");
             GetPlayers().ForEach(player => player.SendSelectedRoundQuestion(netRoundQuestion));
         }
-
-        public void Send(QuestionAnswerData questionAnswerData)
-        {
-            Debug.Log($"Master: Send question answer data to {All}: {questionAnswerData}");
-            GetPlayers().ForEach(player => player.SendQuestionAnswerData(questionAnswerData));
-        }
         
         public void SendNetRoundsInfo(NetRoundsInfo netRoundsInfo)
         {
@@ -103,13 +97,25 @@ namespace Victorina
             Debug.Log($"Master: Send round file ids ({fileIds.Length}) to {All}");
             GetPlayers().ForEach(player => player.SendRoundFileIds(fileIds, chunksAmounts));
         }
+        
+        public void Send(QuestionAnswerData questionAnswerData)
+        {
+            Debug.Log($"Master: Send question answer data to {All}: {questionAnswerData}");
+            GetPlayers().ForEach(player => player.SendQuestionAnswerData(questionAnswerData));
+        }
+
+        public void SendCatInBagData(CatInBagData data)
+        {
+            Debug.Log($"Master: Send cat in bag data to {All}: {data}");
+            GetPlayers().ForEach(player => player.SendCatInBagData(data));
+        }
 
         public void SendPlayersButtonClickData(PlayersButtonClickData playersButtonClickData)
         {
             Debug.Log($"Master: Send players button click data to {All}, ({playersButtonClickData.Players.Count})");
             GetPlayers().ForEach(player => player.SendPlayersButtonClickData(playersButtonClickData));
         }
-
+        
         public void SendPlaySoundEffectCommand(int number)
         {
             Debug.Log($"Master: Send play sound effect command to {All}, number: {number}");

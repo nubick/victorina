@@ -5,14 +5,23 @@ namespace Victorina
     public class PlayerDataReceiver
     {
         [Inject] private MatchData MatchData { get; set; }
+        [Inject] private MatchSystem MatchSystem { get; set; }
+        [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         [Inject] private PlayEffectsSystem PlayEffectsSystem { get; set; }
+        [Inject] private CatInBagData CatInBagData { get; set; }
 
         public void OnReceive(MatchPhase matchPhase)
         {
             MatchData.Phase.Value = matchPhase;
+        }
+
+        public void OnReceive(PlayersBoard playersBoard)
+        {
+            MatchData.PlayersBoard.Value = playersBoard;
+            MatchData.IsMeCurrentPlayer = MatchSystem.IsCurrentPlayer(NetworkData.PlayerId);
         }
         
         public void OnReceive(PlayersButtonClickData data)
@@ -41,6 +50,11 @@ namespace Victorina
             DataChangeHandler.HandleMasterIntention(QuestionAnswerData);
         }
 
+        public void OnReceiveCatInBagData(bool isPlayerSelected)
+        {
+            CatInBagData.IsPlayerSelected.Value = isPlayerSelected;
+        }
+        
         public void OnRoundFileIdsReceived(int[] fileIds, int[] chunksAmounts)
         {
             PlayerFilesRepository.Register(fileIds, chunksAmounts);

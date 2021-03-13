@@ -19,6 +19,9 @@ namespace Victorina
         {
             NetRoundQuestion = netRoundQuestion;
             Price.text = netRoundQuestion.IsAnswered ? string.Empty : netRoundQuestion.Price.ToString();
+
+            if (netRoundQuestion.Type == QuestionType.CatInBag)
+                Price.text += "*";
         }
 
         public void BindEmpty()

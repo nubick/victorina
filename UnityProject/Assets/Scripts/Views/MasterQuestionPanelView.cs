@@ -10,6 +10,7 @@ namespace Victorina
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private QuestionAnswerData Data { get; set; }
+        [Inject] private CatInBagData CatInBagData { get; set; }
         
         public GameObject PreviousQuestionDotButton;
         public GameObject NextQuestionDotButton;
@@ -25,6 +26,7 @@ namespace Victorina
         public void Initialize()
         {
             MetagameEvents.TimerRunOut.Subscribe(OnTimerRunOut);
+            CatInBagData.IsPlayerSelected.SubscribeChanged(RefreshUI);
         }
         
         protected override void OnShown()
@@ -41,14 +43,20 @@ namespace Victorina
             PreviousQuestionDotButton.SetActive(canNavigateToPreviousQuestionDot);
 
             bool isLastDot = Data.CurrentStoryDot == Data.CurrentStory.Last();
-            NextQuestionDotButton.SetActive(!isLastDot);
+            bool isWaitingWhoGetCatInBag = Data.CurrentStoryDot is CatInBagStoryDot && !CatInBagData.IsPlayerSelected.Value;
+            NextQuestionDotButton.SetActive(!isLastDot && !isWaitingWhoGetCatInBag);
+            
+            TimerStrip.gameObject.SetActive(!isWaitingWhoGetCatInBag);
 
             RestartMediaButton.SetActive(false);
             StartTimerButton.SetActive(CanStartTimer(phase, Data.TimerState, isLastDot)); 
             StopTimerButton.SetActive(Data.TimerState == QuestionTimerState.Running);
             
-            //only for No Risk questions
-            AcceptAnswer.SetActive(questionType == QuestionType.NoRisk && phase == QuestionPhase.ShowQuestion && !(Data.CurrentStoryDot is NoRiskStoryDot));
+            //only for No Risk and Cat in Bag questions
+            if(questionType == QuestionType.Simple || Data.CurrentStoryDot is NoRiskStoryDot || Data.CurrentStoryDot is CatInBagStoryDot)
+                AcceptAnswer.SetActive(false);
+            else
+                AcceptAnswer.SetActive(phase == QuestionPhase.ShowQuestion);
             
             ShowAnswerButton.SetActive(questionType == QuestionType.Simple && phase == QuestionPhase.ShowQuestion && Data.TimerState != QuestionTimerState.NotStarted);
 

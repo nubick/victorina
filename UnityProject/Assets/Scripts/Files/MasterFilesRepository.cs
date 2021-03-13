@@ -82,6 +82,12 @@ namespace Victorina
 
         private void BuildChunksCache(int fileId, int chunksAmount)
         {
+            if (_fileBytesCache.ContainsKey(fileId))
+            {
+                Debug.Log($"Notification: file with the same id '{fileId}' was cached before");
+                return;
+            }
+            
             string path = GetPath(fileId);
             byte[] bytes = File.ReadAllBytes(path);
             _fileBytesCache.Add(fileId, bytes);

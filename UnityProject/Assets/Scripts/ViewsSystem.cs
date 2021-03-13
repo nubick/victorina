@@ -11,11 +11,13 @@ namespace Victorina
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private LobbyView LobbyView { get; set; }
         [Inject] private RoundView RoundView { get; set; }
+        [Inject] private PlayersBoardView PlayersBoardView { get; set; }
         [Inject] private TextStoryDotView TextStoryDotView { get; set; }
         [Inject] private ImageStoryDotView ImageStoryDotView { get; set; }
         [Inject] private AudioStoryDotView AudioStoryDotView { get; set; }
         [Inject] private VideoStoryDotView VideoStoryDotView { get; set; }
         [Inject] private NoRiskStoryDotView NoRiskStoryDotView { get; set; }
+        [Inject] private CatInBagStoryDotView CatInBagStoryDotView { get; set; }
 
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private MasterEffectsView MasterEffectsView { get; set; }
@@ -25,6 +27,7 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private CatInBagData CatInBagData { get; set; }
         
         public void Initialize()
         {
@@ -33,8 +36,9 @@ namespace Victorina
             StartupView.Show();
 
             MatchData.Phase.SubscribeChanged(OnMatchPhaseChanged);
+            CatInBagData.IsPlayerSelected.SubscribeChanged(OnCatInBagIsPlayerSelectedChanged);
         }
-
+        
         private void HideAll()
         {
             foreach(ViewBase view in Object.FindObjectsOfType<ViewBase>())
@@ -75,7 +79,10 @@ namespace Victorina
         private void ShowLobbyViews()
         {
             HideAll();
+            
             LobbyView.Show();
+            PlayersBoardView.Show();
+            
             if (NetworkData.IsMaster)
                 MasterEffectsView.Show();
         }
@@ -83,11 +90,14 @@ namespace Victorina
         private void ShowRoundViews()
         {
             HideAll();   
+            
             RoundView.Show();
+            PlayersBoardView.Show();
+            
             if (NetworkData.IsMaster)
                 MasterEffectsView.Show();
         }
-        
+
         public void UpdateStoryDot(QuestionAnswerData data)
         {
             HideAll();
@@ -100,6 +110,12 @@ namespace Victorina
                 VideoStoryDotView.Show();
             else if (data.CurrentStoryDot is NoRiskStoryDot)
                 NoRiskStoryDotView.Show();
+            else if (data.CurrentStoryDot is CatInBagStoryDot)
+            {
+                CatInBagStoryDotView.Show();
+                if (!CatInBagData.IsPlayerSelected.Value)
+                    PlayersBoardView.Show();
+            }
             else
                 TextStoryDotView.Show();
 
@@ -111,7 +127,7 @@ namespace Victorina
 
             if (NetworkData.IsClient)
             {
-                if (data.CurrentStoryDot is NoRiskStoryDot)
+                if (data.CurrentStoryDot is NoRiskStoryDot || data.CurrentStoryDot is CatInBagStoryDot)
                     ;
                 else
                     PlayerButtonView.Show();
@@ -122,6 +138,12 @@ namespace Victorina
         {
             HideAll();
             StartupView.Show();
+        }
+        
+        private void OnCatInBagIsPlayerSelectedChanged()
+        {
+            if(CatInBagData.IsPlayerSelected.Value)
+                PlayersBoardView.Hide();
         }
     }
 }

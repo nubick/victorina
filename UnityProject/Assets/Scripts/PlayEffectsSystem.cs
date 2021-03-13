@@ -1,3 +1,4 @@
+using Assets.Scripts.Data;
 using Injection;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ namespace Victorina
         {
             AppState.Volume.SubscribeChanged(SetVolume);
             SetVolume(AppState.Volume.Value);
+            
+            MetagameEvents.PlaySoundEffectCommand.Subscribe(OnPlaySoundEffect);
         }
 
         private void SetVolume(float volume)
@@ -32,6 +35,11 @@ namespace Victorina
         private AudioClip GetAudioClip(int number)
         {
             return number <= Data.AudioClips.Length ? Data.AudioClips[number - 1] : null;
+        }
+
+        private void OnPlaySoundEffect(SoundEffect soundEffect)
+        {
+            soundEffect.Play(Data.SoundEffectsAudioSource);
         }
     }
 }

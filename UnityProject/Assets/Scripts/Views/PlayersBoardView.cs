@@ -56,7 +56,7 @@ namespace Victorina
 
         private void OnPlayerBoardWidgetClicked(PlayerData playerData)
         {
-            if (NetworkData.IsMaster)
+            if (NetworkData.IsMaster && MatchData.Phase.Value != MatchPhase.Question)
             {
                 MasterPlayerSettingsView.Show(playerData);
             }

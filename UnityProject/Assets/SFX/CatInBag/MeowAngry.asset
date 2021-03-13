@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 994afc43011c4718a8b1e7d7c0925b45, type: 3}
-  m_Name: DevSettings
+  m_Script: {fileID: 11500000, guid: d4f8d46c4ca554de2809f4adbe665c60, type: 3}
+  m_Name: MeowAngry
   m_EditorClassIdentifier: 
-  LastMajorVersion: 0
-  LastMinorVersion: 1
-  BuildNumber: 24
+  Type: 0
+  AudioClip: {fileID: 8300000, guid: db66e9a51f5be4d408f5e9c2b592756d, type: 3}
+  AudioClips: []
+  SelectionType: 0
+  Volume: 1

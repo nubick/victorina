@@ -26,7 +26,8 @@ namespace Victorina
             List<Question> questions = package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions)).ToList();
             int questionsAmount = questions.Count;
             int noRiskAmount = questions.Count(_ => _.Type == QuestionType.NoRisk);
-            Debug.Log($"Rounds: {package.Rounds.Count}, Themes: {themesAmount}, Questions: {questionsAmount}, NoRisk: {noRiskAmount}");
+            int catInBagAmount = questions.Count(_ => _.Type == QuestionType.CatInBag);
+            Debug.Log($"Rounds: {package.Rounds.Count}, Themes: {themesAmount}, Questions: {questionsAmount}, NoRisk: {noRiskAmount}, CatInBag: {catInBagAmount}");
         }
         
         public Question GetQuestion(string questionId)

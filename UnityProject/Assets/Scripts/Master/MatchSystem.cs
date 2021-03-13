@@ -40,9 +40,9 @@ namespace Victorina
             {
                 SelectQuestion(netRoundQuestion);
             }
-            else // if (NetworkData.IsClient)
+            else if (NetworkData.IsClient)
             {
-                if (IsCurrentPlayer(NetworkData.PlayerId))
+                if (MatchData.IsMeCurrentPlayer)
                 {
                     Debug.Log($"Player: Current player selected round question: {netRoundQuestion}");
                     SendToMasterService.SendSelectRoundQuestion(netRoundQuestion);
@@ -132,7 +132,8 @@ namespace Victorina
         public void RewardPlayer(ulong playerId)
         {
             PlayerData player = GetPlayer(playerId);
-            player.Score += MatchData.SelectedRoundQuestion.Price;
+            int price = GetQuestionPrice(MatchData.QuestionAnswerData.SelectedQuestion.Value, MatchData.SelectedRoundQuestion);
+            player.Score += price;
             Debug.Log($"Reward player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
             MatchData.PlayersBoard.NotifyChanged();
             SendToPlayersService.Send(MatchData.PlayersBoard.Value);
@@ -141,10 +142,28 @@ namespace Victorina
         public void FinePlayer(ulong playerId)
         {
             PlayerData player = GetPlayer(playerId);
-            player.Score -= MatchData.SelectedRoundQuestion.Price;
+            int price = GetQuestionPrice(MatchData.QuestionAnswerData.SelectedQuestion.Value, MatchData.SelectedRoundQuestion);
+            player.Score -= price;
             Debug.Log($"Fine player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
             MatchData.PlayersBoard.NotifyChanged();
             SendToPlayersService.Send(MatchData.PlayersBoard.Value);
+        }
+
+        private int GetQuestionPrice(NetQuestion netQuestion, NetRoundQuestion netRoundQuestion)
+        {
+            if (netQuestion.Type == QuestionType.CatInBag)
+            {
+                CatInBagStoryDot catInBagStoryDot = netQuestion.QuestionStory.First() as CatInBagStoryDot;
+
+                if (catInBagStoryDot == null)
+                    throw new Exception("Cat in bag netQuestion doesn't have CatInBagStoryDot at first place.");
+
+                return catInBagStoryDot.Price;
+            }
+            else
+            {
+                return netRoundQuestion.Price;
+            }
         }
 
         public PlayerData GetPlayer(ulong playerId)

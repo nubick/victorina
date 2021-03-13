@@ -11,7 +11,7 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            PlayerName.text = MatchData.PlayersBoard.Value.Current == null ? "Баба-Яга" : MatchData.PlayersBoard.Value.Current.Name;
+            PlayerName.text = MatchData.GetCurrentPlayerName();
         }
     }
 }

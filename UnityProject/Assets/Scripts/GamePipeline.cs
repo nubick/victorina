@@ -57,6 +57,10 @@ namespace Victorina
             _injector.Bind(matchData);
             _injector.Bind(matchData.QuestionAnswerData);
 
+            _injector.Bind(new CatInBagSystem());
+            _injector.Bind(FindObjectOfType<CatInBagStoryDotView>());
+            _injector.Bind(FindObjectOfType<CatInBagData>());
+
             _injector.Bind(new PackageSystem());
             _injector.Bind(new PackageData());
             
@@ -143,6 +147,9 @@ namespace Victorina
             _injector.Get<MasterQuestionPanelView>().Initialize();
             _injector.Get<MasterAcceptAnswerView>().Initialize();
             _injector.Get<MasterEffectsView>().Initialize();
+            
+            _injector.Get<CatInBagSystem>().Initialize();
+            _injector.Get<CatInBagStoryDotView>().Initialize();
         }
         
         private void OnNetworkPlayerSpawned(NetworkPlayer networkPlayer)
