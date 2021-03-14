@@ -9,7 +9,7 @@ namespace Victorina
 
         public override string ToString()
         {
-            return string.Join("", Players.Select(_ => $"{_.Name}: {_.Time}"));
+            return $"[{string.Join("|", Players.Select(_ => $"{_.Name}:{_.Time:0.00}"))}]";
         }
     }
 }

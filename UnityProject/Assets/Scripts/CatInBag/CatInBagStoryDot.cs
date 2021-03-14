@@ -17,7 +17,7 @@ namespace Victorina
 
         public override string ToString()
         {
-            return $"{Theme}|{Price}|{CanGiveYourself}";
+            return $"[cibsd|{Theme}|{Price}|{CanGiveYourself}]";
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Victorina
 
         public override string ToString()
         {
-            return $"IsPlayerSelected: {IsPlayerSelected.Value}";
+            return $"[IsPlayerSelected: {IsPlayerSelected.Value}]";
         }
     }
 }

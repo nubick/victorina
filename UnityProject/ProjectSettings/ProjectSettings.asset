@@ -148,6 +148,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.NervousBanana.Vum
     Standalone: com.NervousBanana.Vum
+    iPhone: com.NervousBanana.Vum
   buildNumber:
     Standalone: 0
     iPhone: 0

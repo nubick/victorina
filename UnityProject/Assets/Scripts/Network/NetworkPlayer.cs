@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics;
 using Injection;
 using MLAPI;
 using MLAPI.Messaging;
+using MLAPI.Serialization.Pooled;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -13,12 +15,7 @@ namespace Victorina
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private PlayerDataReceiver PlayerDataReceiver { get; set; }
         [Inject] private MasterDataReceiver MasterDataReceiver { get; set; }
-
-        public void Awake()
-        {
-            Debug.Log("Network player created");
-        }
-
+        
         public void SendPlayersBoard(PlayersBoard playersBoard)
         {
             //Debug.Log($"Master: Send PlayersBoard: {playersBoard} to {OwnerClientId}");
@@ -136,18 +133,18 @@ namespace Victorina
             else
                 MatchData.QuestionAnswerData.SelectedQuestion.Value.AnswerStory[storyDot.Index] = storyDot;
         }
-
+        
         [ClientRPC]
         private void ReceiveTextStoryDot(TextStoryDot textStoryDot, bool isQuestion)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive text story dot: {textStoryDot}");
+            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}:Receive text story dot: {textStoryDot}");
             SetStoryDot(textStoryDot, isQuestion);
         }
 
         [ClientRPC]
         private void ReceiveImageStoryDot(ImageStoryDot imageStoryDot, bool isQuestion)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive image story dot: {imageStoryDot}");
+            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}:Receive image story dot: {imageStoryDot}");
             SetStoryDot(imageStoryDot, isQuestion);
             PlayerDataReceiver.OnFileStoryDotReceived(imageStoryDot);
         }
@@ -155,7 +152,7 @@ namespace Victorina
         [ClientRPC]
         private void ReceiveAudioStoryDot(AudioStoryDot audioStoryDot, bool isQuestion)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive audio story dot: {audioStoryDot}");
+            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}:Receive audio story dot: {audioStoryDot}");
             SetStoryDot(audioStoryDot, isQuestion);
             PlayerDataReceiver.OnFileStoryDotReceived(audioStoryDot);
         }
@@ -163,7 +160,7 @@ namespace Victorina
         [ClientRPC]
         private void ReceiveVideoStoryDot(VideoStoryDot videoStoryDot, bool isQuestion)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive video story dot: {videoStoryDot}");
+            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}:Receive video story dot: {videoStoryDot}");
             SetStoryDot(videoStoryDot, isQuestion);
             PlayerDataReceiver.OnFileStoryDotReceived(videoStoryDot);
         }
@@ -283,7 +280,7 @@ namespace Victorina
         [ClientRPC]
         private void ReceivePlayersButtonClickData(PlayersButtonClickData playersButtonClickData)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive players button click data: {playersButtonClickData}, {Time.time}");
+            Debug.Log($"Player {OwnerClientId}: Receive players button click data: {playersButtonClickData}");
             PlayerDataReceiver.OnReceive(playersButtonClickData);
         }
 

@@ -83,7 +83,8 @@ namespace Victorina
         private void ShowLobbyViews()
         {
             HideAll();
-            
+
+            Debug.Log("Show: LobbyView");
             LobbyView.Show();
             PlayersBoardView.Show();
             
@@ -95,6 +96,7 @@ namespace Victorina
         {
             HideAll();   
             
+            Debug.Log("Show: RoundView");
             RoundView.Show();
             PlayersBoardView.Show();
             
@@ -107,21 +109,37 @@ namespace Victorina
             HideAll();
 
             if (data.CurrentStoryDot is ImageStoryDot)
+            {
+                Debug.Log("Show: ImageStoryDotView");
                 ImageStoryDotView.Show();
+            }
             else if (data.CurrentStoryDot is AudioStoryDot)
+            {
+                Debug.Log("Show: AudioStoryDotView");
                 AudioStoryDotView.Show();
+            }
             else if (data.CurrentStoryDot is VideoStoryDot)
+            {
+                Debug.Log("Show: VideoStoryDotView");
                 VideoStoryDotView.Show();
+            }
             else if (data.CurrentStoryDot is NoRiskStoryDot)
+            {
+                Debug.Log("Show: NoRiskStoryDotView");
                 NoRiskStoryDotView.Show();
+            }
             else if (data.CurrentStoryDot is CatInBagStoryDot)
             {
+                Debug.Log("Show: CatInBagStoryDotView");
                 CatInBagStoryDotView.Show();
                 if (!CatInBagData.IsPlayerSelected.Value)
                     PlayersBoardView.Show();
             }
             else
+            {
+                Debug.Log("Show: TextStoryDotView");
                 TextStoryDotView.Show();
+            }
 
             if (NetworkData.IsMaster)
             {

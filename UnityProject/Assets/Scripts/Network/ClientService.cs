@@ -24,6 +24,7 @@ namespace Victorina
         public IEnumerator JoinGame(string playerName, string gameCode)
         {
             Debug.Log($"JoinGame: '{playerName}', game code: {gameCode}");
+            Debug.Log($"Client Version: {Static.DevSettings.GetVersion()}");
 
             NetworkData.IsMaster = false;
             
@@ -83,7 +84,7 @@ namespace Victorina
             if (NetworkingManager.IsServer)
                 return;
             
-            Debug.Log($"Player. OnClientDisconnect: {clientId}");
+            Debug.Log($"Player {NetworkingManager.LocalClientId}. OnClientDisconnect: {clientId}");
             NetworkData.ClientConnectingState = ClientConnectingState.Fail;
             ViewsSystem.OnClientDisconnected();
             MetagameEvents.DisconnectedAsClient.Publish();

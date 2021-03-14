@@ -30,7 +30,7 @@ namespace Victorina
             {
                 DownloadingFile file = new DownloadingFile(fileId, chunksAmount);
                 Files.Add(fileId, file);
-                Debug.Log($"Register client file [{fileId};{chunksAmount}], total registered: {Files.Count}");
+                //Debug.Log($"Register client file [{fileId};{chunksAmount}], total registered: {Files.Count}");
                 InitializeIfSavedToDisk(file);
             }
         }
@@ -69,7 +69,7 @@ namespace Victorina
             string path = GetPath(file.FileId);
             if (File.Exists(path))
             {
-                Debug.Log($"File [{file.FileId}] was downloaded before. Load from disk.");
+                //Debug.Log($"File [{file.FileId}] was downloaded before. Load from disk.");
                 file.IsSavedToDisk = true;
             }
         }

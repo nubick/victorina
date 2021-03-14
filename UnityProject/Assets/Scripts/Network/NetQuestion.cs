@@ -13,7 +13,7 @@ namespace Victorina
 
         public override string ToString()
         {
-            return $"NetQuestion [Q:{QuestionStoryDotsAmount}, A:{AnswerStoryDotsAmount}]";
+            return $"[NQ, Type:{Type}, Q:{QuestionStoryDotsAmount}, A:{AnswerStoryDotsAmount}]";
         }
     }
 }

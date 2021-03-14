@@ -9,7 +9,7 @@ namespace Victorina
 
         public override string ToString()
         {
-            return $"[PB, amount: {Players.Count}, cur: {(Current == null ? "none" : Current.ToString())}]";
+            return $"[PB, amount: {Players.Count}, {string.Join(",", Players)}, cur: {(Current == null ? "none" : Current.ToString())}]";
         }
     }
 }
