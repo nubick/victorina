@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Injection;
 using UnityEngine.UI;
 
@@ -5,6 +6,7 @@ namespace Victorina
 {
     public class DownloadingFilesPanelView : ViewBase
     {
+        [Inject] private MatchData MatchData { get; set; }
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         
         public Text ProgressText;
@@ -12,12 +14,13 @@ namespace Victorina
 
         public void Initialize()
         {
-            MetagameEvents.ClientFileRequested.Subscribe(OnClientFileRequested);
+            //MetagameEvents.ClientFileRequested.Subscribe(OnClientFileRequested);
         }
 
         private void OnClientFileRequested()
         {
-            Show();
+            if (!IsActive && MatchData.Phase.Value == MatchPhase.Round)
+                Show();
         }
         
         public void Update()

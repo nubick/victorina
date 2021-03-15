@@ -52,7 +52,7 @@ namespace Victorina
         private void ReceiveRoundData(NetRound netRound)
         {
             Debug.Log($"Player {OwnerClientId}: Receive RoundData: {netRound}");
-            MatchData.RoundData.Value = netRound;
+            PlayerDataReceiver.OnReceiveNetRound(netRound);
         }
 
         public void SendQuestionAnswerData(QuestionAnswerData questionAnswerData)
@@ -241,17 +241,17 @@ namespace Victorina
             SendFileChunk(fileId, chunkIndex);
         }
 
-        public void SendRoundFileIds(int[] fileIds, int[] chunksAmounts)
+        public void SendRoundFileIds(int[] fileIds, int[] chunksAmounts, int[] priorities)
         {
             //Debug.Log($"Master: Send round of file ids ({fileIds.Length}) to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveRoundFileIds, fileIds, chunksAmounts);
+            InvokeClientRpcOnOwner(ReceiveRoundFileIds, fileIds, chunksAmounts, priorities, "RFS");
         }
 
         [ClientRPC]
-        private void ReceiveRoundFileIds(int[] fileIds, int[] chunksAmounts)
+        private void ReceiveRoundFileIds(int[] fileIds, int[] chunksAmounts, int[] priorities)
         {
             Debug.Log($"Player {OwnerClientId}: Receive round file ids, amount: {fileIds.Length}");
-            PlayerDataReceiver.OnRoundFileIdsReceived(fileIds, chunksAmounts);
+            PlayerDataReceiver.OnRoundFileIdsReceived(fileIds, chunksAmounts, priorities);
         }
 
         #endregion
@@ -305,17 +305,17 @@ namespace Victorina
 
         #region Files Loading Percentage to MASTER
 
-        public void SendFilesLoadingPercentageToMaster(byte percentage)
+        public void SendFilesLoadingProgressToMaster(byte percentage, int[] downloadedFileIds)
         {
-            Debug.Log($"Player {OwnerClientId}: send files loading percentage to Master: {percentage}");
-            InvokeServerRpc(MasterReceiveFilesLoadingPercentage, percentage);
+            Debug.Log($"Player {OwnerClientId}: send files loading progress to Master, percentage: {percentage}, amount: {downloadedFileIds.Length}");
+            InvokeServerRpc(MasterReceiveFilesLoadingProgress, percentage, downloadedFileIds, "RFS");
         }
         
         [ServerRPC]
-        private void MasterReceiveFilesLoadingPercentage(byte percentage)
+        private void MasterReceiveFilesLoadingProgress(byte percentage, int[] downloadedFilesIds)
         {
-            Debug.Log($"Master: Receive files loading percentage '{percentage}' from Player {OwnerClientId}");
-            MasterDataReceiver.OnFilesLoadingPercentageReceived(OwnerClientId, percentage);
+            Debug.Log($"Master: Receive files loading progress, percentage: {percentage}, amount: '{downloadedFilesIds.Length}' from Player {OwnerClientId}");
+            MasterDataReceiver.OnFilesLoadingPercentageReceived(OwnerClientId, percentage, downloadedFilesIds);
         }
         
         #endregion

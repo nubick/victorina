@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Injection;
 using MLAPI;
 using UnityEngine;
@@ -35,9 +34,8 @@ namespace Victorina
                 networkPlayer.SendNetRound(MatchData.RoundData.Value);
                 networkPlayer.SendNetRoundsInfo(MatchData.RoundsInfo.Value);
                 
-                Round round = PackageData.Package.Rounds[MatchData.RoundsInfo.Value.CurrentRoundNumber - 1];
-                (int[] fileIds, int[] chunksAmounts) info = PackageSystem.GetRoundFileIds(round);
-                networkPlayer.SendRoundFileIds(info.fileIds, info.chunksAmounts);
+                (int[] fileIds, int[] chunksAmounts, int[] priorities) info = PackageSystem.GetPackageFilesInfo(PackageData.Package);
+                networkPlayer.SendRoundFileIds(info.fileIds, info.chunksAmounts, info.priorities);
                 
             }
             else if (MatchData.Phase.Value == MatchPhase.Question)
@@ -92,10 +90,10 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendNetRoundsInfo(netRoundsInfo));
         }
 
-        public void SendRoundFileIds(int[] fileIds, int[] chunksAmounts)
+        public void SendRoundFileIds(int[] fileIds, int[] chunksAmounts, int[] priorities)
         {
             Debug.Log($"Master: Send round file ids ({fileIds.Length}) to {All}");
-            GetPlayers().ForEach(player => player.SendRoundFileIds(fileIds, chunksAmounts));
+            GetPlayers().ForEach(player => player.SendRoundFileIds(fileIds, chunksAmounts, priorities));
         }
         
         public void Send(QuestionAnswerData questionAnswerData)

@@ -39,7 +39,7 @@ namespace Victorina
             RefreshUI(MatchData.RoundData.Value);
         }
         
-        private void RefreshUI(NetRound netRound)
+        public void RefreshUI(NetRound netRound)
         {
             ClearChild(ThemeWidgetsRoot);
             ClearChild(QuestionsRoot);

@@ -8,11 +8,13 @@ namespace Victorina
         public int FileId { get; }
         public DownloadingFileChunk[] Chunks { get; }
         public bool IsSavedToDisk { get; set; }
+        public int Priority { get; }
         
-        public DownloadingFile(int fileId, int chunksAmount)
+        public DownloadingFile(int fileId, int chunksAmount, int priority)
         {
             FileId = fileId;
             Chunks = new DownloadingFileChunk[chunksAmount];
+            Priority = priority;
             for (int i = 0; i < chunksAmount; i++)
                 Chunks[i] = new DownloadingFileChunk();
         }
@@ -43,6 +45,11 @@ namespace Victorina
                 nextIndex += chunk.Bytes.Length;
             }
             return bytes;
+        }
+
+        public override string ToString()
+        {
+            return $"[FileId:{FileId}, Priority:{Priority}]";
         }
     }
 }

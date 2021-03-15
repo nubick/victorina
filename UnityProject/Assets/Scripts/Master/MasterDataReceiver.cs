@@ -12,6 +12,8 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private CatInBagSystem CatInBagSystem { get; set; }
+        [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
+        [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         
         public void OnPlayerButtonClickReceived(ulong playerId, float spentSeconds)
         {
@@ -54,10 +56,12 @@ namespace Victorina
         {
             CatInBagSystem.OnMasterReceiveWhoWillGetCatInBag(senderPlayerId: senderPlayerId, whoGetPlayerId: whoGetPlayerId);
         }
-        
-        public void OnFilesLoadingPercentageReceived(ulong playerId, byte percentage)
+
+        public void OnFilesLoadingPercentageReceived(ulong clientId, byte percentage, int[] downloadedFilesIds)
         {
-            PlayersBoardSystem.UpdateFilesLoadingPercentage(playerId, percentage);
+            PlayersBoardSystem.UpdateFilesLoadingPercentage(clientId, percentage);
+            byte playerId = ConnectedPlayersData.GetPlayerId(clientId);
+            FilesDeliveryStatusManager.UpdateDownloadedFilesIds(playerId, downloadedFilesIds);
         }
     }
 }

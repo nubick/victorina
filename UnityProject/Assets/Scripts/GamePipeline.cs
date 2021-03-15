@@ -80,6 +80,7 @@ namespace Victorina
             //Master only
             _injector.Bind(new ServerService());
             _injector.Bind(new ConnectedPlayersData());
+            _injector.Bind(new FilesDeliveryStatusManager());
             _injector.Bind(new PlayersBoardSystem());
             _injector.Bind(new QuestionAnswerSystem());
             _injector.Bind(new TimerRunOutDetectSystem());
@@ -144,6 +145,7 @@ namespace Victorina
             
             _injector.Get<PlayEffectsSystem>().Initialize();
 
+            _injector.Get<FilesDeliveryStatusManager>().Initialize();
             _injector.Get<PlayerFilesRequestSystem>().Initialize();
             _injector.Get<PlayersButtonClickPanelView>().Initialize();
             

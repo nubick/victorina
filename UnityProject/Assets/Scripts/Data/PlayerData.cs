@@ -2,8 +2,7 @@ namespace Victorina
 {
     public class PlayerData
     {
-        public string ServerGuid { get; set; }
-        
+        public byte PlayerId { get; set; }
         public ulong Id { get; set; }
         public string Name { get; set; }
         public bool IsConnected { get; set; }

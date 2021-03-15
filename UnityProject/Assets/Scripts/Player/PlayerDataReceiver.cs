@@ -1,3 +1,4 @@
+using System.Linq;
 using Injection;
 
 namespace Victorina
@@ -10,6 +11,7 @@ namespace Victorina
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
+        [Inject] private PlayerFilesRequestSystem PlayerFilesRequestSystem { get; set; }
         [Inject] private PlayEffectsSystem PlayEffectsSystem { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
         [Inject] private AnsweringTimerData AnsweringTimerData { get; set; }
@@ -56,9 +58,10 @@ namespace Victorina
             CatInBagData.IsPlayerSelected.Value = isPlayerSelected;
         }
         
-        public void OnRoundFileIdsReceived(int[] fileIds, int[] chunksAmounts)
+        public void OnRoundFileIdsReceived(int[] fileIds, int[] chunksAmounts, int[] priorities)
         {
-            PlayerFilesRepository.Register(fileIds, chunksAmounts);
+            PlayerFilesRepository.Register(fileIds, chunksAmounts, priorities);
+            PlayerFilesRequestSystem.SendLoadingProgress();
         }
         
         public void OnFileStoryDotReceived(FileStoryDot fileStoryDot)
@@ -81,6 +84,14 @@ namespace Victorina
             AnsweringTimerData.IsRunning = isRunning;
             AnsweringTimerData.MaxSeconds = maxSeconds;
             AnsweringTimerData.LeftSeconds = leftSeconds;
+        }
+
+        public void OnReceiveNetRound(NetRound netRound)
+        {
+            foreach (NetRoundQuestion roundQuestion in netRound.Themes.SelectMany(theme => theme.Questions))
+                roundQuestion.IsDownloadedByMe = roundQuestion.FileIds.All(PlayerFilesRepository.IsDownloaded);
+
+            MatchData.RoundData.Value = netRound;
         }
     }
 }

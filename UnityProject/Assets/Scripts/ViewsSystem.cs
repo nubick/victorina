@@ -39,6 +39,7 @@ namespace Victorina
             StartupView.Show();
 
             MatchData.Phase.SubscribeChanged(OnMatchPhaseChanged);
+            MatchData.RoundData.SubscribeChanged(OnRoundDataChanged);
             QuestionAnswerData.Phase.SubscribeChanged(OnQuestionAnswerPhaseChanged);
             CatInBagData.IsPlayerSelected.SubscribeChanged(OnCatInBagIsPlayerSelectedChanged);
         }
@@ -104,6 +105,14 @@ namespace Victorina
                 MasterEffectsView.Show();
         }
 
+        private void OnRoundDataChanged()
+        {
+            if (MatchData.Phase.Value == MatchPhase.Round)
+            {
+                RoundView.RefreshUI(MatchData.RoundData.Value);
+            }
+        }
+        
         public void UpdateStoryDot(QuestionAnswerData data)
         {
             HideAll();

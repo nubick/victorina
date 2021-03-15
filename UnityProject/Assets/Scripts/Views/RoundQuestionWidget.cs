@@ -10,7 +10,10 @@ namespace Victorina
         public Image Background;
         public Color DefaultColor;
         public Color HighlightedColor;
-     
+
+        public GameObject AllDownloadingIcon;
+        public GameObject MyDownloadingIcon;
+        
         public NetRoundQuestion NetRoundQuestion { get; private set; }
 
         private bool IsEmpty => NetRoundQuestion == null;
@@ -27,6 +30,9 @@ namespace Victorina
                 else if (netRoundQuestion.Type == QuestionType.NoRisk)
                     Price.text += "=";
             }
+            
+            AllDownloadingIcon.SetActive(!netRoundQuestion.IsDownloadedByAll);
+            MyDownloadingIcon.SetActive(!netRoundQuestion.IsDownloadedByMe);
         }
 
         public void BindEmpty()

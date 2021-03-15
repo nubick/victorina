@@ -14,13 +14,18 @@ namespace Victorina
             Files.Clear();
         }
         
-        public void Register(int[] fileIds, int[] chunksAmounts)
+        public void Register(int[] fileIds, int[] chunksAmounts, int[] priorities)
         {
             for (int i = 0; i < fileIds.Length; i++)
-                Register(fileIds[i], chunksAmounts[i]);
+                Register(fileIds[i], chunksAmounts[i], priorities[i]);
         }
 
         public void Register(int fileId, int chunksAmount)
+        {
+            Register(fileId, chunksAmount, 1);
+        }
+        
+        public void Register(int fileId, int chunksAmount, int priority)
         {
             if (Files.ContainsKey(fileId))
             {
@@ -28,7 +33,7 @@ namespace Victorina
             }
             else
             {
-                DownloadingFile file = new DownloadingFile(fileId, chunksAmount);
+                DownloadingFile file = new DownloadingFile(fileId, chunksAmount, priority);
                 Files.Add(fileId, file);
                 //Debug.Log($"Register client file [{fileId};{chunksAmount}], total registered: {Files.Count}");
                 InitializeIfSavedToDisk(file);
@@ -79,6 +84,16 @@ namespace Victorina
             int total = Files.Count;
             int downloaded = Files.Values.Count(_ => _.IsDownloaded());
             return (downloaded, total);
+        }
+
+        public int[] GetDownloadedFileIds()
+        {
+            return Files.Values.Where(_ => _.IsDownloaded()).Select(_ => _.FileId).ToArray();
+        }
+
+        public bool IsDownloaded(int fileId)
+        {
+            return Files.ContainsKey(fileId) && Files[fileId].IsDownloaded();
         }
     }
 }

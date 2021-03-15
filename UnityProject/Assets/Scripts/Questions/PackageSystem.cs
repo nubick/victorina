@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Injection;
 using UnityEngine;
-using UnityEngine.Animations;
 
 namespace Victorina
 {
@@ -36,30 +35,35 @@ namespace Victorina
             return questions.Single(question => question.Id == questionId);
         }
 
-        public (int[], int[]) GetRoundFileIds(Round round)
+        public (int[], int[], int[]) GetPackageFilesInfo(Package package)
         {
-            List<FileStoryDot> fileStoryDots = new List<FileStoryDot>();
-            foreach (Question question in round.Themes.SelectMany(theme => theme.Questions))
+            int roundNumber = 0;
+            List<int> fileIds = new List<int>();
+            List<int> chunksAmounts = new List<int>();
+            List<int> priorities = new List<int>();
+            foreach (Round round in package.Rounds)
             {
-                fileStoryDots.AddRange(GetFileStoryDots(question.QuestionStory));
-                fileStoryDots.AddRange(GetFileStoryDots(question.AnswerStory));
+                roundNumber++;
+                foreach (Question question in round.Themes.SelectMany(theme => theme.Questions))
+                {
+                    foreach (FileStoryDot fileStoryDot in GetFileStoryDots(question))
+                    {
+                        fileIds.Add(fileStoryDot.FileId);
+                        chunksAmounts.Add(fileStoryDot.ChunksAmount);
+                        int priority = roundNumber * 1000 + fileStoryDot.ChunksAmount;
+                        priorities.Add(priority);
+                    }
+                }
             }
-
-            int[] fileIds = new int[fileStoryDots.Count];
-            int[] chunksAmounts = new int[fileStoryDots.Count];
-
-            for (int i = 0; i < fileStoryDots.Count; i++)
-            {
-                fileIds[i] = fileStoryDots[i].FileId;
-                chunksAmounts[i] = fileStoryDots[i].ChunksAmount;
-            }
-
-            return (fileIds, chunksAmounts);
+            return (fileIds.ToArray(), chunksAmounts.ToArray(), priorities.ToArray());
         }
 
-        private List<FileStoryDot> GetFileStoryDots(List<StoryDot> story)
+        public List<FileStoryDot> GetFileStoryDots(Question question)
         {
-            return story.Where(_ => _ is FileStoryDot).Cast<FileStoryDot>().ToList();
+            List<FileStoryDot> storyDots = new List<FileStoryDot>();
+            storyDots.AddRange(question.QuestionStory.Where(_ => _ is FileStoryDot).Cast<FileStoryDot>());
+            storyDots.AddRange(question.AnswerStory.Where(_ => _ is FileStoryDot).Cast<FileStoryDot>());
+            return storyDots;
         }
         
     }

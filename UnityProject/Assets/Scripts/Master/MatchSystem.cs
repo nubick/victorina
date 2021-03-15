@@ -14,6 +14,7 @@ namespace Victorina
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
+        [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
 
         public void Initialize()
         {
@@ -97,16 +98,22 @@ namespace Victorina
             MatchData.RoundsInfo.Value.RoundsAmount = PackageData.Package.Rounds.Count;
             MatchData.RoundsInfo.Value.CurrentRoundNumber = number;
             SendToPlayersService.SendNetRoundsInfo(MatchData.RoundsInfo.Value);
-
-            Round round = PackageData.Package.Rounds[number - 1];
-            MatchData.RoundData.Value = BuildNetRound(round, PackageData.PackageProgress);
-            SendToPlayersService.SendNetRound(MatchData.RoundData.Value);
-
+            
+            SyncCurrentRound();
+            
             MatchData.Phase.Value = MatchPhase.Round;
             SendToPlayersService.SendMatchPhase(MatchData.Phase.Value);
 
-            (int[] fileIds, int[] chunksAmounts) info = PackageSystem.GetRoundFileIds(round);
-            SendToPlayersService.SendRoundFileIds(info.fileIds, info.chunksAmounts);
+            (int[] fileIds, int[] chunksAmounts, int[] priorities) info = PackageSystem.GetPackageFilesInfo(PackageData.Package);
+            SendToPlayersService.SendRoundFileIds(info.fileIds, info.chunksAmounts, info.priorities);
+        }
+
+        public void SyncCurrentRound()
+        {
+            int number = MatchData.RoundsInfo.Value.CurrentRoundNumber;
+            Round round = PackageData.Package.Rounds[number - 1];
+            MatchData.RoundData.Value = BuildNetRound(round, PackageData.PackageProgress);
+            SendToPlayersService.SendNetRound(MatchData.RoundData.Value);
         }
 
         private NetRound BuildNetRound(Round round, PackageProgress packageProgress)
@@ -122,6 +129,9 @@ namespace Victorina
                     netRoundQuestion.Price = question.Price;
                     netRoundQuestion.IsAnswered = packageProgress.IsAnswered(question.Id);
                     netRoundQuestion.Type = question.Type;
+                    netRoundQuestion.IsDownloadedByMe = true;//Master has file from pack
+                    netRoundQuestion.FileIds = FilesDeliveryStatusManager.GetQuestionFileIds(question);
+                    netRoundQuestion.IsDownloadedByAll = FilesDeliveryStatusManager.IsDownloadedByAll(netRoundQuestion.FileIds);
                     netRoundTheme.Questions.Add(netRoundQuestion);
                 }
                 netRound.Themes.Add(netRoundTheme);

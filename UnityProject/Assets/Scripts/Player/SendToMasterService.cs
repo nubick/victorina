@@ -43,10 +43,10 @@ namespace Victorina
                 Debug.Log("Client is not connected: SendSelectRoundQuestion");
         }
 
-        public void SendFilesLoadingPercentage(byte percentage)
+        public void SendFilesLoadingPercentage(byte percentage, int[] downloadedFileIds)
         {
             if (NetworkingManager.IsConnectedClient)
-                Player.SendFilesLoadingPercentageToMaster(percentage);
+                Player.SendFilesLoadingProgressToMaster(percentage, downloadedFileIds);
             else
                 Debug.Log("Client is not connected: SendFilesLoadingPercentage");
         }

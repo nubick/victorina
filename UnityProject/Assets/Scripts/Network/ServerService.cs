@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Injection;
 using MLAPI;
@@ -37,6 +38,7 @@ namespace Victorina
         {
             Debug.Log("Master: Server started");
             NetworkData.IsMaster = true;
+            ConnectedPlayersData.Clear();
             MetagameEvents.ServerStarted.Publish();
         }
         
@@ -45,11 +47,25 @@ namespace Victorina
             Debug.Log($"Master: OnConnectionApproval, clientId: {clientId}");
             ConnectionMessage connectionMessage = ConnectionMessage.FromBytes(connectionData);
             Debug.Log($"PlayerName: {connectionMessage.Name}, guid: {connectionMessage.Guid}");
-            ConnectedPlayersData.PlayersIdToConnectionMessageMap[clientId] = connectionMessage;
+            RegisterPlayer(clientId, connectionMessage);
             ulong? prefabHash = SpawnManager.GetPrefabHashFromGenerator("NetworkPlayer");
             callback(createPlayerObject: true, prefabHash, approved: true, Vector3.zero, Quaternion.identity);
         }
 
+        private void RegisterPlayer(ulong clientId, ConnectionMessage connectionMessage)
+        {
+            JoinedPlayer player = ConnectedPlayersData.Players.SingleOrDefault(_ => _.ConnectionMessage.Guid == connectionMessage.Guid);
+            if (player == null)
+            {
+                player = new JoinedPlayer();
+                player.PlayerId = ConnectedPlayersData.NextPlayerId;
+                ConnectedPlayersData.NextPlayerId++;
+                ConnectedPlayersData.Players.Add(player);
+            }
+            player.ConnectionMessage = connectionMessage;
+            player.ClientId = clientId;
+        }
+        
         private void OnClientConnected(ulong clientId)
         {
             Debug.Log($"{(NetworkData.IsMaster ? "Master" : "Client")}: OnClientConnected, clientId: {clientId}, connected clients: {GetConnectedClients()}");
@@ -71,8 +87,9 @@ namespace Victorina
             
             if (NetworkData.IsMaster)
             {
-                ConnectedPlayersData.ConnectedClientsIds.Rewrite(NetworkingManager.ConnectedClients.Keys);
-                MetagameEvents.MasterClientConnected.Publish();
+                JoinedPlayer joinedPlayer = ConnectedPlayersData.Players.Single(_ => _.ClientId == clientId);
+                joinedPlayer.IsConnected = true;
+                MetagameEvents.MasterClientConnected.Publish(joinedPlayer.PlayerId);
                 SendToPlayersService.SendAll(networkPlayer);
             }
         }
@@ -82,12 +99,13 @@ namespace Victorina
             if (NetworkData.IsMaster)
             {
                 Debug.Log($"Master. OnClientDisconnect, clientId: {clientId}, connected clients: {GetConnectedClients()}");
-                ConnectedPlayersData.PlayersIdToConnectionMessageMap.Remove(clientId);
-                ConnectedPlayersData.ConnectedClientsIds.Rewrite(NetworkingManager.ConnectedClients.Keys);
+                JoinedPlayer joinedPlayer = ConnectedPlayersData.Players.Single(_ => _.ClientId == clientId);
+                joinedPlayer.ClientId = 0;
+                joinedPlayer.IsConnected = false;
                 MetagameEvents.MasterClientDisconnected.Publish();
             }
         }
-
+        
         private string GetConnectedClients()
         {
             return $"({string.Join(",", NetworkingManager.ConnectedClients.Values.Select(_ => _.ClientId))})";
@@ -99,6 +117,7 @@ namespace Victorina
             {
                 Debug.Log("Server. StopServer");
                 NetworkingManager.StopServer();
+                ConnectedPlayersData.Clear();
                 NetworkData.IsMaster = false;
                 MetagameEvents.ServerStopped.Publish();
             }

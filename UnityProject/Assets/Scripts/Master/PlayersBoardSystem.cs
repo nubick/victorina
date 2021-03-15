@@ -18,7 +18,7 @@ namespace Victorina
         
         public void Initialize()
         {
-            MetagameEvents.MasterClientConnected.Subscribe(UpdatePlayersBoard);
+            MetagameEvents.MasterClientConnected.Subscribe(_ => UpdatePlayersBoard());
             MetagameEvents.MasterClientDisconnected.Subscribe(UpdatePlayersBoard);
             MetagameEvents.ServerStopped.Subscribe(OnServerStopped);
         }
@@ -29,23 +29,22 @@ namespace Victorina
                 return;
             
             PlayersBoard.Players.ForEach(_ => _.IsConnected = false);
-            foreach (ulong connectedClientId in ConnectedPlayersData.ConnectedClientsIds)
+
+            foreach (JoinedPlayer player in ConnectedPlayersData.Players)
             {
-                ConnectionMessage msg = ConnectedPlayersData.PlayersIdToConnectionMessageMap[connectedClientId];
-                PlayerData player = PlayersBoard.Players.SingleOrDefault(_ => _.ServerGuid == msg.Guid);
-                
-                if (player == null)
+                PlayerData boardPlayer = PlayersBoard.Players.SingleOrDefault(_ => _.PlayerId == player.PlayerId);
+                if (boardPlayer == null)
                 {
-                    player = new PlayerData();
-                    player.ServerGuid = msg.Guid;
-                    PlayersBoard.Players.Add(player);
+                    boardPlayer = new PlayerData();
+                    boardPlayer.PlayerId = player.PlayerId;
+                    PlayersBoard.Players.Add(boardPlayer);
                 }
                 
-                player.Id = connectedClientId;
-                player.Name = msg.Name;
-                player.IsConnected = true;
+                boardPlayer.Id = player.ClientId;
+                boardPlayer.Name = player.ConnectionMessage.Name;
+                boardPlayer.IsConnected = true;
             }
-
+            
             PlayersBoard.Players.Where(_ => !_.IsConnected).ForEach(_ => _.Id = 0);
 
             if (PlayersBoard.Current != null && !PlayersBoard.Current.IsConnected)
@@ -109,7 +108,7 @@ namespace Victorina
             Debug.Log($"Update player name from '{playerData.Name}' to '{newPlayerName}'");
             if (ServerService.IsPlayerNameValid(newPlayerName))
             {
-                ConnectionMessage msg = ConnectedPlayersData.PlayersIdToConnectionMessageMap.Values.Single(_ => _.Guid == playerData.ServerGuid);
+                ConnectionMessage msg = ConnectedPlayersData.Players.Single(_ => _.PlayerId == playerData.PlayerId).ConnectionMessage;
                 msg.Name = newPlayerName;
                 UpdatePlayersBoard();
             }

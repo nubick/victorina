@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Linq;
 using Injection;
 using UnityEngine;
 
@@ -13,7 +12,7 @@ namespace Victorina
         
         public void Initialize()
         {
-            MetagameEvents.ClientFileDownloaded.Subscribe(OnFileDownloaded);
+            MetagameEvents.ClientFileDownloaded.Subscribe(_ => SendLoadingProgress());
             MetagameEvents.ConnectedAsClient.Subscribe(StartRequesting);
             MetagameEvents.DisconnectedAsClient.Subscribe(StopRequesting);
 
@@ -43,38 +42,53 @@ namespace Victorina
                 
                 if(!Data.IsRequesting)
                     continue;
-                
-                DownloadingFile downloadingFile = PlayerFilesRepository.Files.Values.FirstOrDefault(file => !file.IsDownloaded());
+
+                DownloadingFile downloadingFile = GetNextFile();
                 if (downloadingFile != null)
-                {
-                    for (int chunkIndex = 0; chunkIndex < downloadingFile.Chunks.Length; chunkIndex++)
-                    {
-                        if (!Data.IsRequesting)
-                            break;
-                        
-                        DownloadingFileChunk chunk = downloadingFile.Chunks[chunkIndex];
-                        
-                        if(chunk.IsDownloaded)
-                            continue;
-                        
-                        if(chunk.RequestTime + 10f >= Time.time)
-                            continue;
-                        
-                        SendToMasterService.SendFileChunkRequest(downloadingFile.FileId, chunkIndex);
-                        chunk.RequestTime = Time.time;
-                        MetagameEvents.ClientFileRequested.Publish();
-                        
-                        yield return delay;
-                    }
-                }
+                    yield return DownloadFile(downloadingFile);
             }
         }
 
-        private void OnFileDownloaded(int fileId)
+        private DownloadingFile GetNextFile()
+        {
+            DownloadingFile minPriorityFile = null;
+            foreach (DownloadingFile file in PlayerFilesRepository.Files.Values)
+            {
+                if (file.IsDownloaded())
+                    continue;
+
+                if (minPriorityFile == null || file.Priority < minPriorityFile.Priority)
+                    minPriorityFile = file;
+            }
+            return minPriorityFile;
+        }
+
+        private IEnumerator DownloadFile(DownloadingFile file)
+        {
+            //Debug.Log($"Download file: {file}");
+            for (int chunkIndex = 0; chunkIndex < file.Chunks.Length; chunkIndex++)
+            {
+                DownloadingFileChunk chunk = file.Chunks[chunkIndex];
+                while (!chunk.IsDownloaded)
+                {
+                    if (!Data.IsRequesting)
+                        yield break;
+                    
+                    SendToMasterService.SendFileChunkRequest(file.FileId, chunkIndex);
+                    MetagameEvents.ClientFileRequested.Publish();
+                    float requestTime = Time.time;
+                    while (!chunk.IsDownloaded && Time.time - requestTime < 10f && Data.IsRequesting)
+                        yield return null;
+                }
+            }
+        }
+        
+        public void SendLoadingProgress()
         {
             var progress = PlayerFilesRepository.GetDownloadingProgress();
             byte percentage = (byte) (progress.Downloaded * 100f / progress.Total);
-            SendToMasterService.SendFilesLoadingPercentage(percentage);
+            int[] downloadedFileIds = PlayerFilesRepository.GetDownloadedFileIds();
+            SendToMasterService.SendFilesLoadingPercentage(percentage, downloadedFileIds);
         }
     }
 }

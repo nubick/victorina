@@ -22,7 +22,7 @@ namespace Victorina
         //Master events
         public static GameEvent ServerStarted { get; } = new GameEvent();
         public static GameEvent ServerStopped { get; } = new GameEvent();
-        public static GameEvent MasterClientConnected { get; } = new GameEvent();
+        public static GameEvent<byte> MasterClientConnected { get; } = new GameEvent<byte>();
         public static GameEvent MasterClientDisconnected { get; } = new GameEvent();
         
         public static GameEvent TimerRunOut { get; } = new GameEvent();

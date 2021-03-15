@@ -6,7 +6,13 @@ namespace Victorina
         public int Price { get; set; }
         public bool IsAnswered { get; set; }
         public QuestionType Type { get; set; }
-
+        
+        public bool IsDownloadedByAll { get; set; }
+        public int[] FileIds { get; set; }
+        
+        //Local value for master and player, updated locally
+        public bool IsDownloadedByMe { get; set; }
+        
         public NetRoundQuestion(string questionId)
         {
             QuestionId = questionId;
