@@ -23,6 +23,9 @@ namespace Victorina
 
         public Image TimerStrip;
 
+        public GameObject AnswerTipPanel;
+        public Text AnswerTip;
+        
         private StoryDot PreviousStoryDot => Data.CurrentStory[Data.CurrentStoryDotIndex - 1];
         
         public void Initialize()
@@ -63,6 +66,9 @@ namespace Victorina
             ShowAnswerButton.SetActive(questionType == QuestionType.Simple && phase == QuestionPhase.ShowQuestion && Data.TimerState != QuestionTimerState.NotStarted);
 
             ShowRoundButton.SetActive(phase == QuestionPhase.ShowAnswer && isLastDot);
+
+            AnswerTip.text = QuestionAnswerSystem.GetAnswerTip(Data.SelectedQuestion.Value);
+            AnswerTipPanel.SetActive(false);
         }
 
         private bool CanStartTimer(QuestionPhase phase, QuestionTimerState timerState, bool isLastDot)
@@ -132,6 +138,11 @@ namespace Victorina
         public void OnAcceptAnswerButtonClicked()
         {
             QuestionAnswerSystem.AcceptNoRiskAnswer();
+        }
+
+        public void OnToggleTipTriggerClicked()
+        {
+            AnswerTipPanel.SetActive(!AnswerTipPanel.activeSelf);
         }
     }
 }

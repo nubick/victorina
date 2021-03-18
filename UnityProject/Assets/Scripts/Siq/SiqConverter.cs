@@ -84,7 +84,7 @@ namespace Victorina
                 if (xmlReader.NodeType == XmlNodeType.Element && xmlReader.Name == "question")
                 {
                     Question question = ReadQuestion(xmlReader);
-                    if(!IsEmpty(question))
+                    //if(!IsEmpty(question))
                         questions.Add(question);
                     //Debug.Log($"Question: {question}, {xmlReader.Name}");
                 }

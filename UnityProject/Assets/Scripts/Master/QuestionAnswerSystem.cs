@@ -44,15 +44,6 @@ namespace Victorina
             }
             
             SendData(MasterIntention.StartAnswering);
-
-            Debug.Log($"");
-            Debug.Log($"");
-            Debug.Log($"");
-            string tip = GetAnswerTip(netQuestion);
-            Debug.Log($"{tip}");
-            Debug.Log($"");
-            Debug.Log($"");
-            Debug.Log($"");
         }
         
         private void SendData(MasterIntention intention)
@@ -180,7 +171,7 @@ namespace Victorina
             }
         }
         
-        private string GetAnswerTip(NetQuestion netQuestion)
+        public string GetAnswerTip(NetQuestion netQuestion)
         {
             StoryDot lastStoryDot = netQuestion.AnswerStory.Last();
             if (lastStoryDot is TextStoryDot textStoryDot)
