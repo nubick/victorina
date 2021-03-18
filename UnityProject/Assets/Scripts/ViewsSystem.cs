@@ -18,7 +18,6 @@ namespace Victorina
         [Inject] private VideoStoryDotView VideoStoryDotView { get; set; }
         [Inject] private NoRiskStoryDotView NoRiskStoryDotView { get; set; }
         [Inject] private CatInBagStoryDotView CatInBagStoryDotView { get; set; }
-        [Inject] private AnsweringTimerView AnsweringTimerView { get; set; }
 
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
@@ -30,8 +29,7 @@ namespace Victorina
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
-        [Inject] private AnsweringTimerData AnsweringTimerData { get; set; }
-        
+
         public void Initialize()
         {
             foreach(ViewBase view in Object.FindObjectsOfType<ViewBase>())
@@ -42,6 +40,9 @@ namespace Victorina
             MatchData.RoundData.SubscribeChanged(OnRoundDataChanged);
             QuestionAnswerData.Phase.SubscribeChanged(OnQuestionAnswerPhaseChanged);
             CatInBagData.IsPlayerSelected.SubscribeChanged(OnCatInBagIsPlayerSelectedChanged);
+            
+            MetagameEvents.DisconnectedAsClient.Subscribe(ShowStartUpView);
+            MetagameEvents.ServerStopped.Subscribe(ShowStartUpView);
         }
         
         private void HideAll()
@@ -164,13 +165,7 @@ namespace Victorina
                     PlayerButtonView.Show();
             }
         }
-
-        public void OnClientDisconnected()
-        {
-            HideAll();
-            StartupView.Show();
-        }
-
+        
         private void OnQuestionAnswerPhaseChanged()
         {
             if (QuestionAnswerData.Phase.Value == QuestionPhase.AcceptingAnswer)
@@ -184,6 +179,12 @@ namespace Victorina
         {
             if(CatInBagData.IsPlayerSelected.Value)
                 PlayersBoardView.Hide();
+        }
+
+        private void ShowStartUpView()
+        {
+            HideAll();
+            StartupView.Show();
         }
     }
 }

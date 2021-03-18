@@ -7,7 +7,6 @@ namespace Victorina
 {
     public class RoundView : ViewBase
     {
-        [Inject] private StartupView StartupView { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private ServerService ServerService { get; set; }
@@ -89,8 +88,6 @@ namespace Victorina
                 ServerService.StopServer();
             else
                 ClientService.LeaveGame();
-            
-            SwitchTo(StartupView);
         }
         
         private void OnRoundQuestionClicked(NetRoundQuestion netRoundQuestion)

@@ -11,7 +11,6 @@ namespace Victorina
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private ServerService ServerService { get; set; }
-        [Inject] private StartupView StartupView { get; set; }
         [Inject] private RoundView RoundView { get; set; }
         [Inject] private SiqPackOpenSystem SiqPackOpenSystem { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
@@ -67,7 +66,6 @@ namespace Victorina
         public void OnBackButtonClicked()
         {
             ServerService.StopServer();
-            SwitchTo(StartupView);
         }
 
         public void OnLoadPackButtonClicked()

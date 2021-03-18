@@ -86,7 +86,6 @@ namespace Victorina
             
             Debug.Log($"Player {NetworkingManager.LocalClientId}. OnClientDisconnect: {clientId}");
             NetworkData.ClientConnectingState = ClientConnectingState.Fail;
-            ViewsSystem.OnClientDisconnected();
             MetagameEvents.DisconnectedAsClient.Publish();
         }
     }
