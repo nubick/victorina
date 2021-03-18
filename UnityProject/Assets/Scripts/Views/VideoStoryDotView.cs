@@ -1,3 +1,4 @@
+using System.Collections;
 using System.IO;
 using Injection;
 using UnityEngine;
@@ -25,17 +26,30 @@ namespace Victorina
             
             AppState.Volume.SubscribeChanged(SetVolume);
             SetVolume(AppState.Volume.Value);
+            VideoPlayer.errorReceived += VideoPlayerOnErrorReceived;
+        }
+
+        private void VideoPlayerOnErrorReceived(VideoPlayer source, string message)
+        {
+            Debug.LogWarning($"VideoPlayerOnErrorReceived: {message}");
         }
         
         protected override void OnShown()
         {
             if (MatchData.QuestionAnswerData.CurrentStoryDot is VideoStoryDot videoStoryDot)
             {
+                StopAllCoroutines();
                 PlayVideo(videoStoryDot.FileId);
             }
         }
 
         private void PlayVideo(int fileId)
+        {
+            StopAllCoroutines();
+            StartCoroutine(PlayVideoCoroutine(fileId));
+        }
+        
+        private IEnumerator PlayVideoCoroutine(int fileId)
         {
             bool exists = MasterFilesRepository.Has(fileId);
             VideoPlayer.gameObject.SetActive(exists);
@@ -52,6 +66,11 @@ namespace Victorina
                 string requestPath = $"file://{tempVideoPath}";
                 Debug.Log($"Request video path: '{tempVideoPath}'");
                 VideoPlayer.url = requestPath;
+                VideoPlayer.Prepare();
+
+                while (!VideoPlayer.isPrepared)
+                        yield return null;
+                
                 VideoPlayer.Play();
             }
             else
