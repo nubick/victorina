@@ -51,7 +51,7 @@ namespace Victorina
                 Debug.Log("Client is not connected: SendFilesLoadingPercentage");
         }
 
-        public void SendWhoWillGetCatInBag(ulong playerId)
+        public void SendWhoWillGetCatInBag(byte playerId)
         {
             if (NetworkingManager.IsConnectedClient)
                 Player.SendWhoWillGetCatInBag(playerId);

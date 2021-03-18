@@ -21,8 +21,9 @@ namespace Victorina
             return NetworkingManager.ConnectedClientsList.Where(_ => _.PlayerObject != null).Select(_ => _.PlayerObject.GetComponent<NetworkPlayer>()).ToList();
         }
 
-        public void SendAll(NetworkPlayer networkPlayer)
+        public void SendConnectionData(NetworkPlayer networkPlayer, byte registeredPlayerId)
         {
+            networkPlayer.SendRegisteredPlayerId(registeredPlayerId);
             networkPlayer.SendPlayersBoard(MatchData.PlayersBoard.Value);
 
             if (MatchData.Phase.Value == MatchPhase.WaitingInLobby)

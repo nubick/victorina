@@ -3,7 +3,6 @@ namespace Victorina
     public class PlayerData
     {
         public byte PlayerId { get; set; }
-        public ulong Id { get; set; }
         public string Name { get; set; }
         public bool IsConnected { get; set; }
         public int Score { get; set; }
@@ -11,7 +10,7 @@ namespace Victorina
         
         public override string ToString()
         {
-            return $"[{Id}:{Name}:{Score}]";
+            return $"[{PlayerId}:{Name}:{Score}]";
         }
     }
 }

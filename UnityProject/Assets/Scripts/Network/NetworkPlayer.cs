@@ -1,10 +1,7 @@
 using System;
-using System.Diagnostics;
 using Injection;
 using MLAPI;
 using MLAPI.Messaging;
-using MLAPI.Serialization.Pooled;
-using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Victorina
@@ -15,6 +12,19 @@ namespace Victorina
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private PlayerDataReceiver PlayerDataReceiver { get; set; }
         [Inject] private MasterDataReceiver MasterDataReceiver { get; set; }
+
+        public void SendRegisteredPlayerId(byte playerId)
+        {
+            Debug.Log($"Master: Send Registered PlayerId {playerId} to {OwnerClientId}");
+            InvokeClientRpcOnOwner(ReceiveRegisteredPlayerId, playerId);
+        }
+
+        [ClientRPC]
+        private void ReceiveRegisteredPlayerId(byte playerId)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive registered player id: {playerId}");
+            PlayerDataReceiver.OnReceiveRegisteredPlayerId(playerId);
+        }
         
         public void SendPlayersBoard(PlayersBoard playersBoard)
         {
@@ -322,17 +332,17 @@ namespace Victorina
         
         #region Send Who Will Get Cat In Bag to MASTER
 
-        public void SendWhoWillGetCatInBag(ulong playerId)
+        public void SendWhoWillGetCatInBag(byte playerId)
         {
             Debug.Log($"Player {OwnerClientId}: send who will get cat in bag to Master: {playerId}");
             InvokeServerRpc(MasterReceiveWhoWillGetCatInBag, playerId);
         }
 
         [ServerRPC]
-        private void MasterReceiveWhoWillGetCatInBag(ulong playerId)
+        private void MasterReceiveWhoWillGetCatInBag(byte playerId)
         {
-            Debug.Log($"Master: Receive who will get cat in bag: {playerId} from Player {OwnerClientId}");
-            MasterDataReceiver.OnReceiveWhoWillGetCatInBag(senderPlayerId: OwnerClientId, whoGetPlayerId: playerId);
+            Debug.Log($"Master: Receive who will get cat in bag: {playerId} from Player client id {OwnerClientId}");
+            MasterDataReceiver.OnReceiveWhoWillGetCatInBag(senderClientId: OwnerClientId, whoGetPlayerId: playerId);
         }
         
         #endregion

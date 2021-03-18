@@ -2,7 +2,6 @@ using System.IO;
 using System.Linq;
 using MLAPI.Serialization;
 using MLAPI.Serialization.Pooled;
-using UnityEngine;
 
 namespace Victorina
 {
@@ -37,7 +36,7 @@ namespace Victorina
             writer.WriteInt32(playersBoard.Players.Count);
             foreach (PlayerData player in playersBoard.Players)
             {
-                writer.WriteUInt64(player.Id);
+                writer.WriteByte(player.PlayerId);
                 writer.WriteString(player.Name);
                 writer.WriteBool(player.IsConnected);
                 writer.WriteInt32(player.Score);
@@ -47,7 +46,7 @@ namespace Victorina
             bool isCurrentSelected = playersBoard.Current != null;
             writer.WriteBool(isCurrentSelected);
             if (isCurrentSelected)
-                writer.WriteUInt64(playersBoard.Current.Id);
+                writer.WriteByte(playersBoard.Current.PlayerId);
         }
 
         private PlayersBoard DeserializePlayersBoard(Stream stream)
@@ -58,7 +57,7 @@ namespace Victorina
             for (int i = 0; i < amount; i++)
             {
                 PlayerData player = new PlayerData();
-                player.Id = reader.ReadUInt64();
+                player.PlayerId = (byte) reader.ReadByte();
                 player.Name = reader.ReadString().ToString();
                 player.IsConnected = reader.ReadBool();
                 player.Score = reader.ReadInt32();
@@ -69,8 +68,8 @@ namespace Victorina
             bool isCurrentSelected = reader.ReadBool();
             if (isCurrentSelected)
             {
-                ulong currentId = reader.ReadUInt64();
-                playersBoard.Current = playersBoard.Players.SingleOrDefault(_ => _.Id == currentId);
+                byte currentPlayerId = (byte) reader.ReadByte();
+                playersBoard.Current = playersBoard.Players.Single(_ => _.PlayerId == currentPlayerId);
             }
             
             return playersBoard;
@@ -323,12 +322,12 @@ namespace Victorina
             writer.WriteSingle(data.TimerResetSeconds);
             writer.WriteSingle(data.TimerLeftSeconds);
 
-            writer.WriteUInt64(data.AnsweringPlayerId);
+            writer.WriteByte(data.AnsweringPlayerId);
             writer.WriteString(data.AnsweringPlayerName ?? string.Empty);
 
             writer.WriteInt32(data.WrongAnsweredIds.Count);
-            foreach (ulong playerId in data.WrongAnsweredIds)
-                writer.WriteUInt64(playerId);
+            foreach (byte playerId in data.WrongAnsweredIds)
+                writer.WriteByte(playerId);
         }
 
         private QuestionAnswerData DeserializeQuestionAnswerData(Stream stream)
@@ -344,12 +343,12 @@ namespace Victorina
             data.TimerResetSeconds = reader.ReadSingle();
             data.TimerLeftSeconds = reader.ReadSingle();
 
-            data.AnsweringPlayerId = reader.ReadUInt64();
+            data.AnsweringPlayerId = (byte) reader.ReadByte();
             data.AnsweringPlayerName = reader.ReadString().ToString();
 
             int amount = reader.ReadInt32();
             for (int i = 0; i < amount; i++)
-                data.WrongAnsweredIds.Add(reader.ReadUInt64());
+                data.WrongAnsweredIds.Add((byte) reader.ReadByte());
 
             return data;
         }
@@ -360,7 +359,7 @@ namespace Victorina
             writer.WriteInt32(data.Players.Count);
             foreach (PlayerButtonClickData player in data.Players)
             {
-                writer.WriteUInt64(player.PlayerId);
+                writer.WriteByte(player.PlayerId);
                 writer.WriteString(player.Name);
                 writer.WriteSingle(player.Time);
             }
@@ -374,7 +373,7 @@ namespace Victorina
             for (int i = 0; i < count; i++)
             {
                 PlayerButtonClickData player = new PlayerButtonClickData();
-                player.PlayerId = reader.ReadUInt64();
+                player.PlayerId = (byte) reader.ReadByte();
                 player.Name = reader.ReadString().ToString();
                 player.Time = reader.ReadSingle();
                 data.Players.Add(player);

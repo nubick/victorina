@@ -118,7 +118,7 @@ namespace Victorina
             SendData(MasterIntention.ShowAnswer);
         }
 
-        public void OnPlayerButtonClickReceived(ulong playerId, float spentSeconds)
+        public void OnPlayerButtonClickReceived(byte playerId, float spentSeconds)
         {
             bool wasReceivedBefore = Data.PlayersButtonClickData.Value.Players.Any(_ => _.PlayerId == playerId);
             if (wasReceivedBefore)
@@ -126,7 +126,7 @@ namespace Victorina
 
             bool isNotCurrentForNoRiskQuestion = Data.QuestionType == QuestionType.NoRisk &&
                                                  MatchData.PlayersBoard.Value.Current != null &&
-                                                 MatchData.PlayersBoard.Value.Current.Id != playerId;
+                                                 MatchData.PlayersBoard.Value.Current.PlayerId != playerId;
             if (isNotCurrentForNoRiskQuestion)
                 return;
 
@@ -155,7 +155,7 @@ namespace Victorina
         
         #region Accepting answer
         
-        public void SelectPlayerForAnswer(ulong playerId)
+        public void SelectPlayerForAnswer(byte playerId)
         {
             if (NetworkData.IsClient)
                 return;
@@ -176,7 +176,7 @@ namespace Victorina
             else
             {
                 PauseTimer();
-                SelectPlayerForAnswer(MatchData.PlayersBoard.Value.Current.Id);
+                SelectPlayerForAnswer(MatchData.PlayersBoard.Value.Current.PlayerId);
             }
         }
         

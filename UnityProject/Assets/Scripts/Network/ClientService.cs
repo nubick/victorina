@@ -27,6 +27,7 @@ namespace Victorina
             Debug.Log($"Client Version: {Static.DevSettings.GetVersion()}");
 
             NetworkData.IsMaster = false;
+            NetworkData.RegisteredPlayerId = 0;
             
             string ip = IpCodeSystem.GetIp(gameCode);
             Debug.Log($"Joining IP: {ip}");
@@ -69,7 +70,6 @@ namespace Victorina
             {
                 Debug.Log($"Client connection success, clientId: {clientId}");
                 NetworkData.ClientConnectingState = ClientConnectingState.Success;
-                NetworkData.PlayerId = clientId;
                 MetagameEvents.ConnectedAsClient.Publish();
             }
             else

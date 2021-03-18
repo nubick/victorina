@@ -1,5 +1,4 @@
 using System.Linq;
-using Assets.Scripts.Utils;
 using Injection;
 using UnityEngine;
 
@@ -30,25 +29,19 @@ namespace Victorina
             
             PlayersBoard.Players.ForEach(_ => _.IsConnected = false);
 
-            foreach (JoinedPlayer player in ConnectedPlayersData.Players)
+            foreach (JoinedPlayer joinedPlayer in ConnectedPlayersData.Players)
             {
-                PlayerData boardPlayer = PlayersBoard.Players.SingleOrDefault(_ => _.PlayerId == player.PlayerId);
+                PlayerData boardPlayer = PlayersBoard.Players.SingleOrDefault(_ => _.PlayerId == joinedPlayer.PlayerId);
                 if (boardPlayer == null)
                 {
                     boardPlayer = new PlayerData();
-                    boardPlayer.PlayerId = player.PlayerId;
+                    boardPlayer.PlayerId = joinedPlayer.PlayerId;
                     PlayersBoard.Players.Add(boardPlayer);
                 }
                 
-                boardPlayer.Id = player.ClientId;
-                boardPlayer.Name = player.ConnectionMessage.Name;
+                boardPlayer.Name = joinedPlayer.ConnectionMessage.Name;
                 boardPlayer.IsConnected = true;
             }
-            
-            PlayersBoard.Players.Where(_ => !_.IsConnected).ForEach(_ => _.Id = 0);
-
-            if (PlayersBoard.Current != null && !PlayersBoard.Current.IsConnected)
-                PlayersBoard.Current = null;
             
             MatchData.PlayersBoard.NotifyChanged();
             SendToPlayersService.Send(PlayersBoard);
@@ -56,19 +49,19 @@ namespace Victorina
 
         private void OnServerStopped()
         {
-            if (NetworkData.IsClient)
-                return;
-
-            PlayersBoard.Players.Clear();
+            if (NetworkData.IsMaster)
+            {
+                PlayersBoard.Players.Clear();
+            }
         }
 
-        public void MakePlayerCurrent(ulong playerId)
+        public void MakePlayerCurrent(byte playerId)
         {
-            if (NetworkData.IsClient)
-                return;
-
-            PlayerData playerData = MatchSystem.GetPlayer(playerId);
-            MakePlayerCurrent(playerData);
+            if (NetworkData.IsMaster)
+            {
+                PlayerData playerData = MatchSystem.GetPlayer(playerId);
+                MakePlayerCurrent(playerData);
+            }
         }
         
         public void MakePlayerCurrent(PlayerData playerData)
@@ -85,22 +78,15 @@ namespace Victorina
             SendToPlayersService.Send(MatchData.PlayersBoard.Value);
         }
 
-        public void UpdateFilesLoadingPercentage(ulong playerId, byte percentage)
+        public void UpdateFilesLoadingPercentage(byte playerId, byte percentage)
         {
             if (NetworkData.IsClient)
                 return;
 
-            PlayerData playerData = PlayersBoard.Players.SingleOrDefault(_ => _.Id == playerId);
-            if (playerData == null)
-            {
-                Debug.Log($"Master. Validation Error. Can't find player by id '{playerId}' to set files loading percentage: {percentage}");
-            }
-            else
-            {
-                playerData.FilesLoadingPercentage = percentage;
-                MatchData.PlayersBoard.NotifyChanged();
-                SendToPlayersService.Send(PlayersBoard);
-            }
+            PlayerData playerData = MatchSystem.GetPlayer(playerId);
+            playerData.FilesLoadingPercentage = percentage;
+            MatchData.PlayersBoard.NotifyChanged();
+            SendToPlayersService.Send(PlayersBoard);
         }
 
         public void UpdatePlayerName(PlayerData playerData, string newPlayerName)

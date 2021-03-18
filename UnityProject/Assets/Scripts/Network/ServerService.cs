@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Injection;
 using MLAPI;
@@ -41,17 +40,31 @@ namespace Victorina
             ConnectedPlayersData.Clear();
             MetagameEvents.ServerStarted.Publish();
         }
-        
+
         private void OnConnectionApprovalCallback(byte[] connectionData, ulong clientId, NetworkingManager.ConnectionApprovedDelegate callback)
         {
             Debug.Log($"Master: OnConnectionApproval, clientId: {clientId}");
             ConnectionMessage connectionMessage = ConnectionMessage.FromBytes(connectionData);
             Debug.Log($"PlayerName: {connectionMessage.Name}, guid: {connectionMessage.Guid}");
-            RegisterPlayer(clientId, connectionMessage);
-            ulong? prefabHash = SpawnManager.GetPrefabHashFromGenerator("NetworkPlayer");
-            callback(createPlayerObject: true, prefabHash, approved: true, Vector3.zero, Quaternion.identity);
+            if (IsAnotherConnection(connectionMessage))
+            {
+                Debug.Log($"Master: Can't approve more than one connection from single player.");
+                callback(false, null, false, null, null);
+            }
+            else
+            {
+                RegisterPlayer(clientId, connectionMessage);
+                ulong? prefabHash = SpawnManager.GetPrefabHashFromGenerator("NetworkPlayer");
+                callback(createPlayerObject: true, prefabHash, approved: true, Vector3.zero, Quaternion.identity);
+            }
         }
 
+        private bool IsAnotherConnection(ConnectionMessage connectionMessage)
+        {
+            JoinedPlayer joinedPlayer = ConnectedPlayersData.Players.SingleOrDefault(_ => _.ConnectionMessage.Guid == connectionMessage.Guid);
+            return joinedPlayer != null && NetworkingManager.ConnectedClients.Keys.Contains(joinedPlayer.ClientId);
+        }
+        
         private void RegisterPlayer(ulong clientId, ConnectionMessage connectionMessage)
         {
             JoinedPlayer player = ConnectedPlayersData.Players.SingleOrDefault(_ => _.ConnectionMessage.Guid == connectionMessage.Guid);
@@ -61,6 +74,7 @@ namespace Victorina
                 player.PlayerId = ConnectedPlayersData.NextPlayerId;
                 ConnectedPlayersData.NextPlayerId++;
                 ConnectedPlayersData.Players.Add(player);
+                Debug.Log($"Master: New player is registered, PlayerId {player.PlayerId}");
             }
             player.ConnectionMessage = connectionMessage;
             player.ClientId = clientId;
@@ -90,7 +104,7 @@ namespace Victorina
                 JoinedPlayer joinedPlayer = ConnectedPlayersData.Players.Single(_ => _.ClientId == clientId);
                 joinedPlayer.IsConnected = true;
                 MetagameEvents.MasterClientConnected.Publish(joinedPlayer.PlayerId);
-                SendToPlayersService.SendAll(networkPlayer);
+                SendToPlayersService.SendConnectionData(networkPlayer, joinedPlayer.PlayerId);
             }
         }
 
@@ -99,16 +113,23 @@ namespace Victorina
             if (NetworkData.IsMaster)
             {
                 Debug.Log($"Master. OnClientDisconnect, clientId: {clientId}, connected clients: {GetConnectedClients()}");
-                JoinedPlayer joinedPlayer = ConnectedPlayersData.Players.Single(_ => _.ClientId == clientId);
-                joinedPlayer.ClientId = 0;
-                joinedPlayer.IsConnected = false;
-                MetagameEvents.MasterClientDisconnected.Publish();
+                JoinedPlayer joinedPlayer = ConnectedPlayersData.Players.SingleOrDefault(_ => _.ClientId == clientId);
+                if (joinedPlayer != null)
+                {
+                    joinedPlayer.ClientId = 0;
+                    joinedPlayer.IsConnected = false;
+                    MetagameEvents.MasterClientDisconnected.Publish();
+                }
+                else
+                {
+                    Debug.Log($"Master: OnClientDisconnect, NOT CONNECTED CLIENT: {clientId}, connected clients: {GetConnectedClients()}");
+                }
             }
         }
         
         private string GetConnectedClients()
         {
-            return $"({string.Join(",", NetworkingManager.ConnectedClients.Values.Select(_ => _.ClientId))})";
+            return $"({string.Join(",", NetworkingManager.ConnectedClients.Keys)})";
         }
 
         public void StopServer()

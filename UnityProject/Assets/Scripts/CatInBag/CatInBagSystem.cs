@@ -28,7 +28,7 @@ namespace Victorina
         {
             if (IsWaitingWhoGiveCatInBag)
             {
-                if (!CanGiveToPlayer(playerData.Id))
+                if (!CanGiveToPlayer(playerData.PlayerId))
                 {
                     Debug.Log($"Can't give cat in bag to current player: {playerData}");
                     return;
@@ -37,13 +37,13 @@ namespace Victorina
                 if (NetworkData.IsMaster)
                 {
                     Debug.Log($"Master. Give cat in bag to {playerData}");
-                    GiveCatInBag(playerData.Id);
+                    GiveCatInBag(playerData.PlayerId);
                 }
                 else
                 {
                     if (MatchData.IsMeCurrentPlayer)
                     {
-                        SendToMasterService.SendWhoWillGetCatInBag(playerData.Id);
+                        SendToMasterService.SendWhoWillGetCatInBag(playerData.PlayerId);
                     }
                     else
                     {
@@ -53,13 +53,13 @@ namespace Victorina
             }
         }
 
-        private bool CanGiveToPlayer(ulong playerId)
+        private bool CanGiveToPlayer(byte playerId)
         {
             CatInBagStoryDot catInBagStoryDot = QuestionAnswerData.CurrentStoryDot as CatInBagStoryDot;
             return catInBagStoryDot.CanGiveYourself || !MatchSystem.IsCurrentPlayer(playerId);
         }
 
-        public void OnMasterReceiveWhoWillGetCatInBag(ulong senderPlayerId, ulong whoGetPlayerId)
+        public void OnMasterReceiveWhoWillGetCatInBag(byte senderPlayerId, byte whoGetPlayerId)
         {
             if (!MatchSystem.IsCurrentPlayer(senderPlayerId))
             {
@@ -83,10 +83,9 @@ namespace Victorina
             GiveCatInBag(whoGetPlayerId);
         }
 
-        private void GiveCatInBag(ulong playerId)
+        private void GiveCatInBag(byte playerId)
         {
             PlayersBoardSystem.MakePlayerCurrent(playerId);
-            
             CatInBagData.IsPlayerSelected.Value = true;
             SendToPlayersService.SendCatInBagData(CatInBagData);
         }

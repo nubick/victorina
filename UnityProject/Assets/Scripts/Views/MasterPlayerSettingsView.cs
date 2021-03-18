@@ -23,7 +23,7 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            PlayerId.text = $"ID игрока: {_playerData.Id}";
+            PlayerId.text = $"ID игрока: {_playerData.PlayerId}";
             PlayerNameInputField.Text = _playerData.Name;
             PlayerScoreInputField.Text = _playerData.Score.ToString();
         }

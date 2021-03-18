@@ -15,13 +15,15 @@ namespace Victorina
         [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         
-        public void OnPlayerButtonClickReceived(ulong playerId, float spentSeconds)
+        public void OnPlayerButtonClickReceived(ulong clientId, float spentSeconds)
         {
+            byte playerId = ConnectedPlayersData.GetPlayerId(clientId);
             QuestionAnswerSystem.OnPlayerButtonClickReceived(playerId, spentSeconds);
         }
-
-        public void OnCurrentPlayerSelectRoundQuestionReceived(ulong playerId, NetRoundQuestion receivedNetRoundQuestion)
+        
+        public void OnCurrentPlayerSelectRoundQuestionReceived(ulong clientId, NetRoundQuestion receivedNetRoundQuestion)
         {
+            byte playerId = ConnectedPlayersData.GetPlayerId(clientId);
             if (!MatchSystem.IsCurrentPlayer(playerId))
             {
                 Debug.Log($"Master. Validation Error. Player: {playerId} is not current. Can't select round question: {receivedNetRoundQuestion}");
@@ -52,15 +54,16 @@ namespace Victorina
             MatchSystem.SelectQuestion(netRoundQuestion);
         }
 
-        public void OnReceiveWhoWillGetCatInBag(ulong senderPlayerId, ulong whoGetPlayerId)
+        public void OnReceiveWhoWillGetCatInBag(ulong senderClientId, byte whoGetPlayerId)
         {
+            byte senderPlayerId = ConnectedPlayersData.GetPlayerId(senderClientId);
             CatInBagSystem.OnMasterReceiveWhoWillGetCatInBag(senderPlayerId: senderPlayerId, whoGetPlayerId: whoGetPlayerId);
         }
 
         public void OnFilesLoadingPercentageReceived(ulong clientId, byte percentage, int[] downloadedFilesIds)
         {
-            PlayersBoardSystem.UpdateFilesLoadingPercentage(clientId, percentage);
             byte playerId = ConnectedPlayersData.GetPlayerId(clientId);
+            PlayersBoardSystem.UpdateFilesLoadingPercentage(playerId, percentage);
             FilesDeliveryStatusManager.UpdateDownloadedFilesIds(playerId, downloadedFilesIds);
         }
     }

@@ -66,12 +66,12 @@ namespace Victorina
 
         public bool WasWrongAnswer()
         {
-            return QuestionAnswerData.WrongAnsweredIds.Contains(NetworkData.PlayerId);
+            return QuestionAnswerData.WrongAnsweredIds.Contains(NetworkData.RegisteredPlayerId);
         }
 
         public bool WasIntentionSent()
         {
-            return QuestionAnswerData.PlayersButtonClickData.Value.Players.Any(_ => _.PlayerId == NetworkData.PlayerId);
+            return QuestionAnswerData.PlayersButtonClickData.Value.Players.Any(_ => _.PlayerId == NetworkData.RegisteredPlayerId);
         }
     }
 }

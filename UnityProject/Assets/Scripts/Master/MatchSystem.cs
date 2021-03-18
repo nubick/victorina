@@ -16,6 +16,8 @@ namespace Victorina
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
 
+        private PlayersBoard PlayersBoard => MatchData.PlayersBoard.Value;
+        
         public void Initialize()
         {
             MetagameEvents.ServerStarted.Subscribe(OnServerStarted);
@@ -55,9 +57,9 @@ namespace Victorina
             }
         }
 
-        public bool IsCurrentPlayer(ulong playerId)
+        public bool IsCurrentPlayer(byte playerId)
         {
-            return MatchData.PlayersBoard.Value.Current != null && MatchData.PlayersBoard.Value.Current.Id == playerId;
+            return PlayersBoard.Current != null && PlayersBoard.Current.PlayerId == playerId;
         }
 
         public void SelectQuestion(NetRoundQuestion netRoundQuestion)
@@ -139,24 +141,24 @@ namespace Victorina
             return netRound;
         }
 
-        public void RewardPlayer(ulong playerId)
+        public void RewardPlayer(byte playerId)
         {
             PlayerData player = GetPlayer(playerId);
             int price = GetQuestionPrice(MatchData.QuestionAnswerData.SelectedQuestion.Value, MatchData.SelectedRoundQuestion);
             player.Score += price;
             Debug.Log($"Reward player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
             MatchData.PlayersBoard.NotifyChanged();
-            SendToPlayersService.Send(MatchData.PlayersBoard.Value);
+            SendToPlayersService.Send(PlayersBoard);
         }
 
-        public void FinePlayer(ulong playerId)
+        public void FinePlayer(byte playerId)
         {
             PlayerData player = GetPlayer(playerId);
             int price = GetQuestionPrice(MatchData.QuestionAnswerData.SelectedQuestion.Value, MatchData.SelectedRoundQuestion);
             player.Score -= price;
             Debug.Log($"Fine player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
             MatchData.PlayersBoard.NotifyChanged();
-            SendToPlayersService.Send(MatchData.PlayersBoard.Value);
+            SendToPlayersService.Send(PlayersBoard);
         }
 
         private int GetQuestionPrice(NetQuestion netQuestion, NetRoundQuestion netRoundQuestion)
@@ -176,9 +178,9 @@ namespace Victorina
             }
         }
 
-        public PlayerData GetPlayer(ulong playerId)
+        public PlayerData GetPlayer(byte playerId)
         {
-            PlayerData player = MatchData.PlayersBoard.Value.Players.SingleOrDefault(_ => _.Id == playerId);
+            PlayerData player = PlayersBoard.Players.SingleOrDefault(_ => _.PlayerId == playerId);
             if (player == null)
                 throw new Exception($"Can't find player with id: {playerId}");
             return player;

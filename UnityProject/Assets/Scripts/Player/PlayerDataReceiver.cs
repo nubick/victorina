@@ -16,6 +16,11 @@ namespace Victorina
         [Inject] private CatInBagData CatInBagData { get; set; }
         [Inject] private AnsweringTimerData AnsweringTimerData { get; set; }
 
+        public void OnReceiveRegisteredPlayerId(byte playerId)
+        {
+            NetworkData.RegisteredPlayerId = playerId;
+        }
+        
         public void OnReceive(MatchPhase matchPhase)
         {
             MatchData.Phase.Value = matchPhase;
@@ -24,7 +29,7 @@ namespace Victorina
         public void OnReceive(PlayersBoard playersBoard)
         {
             MatchData.PlayersBoard.Value = playersBoard;
-            MatchData.IsMeCurrentPlayer = MatchSystem.IsCurrentPlayer(NetworkData.PlayerId);
+            MatchData.IsMeCurrentPlayer = MatchSystem.IsCurrentPlayer(NetworkData.RegisteredPlayerId);
         }
         
         public void OnReceive(PlayersButtonClickData data)

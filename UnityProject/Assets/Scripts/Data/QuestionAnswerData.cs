@@ -18,8 +18,8 @@ namespace Victorina
         public ReactiveProperty<PlayersButtonClickData> PlayersButtonClickData { get; } = new ReactiveProperty<PlayersButtonClickData>();
         
         public string AnsweringPlayerName { get; set; }
-        public ulong AnsweringPlayerId { get; set; }
-        public HashSet<ulong> WrongAnsweredIds { get; set; } = new HashSet<ulong>();
+        public byte AnsweringPlayerId { get; set; }
+        public HashSet<byte> WrongAnsweredIds { get; set; } = new HashSet<byte>();
         
         public StoryDot CurrentStoryDot => CurrentStory[CurrentStoryDotIndex];
 
