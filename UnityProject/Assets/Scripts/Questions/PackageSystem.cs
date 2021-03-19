@@ -46,6 +46,9 @@ namespace Victorina
                 roundNumber++;
                 foreach (Question question in round.Themes.SelectMany(theme => theme.Questions))
                 {
+                    if(Data.PackageProgress.IsAnswered(question.Id))
+                        continue;
+                    
                     foreach (FileStoryDot fileStoryDot in GetFileStoryDots(question))
                     {
                         fileIds.Add(fileStoryDot.FileId);

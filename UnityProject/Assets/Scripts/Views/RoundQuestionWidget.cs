@@ -31,8 +31,8 @@ namespace Victorina
                     Price.text += "=";
             }
             
-            AllDownloadingIcon.SetActive(!netRoundQuestion.IsDownloadedByAll);
-            MyDownloadingIcon.SetActive(!netRoundQuestion.IsDownloadedByMe);
+            AllDownloadingIcon.SetActive(!netRoundQuestion.IsAnswered && !netRoundQuestion.IsDownloadedByAll);
+            MyDownloadingIcon.SetActive(!netRoundQuestion.IsAnswered && !netRoundQuestion.IsDownloadedByMe);
         }
 
         public void BindEmpty()

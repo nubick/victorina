@@ -317,7 +317,7 @@ namespace Victorina
 
         public void SendFilesLoadingProgressToMaster(byte percentage, int[] downloadedFileIds)
         {
-            Debug.Log($"Player {OwnerClientId}: send files loading progress to Master, percentage: {percentage}, amount: {downloadedFileIds.Length}");
+            //Debug.Log($"Player {OwnerClientId}: send files loading progress to Master, percentage: {percentage}, amount: {downloadedFileIds.Length}");
             InvokeServerRpc(MasterReceiveFilesLoadingProgress, percentage, downloadedFileIds, "RFS");
         }
         
