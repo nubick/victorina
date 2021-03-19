@@ -35,7 +35,7 @@ namespace Victorina
         [ClientRPC]
         private void ReceivePlayersBoard(PlayersBoard playersBoard)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive PlayersBoard: {playersBoard}");
+            //Debug.Log($"Player {OwnerClientId}: Receive PlayersBoard: {playersBoard}");
             PlayerDataReceiver.OnReceive(playersBoard);
         }
 
@@ -61,7 +61,7 @@ namespace Victorina
         [ClientRPC]
         private void ReceiveRoundData(NetRound netRound)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive RoundData: {netRound}");
+            //Debug.Log($"Player {OwnerClientId}: Receive RoundData: {netRound}");
             PlayerDataReceiver.OnReceiveNetRound(netRound);
         }
 

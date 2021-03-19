@@ -145,7 +145,7 @@ namespace Victorina
             
             _injector.Get<PlayEffectsSystem>().Initialize();
 
-            _injector.Get<FilesDeliveryStatusManager>().Initialize();
+            StartCoroutine(_injector.Get<FilesDeliveryStatusManager>().Initialize());
             _injector.Get<PlayerFilesRequestSystem>().Initialize();
             _injector.Get<PlayersButtonClickPanelView>().Initialize();
             

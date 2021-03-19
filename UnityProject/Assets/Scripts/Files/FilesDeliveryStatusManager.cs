@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Injection;
+using UnityEngine;
 
 namespace Victorina
 {
@@ -11,12 +13,14 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         
         private readonly Dictionary<byte, HashSet<int>> _playerIdToFilesMap = new Dictionary<byte, HashSet<int>>();
+        private bool _isSyncRequired;
         
-        public void Initialize()
+        public IEnumerator Initialize()
         {
             MetagameEvents.ServerStarted.Subscribe(Clear);
             MetagameEvents.ServerStopped.Subscribe(Clear);
             MetagameEvents.MasterClientConnected.Subscribe(RegisterPlayer);
+            yield return SyncCurrentRoundCoroutine();
         }
 
         private void Clear()
@@ -35,14 +39,24 @@ namespace Victorina
             HashSet<int> hashSet = _playerIdToFilesMap[playerId];
             hashSet.Clear();
             hashSet.UnionWith(downloadedFilesIds);
-
-            if (MatchData.Phase.Value == MatchPhase.Round)
-            {
-                MatchSystem.SyncCurrentRound();
-                MatchData.RoundData.NotifyChanged();
-            }
+            _isSyncRequired = true;
         }
 
+        private IEnumerator SyncCurrentRoundCoroutine()
+        {
+            for (;;)
+            {
+                yield return new WaitForSeconds(0.5f);
+
+                if (_isSyncRequired && MatchData.Phase.Value == MatchPhase.Round)
+                {
+                    MatchSystem.SyncCurrentRound();
+                    MatchData.RoundData.NotifyChanged();
+                    _isSyncRequired = false;
+                }
+            }
+        }
+        
         public int[] GetQuestionFileIds(Question question)
         {
             return PackageSystem.GetFileStoryDots(question).Select(_ => _.FileId).ToArray();

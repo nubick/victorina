@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Injection;
 using UnityEngine;
@@ -13,6 +14,8 @@ namespace Victorina
         [Inject] private ClientService ClientService { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private MatchSettingsView MatchSettingsView { get; set; }
+
+        private readonly Dictionary<string, RoundQuestionWidget> _questionWidgetsCache = new Dictionary<string, RoundQuestionWidget>();
         
         public RectTransform ThemeWidgetsRoot;
         public ThemeWidget ThemeWidgetPrefab;
@@ -40,9 +43,35 @@ namespace Victorina
         
         public void RefreshUI(NetRound netRound)
         {
+            if (IsTheSameRound(netRound))
+            {
+                UpdateLayout(netRound);
+            }
+            else
+            {
+                ClearLayout();
+                InstantiateLayout(netRound);
+            }
+            
+            RefreshRoundsInfo(MatchData.RoundsInfo.Value);
+            MatchSettingsButton.SetActive(NetworkData.IsMaster);
+        }
+        
+        private bool IsTheSameRound(NetRound netRound)
+        {
+            NetRoundQuestion netRoundQuestion = netRound.Themes.First().Questions.First();
+            return _questionWidgetsCache.ContainsKey(netRoundQuestion.QuestionId);
+        }
+
+        private void ClearLayout()
+        {
+            _questionWidgetsCache.Clear();
             ClearChild(ThemeWidgetsRoot);
             ClearChild(QuestionsRoot);
-            
+        }
+
+        private void InstantiateLayout(NetRound netRound)
+        {
             int columns = netRound.Themes.Max(_ => _.Questions.Count);
             
             foreach (NetRoundTheme netRoundTheme in netRound.Themes)
@@ -55,6 +84,7 @@ namespace Victorina
                 {
                     RoundQuestionWidget widget = Instantiate(RoundQuestionWidgetPrefab, questionsRoot);
                     widget.Bind(netRoundQuestion);
+                    _questionWidgetsCache.Add(netRoundQuestion.QuestionId, widget);
                 }
 
                 for (int i = netRoundTheme.Questions.Count; i < columns; i++)
@@ -63,12 +93,17 @@ namespace Victorina
                     widget.BindEmpty();
                 }
             }
-            
-            RefreshRoundsInfo(MatchData.RoundsInfo.Value);
-
-            MatchSettingsButton.SetActive(NetworkData.IsMaster);
         }
 
+        private void UpdateLayout(NetRound netRound)
+        {
+            foreach (NetRoundQuestion netRoundQuestion in netRound.Themes.SelectMany(theme => theme.Questions))
+            {
+                RoundQuestionWidget widget = _questionWidgetsCache[netRoundQuestion.QuestionId];
+                widget.Bind(netRoundQuestion);
+            }
+        }
+        
         private void RefreshRoundsInfo(NetRoundsInfo roundsInfo)
         {
             ClearChild(RoundsInfoRoot);

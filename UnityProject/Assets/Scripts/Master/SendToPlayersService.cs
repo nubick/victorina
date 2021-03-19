@@ -57,7 +57,7 @@ namespace Victorina
         
         public void Send(PlayersBoard playersBoard)
         {
-            Debug.Log($"Master: Send PlayersBoard to {All}: {playersBoard}");
+            //Debug.Log($"Master: Send PlayersBoard to {All}: {playersBoard}");
             GetPlayers().ForEach(player => player.SendPlayersBoard(playersBoard));
         }
 
@@ -69,7 +69,7 @@ namespace Victorina
         
         public void SendNetRound(NetRound netRound)
         {
-            Debug.Log($"Master: Send NetRound '{netRound}' to {All}");
+            //Debug.Log($"Master: Send NetRound '{netRound}' to {All}");
             GetPlayers().ForEach(player => player.SendNetRound(netRound));
         }
 
