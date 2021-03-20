@@ -24,6 +24,8 @@ namespace Victorina
         public void SendConnectionData(NetworkPlayer networkPlayer, byte registeredPlayerId)
         {
             networkPlayer.SendRegisteredPlayerId(registeredPlayerId);
+            
+            Debug.Log($"Master: Send PlayersBoard: {MatchData.PlayersBoard.Value} to {networkPlayer.GetPlayerInfo()}");
             networkPlayer.SendPlayersBoard(MatchData.PlayersBoard.Value);
 
             if (MatchData.Phase.Value == MatchPhase.WaitingInLobby)
@@ -32,7 +34,10 @@ namespace Victorina
             }
             else if (MatchData.Phase.Value == MatchPhase.Round)
             {
+                Debug.Log($"Master: Send RoundData: {MatchData.RoundData.Value} to {networkPlayer.GetPlayerInfo()}");
                 networkPlayer.SendNetRound(MatchData.RoundData.Value);
+                
+                Debug.Log($"Master: Send RoundsInfo: {MatchData.RoundsInfo.Value} to {networkPlayer.GetPlayerInfo()}");
                 networkPlayer.SendNetRoundsInfo(MatchData.RoundsInfo.Value);
             }
             else if (MatchData.Phase.Value == MatchPhase.Question)
@@ -46,6 +51,7 @@ namespace Victorina
             (int[] fileIds, int[] chunksAmounts, int[] priorities) info = PackageSystem.GetPackageFilesInfo(PackageData.Package);
             networkPlayer.SendRoundFileIds(info.fileIds, info.chunksAmounts, info.priorities);
             
+            Debug.Log($"Master: Send match phase: {MatchData.Phase.Value} to {networkPlayer.GetPlayerInfo()}");
             networkPlayer.SendMatchPhase(MatchData.Phase.Value);
         }
 

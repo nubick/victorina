@@ -38,6 +38,8 @@ namespace Victorina
             
             AnswerPanel.SetActive(phase == QuestionPhase.ShowAnswer);
             AnswerButton.SetActive(PlayerAnswerSystem.CanSendAnswerIntention());
+
+            TimerStrip.gameObject.SetActive(QuestionAnswerData.TimerState != QuestionTimerState.NotStarted);
             
             if (QuestionAnswerData.QuestionType == QuestionType.Simple)
             {

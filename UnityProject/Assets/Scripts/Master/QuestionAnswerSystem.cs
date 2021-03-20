@@ -114,6 +114,9 @@ namespace Victorina
 
         public void OnPlayerButtonClickReceived(byte playerId, float spentSeconds)
         {
+            if (Data.TimerState == QuestionTimerState.NotStarted)
+                return;
+            
             bool wasReceivedBefore = Data.PlayersButtonClickData.Value.Players.Any(_ => _.PlayerId == playerId);
             if (wasReceivedBefore)
                 return;
@@ -124,8 +127,8 @@ namespace Victorina
             if (isNotCurrentForNoRiskQuestion)
                 return;
 
-            bool wrongAnsweredBefore = Data.WrongAnsweredIds.Contains(playerId);
-            if (wrongAnsweredBefore)
+            bool didWrongAnswerBefore = Data.WrongAnsweredIds.Contains(playerId);
+            if (didWrongAnswerBefore)
                 return;
             
             PlayerButtonClickData clickData = new PlayerButtonClickData();

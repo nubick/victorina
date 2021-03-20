@@ -8,7 +8,6 @@ namespace Victorina
     {
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private SendToMasterService SendToMasterService { get; set; }
-        [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
@@ -49,6 +48,7 @@ namespace Victorina
             if (NetworkData.IsMaster ||
                 MatchData.Phase.Value != MatchPhase.Question ||
                 QuestionAnswerData.Phase.Value != QuestionPhase.ShowQuestion ||
+                QuestionAnswerData.TimerState == QuestionTimerState.NotStarted ||
                 WasIntentionSent())
                 return false;
 

@@ -15,7 +15,7 @@ namespace Victorina
         [Inject] private MasterDataReceiver MasterDataReceiver { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         
-        private string GetPlayerInfo()
+        public string GetPlayerInfo()
         {
             JoinedPlayer joinedPlayer = ConnectedPlayersData.GetByClientId(OwnerClientId);
             return joinedPlayer == null ?

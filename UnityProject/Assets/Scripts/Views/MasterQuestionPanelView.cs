@@ -1,7 +1,10 @@
+using System.Data.Common;
 using System.Linq;
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
+using Image = UnityEngine.UI.Image;
 
 namespace Victorina
 {
@@ -50,8 +53,8 @@ namespace Victorina
             bool isLastDot = Data.CurrentStoryDot == Data.CurrentStory.Last();
             bool isWaitingWhoGetCatInBag = Data.CurrentStoryDot is CatInBagStoryDot && !CatInBagData.IsPlayerSelected.Value;
             NextQuestionDotButton.SetActive(!isLastDot && !isWaitingWhoGetCatInBag);
-            
-            TimerStrip.gameObject.SetActive(!isWaitingWhoGetCatInBag);
+
+            TimerStrip.gameObject.SetActive(Data.TimerState != QuestionTimerState.NotStarted);
 
             RestartMediaButton.SetActive(false);
             StartTimerButton.SetActive(CanStartTimer(phase, Data.TimerState, isLastDot)); 
