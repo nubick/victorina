@@ -34,6 +34,9 @@ namespace Victorina
             Data.Phase.Value = QuestionPhase.ShowQuestion;
             Data.CurrentStoryDotIndex = 0;
             
+            Data.AnswerTip = GetAnswerTip(Data.SelectedQuestion.Value);
+            Data.IsAnswerTipEnabled = false;
+            
             if (IsLastQuestionStoryDot())
                 StartTimer();
 
@@ -153,7 +156,6 @@ namespace Victorina
             
             Data.AnsweringPlayerName = MatchSystem.GetPlayer(playerId).Name;
             Data.AnsweringPlayerId = playerId;
-            Data.AnswerTip = GetAnswerTip(Data.SelectedQuestion.Value);
             Data.Phase.Value = QuestionPhase.AcceptingAnswer;
             SendToPlayersService.Send(Data);
         }

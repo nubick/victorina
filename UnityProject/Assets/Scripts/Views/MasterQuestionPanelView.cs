@@ -67,8 +67,8 @@ namespace Victorina
 
             ShowRoundButton.SetActive(phase == QuestionPhase.ShowAnswer && isLastDot);
 
-            AnswerTip.text = QuestionAnswerSystem.GetAnswerTip(Data.SelectedQuestion.Value);
-            AnswerTipPanel.SetActive(false);
+            AnswerTip.text = Data.AnswerTip;
+            AnswerTipPanel.SetActive(Data.IsAnswerTipEnabled);
         }
 
         private bool CanStartTimer(QuestionPhase phase, QuestionTimerState timerState, bool isLastDot)
@@ -142,7 +142,8 @@ namespace Victorina
 
         public void OnToggleTipTriggerClicked()
         {
-            AnswerTipPanel.SetActive(!AnswerTipPanel.activeSelf);
+            Data.IsAnswerTipEnabled = !Data.IsAnswerTipEnabled;
+            RefreshUI();
         }
     }
 }

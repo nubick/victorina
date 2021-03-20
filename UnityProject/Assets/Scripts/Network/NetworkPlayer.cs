@@ -263,7 +263,7 @@ namespace Victorina
 
         public void SendRoundFileIds(int[] fileIds, int[] chunksAmounts, int[] priorities)
         {
-            //Debug.Log($"Master: Send round of file ids ({fileIds.Length}) to {OwnerClientId}");
+            Debug.Log($"Master: Send round of file ids ({fileIds.Length}) to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveRoundFileIds, fileIds, chunksAmounts, priorities, "RFS");
         }
 

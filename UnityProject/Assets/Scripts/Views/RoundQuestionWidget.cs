@@ -39,6 +39,9 @@ namespace Victorina
         {
             NetRoundQuestion = null;
             Price.text = string.Empty;
+            
+            AllDownloadingIcon.SetActive(false);
+            MyDownloadingIcon.SetActive(false);
         }
         
         public void OnPointerClick(PointerEventData eventData)

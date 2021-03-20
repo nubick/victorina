@@ -28,6 +28,7 @@ namespace Victorina
             SelectedQuestion.Value.QuestionStory;
         
         //Master Only
+        public bool IsAnswerTipEnabled { get; set; }
         public string AnswerTip { get; set; }
         
         public QuestionAnswerData()
