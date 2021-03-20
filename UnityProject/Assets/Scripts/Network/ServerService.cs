@@ -61,13 +61,13 @@ namespace Victorina
 
         private bool IsAnotherConnection(ConnectionMessage connectionMessage)
         {
-            JoinedPlayer joinedPlayer = ConnectedPlayersData.Players.SingleOrDefault(_ => _.ConnectionMessage.Guid == connectionMessage.Guid);
+            JoinedPlayer joinedPlayer = ConnectedPlayersData.GetByGuid(connectionMessage.Guid);
             return joinedPlayer != null && NetworkingManager.ConnectedClients.Keys.Contains(joinedPlayer.ClientId);
         }
         
         private void RegisterPlayer(ulong clientId, ConnectionMessage connectionMessage)
         {
-            JoinedPlayer player = ConnectedPlayersData.Players.SingleOrDefault(_ => _.ConnectionMessage.Guid == connectionMessage.Guid);
+            JoinedPlayer player = ConnectedPlayersData.GetByGuid(connectionMessage.Guid);
             if (player == null)
             {
                 player = new JoinedPlayer();
@@ -101,7 +101,7 @@ namespace Victorina
             
             if (NetworkData.IsMaster)
             {
-                JoinedPlayer joinedPlayer = ConnectedPlayersData.Players.Single(_ => _.ClientId == clientId);
+                JoinedPlayer joinedPlayer = ConnectedPlayersData.GetByClientId(clientId);
                 joinedPlayer.IsConnected = true;
                 MetagameEvents.MasterClientConnected.Publish(joinedPlayer.PlayerId);
                 SendToPlayersService.SendConnectionData(networkPlayer, joinedPlayer.PlayerId);
@@ -113,7 +113,7 @@ namespace Victorina
             if (NetworkData.IsMaster)
             {
                 Debug.Log($"Master. OnClientDisconnect, clientId: {clientId}, connected clients: {GetConnectedClients()}");
-                JoinedPlayer joinedPlayer = ConnectedPlayersData.Players.SingleOrDefault(_ => _.ClientId == clientId);
+                JoinedPlayer joinedPlayer = ConnectedPlayersData.GetByClientId(clientId);
                 if (joinedPlayer != null)
                 {
                     joinedPlayer.ClientId = 0;

@@ -7,8 +7,7 @@ namespace Victorina
     {
         [Inject] private JoinGameView JoinGameView { get; set; }
         [Inject] private ServerService ServerService { get; set; }
-        [Inject] private LobbyView LobbyView { get; set; }
-
+        
         public Text Version;
         
         protected override void OnShown()
@@ -19,7 +18,6 @@ namespace Victorina
         public void OnCreateNewGameButtonClicked()
         {
             ServerService.StartServer();
-            SwitchTo(LobbyView);
         }
 
         public void OnJoinGameButtonClicked()

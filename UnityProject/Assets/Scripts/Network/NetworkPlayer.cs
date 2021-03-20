@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Injection;
 using MLAPI;
 using MLAPI.Messaging;
@@ -12,10 +13,19 @@ namespace Victorina
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private PlayerDataReceiver PlayerDataReceiver { get; set; }
         [Inject] private MasterDataReceiver MasterDataReceiver { get; set; }
+        [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
+        
+        private string GetPlayerInfo()
+        {
+            JoinedPlayer joinedPlayer = ConnectedPlayersData.GetByClientId(OwnerClientId);
+            return joinedPlayer == null ?
+                $"[Can't find by: {OwnerClientId}]" : 
+                $"[{joinedPlayer.ConnectionMessage.Name}|{OwnerClientId}]";
+        }
 
         public void SendRegisteredPlayerId(byte playerId)
         {
-            Debug.Log($"Master: Send Registered PlayerId {playerId} to {OwnerClientId}");
+            Debug.Log($"Master: Send Registered PlayerId {playerId} to {GetPlayerInfo()}");
             InvokeClientRpcOnOwner(ReceiveRegisteredPlayerId, playerId);
         }
 
@@ -277,7 +287,7 @@ namespace Victorina
         [ServerRPC]
         private void MasterReceivePlayerButtonClick(float spentSeconds)
         {
-            Debug.Log($"Master: Receive Player {OwnerClientId} button click, thoughtSeconds: {spentSeconds}");
+            Debug.Log($"Master: Receive Player {GetPlayerInfo()} button click, spentSeconds: {spentSeconds}");
             MasterDataReceiver.OnPlayerButtonClickReceived(OwnerClientId, spentSeconds);
         }
 
@@ -307,7 +317,7 @@ namespace Victorina
         [ServerRPC]
         private void MasterReceiveSelectRoundQuestion(NetRoundQuestion netRoundQuestion)
         {
-            Debug.Log($"Master: Receive select round question, Player {OwnerClientId}, netRoundQuestion: {netRoundQuestion}");
+            Debug.Log($"Master: Receive select round question, Player {GetPlayerInfo()}, netRoundQuestion: {netRoundQuestion}");
             MasterDataReceiver.OnCurrentPlayerSelectRoundQuestionReceived(OwnerClientId, netRoundQuestion);
         }
         
@@ -324,7 +334,7 @@ namespace Victorina
         [ServerRPC]
         private void MasterReceiveFilesLoadingProgress(byte percentage, int[] downloadedFilesIds)
         {
-            Debug.Log($"Master: Receive files loading progress, percentage: {percentage}, amount: '{downloadedFilesIds.Length}' from Player {OwnerClientId}");
+            Debug.Log($"Master: Receive files loading progress, percentage: {percentage}, amount: '{downloadedFilesIds.Length}' from Player {GetPlayerInfo()}");
             MasterDataReceiver.OnFilesLoadingPercentageReceived(OwnerClientId, percentage, downloadedFilesIds);
         }
         
@@ -341,7 +351,7 @@ namespace Victorina
         [ServerRPC]
         private void MasterReceiveWhoWillGetCatInBag(byte playerId)
         {
-            Debug.Log($"Master: Receive who will get cat in bag: {playerId} from Player client id {OwnerClientId}");
+            Debug.Log($"Master: Receive who will get cat in bag: {playerId} from Player {GetPlayerInfo()}");
             MasterDataReceiver.OnReceiveWhoWillGetCatInBag(senderClientId: OwnerClientId, whoGetPlayerId: playerId);
         }
         

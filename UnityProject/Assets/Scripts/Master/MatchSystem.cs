@@ -105,9 +105,6 @@ namespace Victorina
             
             MatchData.Phase.Value = MatchPhase.Round;
             SendToPlayersService.SendMatchPhase(MatchData.Phase.Value);
-
-            (int[] fileIds, int[] chunksAmounts, int[] priorities) info = PackageSystem.GetPackageFilesInfo(PackageData.Package);
-            SendToPlayersService.SendRoundFileIds(info.fileIds, info.chunksAmounts, info.priorities);
         }
 
         public void SyncCurrentRound()

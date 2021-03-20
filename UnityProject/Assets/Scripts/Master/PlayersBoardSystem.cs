@@ -94,7 +94,7 @@ namespace Victorina
             Debug.Log($"Update player name from '{playerData.Name}' to '{newPlayerName}'");
             if (ServerService.IsPlayerNameValid(newPlayerName))
             {
-                ConnectionMessage msg = ConnectedPlayersData.Players.Single(_ => _.PlayerId == playerData.PlayerId).ConnectionMessage;
+                ConnectionMessage msg = ConnectedPlayersData.GetByPlayerId(playerData.PlayerId).ConnectionMessage;
                 msg.Name = newPlayerName;
                 UpdatePlayersBoard();
             }

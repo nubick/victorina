@@ -34,10 +34,6 @@ namespace Victorina
             {
                 networkPlayer.SendNetRound(MatchData.RoundData.Value);
                 networkPlayer.SendNetRoundsInfo(MatchData.RoundsInfo.Value);
-                
-                (int[] fileIds, int[] chunksAmounts, int[] priorities) info = PackageSystem.GetPackageFilesInfo(PackageData.Package);
-                networkPlayer.SendRoundFileIds(info.fileIds, info.chunksAmounts, info.priorities);
-                
             }
             else if (MatchData.Phase.Value == MatchPhase.Question)
             {
@@ -46,6 +42,9 @@ namespace Victorina
                 networkPlayer.SendPlayersButtonClickData(QuestionAnswerData.PlayersButtonClickData.Value);
                 networkPlayer.SendQuestionAnswerData(QuestionAnswerData);
             }
+            
+            (int[] fileIds, int[] chunksAmounts, int[] priorities) info = PackageSystem.GetPackageFilesInfo(PackageData.Package);
+            networkPlayer.SendRoundFileIds(info.fileIds, info.chunksAmounts, info.priorities);
             
             networkPlayer.SendMatchPhase(MatchData.Phase.Value);
         }
@@ -90,16 +89,10 @@ namespace Victorina
             Debug.Log($"Master: Send rounds info to {All}, {netRoundsInfo}");
             GetPlayers().ForEach(player => player.SendNetRoundsInfo(netRoundsInfo));
         }
-
-        public void SendRoundFileIds(int[] fileIds, int[] chunksAmounts, int[] priorities)
-        {
-            Debug.Log($"Master: Send round file ids ({fileIds.Length}) to {All}");
-            GetPlayers().ForEach(player => player.SendRoundFileIds(fileIds, chunksAmounts, priorities));
-        }
         
         public void Send(QuestionAnswerData questionAnswerData)
         {
-            Debug.Log($"Master: Send question answer data to {All}: {questionAnswerData}");
+            Debug.Log($"Master: Send QuestionAnswerData to {All}: {questionAnswerData}");
             GetPlayers().ForEach(player => player.SendQuestionAnswerData(questionAnswerData));
         }
 
@@ -111,7 +104,7 @@ namespace Victorina
 
         public void SendPlayersButtonClickData(PlayersButtonClickData playersButtonClickData)
         {
-            Debug.Log($"Master: Send players button click data to {All}, ({playersButtonClickData.Players.Count})");
+            Debug.Log($"Master: Send players button click data to {All}, {playersButtonClickData})");
             GetPlayers().ForEach(player => player.SendPlayersButtonClickData(playersButtonClickData));
         }
         

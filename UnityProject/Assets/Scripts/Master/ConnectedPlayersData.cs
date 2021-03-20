@@ -17,10 +17,25 @@ namespace Victorina
         
         public byte GetPlayerId(ulong clientId)
         {
-            JoinedPlayer player = Players.SingleOrDefault(_ => _.ClientId == clientId);
+            JoinedPlayer player = GetByClientId(clientId);
             if (player == null)
                 throw new Exception($"Can't find JoinedPlayer by client id: {clientId}");
             return player.PlayerId;
+        }
+
+        public JoinedPlayer GetByClientId(ulong clientId)
+        {
+            return Players.SingleOrDefault(_ => _.ClientId == clientId);
+        }
+
+        public JoinedPlayer GetByPlayerId(byte playerId)
+        {
+            return Players.SingleOrDefault(_ => _.PlayerId == playerId);
+        }
+
+        public JoinedPlayer GetByGuid(string guid)
+        {
+            return Players.SingleOrDefault(_ => _.ConnectionMessage.Guid == guid);
         }
     }
 }
