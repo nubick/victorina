@@ -10,7 +10,7 @@ namespace Victorina
         public static float TimeForAnswer = 15f;
 
         public static int MajorVersion = 0;
-        public static int MinorVersion = 1;
+        public static int MinorVersion = 2;
 
         public static BuildMode BuildMode => BuildMode.Production;
         

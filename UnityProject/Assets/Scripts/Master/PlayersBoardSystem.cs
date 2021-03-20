@@ -40,7 +40,7 @@ namespace Victorina
                 }
                 
                 boardPlayer.Name = joinedPlayer.ConnectionMessage.Name;
-                boardPlayer.IsConnected = true;
+                boardPlayer.IsConnected = joinedPlayer.IsConnected;
             }
             
             MatchData.PlayersBoard.NotifyChanged();
