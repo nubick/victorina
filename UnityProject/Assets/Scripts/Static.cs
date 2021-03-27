@@ -12,7 +12,7 @@ namespace Victorina
         public static int MajorVersion = 0;
         public static int MinorVersion = 2;
 
-        public static BuildMode BuildMode => BuildMode.Production;
+        public static BuildMode BuildMode => DevSettings.BuildMode;
         
 #if UNITY_EDITOR
         public static string DataPath => $"{Application.persistentDataPath}/Editor";

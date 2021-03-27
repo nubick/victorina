@@ -9,6 +9,8 @@ namespace Victorina
         public int LastMinorVersion;
         public int BuildNumber;
 
+        public BuildMode BuildMode;
+
         public Version GetVersion()
         {
             return new Version(LastMajorVersion, LastMinorVersion, BuildNumber);
