@@ -48,8 +48,13 @@ namespace Victorina
         private void HideAll()
         {
             foreach(ViewBase view in Object.FindObjectsOfType<ViewBase>())
-                if(view.IsActive)
+                if (view.IsActive)
+                {
+                    if(view is IDataDependOnlyView)
+                        continue;
+                    
                     view.Hide();
+                }
         }
 
         private void OnMatchPhaseChanged()

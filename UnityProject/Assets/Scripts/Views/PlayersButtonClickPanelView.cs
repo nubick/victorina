@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Victorina
 {
-    public class PlayersButtonClickPanelView : ViewBase
+    public class PlayersButtonClickPanelView : ViewBase, IDataDependOnlyView
     {
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }

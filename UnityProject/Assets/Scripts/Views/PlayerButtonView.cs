@@ -1,6 +1,7 @@
 using System;
 using Injection;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Victorina
@@ -13,15 +14,16 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
 
         public Image TimerStrip;
-        public GameObject AnswerButton;
+        public GameObject SayAnswerButton;
         public GameObject AnsweringPanel;
         public Text AnsweringText;
-        public GameObject AnswerPanel;
+        public GameObject AnswerDemonstrationPanel;
         public GameObject WasWrongAnswerPanel;
         
         public void Initialize()
         {
             QuestionAnswerData.Phase.SubscribeChanged(RefreshUI);
+            QuestionAnswerData.PlayersButtonClickData.SubscribeChanged(RefreshUI);
         }
 
         protected override void OnShown()
@@ -36,8 +38,8 @@ namespace Victorina
             
             QuestionPhase phase = QuestionAnswerData.Phase.Value;
             
-            AnswerPanel.SetActive(phase == QuestionPhase.ShowAnswer);
-            AnswerButton.SetActive(PlayerAnswerSystem.CanSendAnswerIntention());
+            AnswerDemonstrationPanel.SetActive(phase == QuestionPhase.ShowAnswer);
+            SayAnswerButton.SetActive(PlayerAnswerSystem.CanSendAnswerIntention());
 
             TimerStrip.gameObject.SetActive(QuestionAnswerData.TimerState != QuestionTimerState.NotStarted);
             

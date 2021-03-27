@@ -78,10 +78,17 @@ namespace Victorina
             Data.TimerResetSeconds = Static.TimeForAnswer;
             Data.TimerLeftSeconds = QuestionTimer.LeftSeconds;
             Data.TimerState = QuestionTimerState.Running;
-            
-            Data.PlayersButtonClickData.Value.Players.Clear();
-            Data.PlayersButtonClickData.NotifyChanged();
-            SendToPlayersService.SendPlayersButtonClickData(Data.PlayersButtonClickData.Value);
+            ClearPlayersButtonClickData();
+        }
+
+        private void ClearPlayersButtonClickData()
+        {
+            if (Data.PlayersButtonClickData.Value.Players.Any())
+            {
+                Data.PlayersButtonClickData.Value.Players.Clear();
+                Data.PlayersButtonClickData.NotifyChanged();
+                SendToPlayersService.SendPlayersButtonClickData(Data.PlayersButtonClickData.Value);
+            }
         }
 
         public void PauseTimer()
@@ -110,6 +117,8 @@ namespace Victorina
             Data.CurrentStoryDotIndex = 0;
             
             SendData(MasterIntention.ShowAnswer);
+            
+            ClearPlayersButtonClickData();
         }
 
         public void OnPlayerButtonClickReceived(byte playerId, float spentSeconds)
@@ -161,6 +170,8 @@ namespace Victorina
             Data.AnsweringPlayerId = playerId;
             Data.Phase.Value = QuestionPhase.AcceptingAnswer;
             SendToPlayersService.Send(Data);
+            
+            ClearPlayersButtonClickData();
         }
 
         public void AcceptNoRiskAnswer()
