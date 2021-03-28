@@ -15,7 +15,7 @@ namespace Victorina
         {
             _playerData = playerData;
             Name.text = playerData.Name;
-            Time.text = $"{playerData.Time:0.0} сек";
+            Time.text = $"{playerData.Time:0.00} сек";
         }
         
         public void OnPointerClick(PointerEventData eventData)

@@ -1,9 +1,7 @@
-using System.Data.Common;
 using System.Linq;
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 using Image = UnityEngine.UI.Image;
 
 namespace Victorina
@@ -13,6 +11,7 @@ namespace Victorina
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private QuestionAnswerData Data { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
         
         public GameObject PreviousQuestionDotButton;
@@ -28,6 +27,8 @@ namespace Victorina
 
         public GameObject AnswerTipPanel;
         public Text AnswerTip;
+
+        public Text ThemeText;
         
         private StoryDot PreviousStoryDot => Data.CurrentStory[Data.CurrentStoryDotIndex - 1];
         
@@ -72,6 +73,8 @@ namespace Victorina
 
             AnswerTip.text = Data.AnswerTip;
             AnswerTipPanel.SetActive(Data.IsAnswerTipEnabled);
+            
+            ThemeText.text = $"Тема: {MatchData.SelectedRoundQuestion.Theme}";
         }
 
         private bool CanStartTimer(QuestionPhase phase, QuestionTimerState timerState, bool isLastDot)

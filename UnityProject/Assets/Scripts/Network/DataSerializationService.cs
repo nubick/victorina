@@ -148,6 +148,7 @@ namespace Victorina
             writer.WriteInt32(netRoundQuestion.Price);
             writer.WriteBool(netRoundQuestion.IsAnswered);
             writer.WriteInt32((int) netRoundQuestion.Type);
+            writer.WriteString(netRoundQuestion.Theme);
             writer.WriteBool(netRoundQuestion.IsDownloadedByAll);
             writer.WriteIntArray(netRoundQuestion.FileIds);
         }
@@ -159,6 +160,7 @@ namespace Victorina
             netRoundQuestion.Price = reader.ReadInt32();
             netRoundQuestion.IsAnswered = reader.ReadBool();
             netRoundQuestion.Type = (QuestionType) reader.ReadInt32();
+            netRoundQuestion.Theme = reader.ReadString().ToString();
             netRoundQuestion.IsDownloadedByAll = reader.ReadBool();
             netRoundQuestion.FileIds = reader.ReadIntArray();
             return netRoundQuestion;

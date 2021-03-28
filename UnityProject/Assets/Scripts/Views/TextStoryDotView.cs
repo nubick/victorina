@@ -7,8 +7,7 @@ namespace Victorina
     public class TextStoryDotView : ViewBase
     {
         [Inject] private MatchData MatchData { get; set; }
-        [Inject] private MatchSystem MatchSystem { get; set; }
-
+        
         public Text QuestionText;
 
         protected override void OnShown()

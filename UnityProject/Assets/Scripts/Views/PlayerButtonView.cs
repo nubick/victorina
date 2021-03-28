@@ -19,6 +19,8 @@ namespace Victorina
         public Text AnsweringText;
         public GameObject AnswerDemonstrationPanel;
         public GameObject WasWrongAnswerPanel;
+
+        public Text ThemeText;
         
         public void Initialize()
         {
@@ -60,6 +62,8 @@ namespace Victorina
             {
                 throw new Exception($"Not supported question type: {QuestionAnswerData.QuestionType}");
             }
+
+            ThemeText.text = $"Тема: {MatchData.SelectedRoundQuestion.Theme}";
         }
 
         public void OnAnswerButtonClicked()

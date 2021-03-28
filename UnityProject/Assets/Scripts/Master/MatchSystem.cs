@@ -128,6 +128,7 @@ namespace Victorina
                     netRoundQuestion.Price = question.Price;
                     netRoundQuestion.IsAnswered = packageProgress.IsAnswered(question.Id);
                     netRoundQuestion.Type = question.Type;
+                    netRoundQuestion.Theme = theme.Name;
                     netRoundQuestion.IsDownloadedByMe = true;//Master has file from pack
                     netRoundQuestion.FileIds = FilesDeliveryStatusManager.GetQuestionFileIds(question);
                     netRoundQuestion.IsDownloadedByAll = FilesDeliveryStatusManager.IsDownloadedByAll(netRoundQuestion.FileIds);

@@ -6,6 +6,7 @@ namespace Victorina
         public int Price { get; set; }
         public bool IsAnswered { get; set; }
         public QuestionType Type { get; set; }
+        public string Theme { get; set; }
         
         public bool IsDownloadedByAll { get; set; }
         public int[] FileIds { get; set; }
