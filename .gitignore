@@ -2,6 +2,7 @@ UnityProject/Library
 UnityProject/Logs
 UnityProject/obj
 UnityProject/Temp
+UnityProject/UserSettings
 .idea/
 *.sln
 *.csproj

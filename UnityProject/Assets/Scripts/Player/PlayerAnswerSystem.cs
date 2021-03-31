@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
 using Injection;
+using UnityEngine;
 
 namespace Victorina
 {
-    public class PlayerAnswerSystem
+    public class PlayerAnswerSystem : IKeyPressedHandler
     {
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private SendToMasterService SendToMasterService { get; set; }
@@ -38,11 +39,12 @@ namespace Victorina
             SendAnswerIntention();
         }
         
-        public void OnAnyKeyDown()
+        public void OnKeyPressed(KeyCode keyCode)
         {
-            SendAnswerIntention();
+            if(keyCode == KeyCode.Space)
+                SendAnswerIntention();
         }
-
+        
         public bool CanSendAnswerIntention()
         {
             if (NetworkData.IsMaster ||
@@ -72,6 +74,6 @@ namespace Victorina
         public bool WasIntentionSent()
         {
             return QuestionAnswerData.PlayersButtonClickData.Value.Players.Any(_ => _.PlayerId == NetworkData.RegisteredPlayerId);
-        }
+        } 
     }
 }

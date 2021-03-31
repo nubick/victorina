@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Victorina
 {
@@ -22,6 +23,8 @@ namespace Victorina
         public HashSet<byte> WrongAnsweredIds { get; set; } = new HashSet<byte>();
         
         public StoryDot CurrentStoryDot => CurrentStory[CurrentStoryDotIndex];
+        public StoryDot PreviousStoryDot => CurrentStory[CurrentStoryDotIndex - 1];
+        public bool IsLastDot => CurrentStoryDot == CurrentStory.Last();
 
         public StoryDot[] CurrentStory => Phase.Value == QuestionPhase.ShowAnswer ? 
             SelectedQuestion.Value.AnswerStory : 

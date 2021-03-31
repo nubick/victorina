@@ -30,8 +30,6 @@ namespace Victorina
 
         public Text ThemeText;
         
-        private StoryDot PreviousStoryDot => Data.CurrentStory[Data.CurrentStoryDotIndex - 1];
-        
         public void Initialize()
         {
             MetagameEvents.TimerRunOut.Subscribe(OnTimerRunOut);
@@ -48,17 +46,11 @@ namespace Victorina
             QuestionType questionType = Data.SelectedQuestion.Value.Type;
             QuestionPhase phase = Data.Phase.Value;
 
-            bool canNavigateToPreviousQuestionDot = Data.CurrentStoryDotIndex > 0 && !(PreviousStoryDot is CatInBagStoryDot) && !(PreviousStoryDot is NoRiskStoryDot);
-            PreviousQuestionDotButton.SetActive(canNavigateToPreviousQuestionDot);
-
-            bool isLastDot = Data.CurrentStoryDot == Data.CurrentStory.Last();
-            bool isWaitingWhoGetCatInBag = Data.CurrentStoryDot is CatInBagStoryDot && !CatInBagData.IsPlayerSelected.Value;
-            NextQuestionDotButton.SetActive(!isLastDot && !isWaitingWhoGetCatInBag);
-
+            PreviousQuestionDotButton.SetActive(QuestionAnswerSystem.CanShowPrevious());
+            NextQuestionDotButton.SetActive(QuestionAnswerSystem.CanShowNext());
             TimerStrip.gameObject.SetActive(Data.TimerState != QuestionTimerState.NotStarted);
-
             RestartMediaButton.SetActive(false);
-            StartTimerButton.SetActive(CanStartTimer(phase, Data.TimerState, isLastDot)); 
+            StartTimerButton.SetActive(CanStartTimer(phase, Data.TimerState, Data.IsLastDot)); 
             StopTimerButton.SetActive(Data.TimerState == QuestionTimerState.Running);
             
             //only for No Risk and Cat in Bag questions
@@ -67,9 +59,9 @@ namespace Victorina
             else
                 AcceptAnswer.SetActive(phase == QuestionPhase.ShowQuestion);
             
-            ShowAnswerButton.SetActive(questionType == QuestionType.Simple && phase == QuestionPhase.ShowQuestion && Data.TimerState != QuestionTimerState.NotStarted);
-
-            ShowRoundButton.SetActive(phase == QuestionPhase.ShowAnswer && isLastDot);
+            ShowAnswerButton.SetActive(QuestionAnswerSystem.CanShowAnswer());
+            
+            ShowRoundButton.SetActive(QuestionAnswerSystem.CanBackToRound());
 
             AnswerTip.text = Data.AnswerTip;
             AnswerTipPanel.SetActive(Data.IsAnswerTipEnabled);

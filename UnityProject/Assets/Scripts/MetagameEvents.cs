@@ -1,5 +1,6 @@
 using Assets.Scripts.Data;
 using Assets.Scripts.Utils;
+using UnityEngine;
 
 namespace Victorina
 {
@@ -16,9 +17,8 @@ namespace Victorina
         public static GameEvent QuestionTimerStarted { get; } = new GameEvent();
         public static GameEvent QuestionTimerPaused { get; } = new GameEvent();
         
-
         public static GameEvent MediaRestarted { get; } = new GameEvent();
-
+        
         //Master events
         public static GameEvent ServerStarted { get; } = new GameEvent();
         public static GameEvent ServerStopped { get; } = new GameEvent();

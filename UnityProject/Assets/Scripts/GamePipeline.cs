@@ -17,6 +17,7 @@ namespace Victorina
             
             _injector = new Injector();
             InjectAll();//InjectAll from Start as from Awake NetworkingManager.Singleton is still null
+            RegisterHandlers();
             Initialize();
             MetagameEvents.NetworkPlayerSpawned.Subscribe(OnNetworkPlayerSpawned);
         }
@@ -85,6 +86,7 @@ namespace Victorina
             _injector.Bind(new QuestionAnswerSystem());
             _injector.Bind(new TimerRunOutDetectSystem());
             _injector.Bind(new MasterDataReceiver());
+            _injector.Bind(new MasterContextKeyboardSystem());
             _injector.Bind(new MasterEffectsSystem());
             _injector.Bind(FindObjectOfType<MasterQuestionPanelView>());
             _injector.Bind(FindObjectOfType<MasterAcceptAnswerView>());
@@ -96,8 +98,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<PlayerButtonView>());
             _injector.Bind(new PlayerDataReceiver());
             _injector.Bind(new PlayerAnswerSystem());
-            _injector.Bind(FindObjectOfType<PlayerInputSystem>());
-            
+
             _injector.Bind(new ClientService());
             
             _injector.Bind(new SendToPlayersService());
@@ -121,6 +122,14 @@ namespace Victorina
             widgets.ForEach(_ => _injector.InjectTo(_));
         }
 
+        private void RegisterHandlers()
+        {
+            KeyboardManager keyboardManager = FindObjectOfType<KeyboardManager>();
+            foreach(object item in _injector.GetAll())
+                if (item is IKeyPressedHandler handler)
+                    keyboardManager.Register(handler);
+        }
+        
         private void Initialize()
         {
             _injector.Get<SaveSystem>().LoadAll();

@@ -72,6 +72,11 @@ namespace Injection
 			return (T) Get(typeof(T));
 		}
 
+		public object[] GetAll()
+		{
+			return _objects.Values.ToArray();
+		}
+		
 		private FieldInfo[] GetFields(Type type)
 		{
 			if (!FieldsCache.ContainsKey(type))

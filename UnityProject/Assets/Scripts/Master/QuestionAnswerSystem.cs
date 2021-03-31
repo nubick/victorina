@@ -57,6 +57,12 @@ namespace Victorina
             MasterQuestionPanelView.RefreshUI();
         }
         
+        public bool CanShowNext()
+        {
+            bool isWaitingWhoGetCatInBag = Data.CurrentStoryDot is CatInBagStoryDot && !CatInBagData.IsPlayerSelected.Value;
+            return !Data.IsLastDot && !isWaitingWhoGetCatInBag;
+        }
+            
         public void ShowNext()
         {
             Data.CurrentStoryDotIndex++;
@@ -65,6 +71,11 @@ namespace Victorina
                 StartTimer();
             
             SendData(MasterIntention.ShowStoryDot);
+        }
+
+        public bool CanShowPrevious()
+        {
+            return Data.CurrentStoryDotIndex > 0 && !(Data.PreviousStoryDot is CatInBagStoryDot) && !(Data.PreviousStoryDot is NoRiskStoryDot);
         }
         
         public void ShowPrevious()
@@ -108,6 +119,11 @@ namespace Victorina
             QuestionTimer.Reset(Static.TimeForAnswer);
             StartTimer();
             SendData(MasterIntention.RestartMedia);
+        }
+
+        public bool CanShowAnswer()
+        {
+            return Data.SelectedQuestion.Value.Type == QuestionType.Simple && Data.Phase.Value == QuestionPhase.ShowQuestion && Data.TimerState != QuestionTimerState.NotStarted;
         }
         
         public void ShowAnswer()
@@ -154,12 +170,27 @@ namespace Victorina
             MasterQuestionPanelView.RefreshUI();
         }
 
+        public bool CanBackToRound()
+        {
+            return Data.Phase.Value == QuestionPhase.ShowAnswer && Data.IsLastDot;
+        }
+        
         public void BackToRound()
         {
             MatchSystem.BackToRound();
         }
         
         #region Accepting answer
+
+        public void SelectFastestPlayerForAnswer()
+        {
+            PlayerButtonClickData fastest = Data.PlayersButtonClickData.Value.Players.OrderBy(_ => _.Time).FirstOrDefault();
+            
+            if (fastest == null)
+                throw new Exception("Can't select fastest when list of players is empty.");
+
+            SelectPlayerForAnswer(fastest.PlayerId);
+        }
         
         public void SelectPlayerForAnswer(byte playerId)
         {
