@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Assets.Scripts.Utils;
+using Injection;
 using MLAPI.Serialization;
 using MLAPI.Serialization.Pooled;
 
@@ -7,6 +10,8 @@ namespace Victorina
 {
     public class DataSerializationService
     {
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
+        
         public void Initialize()
         {
             SerializationManager.RegisterSerializationHandlers(SerializePlayersBoard, DeserializePlayersBoard);
@@ -14,6 +19,8 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeNetRoundQuestion, DeserializeNetRoundQuestion);
             SerializationManager.RegisterSerializationHandlers(SerializeNetQuestion, DeserializeNetQuestion);
             SerializationManager.RegisterSerializationHandlers(SerializeNetRoundsInfo, DeserializeNetRoundsInfo);
+            SerializationManager.RegisterSerializationHandlers(SerializePlayersButtonClickData, DeserializePlayersButtonClickData);
+            SerializationManager.RegisterSerializationHandlers(SerializeAuctionData, DeserializeAuctionData);
             
             SerializationManager.RegisterSerializationHandlers(SerializeQuestionAnswerData, DeserializeQuestionAnswerData);
             SerializationManager.RegisterSerializationHandlers(SerializeTextStoryDot, DeserializeTextStoryDot);
@@ -22,8 +29,8 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeVideoStoryDot, DeserializeVideoStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeNoRiskStoryDot, DeserializeNoRiskStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeCatInBagStoryDot, DeserializeCatInBagStoryDot);
+            SerializationManager.RegisterSerializationHandlers(SerializeAuctionStoryDot, DeserializeAuctionStoryDot);
             
-            SerializationManager.RegisterSerializationHandlers(SerializePlayersButtonClickData, DeserializePlayersButtonClickData);
 
             SerializationManager.RegisterSerializationHandlers(SerializeBytesArray, DeserializeBytesArray);
         }
@@ -56,8 +63,8 @@ namespace Victorina
             int amount = reader.ReadInt32();
             for (int i = 0; i < amount; i++)
             {
-                PlayerData player = new PlayerData();
-                player.PlayerId = (byte) reader.ReadByte();
+                byte playerId = (byte) reader.ReadByte();
+                PlayerData player = new PlayerData(playerId);
                 player.Name = reader.ReadString().ToString();
                 player.IsConnected = reader.ReadBool();
                 player.Score = reader.ReadInt32();
@@ -244,6 +251,12 @@ namespace Victorina
             writer.WriteInt32(storyDot.Price);
             writer.WriteBool(storyDot.CanGiveYourself);
         }
+
+        private void SerializeAuctionStoryDot(Stream stream, AuctionStoryDot auctionStoryDot)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32(auctionStoryDot.Index);
+        }
         
         private void DeserializeFileStoryDot(Stream stream, FileStoryDot fileStoryDot)
         {
@@ -291,6 +304,14 @@ namespace Victorina
             storyDot.Price = reader.ReadInt32();
             storyDot.CanGiveYourself = reader.ReadBool();
             return storyDot;
+        }
+        
+        private AuctionStoryDot DeserializeAuctionStoryDot(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            AuctionStoryDot auctionStoryDot = new AuctionStoryDot();
+            auctionStoryDot.Index = reader.ReadInt32();
+            return auctionStoryDot;
         }
         
         #endregion
@@ -397,6 +418,41 @@ namespace Victorina
             byte[] bytes = new byte[length];
             stream.Read(bytes, 0, length);
             return bytes;
+        }
+
+        private void WritePlayerData(PooledBitWriter writer, PlayerData playerData)
+        {
+            writer.WriteByte(playerData?.PlayerId ?? (byte) 0);
+        }
+
+        private PlayerData ReadPlayerData(PooledBitReader reader)
+        {
+            byte playerId = reader.ReadByteDirect();
+            return playerId == 0 ? null : PlayersBoardSystem.GetPlayer(playerId);
+        }
+
+        private void SerializeAuctionData(Stream stream, AuctionData auctionData)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32(auctionData.Bet);
+            writer.WriteBool(auctionData.IsAllIn);
+            WritePlayerData(writer, auctionData.Player);
+            WritePlayerData(writer, auctionData.BettingPlayer);
+            byte[] playerIds = auctionData.PassedPlayers.Select(_ => _.PlayerId).ToArray();
+            SerializeBytesArray(stream, playerIds);
+        }
+
+        private AuctionData DeserializeAuctionData(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            AuctionData data = new AuctionData();
+            data.Bet = reader.ReadInt32();
+            data.IsAllIn = reader.ReadBool();
+            data.Player = ReadPlayerData(reader);
+            data.BettingPlayer = ReadPlayerData(reader);
+            byte[] playerIds = DeserializeBytesArray(stream);
+            playerIds.ForEach(playerId => data.PassedPlayers.Add(PlayersBoardSystem.GetPlayer(playerId)));
+            return data;
         }
     }
 }

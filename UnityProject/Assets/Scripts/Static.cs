@@ -12,6 +12,8 @@ namespace Victorina
         public static int MajorVersion = 0;
         public static int MinorVersion = 2;
 
+        public static string EmptyPlayerName = "Баба-Яга";
+        
         public static BuildMode BuildMode => DevSettings.BuildMode;
         
 #if UNITY_EDITOR

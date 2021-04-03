@@ -5,13 +5,13 @@ namespace Victorina
 {
     public class NoRiskStoryDotView : ViewBase
     {
-        [Inject] private MatchData MatchData { get; set; }
-        
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
+
         public Text PlayerName;
         
         protected override void OnShown()
         {
-            PlayerName.text = MatchData.GetCurrentPlayerName();
+            PlayerName.text = PlayersBoardSystem.GetCurrentPlayerName();
         }
     }
 }

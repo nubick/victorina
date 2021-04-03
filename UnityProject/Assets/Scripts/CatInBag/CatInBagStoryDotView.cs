@@ -6,7 +6,7 @@ namespace Victorina
 {
     public class CatInBagStoryDotView : ViewBase
     {
-        [Inject] private MatchData MatchData { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
         
@@ -44,7 +44,7 @@ namespace Victorina
 
         private void RefreshUI()
         {
-            string currentPlayerName = MatchData.GetCurrentPlayerName();
+            string currentPlayerName = PlayersBoardSystem.GetCurrentPlayerName();
 
             CatInBagStoryDot storyDot = QuestionAnswerData.CurrentStoryDot as CatInBagStoryDot;
             

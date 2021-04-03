@@ -17,6 +17,7 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
+        [Inject] private AuctionSystem AuctionSystem { get; set; }
         
         private bool IsLastQuestionStoryDot() => Data.TimerState == QuestionTimerState.NotStarted &&
                                                  Data.Phase.Value == QuestionPhase.ShowQuestion &&
@@ -45,6 +46,12 @@ namespace Victorina
                 CatInBagData.IsPlayerSelected.Value = false;
                 SendToPlayersService.SendCatInBagData(CatInBagData);
             }
+
+            if (Data.CurrentStoryDot is AuctionStoryDot)
+            {
+                AuctionSystem.StartNew(MatchData.PlayersBoard.Value.Current, MatchData.SelectedRoundQuestion.Price);
+            }
+            
             
             SendData(MasterIntention.StartAnswering);
         }
@@ -62,7 +69,7 @@ namespace Victorina
             bool isWaitingWhoGetCatInBag = Data.CurrentStoryDot is CatInBagStoryDot && !CatInBagData.IsPlayerSelected.Value;
             return !Data.IsLastDot && !isWaitingWhoGetCatInBag;
         }
-            
+        
         public void ShowNext()
         {
             Data.CurrentStoryDotIndex++;
@@ -158,7 +165,7 @@ namespace Victorina
             
             PlayerButtonClickData clickData = new PlayerButtonClickData();
             clickData.PlayerId = playerId;
-            clickData.Name = MatchSystem.GetPlayer(playerId).Name;
+            clickData.Name = PlayersBoardSystem.GetPlayer(playerId).Name;
             clickData.Time = spentSeconds;
             Data.PlayersButtonClickData.Value.Players.Add(clickData);
 
@@ -197,7 +204,7 @@ namespace Victorina
             if (NetworkData.IsClient)
                 return;
             
-            Data.AnsweringPlayerName = MatchSystem.GetPlayer(playerId).Name;
+            Data.AnsweringPlayerName = PlayersBoardSystem.GetPlayer(playerId).Name;
             Data.AnsweringPlayerId = playerId;
             Data.Phase.Value = QuestionPhase.AcceptingAnswer;
             SendToPlayersService.Send(Data);

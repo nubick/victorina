@@ -26,7 +26,7 @@ namespace Victorina
         public void SendRegisteredPlayerId(byte playerId)
         {
             Debug.Log($"Master: Send Registered PlayerId {playerId} to {GetPlayerInfo()}");
-            InvokeClientRpcOnOwner(ReceiveRegisteredPlayerId, playerId);
+            InvokeClientRpcOnOwner(ReceiveRegisteredPlayerId, playerId, "Sequenced");
         }
 
         [ClientRPC]
@@ -39,7 +39,7 @@ namespace Victorina
         public void SendPlayersBoard(PlayersBoard playersBoard)
         {
             //Debug.Log($"Master: Send PlayersBoard: {playersBoard} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceivePlayersBoard, playersBoard);
+            InvokeClientRpcOnOwner(ReceivePlayersBoard, playersBoard, "Sequenced");
         }
 
         [ClientRPC]
@@ -99,6 +99,18 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive cat in bag data, isPlayerSelected: {isPlayerSelected}");
             PlayerDataReceiver.OnReceiveCatInBagData(isPlayerSelected);
         }
+
+        public void SendAuctionData(AuctionData auctionData)
+        {
+            InvokeClientRpcOnOwner(ReceiveAuctionData, auctionData);
+        }
+
+        [ClientRPC]
+        private void ReceiveAuctionData(AuctionData auctionData)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive AuctionData: {auctionData}");
+            PlayerDataReceiver.OnReceiveAuctionData(auctionData);
+        }
         
         public void SendSelectedQuestion(NetQuestion netQuestion)
         {
@@ -142,6 +154,8 @@ namespace Victorina
                 InvokeClientRpcOnOwner(ReceiveNoRiskStoryDot, noRiskStoryDot);
             else if (storyDot is CatInBagStoryDot catInBagStoryDot)
                 InvokeClientRpcOnOwner(ReceiveCatInBagStoryDot, catInBagStoryDot);
+            else if (storyDot is AuctionStoryDot auctionStoryDot)
+                InvokeClientRpcOnOwner(ReceiveAuctionStoryDot, auctionStoryDot);
             else
                 throw new Exception($"Not supported story dot: {storyDot}");
         }
@@ -189,16 +203,23 @@ namespace Victorina
         private void ReceiveNoRiskStoryDot(NoRiskStoryDot noRiskStoryDot)
         {
             Debug.Log($"Player {OwnerClientId}: Receive no risk story dot");
-            SetStoryDot(noRiskStoryDot, true);
+            SetStoryDot(noRiskStoryDot, isQuestion: true);
         }
 
         [ClientRPC]
         private void ReceiveCatInBagStoryDot(CatInBagStoryDot catInBagStoryDot)
         {
             Debug.Log($"Player {OwnerClientId}: Receive cat in bag story dot: {catInBagStoryDot}");
-            SetStoryDot(catInBagStoryDot, true);
+            SetStoryDot(catInBagStoryDot, isQuestion: true);
         }
 
+        [ClientRPC]
+        private void ReceiveAuctionStoryDot(AuctionStoryDot auctionStoryDot)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive auction story dot");
+            SetStoryDot(auctionStoryDot, isQuestion: true);
+        }
+        
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
         {
             //Debug.Log($"Master: Send selected round question: {netRoundQuestion} to {OwnerClientId}");
@@ -384,5 +405,48 @@ namespace Victorina
             //Debug.Log($"Player {OwnerClientId}: Receive answering timer data, isRunning: {isRunning}, startSeconds: {maxSeconds}, leftSeconds: {leftSeconds}");
             PlayerDataReceiver.OnReceiveAnsweringTimerData(isRunning, maxSeconds, leftSeconds);
         }
+        
+        #region Auction
+
+        public void SendPassAuction()
+        {
+            Debug.Log($"Player {OwnerClientId}: send pass auction to Master");
+            InvokeServerRpc(MasterReceivePassAuction);
+        }
+        
+        [ServerRPC]
+        private void MasterReceivePassAuction()
+        {
+            Debug.Log($"Master: Receive pass auction from Player {GetPlayerInfo()}");
+            MasterDataReceiver.OnReceivePassAuction(OwnerClientId);
+        }
+
+        public void SendAllInAuction()
+        {
+            Debug.Log($"Player {OwnerClientId}: send all-in auction to Master");
+            InvokeServerRpc(MasterReceiveAllInAuction);
+        }
+
+        [ServerRPC]
+        private void MasterReceiveAllInAuction()
+        {
+            Debug.Log($"Master: Receive all in auction from Player {GetPlayerInfo()}");
+            MasterDataReceiver.OnReceiveAllInAuction(OwnerClientId);
+        }
+
+        public void SendBetAuction(int bet)
+        {
+            Debug.Log($"Player {OwnerClientId}: send bet '{bet}' auction to Master");
+            InvokeServerRpc(MasterReceiveBetAuction, bet);
+        }
+        
+        [ServerRPC]
+        private void MasterReceiveBetAuction(int bet)
+        {
+            Debug.Log($"Master: Receive bet '{bet}' auction from Player {GetPlayerInfo()}");
+            MasterDataReceiver.OnReceiveBetAuction(OwnerClientId, bet);
+        }
+        
+        #endregion
     }
 }

@@ -14,6 +14,7 @@ namespace Victorina
         [Inject] private CatInBagSystem CatInBagSystem { get; set; }
         [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
+        [Inject] private AuctionSystem AuctionSystem { get; set; }
         
         public void OnPlayerButtonClickReceived(ulong clientId, float spentSeconds)
         {
@@ -66,5 +67,30 @@ namespace Victorina
             PlayersBoardSystem.UpdateFilesLoadingPercentage(playerId, percentage);
             FilesDeliveryStatusManager.UpdateDownloadedFilesIds(playerId, downloadedFilesIds);
         }
+        
+        #region Auction
+
+        public void OnReceivePassAuction(ulong clientId)
+        {
+            byte playerId = ConnectedPlayersData.GetPlayerId(clientId);
+            PlayerData playerData = PlayersBoardSystem.GetPlayer(playerId);
+            AuctionSystem.MasterOnReceivePlayerPass(playerData);
+        }
+
+        public void OnReceiveAllInAuction(ulong clientId)
+        {
+            byte playerId = ConnectedPlayersData.GetPlayerId(clientId);
+            PlayerData playerData = PlayersBoardSystem.GetPlayer(playerId);
+            AuctionSystem.MasterOnReceivePlayerAllIn(playerData);
+        }
+
+        public void OnReceiveBetAuction(ulong clientId, int bet)
+        {
+            byte playerId = ConnectedPlayersData.GetPlayerId(clientId);
+            PlayerData playerData = PlayersBoardSystem.GetPlayer(playerId);
+            AuctionSystem.MasterOnReceivePlayerBet(playerData, bet);
+        }
+        
+        #endregion
     }
 }

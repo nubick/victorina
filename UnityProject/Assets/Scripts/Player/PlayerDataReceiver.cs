@@ -8,6 +8,7 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
@@ -19,6 +20,7 @@ namespace Victorina
         public void OnReceiveRegisteredPlayerId(byte playerId)
         {
             NetworkData.RegisteredPlayerId = playerId;
+            InitializePlayerData();
         }
         
         public void OnReceive(MatchPhase matchPhase)
@@ -26,10 +28,17 @@ namespace Victorina
             MatchData.Phase.Value = matchPhase;
         }
 
+        private void InitializePlayerData()
+        {
+            MatchData.IsMeCurrentPlayer = MatchSystem.IsCurrentPlayer(NetworkData.RegisteredPlayerId);
+            MatchData.ThisPlayer = PlayersBoardSystem.GetPlayer(NetworkData.RegisteredPlayerId);
+        }
+        
         public void OnReceive(PlayersBoard playersBoard)
         {
             MatchData.PlayersBoard.Value = playersBoard;
-            MatchData.IsMeCurrentPlayer = MatchSystem.IsCurrentPlayer(NetworkData.RegisteredPlayerId);
+            if (NetworkData.RegisteredPlayerId > 0)
+                InitializePlayerData();
         }
         
         public void OnReceive(PlayersButtonClickData data)
@@ -97,6 +106,11 @@ namespace Victorina
                 roundQuestion.IsDownloadedByMe = roundQuestion.FileIds.All(PlayerFilesRepository.IsDownloaded);
 
             MatchData.RoundData.Value = netRound;
+        }
+
+        public void OnReceiveAuctionData(AuctionData auctionData)
+        {
+            QuestionAnswerData.AuctionData.Value = auctionData;
         }
     }
 }

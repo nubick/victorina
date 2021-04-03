@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Injection;
 using UnityEngine;
@@ -9,7 +10,6 @@ namespace Victorina
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private MatchData MatchData { get; set; }
-        [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private ServerService ServerService { get; set; }
 
@@ -34,8 +34,7 @@ namespace Victorina
                 PlayerData boardPlayer = PlayersBoard.Players.SingleOrDefault(_ => _.PlayerId == joinedPlayer.PlayerId);
                 if (boardPlayer == null)
                 {
-                    boardPlayer = new PlayerData();
-                    boardPlayer.PlayerId = joinedPlayer.PlayerId;
+                    boardPlayer = new PlayerData(joinedPlayer.PlayerId);
                     PlayersBoard.Players.Add(boardPlayer);
                 }
                 
@@ -59,7 +58,7 @@ namespace Victorina
         {
             if (NetworkData.IsMaster)
             {
-                PlayerData playerData = MatchSystem.GetPlayer(playerId);
+                PlayerData playerData = GetPlayer(playerId);
                 MakePlayerCurrent(playerData);
             }
         }
@@ -83,7 +82,7 @@ namespace Victorina
             if (NetworkData.IsClient)
                 return;
 
-            PlayerData playerData = MatchSystem.GetPlayer(playerId);
+            PlayerData playerData = GetPlayer(playerId);
             playerData.FilesLoadingPercentage = percentage;
             MatchData.PlayersBoard.NotifyChanged();
             SendToPlayersService.Send(PlayersBoard);
@@ -109,6 +108,19 @@ namespace Victorina
             Debug.Log($"Update player score from '{playerData.Score}' to '{newScore}'");
             playerData.Score = newScore;
             UpdatePlayersBoard();
+        }
+        
+        public PlayerData GetPlayer(byte playerId)
+        {
+            PlayerData player = PlayersBoard.Players.SingleOrDefault(_ => _.PlayerId == playerId);
+            if (player == null)
+                throw new Exception($"Can't find player with id: {playerId}");
+            return player;
+        }
+        
+        public string GetCurrentPlayerName()
+        {
+            return PlayersBoard.Current == null ? Static.EmptyPlayerName : PlayersBoard.Current.Name;
         }
     }
 }

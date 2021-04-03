@@ -4,6 +4,7 @@ namespace Victorina
     {
         Simple,
         NoRisk,
-        CatInBag
+        CatInBag,
+        Auction
     }
 }

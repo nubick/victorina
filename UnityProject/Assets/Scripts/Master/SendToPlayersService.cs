@@ -125,5 +125,11 @@ namespace Victorina
             //Debug.Log($"Master: Send answering timer data to {All}, {data}");
             GetPlayers().ForEach(player => player.SendAnsweringTimerData(data));
         }
+
+        public void SendAuctionData(AuctionData auctionData)
+        {
+            Debug.Log($"Master: Send AuctionData to {All}: {auctionData}");
+            GetPlayers().ForEach(player => player.SendAuctionData(auctionData));
+        }
     }
 }

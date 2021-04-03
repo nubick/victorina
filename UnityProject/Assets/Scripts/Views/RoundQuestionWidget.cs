@@ -23,12 +23,14 @@ namespace Victorina
             NetRoundQuestion = netRoundQuestion;
             Price.text = netRoundQuestion.IsAnswered ? string.Empty : netRoundQuestion.Price.ToString();
 
-            if(Static.BuildMode == BuildMode.Development)
+            if(Static.BuildMode == BuildMode.Development && !netRoundQuestion.IsAnswered)
             {
                 if (netRoundQuestion.Type == QuestionType.CatInBag)
-                    Price.text += "*";
+                    Price.text += ":cat in bag";
                 else if (netRoundQuestion.Type == QuestionType.NoRisk)
-                    Price.text += "=";
+                    Price.text += ":no risk";
+                else if (netRoundQuestion.Type == QuestionType.Auction)
+                    Price.text += ":auction";
             }
             
             AllDownloadingIcon.SetActive(!netRoundQuestion.IsAnswered && !netRoundQuestion.IsDownloadedByAll);

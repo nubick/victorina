@@ -26,7 +26,8 @@ namespace Victorina
             int questionsAmount = questions.Count;
             int noRiskAmount = questions.Count(_ => _.Type == QuestionType.NoRisk);
             int catInBagAmount = questions.Count(_ => _.Type == QuestionType.CatInBag);
-            Debug.Log($"Rounds: {package.Rounds.Count}, Themes: {themesAmount}, Questions: {questionsAmount}, NoRisk: {noRiskAmount}, CatInBag: {catInBagAmount}");
+            int auctionAmount = questions.Count(_ => _.Type == QuestionType.Auction);
+            Debug.Log($"Rounds: {package.Rounds.Count}, Themes: {themesAmount}, Questions: {questionsAmount}, NoRisk: {noRiskAmount}, CatInBag: {catInBagAmount}, Auctions: {auctionAmount}");
         }
         
         public Question GetQuestion(string questionId)

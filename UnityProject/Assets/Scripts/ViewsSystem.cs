@@ -18,6 +18,7 @@ namespace Victorina
         [Inject] private VideoStoryDotView VideoStoryDotView { get; set; }
         [Inject] private NoRiskStoryDotView NoRiskStoryDotView { get; set; }
         [Inject] private CatInBagStoryDotView CatInBagStoryDotView { get; set; }
+        [Inject] private AuctionStoryDotView AuctionStoryDotView { get; set; }
 
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
@@ -127,21 +128,42 @@ namespace Victorina
             {
                 Debug.Log("Show: ImageStoryDotView");
                 ImageStoryDotView.Show();
+
+                if (NetworkData.IsMaster)
+                    MasterQuestionPanelView.Show();
+                
+                if(NetworkData.IsClient)
+                    PlayerButtonView.Show();
             }
             else if (data.CurrentStoryDot is AudioStoryDot)
             {
                 Debug.Log("Show: AudioStoryDotView");
                 AudioStoryDotView.Show();
+                
+                if (NetworkData.IsMaster)
+                    MasterQuestionPanelView.Show();
+
+                if(NetworkData.IsClient)
+                    PlayerButtonView.Show();
             }
             else if (data.CurrentStoryDot is VideoStoryDot)
             {
                 Debug.Log("Show: VideoStoryDotView");
                 VideoStoryDotView.Show();
+                
+                if (NetworkData.IsMaster)
+                    MasterQuestionPanelView.Show();
+
+                if(NetworkData.IsClient)
+                    PlayerButtonView.Show();
             }
             else if (data.CurrentStoryDot is NoRiskStoryDot)
             {
                 Debug.Log("Show: NoRiskStoryDotView");
                 NoRiskStoryDotView.Show();
+                
+                if (NetworkData.IsMaster)
+                    MasterQuestionPanelView.Show();
             }
             else if (data.CurrentStoryDot is CatInBagStoryDot)
             {
@@ -149,26 +171,29 @@ namespace Victorina
                 CatInBagStoryDotView.Show();
                 if (!CatInBagData.IsPlayerSelected.Value)
                     PlayersBoardView.Show();
+                
+                if (NetworkData.IsMaster)
+                    MasterQuestionPanelView.Show();
+            }
+            else if (data.CurrentStoryDot is AuctionStoryDot)
+            {
+                Debug.Log("Show: AuctionStoryDotView");
+                AuctionStoryDotView.Show();
+                PlayersBoardView.Show();
             }
             else
             {
                 Debug.Log("Show: TextStoryDotView");
                 TextStoryDotView.Show();
-            }
+                
+                if (NetworkData.IsMaster)
+                    MasterQuestionPanelView.Show();
 
-            if (NetworkData.IsMaster)
-            {
-                MasterQuestionPanelView.Show();
-                MasterEffectsView.Show();
-            }
-
-            if (NetworkData.IsClient)
-            {
-                if (data.CurrentStoryDot is NoRiskStoryDot || data.CurrentStoryDot is CatInBagStoryDot)
-                    ;
-                else
+                if(NetworkData.IsClient)
                     PlayerButtonView.Show();
             }
+            
+            //MasterEffectsView.Show();
         }
         
         private void OnQuestionAnswerPhaseChanged()

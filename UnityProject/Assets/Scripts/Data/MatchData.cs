@@ -19,6 +19,7 @@ namespace Victorina
         //Player only data
         public DateTime EnableAnswerTime { get; set; }
         public bool IsMeCurrentPlayer { get; set; }
+        public PlayerData ThisPlayer { get; set; }
         
         public MatchData()
         {
@@ -35,11 +36,6 @@ namespace Victorina
             RoundsInfo.Value = new NetRoundsInfo();
             RoundData.Value = new NetRound();
             SelectedRoundQuestion = null;
-        }
-
-        public string GetCurrentPlayerName()
-        {
-            return PlayersBoard.Value.Current == null ? "Баба-Яга" : PlayersBoard.Value.Current.Name;
         }
         
         public override string ToString()

@@ -118,6 +118,12 @@ namespace Victorina
                         {
                             ReadCatInBag(xmlReader, question);
                         }
+                        // else if (typeName == "auction")
+                        // {
+                        //     question.Type = QuestionType.Auction;
+                        //     AuctionStoryDot auctionStoryDot = new AuctionStoryDot();
+                        //     AddStoryDot(question, auctionStoryDot, isAfterMarker: false);
+                        // }
                         else
                         {
                             Debug.LogWarning($"Not supported question type name: {typeName}");

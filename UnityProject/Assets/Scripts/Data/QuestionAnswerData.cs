@@ -17,6 +17,7 @@ namespace Victorina
         public float TimerLeftSeconds { get; set; }
         
         public ReactiveProperty<PlayersButtonClickData> PlayersButtonClickData { get; } = new ReactiveProperty<PlayersButtonClickData>();
+        public ReactiveProperty<AuctionData> AuctionData { get; } = new ReactiveProperty<AuctionData>();
         
         public string AnsweringPlayerName { get; set; }
         public byte AnsweringPlayerId { get; set; }
@@ -37,6 +38,7 @@ namespace Victorina
         public QuestionAnswerData()
         {
             PlayersButtonClickData.Value = new PlayersButtonClickData();
+            AuctionData.Value = new AuctionData();
         }
 
         public override string ToString()

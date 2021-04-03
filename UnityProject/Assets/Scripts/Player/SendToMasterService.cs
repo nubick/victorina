@@ -58,5 +58,33 @@ namespace Victorina
             else
                 Debug.Log("Client is not connected: SendWhoWillGetCatInBag");
         }
+        
+        #region Auction
+
+        public void SendPassAuction()
+        {
+            if (NetworkingManager.IsConnectedClient)
+                Player.SendPassAuction();
+            else
+                Debug.Log("Client is not connected: SendPassAuction");
+        }
+
+        public void SendAllInAuction()
+        {
+            if (NetworkingManager.IsConnectedClient)
+                Player.SendAllInAuction();
+            else
+                Debug.Log("Client is not connected: SendAllInAuction");
+        }
+
+        public void SendBetAuction(int bet)
+        {
+            if (NetworkingManager.IsConnectedClient)
+                Player.SendBetAuction(bet);
+            else
+                Debug.Log($"Client is not connected: SendBetAuction");
+        }
+
+        #endregion
     }
 }

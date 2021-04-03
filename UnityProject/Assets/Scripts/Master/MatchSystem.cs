@@ -15,6 +15,7 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
 
         private PlayersBoard PlayersBoard => MatchData.PlayersBoard.Value;
         
@@ -141,7 +142,7 @@ namespace Victorina
 
         public void RewardPlayer(byte playerId)
         {
-            PlayerData player = GetPlayer(playerId);
+            PlayerData player = PlayersBoardSystem.GetPlayer(playerId);
             int price = GetQuestionPrice(MatchData.QuestionAnswerData.SelectedQuestion.Value, MatchData.SelectedRoundQuestion);
             player.Score += price;
             Debug.Log($"Reward player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
@@ -151,7 +152,7 @@ namespace Victorina
 
         public void FinePlayer(byte playerId)
         {
-            PlayerData player = GetPlayer(playerId);
+            PlayerData player = PlayersBoardSystem.GetPlayer(playerId);
             int price = GetQuestionPrice(MatchData.QuestionAnswerData.SelectedQuestion.Value, MatchData.SelectedRoundQuestion);
             player.Score -= price;
             Debug.Log($"Fine player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
@@ -174,14 +175,6 @@ namespace Victorina
             {
                 return netRoundQuestion.Price;
             }
-        }
-
-        public PlayerData GetPlayer(byte playerId)
-        {
-            PlayerData player = PlayersBoard.Players.SingleOrDefault(_ => _.PlayerId == playerId);
-            if (player == null)
-                throw new Exception($"Can't find player with id: {playerId}");
-            return player;
         }
     }
 }

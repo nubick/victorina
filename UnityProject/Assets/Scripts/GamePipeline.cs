@@ -65,6 +65,9 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<CatInBagStoryDotView>());
             _injector.Bind(FindObjectOfType<CatInBagData>());
 
+            _injector.Bind(new AuctionSystem());
+            _injector.Bind(FindObjectOfType<AuctionStoryDotView>());
+            
             _injector.Bind(new AnsweringTimerSystem());
             _injector.Bind(new AnsweringTimerData());
             _injector.Bind(FindObjectOfType<AnsweringTimerView>());
@@ -167,6 +170,8 @@ namespace Victorina
             
             _injector.Get<CatInBagSystem>().Initialize();
             _injector.Get<CatInBagStoryDotView>().Initialize();
+            
+            _injector.Get<AuctionStoryDotView>().Initialize();
             
             _injector.Get<AnsweringTimerSystem>().Initialize();
         }
