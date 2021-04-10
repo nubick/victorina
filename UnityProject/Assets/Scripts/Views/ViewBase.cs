@@ -13,8 +13,8 @@ namespace Victorina
 
         public void Show()
         {
-            if (Static.BuildMode == BuildMode.Development)
-                Debug.Log($"Show '{name}' view, {Time.time}");
+            // if (Static.BuildMode == BuildMode.Development)
+            //     Debug.Log($"Show '{name}' view, {Time.time}");
             
             Content.SetActive(true);
             OnShown();
@@ -22,8 +22,8 @@ namespace Victorina
 
         public void Hide()
         {
-            if (Static.BuildMode == BuildMode.Development)
-                Debug.Log($"Hide '{name}' view, {Time.time}");
+            // if (Static.BuildMode == BuildMode.Development)
+            //     Debug.Log($"Hide '{name}' view, {Time.time}");
             
             Content.SetActive(false);
             OnHide();

@@ -82,7 +82,10 @@ namespace Victorina
 
         public bool CanShowPrevious()
         {
-            return Data.CurrentStoryDotIndex > 0 && !(Data.PreviousStoryDot is CatInBagStoryDot) && !(Data.PreviousStoryDot is NoRiskStoryDot);
+            return Data.CurrentStoryDotIndex > 0 &&
+                   !(Data.PreviousStoryDot is CatInBagStoryDot) &&
+                   !(Data.PreviousStoryDot is NoRiskStoryDot) &&
+                   !(Data.PreviousStoryDot is AuctionStoryDot);
         }
         
         public void ShowPrevious()
@@ -264,6 +267,11 @@ namespace Victorina
                 ShowAnswer();
             }
             else if (Data.SelectedQuestion.Value.Type == QuestionType.CatInBag)
+            {
+                MatchSystem.FinePlayer(Data.AnsweringPlayerId);
+                ShowAnswer();
+            }
+            else if (Data.SelectedQuestion.Value.Type == QuestionType.Auction)
             {
                 MatchSystem.FinePlayer(Data.AnsweringPlayerId);
                 ShowAnswer();

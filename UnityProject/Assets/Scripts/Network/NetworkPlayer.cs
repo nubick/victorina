@@ -355,7 +355,7 @@ namespace Victorina
         [ServerRPC]
         private void MasterReceiveFilesLoadingProgress(byte percentage, int[] downloadedFilesIds)
         {
-            Debug.Log($"Master: Receive files loading progress, percentage: {percentage}, amount: '{downloadedFilesIds.Length}' from Player {GetPlayerInfo()}");
+            //Debug.Log($"Master: Receive files loading progress, percentage: {percentage}, amount: '{downloadedFilesIds.Length}' from Player {GetPlayerInfo()}");
             MasterDataReceiver.OnFilesLoadingPercentageReceived(OwnerClientId, percentage, downloadedFilesIds);
         }
         

@@ -89,7 +89,7 @@ namespace Victorina
             _injector.Bind(new QuestionAnswerSystem());
             _injector.Bind(new TimerRunOutDetectSystem());
             _injector.Bind(new MasterDataReceiver());
-            _injector.Bind(new MasterContextKeyboardSystem());
+            //_injector.Bind(new MasterContextKeyboardSystem());
             _injector.Bind(new MasterEffectsSystem());
             _injector.Bind(FindObjectOfType<MasterQuestionPanelView>());
             _injector.Bind(FindObjectOfType<MasterAcceptAnswerView>());

@@ -60,6 +60,7 @@ namespace Victorina
                     return !WasWrongAnswer();
                 case QuestionType.NoRisk:
                 case QuestionType.CatInBag:
+                case QuestionType.Auction:
                     return MatchData.IsMeCurrentPlayer;
                 default:
                     throw new Exception($"Not supported QuestionType: {QuestionAnswerData.QuestionType}");

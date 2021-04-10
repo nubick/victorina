@@ -142,24 +142,24 @@ namespace Victorina
 
         public void RewardPlayer(byte playerId)
         {
-            PlayerData player = PlayersBoardSystem.GetPlayer(playerId);
             int price = GetQuestionPrice(MatchData.QuestionAnswerData.SelectedQuestion.Value, MatchData.SelectedRoundQuestion);
+            PlayerData player = PlayersBoardSystem.GetPlayer(playerId);
             player.Score += price;
             Debug.Log($"Reward player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
             MatchData.PlayersBoard.NotifyChanged();
             SendToPlayersService.Send(PlayersBoard);
         }
-
+        
         public void FinePlayer(byte playerId)
         {
-            PlayerData player = PlayersBoardSystem.GetPlayer(playerId);
             int price = GetQuestionPrice(MatchData.QuestionAnswerData.SelectedQuestion.Value, MatchData.SelectedRoundQuestion);
+            PlayerData player = PlayersBoardSystem.GetPlayer(playerId);
             player.Score -= price;
             Debug.Log($"Fine player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
             MatchData.PlayersBoard.NotifyChanged();
             SendToPlayersService.Send(PlayersBoard);
         }
-
+        
         private int GetQuestionPrice(NetQuestion netQuestion, NetRoundQuestion netRoundQuestion)
         {
             if (netQuestion.Type == QuestionType.CatInBag)
@@ -170,6 +170,10 @@ namespace Victorina
                     throw new Exception("Cat in bag netQuestion doesn't have CatInBagStoryDot at first place.");
 
                 return catInBagStoryDot.Price;
+            }
+            else if (netQuestion.Type == QuestionType.Auction)
+            {
+                return MatchData.QuestionAnswerData.AuctionData.Value.Bet;
             }
             else
             {

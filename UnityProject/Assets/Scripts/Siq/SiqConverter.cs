@@ -118,12 +118,12 @@ namespace Victorina
                         {
                             ReadCatInBag(xmlReader, question);
                         }
-                        // else if (typeName == "auction")
-                        // {
-                        //     question.Type = QuestionType.Auction;
-                        //     AuctionStoryDot auctionStoryDot = new AuctionStoryDot();
-                        //     AddStoryDot(question, auctionStoryDot, isAfterMarker: false);
-                        // }
+                        else if (typeName == "auction")
+                        {
+                            question.Type = QuestionType.Auction;
+                            AuctionStoryDot auctionStoryDot = new AuctionStoryDot();
+                            AddStoryDot(question, auctionStoryDot, isAfterMarker: false);
+                        }
                         else
                         {
                             Debug.LogWarning($"Not supported question type name: {typeName}");
@@ -182,7 +182,11 @@ namespace Victorina
                         {
                             xmlReader.Read();
                             string priceString = xmlReader.Value;
-                            catPrice = int.Parse(priceString);
+                            if (!int.TryParse(priceString, out catPrice))
+                            {
+                                catPrice = 100;
+                                Debug.LogWarning($"Can't parse cat in bag cost '{priceString}', use default value {catPrice}");
+                            }
                         }
                         else if (paramName == "self")
                         {

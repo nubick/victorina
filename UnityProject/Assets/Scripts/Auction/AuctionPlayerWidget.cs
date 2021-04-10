@@ -10,7 +10,14 @@ namespace Victorina
 
         public void Bind(PlayerData player, AuctionData auctionData)
         {
-            if (auctionData.Player == player)
+            if (auctionData.BettingPlayer == player)
+            {
+                if (auctionData.Player == player)
+                    Bet.text = "Выиграл";
+                else
+                    Bet.text = "Делает ставку";
+            }
+            else if (auctionData.Player == player)
             {
                 if (auctionData.IsAllIn)
                     Bet.text = "Ва-Банк";

@@ -1,3 +1,4 @@
+using System;
 using Injection;
 using UnityEngine;
 
@@ -10,6 +11,8 @@ namespace Victorina
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private MatchData MatchData { get; set; }
+        [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         
         private AuctionData Data => QuestionAnswerData.AuctionData.Value;
         private PlayersBoard PlayersBoard => MatchData.PlayersBoard.Value;
@@ -17,14 +20,17 @@ namespace Victorina
         public void StartNew(PlayerData currentPlayer, int questionPrice)
         {
             Data.Bet = questionPrice;
-            Data.Player = currentPlayer;
+            Data.Player = null;
             Data.BettingPlayer = currentPlayer;
             Data.IsAllIn = false;
             Data.PassedPlayers.Clear();
-            Data.Player = null;
+            AddAutomaticPasses();
+            
             SendToPlayersService.SendAuctionData(Data);
             QuestionAnswerData.AuctionData.NotifyChanged();
         }
+        
+        #region Client
         
         public void SendPlayerPass()
         {
@@ -41,22 +47,23 @@ namespace Victorina
             SendToMasterService.SendBetAuction(bet);
         }
 
+        #endregion
+
         private PlayerData SelectNextBettingPlayer()
         {
             int lastIndex = PlayersBoard.Players.IndexOf(Data.BettingPlayer);
-            for (int index = lastIndex + 1; index % PlayersBoard.Players.Count != lastIndex; index++)
+            for (int dIndex = 1; dIndex <= PlayersBoard.Players.Count; dIndex++)
             {
-                PlayerData player = PlayersBoard.Players[index];
+                PlayerData player = PlayersBoard.Players[(lastIndex + dIndex) % PlayersBoard.Players.Count];
                 if (!Data.PassedPlayers.Contains(player))
                     return player;
             }
-            return null;
+            throw new Exception("Logic error! It looks like all players are passed.");
         }
-        
+
         public void MasterOnReceivePlayerPass(PlayerData player)
         {
-            bool cantPass = Data.Player == null && Data.BettingPlayer == player;
-            if (cantPass)
+            if (!CanPass(player))
             {
                 Debug.Log($"Player '{player}' can't pass as it is betting player and player was not selected yet.");
                 return;
@@ -71,6 +78,7 @@ namespace Victorina
                 Data.PassedPlayers.Add(player);
                 if (Data.BettingPlayer == player)
                     Data.BettingPlayer = SelectNextBettingPlayer();
+
                 SendToPlayersService.SendAuctionData(Data);
                 QuestionAnswerData.AuctionData.NotifyChanged();
             }
@@ -78,12 +86,15 @@ namespace Victorina
 
         public void MasterOnReceivePlayerAllIn(PlayerData player)
         {
-            bool canAllIn = Data.BettingPlayer == player && player.Score > Data.Bet;
+            bool canAllIn = Data.BettingPlayer == player && player.Score >= Data.NextMinBet;
             if (canAllIn)
             {
                 Data.IsAllIn = true;
                 Data.Bet = player.Score;
+                Data.Player = player;
+                AddAutomaticPasses();
                 Data.BettingPlayer = SelectNextBettingPlayer();
+                
                 SendToPlayersService.SendAuctionData(Data);
                 QuestionAnswerData.AuctionData.NotifyChanged();
             }
@@ -95,12 +106,16 @@ namespace Victorina
 
         public void MasterOnReceivePlayerBet(PlayerData player, int bet)
         {
-            bool canBet = Data.BettingPlayer == player && !Data.IsAllIn && bet <= player.Score && bet > Data.Bet;
+            bool isForceBet = Data.Player == null && player.Score < bet;
+            bool canBet = Data.BettingPlayer == player && !Data.IsAllIn && bet >= Data.NextMinBet &&
+                          (player.Score >= bet || isForceBet);
             if (canBet)
             {
                 Data.Bet = bet;
                 Data.Player = player;
+                AddAutomaticPasses();
                 Data.BettingPlayer = SelectNextBettingPlayer();
+                
                 SendToPlayersService.SendAuctionData(Data);
                 QuestionAnswerData.AuctionData.NotifyChanged();
             }
@@ -110,9 +125,39 @@ namespace Victorina
             }
         }
 
+        private void AddAutomaticPasses()
+        {
+            foreach (PlayerData player in PlayersBoard.Players)
+            {
+                if(Data.PassedPlayers.Contains(player))
+                    continue;
+
+                if(!CanPass(player))
+                    continue;
+                
+                if (player.Score < Data.NextMinBet)
+                    Data.PassedPlayers.Add(player);
+            }
+        }
+
+        public bool CanPass(PlayerData player)
+        {
+            bool canPass1 = Data.Player != player;//Player is not who hold bet
+            bool canPass2 = !(Data.Player == null && Data.BettingPlayer == player);
+            return canPass1 && canPass2;
+        }
+        
         public void MasterFinishAuction()
         {
-            QuestionAnswerSystem.ShowNext();
+            if (NetworkData.IsMaster)
+            {
+                PlayersBoardSystem.MakePlayerCurrent(Data.BettingPlayer);
+                QuestionAnswerSystem.ShowNext();
+            }
+            else
+            {
+                Debug.LogWarning("Player clicked finish auction button");
+            }
         }
     }
 }

@@ -52,7 +52,8 @@ namespace Victorina
                 AnsweringText.text = $"Отвечает: {QuestionAnswerData.AnsweringPlayerName}";
             }
             else if (QuestionAnswerData.QuestionType == QuestionType.NoRisk ||
-                     QuestionAnswerData.QuestionType == QuestionType.CatInBag)
+                     QuestionAnswerData.QuestionType == QuestionType.CatInBag ||
+                     QuestionAnswerData.QuestionType == QuestionType.Auction)
             {
                 WasWrongAnswerPanel.SetActive(false);
                 AnsweringPanel.SetActive(!MatchData.IsMeCurrentPlayer || phase == QuestionPhase.AcceptingAnswer);

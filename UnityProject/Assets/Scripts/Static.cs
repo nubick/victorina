@@ -15,6 +15,8 @@ namespace Victorina
         public static string EmptyPlayerName = "Баба-Яга";
         
         public static BuildMode BuildMode => DevSettings.BuildMode;
+
+        public static int AuctionMinStep = 100;
         
 #if UNITY_EDITOR
         public static string DataPath => $"{Application.persistentDataPath}/Editor";
