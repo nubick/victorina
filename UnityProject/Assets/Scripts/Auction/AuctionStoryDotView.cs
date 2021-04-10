@@ -32,6 +32,7 @@ namespace Victorina
         public void Initialize()
         {
             MatchData.QuestionAnswerData.AuctionData.SubscribeChanged(RefreshUI);
+            MetagameEvents.AuctionPlayerClicked.Subscribe(OnAuctionPlayerClicked);
         }
         
         protected override void OnShown()
@@ -43,13 +44,23 @@ namespace Victorina
         {
             RefreshPlayersWidgets(MatchData.PlayersBoard.Value);
 
-            bool isBetPanelActive = NetworkData.IsClient && !AuctionData.IsFinished && !AuctionData.PassedPlayers.Contains(MatchData.ThisPlayer);
-            BetPanel.SetActive(isBetPanelActive);
-            if (isBetPanelActive)
+            if (NetworkData.IsClient)
             {
-                BetCanvasGroup.interactable = AuctionData.BettingPlayer == MatchData.ThisPlayer && !AuctionData.IsAllIn;
-                AllInButton.interactable = AuctionData.BettingPlayer == MatchData.ThisPlayer && MatchData.ThisPlayer.Score >= AuctionData.NextMinBet;
-                PassButton.interactable = AuctionSystem.CanPass(MatchData.ThisPlayer);
+                bool isBetPanelActive = !AuctionData.IsFinished && !AuctionData.PassedPlayers.Contains(MatchData.ThisPlayer);
+                BetPanel.SetActive(isBetPanelActive);
+                if (isBetPanelActive)
+                {
+                    BetCanvasGroup.interactable = AuctionData.BettingPlayer == MatchData.ThisPlayer && !AuctionData.IsAllIn;
+                    AllInButton.interactable = AuctionData.BettingPlayer == MatchData.ThisPlayer && MatchData.ThisPlayer.Score >= AuctionData.NextMinBet;
+                    PassButton.interactable = AuctionSystem.CanPass(MatchData.ThisPlayer);
+                }
+            }
+            else if (NetworkData.IsMaster)
+            {
+                BetPanel.SetActive(AuctionData.SelectedPlayerByMaster != null);
+                BetCanvasGroup.interactable = true;
+                AllInButton.interactable = false;
+                PassButton.interactable = false;
             }
 
             PlayerText.text = AuctionData.Player?.Name ?? Static.EmptyPlayerName;
@@ -68,7 +79,8 @@ namespace Victorina
             foreach (PlayerData playerData in playersBoard.Players)
             {
                 AuctionPlayerWidget widget = Instantiate(WidgetPrefab, WidgetsRoot);
-                widget.Bind(playerData, AuctionData);
+                bool isSelected = NetworkData.IsMaster && AuctionData.SelectedPlayerByMaster == playerData;
+                widget.Bind(playerData, AuctionData, isSelected);
             }
         }
 
@@ -99,8 +111,19 @@ namespace Victorina
 
         private void SetRoughBet(int bet)
         {
-            _roughBet = Mathf.Clamp(bet, AuctionData.NextMinBet, Mathf.Max(MatchData.ThisPlayer.Score, AuctionData.NextMinBet));
+            int minBet = NetworkData.IsClient ? AuctionData.NextMinBet : 0;
+            int maxBet = NetworkData.IsClient ? Mathf.Max(MatchData.ThisPlayer.Score, AuctionData.NextMinBet) : int.MaxValue;
+            _roughBet = Mathf.Clamp(bet, minBet, maxBet);
             RoughBetText.text = $"Поставить\n{_roughBet}";
+        }
+        
+        private void OnAuctionPlayerClicked(PlayerData player)
+        {
+            if (NetworkData.IsMaster)
+            {
+                AuctionData.SelectedPlayerByMaster = player;
+                RefreshUI();
+            }
         }
     }
 }

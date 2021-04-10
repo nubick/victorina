@@ -6,10 +6,17 @@ namespace Victorina
 {
     public class AuctionPlayerWidget : MonoBehaviour, IPointerClickHandler
     {
+        private PlayerData _player;
+        
         public Text Bet;
+        public GameObject Selection;
 
-        public void Bind(PlayerData player, AuctionData auctionData)
+        public void Bind(PlayerData player, AuctionData auctionData, bool isSelected)
         {
+            _player = player;
+            
+            Selection.SetActive(isSelected);
+            
             if (auctionData.BettingPlayer == player)
             {
                 if (auctionData.Player == player)
@@ -35,7 +42,7 @@ namespace Victorina
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Debug.Log($"Todo: Implement click handling");
+            MetagameEvents.AuctionPlayerClicked.Publish(_player);
         }
     }
 }

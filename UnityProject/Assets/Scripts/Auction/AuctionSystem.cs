@@ -24,6 +24,7 @@ namespace Victorina
             Data.BettingPlayer = currentPlayer;
             Data.IsAllIn = false;
             Data.PassedPlayers.Clear();
+            Data.SelectedPlayerByMaster = null;
             AddAutomaticPasses();
             
             SendToPlayersService.SendAuctionData(Data);
@@ -44,7 +45,11 @@ namespace Victorina
 
         public void SendPlayerBet(int bet)
         {
-            SendToMasterService.SendBetAuction(bet);
+            if (NetworkData.IsClient)
+                SendToMasterService.SendBetAuction(bet);
+
+            if (NetworkData.IsMaster)
+                MasterMakeBetForPlayer(bet, Data.SelectedPlayerByMaster);
         }
 
         #endregion
@@ -59,6 +64,19 @@ namespace Victorina
                     return player;
             }
             throw new Exception("Logic error! It looks like all players are passed.");
+        }
+
+        private void MasterMakeBetForPlayer(int bet, PlayerData player)
+        {
+            Data.Bet = bet;
+            Data.Player = player;
+            Data.PassedPlayers.Remove(player);
+            Data.BettingPlayer = player;
+            AddAutomaticPasses();
+            Data.BettingPlayer = SelectNextBettingPlayer();
+
+            SendToPlayersService.SendAuctionData(Data);
+            QuestionAnswerData.AuctionData.NotifyChanged();
         }
 
         public void MasterOnReceivePlayerPass(PlayerData player)
@@ -151,7 +169,7 @@ namespace Victorina
         {
             if (NetworkData.IsMaster)
             {
-                PlayersBoardSystem.MakePlayerCurrent(Data.BettingPlayer);
+                PlayersBoardSystem.MakePlayerCurrent(Data.Player);
                 QuestionAnswerSystem.ShowNext();
             }
             else

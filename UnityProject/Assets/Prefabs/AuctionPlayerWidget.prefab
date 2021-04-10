@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Bet: {fileID: 405104146517630506}
+  Selection: {fileID: 6534232949287930823}
 --- !u!1 &6534232949287930823
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,7 +140,7 @@ GameObject:
   - component: {fileID: 3752211923376279130}
   - component: {fileID: 4205665202925648245}
   m_Layer: 5
-  m_Name: CurrentBorder
+  m_Name: Selection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

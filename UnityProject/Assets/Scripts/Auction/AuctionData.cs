@@ -13,6 +13,9 @@ namespace Victorina
         public bool IsFinished => BettingPlayer == Player;
         public int NextMinBet => Player == null ? Bet : Bet + Static.AuctionMinStep;
 
+        //Master Only
+        public PlayerData SelectedPlayerByMaster { get; set; }
+        
         public override string ToString()
         {
             return $"[Bet:{Bet}|AllIn:{IsAllIn}|Player:{(Player == null ? "None" : Player.Name)}|Betting:{BettingPlayer}|Passed:{string.Join(",", PassedPlayers)}]";
