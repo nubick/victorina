@@ -44,7 +44,7 @@ namespace Victorina
             {
                 networkPlayer.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
                 networkPlayer.SendSelectedQuestion(QuestionAnswerData.SelectedQuestion.Value);
-                networkPlayer.SendPlayersButtonClickData(QuestionAnswerData.PlayersButtonClickData.Value);
+                networkPlayer.SendPlayersButtonClickData(QuestionAnswerData.PlayersButtonClickData);
                 networkPlayer.SendQuestionAnswerData(QuestionAnswerData);
             }
             

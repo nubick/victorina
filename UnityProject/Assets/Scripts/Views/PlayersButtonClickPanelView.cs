@@ -13,7 +13,7 @@ namespace Victorina
         
         public void Initialize()
         {
-            QuestionAnswerData.PlayersButtonClickData.SubscribeChanged(Refresh);
+            MetagameEvents.PlayersButtonClickDataChanged.Subscribe(Refresh);
             MetagameEvents.PlayerButtonClickWidgetClicked.Subscribe(OnWidgetClicked);
         }
 
@@ -22,7 +22,7 @@ namespace Victorina
             ClearChild(WidgetsRoot);
             Show();
 
-            foreach (PlayerButtonClickData player in QuestionAnswerData.PlayersButtonClickData.Value.Players)
+            foreach (PlayerButtonClickData player in QuestionAnswerData.PlayersButtonClickData.Players)
             {
                 PlayerButtonClickWidget widget = Instantiate(WidgetPrefab, WidgetsRoot);
                 widget.Bind(player);

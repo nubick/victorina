@@ -15,8 +15,8 @@ namespace Victorina
         public QuestionTimerState TimerState { get; set; }
         public float TimerResetSeconds { get; set; }
         public float TimerLeftSeconds { get; set; }
-        
-        public ReactiveProperty<PlayersButtonClickData> PlayersButtonClickData { get; } = new ReactiveProperty<PlayersButtonClickData>();
+
+        public PlayersButtonClickData PlayersButtonClickData { get; set; } = new PlayersButtonClickData();
         public ReactiveProperty<AuctionData> AuctionData { get; } = new ReactiveProperty<AuctionData>();
         
         public string AnsweringPlayerName { get; set; }
@@ -37,7 +37,6 @@ namespace Victorina
         
         public QuestionAnswerData()
         {
-            PlayersButtonClickData.Value = new PlayersButtonClickData();
             AuctionData.Value = new AuctionData();
         }
 

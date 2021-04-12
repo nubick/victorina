@@ -20,6 +20,9 @@ namespace Victorina
         
         public static GameEvent MediaRestarted { get; } = new GameEvent();
         
+        //Data changed
+        public static GameEvent PlayersButtonClickDataChanged { get; } = new GameEvent();
+        
         //Master events
         public static GameEvent ServerStarted { get; } = new GameEvent();
         public static GameEvent ServerStopped { get; } = new GameEvent();

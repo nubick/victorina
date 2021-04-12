@@ -43,7 +43,8 @@ namespace Victorina
         
         public void OnReceive(PlayersButtonClickData data)
         {
-            MatchData.QuestionAnswerData.PlayersButtonClickData.Value = data;
+            MatchData.QuestionAnswerData.PlayersButtonClickData = data;
+            MetagameEvents.PlayersButtonClickDataChanged.Publish();
         }
 
         public void OnReceive(QuestionAnswerData data)

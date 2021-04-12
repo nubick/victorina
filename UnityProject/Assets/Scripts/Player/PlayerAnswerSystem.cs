@@ -74,7 +74,7 @@ namespace Victorina
 
         public bool WasIntentionSent()
         {
-            return QuestionAnswerData.PlayersButtonClickData.Value.Players.Any(_ => _.PlayerId == NetworkData.RegisteredPlayerId);
+            return QuestionAnswerData.PlayersButtonClickData.Players.Any(_ => _.PlayerId == NetworkData.RegisteredPlayerId);
         } 
     }
 }

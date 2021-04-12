@@ -99,19 +99,9 @@ namespace Victorina
             Data.TimerResetSeconds = Static.TimeForAnswer;
             Data.TimerLeftSeconds = QuestionTimer.LeftSeconds;
             Data.TimerState = QuestionTimerState.Running;
-            ClearPlayersButtonClickData();
+            Data.PlayersButtonClickData.Clear();
         }
-
-        private void ClearPlayersButtonClickData()
-        {
-            if (Data.PlayersButtonClickData.Value.Players.Any())
-            {
-                Data.PlayersButtonClickData.Value.Players.Clear();
-                Data.PlayersButtonClickData.NotifyChanged();
-                SendToPlayersService.SendPlayersButtonClickData(Data.PlayersButtonClickData.Value);
-            }
-        }
-
+        
         public void PauseTimer()
         {
             Data.TimerState = QuestionTimerState.Paused;
@@ -141,10 +131,8 @@ namespace Victorina
             Data.TimerState = QuestionTimerState.Paused;
             Data.Phase.Value = QuestionPhase.ShowAnswer;
             Data.CurrentStoryDotIndex = 0;
-            
             SendData(MasterIntention.ShowAnswer);
-            
-            ClearPlayersButtonClickData();
+            Data.PlayersButtonClickData.Clear();
         }
 
         public void OnPlayerButtonClickReceived(byte playerId, float spentSeconds)
@@ -152,7 +140,7 @@ namespace Victorina
             if (Data.TimerState == QuestionTimerState.NotStarted)
                 return;
             
-            bool wasReceivedBefore = Data.PlayersButtonClickData.Value.Players.Any(_ => _.PlayerId == playerId);
+            bool wasReceivedBefore = Data.PlayersButtonClickData.Players.Any(_ => _.PlayerId == playerId);
             if (wasReceivedBefore)
                 return;
 
@@ -166,15 +154,8 @@ namespace Victorina
             if (didWrongAnswerBefore)
                 return;
             
-            PlayerButtonClickData clickData = new PlayerButtonClickData();
-            clickData.PlayerId = playerId;
-            clickData.Name = PlayersBoardSystem.GetPlayer(playerId).Name;
-            clickData.Time = spentSeconds;
-            Data.PlayersButtonClickData.Value.Players.Add(clickData);
-
-            Data.PlayersButtonClickData.NotifyChanged();
-            SendToPlayersService.SendPlayersButtonClickData(Data.PlayersButtonClickData.Value);
-
+            Data.PlayersButtonClickData.Add(playerId, PlayersBoardSystem.GetPlayer(playerId).Name, spentSeconds);
+            
             PauseTimer();
 
             MasterQuestionPanelView.RefreshUI();
@@ -194,7 +175,7 @@ namespace Victorina
 
         public void SelectFastestPlayerForAnswer()
         {
-            PlayerButtonClickData fastest = Data.PlayersButtonClickData.Value.Players.OrderBy(_ => _.Time).FirstOrDefault();
+            PlayerButtonClickData fastest = Data.PlayersButtonClickData.Players.OrderBy(_ => _.Time).FirstOrDefault();
             
             if (fastest == null)
                 throw new Exception("Can't select fastest when list of players is empty.");
@@ -211,8 +192,7 @@ namespace Victorina
             Data.AnsweringPlayerId = playerId;
             Data.Phase.Value = QuestionPhase.AcceptingAnswer;
             SendToPlayersService.Send(Data);
-            
-            ClearPlayersButtonClickData();
+            Data.PlayersButtonClickData.Clear();
         }
 
         public void AcceptNoRiskAnswer()

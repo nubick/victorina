@@ -1,7 +1,6 @@
 using System;
 using Injection;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Victorina
@@ -25,7 +24,7 @@ namespace Victorina
         public void Initialize()
         {
             QuestionAnswerData.Phase.SubscribeChanged(RefreshUI);
-            QuestionAnswerData.PlayersButtonClickData.SubscribeChanged(RefreshUI);
+            MetagameEvents.PlayersButtonClickDataChanged.Subscribe(RefreshUI);
         }
 
         protected override void OnShown()

@@ -95,6 +95,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<MasterAcceptAnswerView>());
             _injector.Bind(FindObjectOfType<MasterPlayerSettingsView>());
             _injector.Bind(FindObjectOfType<MasterEffectsView>());
+            _injector.Bind(FindObjectOfType<DataSyncService>());
             
             //Client only
             _injector.Bind(FindObjectOfType<DownloadingFilesPanelView>());
@@ -167,6 +168,7 @@ namespace Victorina
             _injector.Get<MatchSystem>().Initialize();
             _injector.Get<MasterQuestionPanelView>().Initialize();
             _injector.Get<MasterEffectsView>().Initialize();
+            _injector.Get<DataSyncService>().Initialize();
             
             _injector.Get<CatInBagSystem>().Initialize();
             _injector.Get<CatInBagStoryDotView>().Initialize();

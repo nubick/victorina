@@ -45,7 +45,7 @@ namespace Victorina
             {
                 if (keyCode == KeyCode.Space || keyCode == KeyCode.RightArrow)
                 {
-                    if (QuestionAnswerData.PlayersButtonClickData.Value.Players.Any())
+                    if (QuestionAnswerData.PlayersButtonClickData.Players.Any())
                     {
                         Debug.Log($"Master keyboard:{keyCode}. Select fastest player for answer.");
                         QuestionAnswerSystem.SelectFastestPlayerForAnswer();
