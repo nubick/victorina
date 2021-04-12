@@ -1,5 +1,4 @@
 using System.Collections;
-using System.IO;
 using Injection;
 using UnityEngine;
 using UnityEngine.Video;
@@ -13,6 +12,7 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private AppState AppState { get; set; }
+        [Inject] private PathData PathData { get; set; }
         
         public GameObject NoVideoImage;
         public VideoPlayer VideoPlayer;
@@ -54,17 +54,13 @@ namespace Victorina
             bool exists = MasterFilesRepository.Has(fileId);
             VideoPlayer.gameObject.SetActive(exists);
             NoVideoImage.SetActive(!exists);
-
-            string path = MasterFilesRepository.GetPath(fileId);
-
+            
             if (exists)
             {
                 _pendingFileId = null;
-                string tempVideoPath = MasterFilesRepository.GetTempVideoFilePath();
-                File.Copy(path, tempVideoPath, overwrite: true);
-
-                string requestPath = $"file://{tempVideoPath}";
-                Debug.Log($"Request video path: '{tempVideoPath}'");
+                MasterFilesRepository.CopyToTempVideoFilePath(fileId);
+                string requestPath = $"file://{PathData.TempVideoFilePath}";
+                Debug.Log($"Request video path: '{PathData.TempVideoFilePath}'");
                 VideoPlayer.url = requestPath;
                 VideoPlayer.Prepare();
 
@@ -76,7 +72,7 @@ namespace Victorina
             else
             {
                 _pendingFileId = fileId;
-                Debug.Log($"Can't play video. File doesn't exist: '{path}'");
+                Debug.Log($"Can't play video. File doesn't exist: {fileId}");
             }
         }
 

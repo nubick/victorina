@@ -1,12 +1,15 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using Injection;
 using UnityEngine;
 
 namespace Victorina
 {
     public class SiqPackOpenSystem
     {
+        [Inject] private PathData PathData { get; set; }
+        
 #if UNITY_ANDROID
         public string Open(string path)
         {
@@ -22,7 +25,7 @@ namespace Victorina
             if (exists)
             {
                 string packageName = Path.GetFileNameWithoutExtension(path);
-                string destinationDirectoryName = $"{Static.DataPath}/{packageName}";
+                string destinationDirectoryName = $"{PathData.PackagesPath}/{packageName}";
                 UnZip(path, destinationDirectoryName);
                 return packageName;
             }

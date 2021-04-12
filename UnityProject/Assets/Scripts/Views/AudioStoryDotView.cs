@@ -13,6 +13,7 @@ namespace Victorina
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private AppState AppState { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
+        [Inject] private PathSystem PathSystem { get; set; }
 
         public AudioSource AudioSource;
         
@@ -42,7 +43,7 @@ namespace Victorina
         private IEnumerator LoadAndPlay(int fileId)
         {
             bool exist = MasterFilesRepository.Has(fileId);
-            string path = MasterFilesRepository.GetPath(fileId);
+            string path = PathSystem.GetPath(fileId);
             
             if (exist)
             {

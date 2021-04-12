@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Injection;
 using UnityEngine;
 
 namespace Victorina
 {
-    public class MasterFilesRepository : FilesRepository
+    public class MasterFilesRepository
     {
+        [Inject] private PathSystem PathSystem { get; set; }
+        
         private const int ChunkSize = 60 * 1024;
 
         private readonly HashSet<int> _fileIds = new HashSet<int>();
@@ -21,8 +24,6 @@ namespace Victorina
             _hashMap.Clear();
             _fileBytesCache.Clear();
             _chunksCache.Clear();
-            
-            EnsurePackageFilesDirectory();
             
             var questions = package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions));
             foreach (Question question in questions)
@@ -66,7 +67,7 @@ namespace Victorina
                 }
                 else
                 {
-                    string destFileName = GetPath(hash);
+                    string destFileName = PathSystem.GetPath(hash);
                     File.Copy(path, destFileName, overwrite: true);
 
                     _fileIds.Add(hash);
@@ -88,7 +89,7 @@ namespace Victorina
                 return;
             }
             
-            string path = GetPath(fileId);
+            string path = PathSystem.GetPath(fileId);
             byte[] bytes = File.ReadAllBytes(path);
             _fileBytesCache.Add(fileId, bytes);
             byte[][] chunks = new byte[chunksAmount][];
@@ -99,7 +100,7 @@ namespace Victorina
 
         public bool Has(int fileId)
         {
-            return File.Exists(GetPath(fileId));
+            return File.Exists(PathSystem.GetPath(fileId));
         }
         
         public byte[] GetBytes(int fileId)
@@ -107,7 +108,7 @@ namespace Victorina
             if (Has(fileId))
             {
                 if (!_fileBytesCache.ContainsKey(fileId))
-                    _fileBytesCache.Add(fileId, File.ReadAllBytes(GetPath(fileId)));
+                    _fileBytesCache.Add(fileId, File.ReadAllBytes(PathSystem.GetPath(fileId)));
 
                 return _fileBytesCache[fileId];
             }
@@ -131,10 +132,16 @@ namespace Victorina
 
         private int GetFileChunksAmount(int fileId)
         {
-            string path = GetPath(fileId);
+            string path = PathSystem.GetPath(fileId);
             FileInfo fileInfo = new FileInfo(path);
             int size = (int) fileInfo.Length;
             return size / ChunkSize + (size % ChunkSize == 0 ? 0 : 1);
+        }
+
+        public void CopyToTempVideoFilePath(int fileId)
+        {
+            string path = PathSystem.GetPath(fileId);
+            File.Copy(path, PathSystem.Data.TempVideoFilePath, overwrite: true);
         }
     }
 }

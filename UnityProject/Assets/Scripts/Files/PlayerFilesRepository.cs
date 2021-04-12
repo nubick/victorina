@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Injection;
 using UnityEngine;
 
 namespace Victorina
 {
-    public class PlayerFilesRepository : FilesRepository
+    public class PlayerFilesRepository
     {
+        [Inject] private PathSystem PathSystem { get; set; }
+        
         public Dictionary<int, DownloadingFile> Files { get; } = new Dictionary<int, DownloadingFile>();
 
         public void Clear()
@@ -61,8 +64,7 @@ namespace Victorina
 
         private void SaveDownloadedFile(DownloadingFile file)
         {
-            EnsurePackageFilesDirectory();
-            string path = GetPath(file.FileId);
+            string path = PathSystem.GetPath(file.FileId);
             byte[] bytes = file.GetBytes();
             File.WriteAllBytes(path, bytes);
             file.IsSavedToDisk = true;
@@ -71,7 +73,7 @@ namespace Victorina
 
         private void InitializeIfSavedToDisk(DownloadingFile file)
         {
-            string path = GetPath(file.FileId);
+            string path = PathSystem.GetPath(file.FileId);
             if (File.Exists(path))
             {
                 //Debug.Log($"File [{file.FileId}] was downloaded before. Load from disk.");

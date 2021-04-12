@@ -18,12 +18,6 @@ namespace Victorina
 
         public static int AuctionMinStep = 100;
         
-#if UNITY_EDITOR
-        public static string DataPath => $"{Application.persistentDataPath}/Editor";
-#else
-        public static string DataPath => Application.persistentDataPath;
-#endif
-        
         private static DevSettings _devSettings;
         public static DevSettings DevSettings
         {

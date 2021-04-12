@@ -10,11 +10,12 @@ namespace Victorina
     public class SiqConverter
     {
         [Inject] private EncodingFixSystem EncodingFixSystem { get; set; }
+        [Inject] private PathData PathData { get; set; }
         
         public Package Convert(string packageName)
         {
             Package package = new Package(packageName);
-            XmlReader xmlReader = XmlReader.Create($"{Static.DataPath}/{packageName}/content.xml");
+            XmlReader xmlReader = XmlReader.Create($"{PathData.PackagesPath}/{packageName}/content.xml");
             package.Rounds = ReadRounds(xmlReader);
             
             EncodingFixSystem.TryFix(packageName);
@@ -345,17 +346,17 @@ namespace Victorina
         
         public string GetImagesPath(string packageName)
         {
-            return $"{Static.DataPath}/{packageName}/Images";
+            return $"{PathData.PackagesPath}/{packageName}/Images";
         }
         
         public string GetAudioPath(string packageName)
         {
-            return $"{Static.DataPath}/{packageName}/Audio";
+            return $"{PathData.PackagesPath}/{packageName}/Audio";
         }
 
         public string GetVideoPath(string packageName)
         {
-            return $"{Static.DataPath}/{packageName}/Video";
+            return $"{PathData.PackagesPath}/{packageName}/Video";
         }
 
         private void Log(XmlReader xmlReader)

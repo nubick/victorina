@@ -75,6 +75,9 @@ namespace Victorina
             _injector.Bind(new PackageSystem());
             _injector.Bind(new PackageData());
             
+            _injector.Bind(new PathSystem());
+            _injector.Bind(new PathData());
+            
             _injector.Bind(NetworkingManager.Singleton);
             
             _injector.Bind(new DataChangeHandler());
@@ -141,6 +144,8 @@ namespace Victorina
             GeneratePlayerGuid();//after load app state
             
             StartCoroutine(_injector.Get<ExternalIpSystem>().Initialize());
+            
+            _injector.Get<PathSystem>().Initialize();
             
             _injector.Get<ServerService>().Initialize();
             _injector.Get<PlayersBoardSystem>().Initialize();
