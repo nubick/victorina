@@ -18,7 +18,7 @@ namespace Victorina
             package.Rounds = ReadRounds(xmlReader);
             
             EncodingFixSystem.TryFix(packageName);
-            
+
             InitializeStoryDots(package);
             return package;
         }
@@ -142,7 +142,7 @@ namespace Victorina
             ReadScenario(xmlReader, question);
             
             xmlReader.ReadToFollowing("answer");
-            string answer = xmlReader.ReadInnerXml();
+            string answer = DecodeString(xmlReader.ReadInnerXml());
             TextStoryDot textStoryDot = new TextStoryDot(answer);
             question.AnswerStory.Add(textStoryDot);
             return question;
@@ -254,13 +254,13 @@ namespace Victorina
 
             if (string.IsNullOrEmpty(type))
             {
-                string text = xmlReader.Value;
+                string text = DecodeString(xmlReader.Value);
                 TextStoryDot textStoryDot = new TextStoryDot(text);
                 AddStoryDot(question, textStoryDot, isAfterMarker);
             }
             else if (type == "say")
             {
-                string text = xmlReader.Value;
+                string text = DecodeString(xmlReader.Value);
                 TextStoryDot textStoryDot = new TextStoryDot($"say: {text}");
                 AddStoryDot(question, textStoryDot, isAfterMarker);
             }
@@ -361,6 +361,16 @@ namespace Victorina
         private void Log(XmlReader xmlReader)
         {
             Debug.Log($"NodeType: {xmlReader.NodeType}, Name: {xmlReader.Name}, ValueType: {xmlReader.ValueType}, Value: {xmlReader.Value}");
+        }
+        
+        private string DecodeString(string str)
+        {
+            return str
+                .Replace("&amp;", "&")
+                .Replace("&gt;", ">")
+                .Replace("&lt;", "<")
+                .Replace("&quot;", "\"")
+                .Replace("&apos;", "'");
         }
     }
 }
