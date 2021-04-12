@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -63,9 +64,9 @@ namespace Victorina
                 throw new Exception($"Not supported question type: {QuestionAnswerData.QuestionType}");
             }
 
-            ThemeText.text = $"Тема: {MatchData.SelectedRoundQuestion.Theme}";
+            ThemeText.text = $"Тема: {MatchData.GetTheme()}";
         }
-
+        
         public void OnAnswerButtonClicked()
         {
             PlayerAnswerSystem.OnAnswerButtonClicked();

@@ -65,8 +65,8 @@ namespace Victorina
 
             AnswerTip.text = Data.AnswerTip;
             AnswerTipPanel.SetActive(Data.IsAnswerTipEnabled);
-            
-            ThemeText.text = $"Тема: {MatchData.SelectedRoundQuestion.Theme}";
+
+            ThemeText.text = $"Тема: {MatchData.GetTheme()}";
         }
 
         private bool CanStartTimer(QuestionPhase phase, QuestionTimerState timerState, bool isLastDot)

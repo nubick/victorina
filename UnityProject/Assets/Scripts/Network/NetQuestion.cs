@@ -1,4 +1,6 @@
 
+using System;
+
 namespace Victorina
 {
     public class NetQuestion
@@ -10,6 +12,19 @@ namespace Victorina
         
         public int AnswerStoryDotsAmount { get; set; }
         public StoryDot[] AnswerStory { get; set; }
+
+        public T GetFirst<T>() where T : StoryDot
+        {
+            foreach (StoryDot storyDot in QuestionStory)
+                if (storyDot is T firstStoryDot)
+                    return firstStoryDot;
+
+            foreach (StoryDot storyDot in AnswerStory)
+                if (storyDot is T firstStoryDot)
+                    return firstStoryDot;
+
+            throw new Exception($"Can't find story dot of type '{typeof(T)}'. QuestionType: {Type}");
+        }
 
         public override string ToString()
         {

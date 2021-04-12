@@ -164,7 +164,7 @@ namespace Victorina
         {
             if (netQuestion.Type == QuestionType.CatInBag)
             {
-                CatInBagStoryDot catInBagStoryDot = netQuestion.QuestionStory.First() as CatInBagStoryDot;
+                CatInBagStoryDot catInBagStoryDot = netQuestion.GetFirst<CatInBagStoryDot>();
 
                 if (catInBagStoryDot == null)
                     throw new Exception("Cat in bag netQuestion doesn't have CatInBagStoryDot at first place.");
