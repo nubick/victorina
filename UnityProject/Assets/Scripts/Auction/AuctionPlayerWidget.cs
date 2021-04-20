@@ -17,12 +17,17 @@ namespace Victorina
             
             Selection.SetActive(isSelected);
             
+            Bet.fontStyle = FontStyle.Normal;
+            
             if (auctionData.BettingPlayer == player)
             {
                 if (auctionData.Player == player)
                     Bet.text = "Выиграл";
                 else
+                {
                     Bet.text = "Делает ставку";
+                    Bet.fontStyle = FontStyle.Bold;
+                }
             }
             else if (auctionData.Player == player)
             {
