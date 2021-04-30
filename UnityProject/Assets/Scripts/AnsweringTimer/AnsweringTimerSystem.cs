@@ -82,7 +82,6 @@ namespace Victorina
         private void AcceptAnswerAsWrong()
         {
             QuestionAnswerSystem.AcceptAnswerAsWrong();
-            MasterAcceptAnswerView.Hide();
         }
     }
 }

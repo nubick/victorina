@@ -203,6 +203,11 @@ namespace Victorina
                 if (NetworkData.IsMaster)
                     MasterAcceptAnswerView.Show();
             }
+            else
+            {
+                if(MasterAcceptAnswerView.IsActive)
+                    MasterAcceptAnswerView.Hide();
+            }
         }
         
         private void OnCatInBagIsPlayerSelectedChanged()

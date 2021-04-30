@@ -20,19 +20,16 @@ namespace Victorina
         public void OnCorrectButtonClicked()
         {
             QuestionAnswerSystem.AcceptAnswerAsCorrect();
-            Hide();
         }
 
         public void OnWrongButtonClicked()
         {
             QuestionAnswerSystem.AcceptAnswerAsWrong();
-            Hide();
         }
 
         public void OnCancelButtonClicked()
         {
             QuestionAnswerSystem.CancelAcceptingAnswer();
-            Hide();
         }
     }
 }

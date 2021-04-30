@@ -52,7 +52,6 @@ namespace Victorina
                 AuctionSystem.StartNew(MatchData.PlayersBoard.Value.Current, MatchData.SelectedRoundQuestion.Price);
             }
             
-            
             SendData(MasterIntention.StartAnswering);
         }
         
