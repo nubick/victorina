@@ -7,6 +7,7 @@ namespace Victorina
     {
         [Inject] private JoinGameView JoinGameView { get; set; }
         [Inject] private ServerService ServerService { get; set; }
+        [Inject] private PackageEditorView PackageEditorView { get; set; }
         
         public Text Version;
         
@@ -23,6 +24,11 @@ namespace Victorina
         public void OnJoinGameButtonClicked()
         {
             SwitchTo(JoinGameView);
+        }
+
+        public void OnEditorButtonClicked()
+        {
+            SwitchTo(PackageEditorView);
         }
     }
 }

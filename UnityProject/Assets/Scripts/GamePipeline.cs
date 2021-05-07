@@ -118,11 +118,16 @@ namespace Victorina
             _injector.Bind(new PlayerFilesRequestSystem());
             _injector.Bind(FindObjectOfType<PlayerFilesRequestData>());
             
-            _injector.Bind(new SiqPackOpenSystem());
+            _injector.Bind(new SiqPackageOpenSystem());
             _injector.Bind(new SiqLoadedPackageSystem());
             _injector.Bind(new SiqLoadedPackageData());
             _injector.Bind(new SiqConverter());
             _injector.Bind(new EncodingFixSystem());
+            
+            //Package Editor
+            _injector.Bind(FindObjectOfType<PackageEditorView>());
+            _injector.Bind(new PackageEditorSystem());
+            _injector.Bind(new PackageEditorData());
             
             _injector.CommitBindings();
             
@@ -184,6 +189,9 @@ namespace Victorina
             _injector.Get<AuctionStoryDotView>().Initialize();
             
             _injector.Get<AnsweringTimerSystem>().Initialize();
+            
+            //Package Editor
+            _injector.Get<PackageEditorView>().Initialize();
         }
         
         private void OnNetworkPlayerSpawned(NetworkPlayer networkPlayer)

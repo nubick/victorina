@@ -11,17 +11,22 @@ namespace Victorina
     {
         [Inject] private EncodingFixSystem EncodingFixSystem { get; set; }
         [Inject] private PathData PathData { get; set; }
-        
-        public Package Convert(string packageName)
+
+        public Package Convert(string packageName, string packagePath)
         {
             Package package = new Package(packageName);
-            XmlReader xmlReader = XmlReader.Create($"{PathData.PackagesPath}/{packageName}/content.xml");
+            XmlReader xmlReader = XmlReader.Create($"{packagePath}/{packageName}/content.xml");
             package.Rounds = ReadRounds(xmlReader);
             
             EncodingFixSystem.TryFix(packageName);
 
             InitializeStoryDots(package);
             return package;
+        }
+        
+        public Package Convert(string packageName)
+        {
+            return Convert(packageName, PathData.PackagesPath);
         }
 
         private List<Round> ReadRounds(XmlReader xmlReader)

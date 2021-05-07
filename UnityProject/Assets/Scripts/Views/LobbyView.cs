@@ -1,6 +1,5 @@
 using System.Collections;
 using Injection;
-using SFB;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +11,7 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private ServerService ServerService { get; set; }
         [Inject] private RoundView RoundView { get; set; }
-        [Inject] private SiqPackOpenSystem SiqPackOpenSystem { get; set; }
+        [Inject] private SiqPackageOpenSystem SiqPackageOpenSystem { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private SiqLoadedPackageSystem SiqLoadedPackageSystem { get; set; }
         [Inject] private SiqLoadedPackageData SiqLoadedPackageData { get; set; }
@@ -70,17 +69,17 @@ namespace Victorina
 
         public void OnLoadPackButtonClicked()
         {
-            ExtensionFilter[] extensions = {new ExtensionFilter("SIQ Files", "siq")};
-            string[] paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
-            if (string.IsNullOrWhiteSpace(paths[0]))
+            string path = SiqPackageOpenSystem.GetPathUsingOpenDialogue();
+
+            if (string.IsNullOrWhiteSpace(path))
             {
-                Debug.Log("Not selected pack in file browser.");
+                Debug.Log("Package is not selected in file browser.");
+                return;
             }
-            else
-            {
-                string packageName = SiqPackOpenSystem.Open(paths[0]);
-                StartPackage(packageName);
-            }
+            
+            SiqPackageOpenSystem.UnZipPackageToPlayFolder(path);
+            string packageName = SiqPackageOpenSystem.GetPackageName(path);
+            StartPackage(packageName);
         }
 
         private void RefreshButtons()
