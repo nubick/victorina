@@ -41,6 +41,7 @@ namespace Victorina
         //Package editor events
         public static GameEvent<string> EditorPackageClicked { get; } = new GameEvent<string>();
         public static GameEvent<Round> EditorRoundClicked { get; } = new GameEvent<Round>();
+        public static GameEvent<Theme> EditorThemeClicked { get; } = new GameEvent<Theme>();
         
         //Commands
         public static GameEvent<SoundEffect> PlaySoundEffectCommand = new GameEvent<SoundEffect>();

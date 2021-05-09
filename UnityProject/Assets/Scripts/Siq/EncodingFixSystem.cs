@@ -9,11 +9,11 @@ namespace Victorina
     {
         [Inject] private SiqConverter SiqConverter { get; set; }
         
-        public void TryFix(string packageName)
+        public void TryFix(string packagePath)
         {
-            FixURLEncoding(SiqConverter.GetImagesPath(packageName));
-            FixURLEncoding(SiqConverter.GetAudioPath(packageName));
-            FixURLEncoding(SiqConverter.GetVideoPath(packageName));
+            FixURLEncoding(SiqConverter.GetImagesPath(packagePath));
+            FixURLEncoding(SiqConverter.GetAudioPath(packagePath));
+            FixURLEncoding(SiqConverter.GetVideoPath(packagePath));
         }
 
         private void FixURLEncoding(string folder)

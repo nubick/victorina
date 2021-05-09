@@ -10,10 +10,11 @@ namespace Victorina
         [Inject] private PackageData Data { get; set; }
         [Inject] private SiqConverter SiqConverter { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
+        [Inject] private PathData PathData { get; set; }
 
         public void Initialize(string packageName)
         {
-            Data.Package = SiqConverter.Convert(packageName);
+            Data.Package = SiqConverter.Convert(packageName, PathData.PackagesPath);
             WritePackageStatistics(Data.Package);
             Data.PackageProgress = new PackageProgress();
             MasterFilesRepository.AddPackageFiles(Data.Package);

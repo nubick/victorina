@@ -18,10 +18,5 @@ namespace Victorina
         {
             MetagameEvents.EditorPackageClicked.Publish(PackageName.text);
         }
-        
-        public void OnDeleteButtonClicked()
-        {
-            
-        }
     }
 }

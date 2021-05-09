@@ -124,10 +124,13 @@ namespace Victorina
             _injector.Bind(new SiqConverter());
             _injector.Bind(new EncodingFixSystem());
             
+            _injector.Bind(new PackageJsonConverter());
+            
             //Package Editor
             _injector.Bind(FindObjectOfType<PackageEditorView>());
             _injector.Bind(new PackageEditorSystem());
             _injector.Bind(new PackageEditorData());
+            _injector.Bind(new PackageEditorSaveSystem());
             
             _injector.CommitBindings();
             

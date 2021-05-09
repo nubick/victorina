@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class EditorRoundWidget : MonoBehaviour
+    public class PackageEditorRoundTabWidget : MonoBehaviour
     {
         private Round _round;
         

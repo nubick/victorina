@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using Injection;
@@ -10,25 +11,26 @@ namespace Victorina
     public class SiqConverter
     {
         [Inject] private EncodingFixSystem EncodingFixSystem { get; set; }
-        [Inject] private PathData PathData { get; set; }
 
-        public Package Convert(string packageName, string packagePath)
+        public bool IsValid(string packageName, string packagesPath)
+        {
+            string path = $"{packagesPath}/{packageName}/content.xml";
+            return File.Exists(path);
+        }
+        
+        public Package Convert(string packageName, string packagesPath)
         {
             Package package = new Package(packageName);
-            XmlReader xmlReader = XmlReader.Create($"{packagePath}/{packageName}/content.xml");
+            XmlReader xmlReader = XmlReader.Create($"{packagesPath}/{packageName}/content.xml");
             package.Rounds = ReadRounds(xmlReader);
-            
-            EncodingFixSystem.TryFix(packageName);
 
-            InitializeStoryDots(package);
+            string packagePath = $"{packagesPath}/{packageName}";
+            EncodingFixSystem.TryFix(packagePath);
+            InitializeStoryDots(package, packagePath);
+            
             return package;
         }
         
-        public Package Convert(string packageName)
-        {
-            return Convert(packageName, PathData.PackagesPath);
-        }
-
         private List<Round> ReadRounds(XmlReader xmlReader)
         {
             List<Round> rounds = new List<Round>();
@@ -310,21 +312,21 @@ namespace Victorina
             return question.Price == 0;
         }
 
-        private void InitializeStoryDots(Package package)
+        private void InitializeStoryDots(Package package, string packagePath)
         {
             List<Theme> allThemes = package.Rounds.SelectMany(round => round.Themes).ToList();
             foreach (Theme theme in allThemes)
             {
                 foreach (Question question in theme.Questions)
                 {
-                    InitializeStory(question.QuestionStory, package.Name, question, theme);
-                    InitializeStory(question.AnswerStory, package.Name, question, theme);
+                    InitializeStory(question.QuestionStory, packagePath, question, theme);
+                    InitializeStory(question.AnswerStory, packagePath, question, theme);
                 }
             }
             Debug.Log($"Package '{package.Name}' files are loaded");
         }
 
-        private void InitializeStory(List<StoryDot> story, string packageName, Question question, Theme theme)
+        private void InitializeStory(List<StoryDot> story, string packagePath, Question question, Theme theme)
         {
             int index = 0;
             foreach (StoryDot storyDot in story)
@@ -333,11 +335,11 @@ namespace Victorina
                 index++;
                     
                 if (storyDot is ImageStoryDot imageStoryDot)
-                    imageStoryDot.SiqPath = $"{GetImagesPath(packageName)}/{imageStoryDot.SiqPath}";
+                    imageStoryDot.SiqPath = $"{GetImagesPath(packagePath)}/{imageStoryDot.SiqPath}";
                 else if (storyDot is AudioStoryDot audioStoryDot)
-                    audioStoryDot.SiqPath = $"{GetAudioPath(packageName)}/{audioStoryDot.SiqPath}";
+                    audioStoryDot.SiqPath = $"{GetAudioPath(packagePath)}/{audioStoryDot.SiqPath}";
                 else if (storyDot is VideoStoryDot videoStoryDot)
-                    videoStoryDot.SiqPath = $"{GetVideoPath(packageName)}/{videoStoryDot.SiqPath}";
+                    videoStoryDot.SiqPath = $"{GetVideoPath(packagePath)}/{videoStoryDot.SiqPath}";
                 else if (storyDot is CatInBagStoryDot catInBagStoryDot)
                 {
                     if (catInBagStoryDot.Price == 0)
@@ -349,19 +351,19 @@ namespace Victorina
             }
         }
         
-        public string GetImagesPath(string packageName)
+        public string GetImagesPath(string packagePath)
         {
-            return $"{PathData.PackagesPath}/{packageName}/Images";
+            return $"{packagePath}/Images";
         }
         
-        public string GetAudioPath(string packageName)
+        public string GetAudioPath(string packagePath)
         {
-            return $"{PathData.PackagesPath}/{packageName}/Audio";
+            return $"{packagePath}/Audio";
         }
 
-        public string GetVideoPath(string packageName)
+        public string GetVideoPath(string packagePath)
         {
-            return $"{PathData.PackagesPath}/{packageName}/Video";
+            return $"{packagePath}/Video";
         }
 
         private void Log(XmlReader xmlReader)

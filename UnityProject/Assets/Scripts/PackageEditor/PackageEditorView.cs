@@ -1,6 +1,5 @@
 using Injection;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Victorina
 {
@@ -12,19 +11,28 @@ namespace Victorina
         [Inject] private PackageEditorData Data { get; set; }
         [Inject] private SiqConverter SiqConverter { get; set; }
         [Inject] private PathData PathData { get; set; }
+        [Inject] private PackageEditorSaveSystem SaveSystem { get; set; }
 
         public RectTransform OpenedPackagesRoot;
         public OpenedPackageWidget OpenedPackageWidgetPrefab;
 
-        public RectTransform RoundsRoot;
-        public EditorRoundWidget EditorRoundWidgetPrefab;
+        public RectTransform RoundsTabsRoot;
+        public PackageEditorRoundTabWidget RoundTabWidgetPrefab;
+
+        public RectTransform ThemesRoot;
+        public PackageEditorThemeWidget ThemeWidget;
+
+        [Header("Tools")]
+        public GameObject SaveThemeButton;
+        public GameObject SavePackageButton;
         
         public void Initialize()
         {
-            MetagameEvents.EditorPackageClicked.Subscribe(OnEditorPackageClicked);
-            MetagameEvents.EditorRoundClicked.Subscribe(OnEditorRoundClicked);
+            MetagameEvents.EditorPackageClicked.Subscribe(OnPackageClicked);
+            MetagameEvents.EditorRoundClicked.Subscribe(OnRoundClicked);
+            MetagameEvents.EditorThemeClicked.Subscribe(OnThemeClicked);
         }
-
+        
         protected override void OnShown()
         {
             Data.SelectedPackageName = null;
@@ -43,17 +51,28 @@ namespace Victorina
                 widget.Bind(packageName, isSelected: Data.SelectedPackageName == packageName);
             }
 
-            ClearChild(RoundsRoot);
+            ClearChild(RoundsTabsRoot);
             if (Data.SelectedPackage != null)
             {
                 foreach (Round round in Data.SelectedPackage.Rounds)
                 {
-                    EditorRoundWidget roundWidget = Instantiate(EditorRoundWidgetPrefab, RoundsRoot);
-                    roundWidget.Bind(round, round == Data.SelectedRound);
+                    PackageEditorRoundTabWidget roundTabWidget = Instantiate(RoundTabWidgetPrefab, RoundsTabsRoot);
+                    roundTabWidget.Bind(round, round == Data.SelectedRound);
                 }
             }
             
-            
+            ClearChild(ThemesRoot);
+            if (Data.SelectedRound != null)
+            {
+                foreach (Theme theme in Data.SelectedRound.Themes)
+                {
+                    PackageEditorThemeWidget themeWidget = Instantiate(ThemeWidget, ThemesRoot);
+                    themeWidget.Bind(theme, Data.SelectedTheme == theme);
+                }
+            }
+
+            SaveThemeButton.SetActive(Data.SelectedTheme != null);
+            SavePackageButton.SetActive(Data.SelectedPackage != null);
         }
         
         public void OnBackButtonClicked()
@@ -76,18 +95,51 @@ namespace Victorina
             RefreshUI();
         }
 
-        private void OnEditorPackageClicked(string packageName)
+        private void OnPackageClicked(string packageName)
         {
+            if (SiqConverter.IsValid(packageName, PathData.PackageEditorPath))
+            {
+                Data.SelectedPackage = SiqConverter.Convert(packageName, PathData.PackageEditorPath);
+            }
+            else
+            {
+                string path = $"{PathData.PackageEditorPath}/{packageName}/package.json";
+                Data.SelectedPackage = System.LoadPackage(path);
+            }
+            
             Data.SelectedPackageName = packageName;
-            Data.SelectedPackage = SiqConverter.Convert(packageName, PathData.PackageEditorPath);
             Data.SelectedRound = null;
+            Data.SelectedTheme = null;
             RefreshUI();
         }
 
-        private void OnEditorRoundClicked(Round round)
+        private void OnRoundClicked(Round round)
         {
             Data.SelectedRound = round;
+            Data.SelectedTheme = null;
             RefreshUI();
+        }
+        
+        private void OnThemeClicked(Theme theme)
+        {
+            Data.SelectedTheme = theme;
+            RefreshUI();
+        }
+
+        public void OnSaveThemeButtonClicked()
+        {
+            if (Data.SelectedTheme != null)
+            {
+                SaveSystem.SaveTheme(Data.SelectedPackage, Data.SelectedTheme);
+            }
+        }
+
+        public void OnSavePackageButtonClicked()
+        {
+            if (Data.SelectedPackage != null)
+            {
+                SaveSystem.SavePackage(Data.SelectedPackage);
+            }
         }
     }
 }
