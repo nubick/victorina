@@ -1,5 +1,8 @@
+using System;
 using Injection;
 using System.IO;
+using System.IO.Compression;
+using SFB;
 using UnityEngine;
 
 namespace Victorina
@@ -9,6 +12,50 @@ namespace Victorina
         [Inject] private PathData PathData { get; set; }
         [Inject] private SiqConverter SiqConverter { get; set; }
         [Inject] private PackageJsonConverter PackageJsonConverter { get; set; }
+
+        #region Archive file
+        
+        public string GetPackageArchivePathUsingOpenDialogue()
+        {
+            ExtensionFilter[] extensions =
+            {
+                new ExtensionFilter("Vumka Files, vum"),
+                new ExtensionFilter("SIQ Files", "siq")
+            };
+            string[] paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
+            return paths[0];
+        }
+        
+        public string UnZipArchiveToPlayFolder(string packageArchivePath)
+        {
+            return UnZipArchiveToFolder(packageArchivePath, PathData.PackagesPath);
+        }
+
+        public string UnZipArchiveToCrafterFolder(string packageArchivePath)
+        {
+            return UnZipArchiveToFolder(packageArchivePath, PathData.CrafterPath);
+        }
+
+        private string UnZipArchiveToFolder(string packageArchivePath, string destinationFolderPath)
+        {
+            string archiveName = Path.GetFileNameWithoutExtension(packageArchivePath);
+            string destinationPath = $"{destinationFolderPath}/{archiveName}";
+            UnZip(packageArchivePath, destinationPath);
+            return destinationPath;
+        }
+        
+        private void UnZip(string packageArchivePath, string destinationPath)
+        {
+            Debug.Log($"UnZip from '{packageArchivePath}' to '{destinationPath}'");
+            
+            bool exists = File.Exists(packageArchivePath);
+            if (!exists)
+                throw new Exception($"File doesn't exist: {packageArchivePath}");
+            
+            ZipFile.ExtractToDirectory(packageArchivePath, destinationPath, true);
+        }
+        
+        #endregion
         
         public string[] GetCrafterPackagesPaths()
         {

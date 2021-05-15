@@ -7,18 +7,21 @@ namespace Victorina
     {
         [Inject] private PackageEditorData Data { get; set; }
         [Inject] private PackageFilesSystem PackageFilesSystem { get; set; }
-        [Inject] private SiqPackageOpenSystem SiqPackageOpenSystem { get; set; }
         [Inject] private PackageEditorSaveSystem SaveSystem { get; set; }
-        
+        [Inject] private PathData PathData { get; set; }
+
         public void LoadPackages()
         {
             Data.Packages.Clear();
             foreach (string packagePath in PackageFilesSystem.GetCrafterPackagesPaths())
-            {
-                Package package = PackageFilesSystem.LoadPackage(packagePath);
-                Data.Packages.Add(package);
-            }
+                LoadPackage(packagePath);
             SelectPackage(null);
+        }
+
+        private void LoadPackage(string packagePath)
+        {
+            Package package = PackageFilesSystem.LoadPackage(packagePath);
+            Data.Packages.Add(package);
         }
         
         public void SelectPackage(Package package)
@@ -41,16 +44,16 @@ namespace Victorina
         
         public void AddPackage()
         {
-            string packagePath = SiqPackageOpenSystem.GetPathUsingOpenDialogue();
-
-            if (string.IsNullOrEmpty(packagePath))
+            string packageArchivePath = PackageFilesSystem.GetPackageArchivePathUsingOpenDialogue();
+            
+            if (string.IsNullOrEmpty(packageArchivePath))
             {
                 Debug.Log("Package is not selected in file browser.");
                 return;
             }
 
-            SiqPackageOpenSystem.UnZipPackageToEditorFolder(packagePath);
-            LoadPackages();
+            string packagePath = PackageFilesSystem.UnZipArchiveToCrafterFolder(packageArchivePath);
+            LoadPackage(packagePath);
         }
 
         public void SaveSelectedPackage()
@@ -66,7 +69,7 @@ namespace Victorina
             if (Data.SelectedTheme == null)
                 return;
             
-            SaveSystem.SaveTheme(Data.SelectedPackage, Data.SelectedTheme);
+            SaveSystem.SaveTheme(Data.SelectedTheme);
         }
         
         public void DeleteSelectedPackage()
@@ -77,6 +80,14 @@ namespace Victorina
             PackageFilesSystem.Delete(Data.SelectedPackage);
             Data.Packages.Remove(Data.SelectedPackage);
             SelectPackage(null);
+        }
+
+        public void CopySelectedThemeToBag()
+        {
+            if (Data.SelectedTheme == null)
+                return;
+            
+            SaveSystem.SaveTheme(Data.SelectedTheme, PathData.CrafterBagPath);
         }
     }
 }

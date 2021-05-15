@@ -1,5 +1,6 @@
 using Injection;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Victorina
 {
@@ -16,8 +17,10 @@ namespace Victorina
         public PackageEditorRoundTabWidget RoundTabWidgetPrefab;
 
         public RectTransform ThemesRoot;
-        public PackageEditorThemeWidget ThemeWidget;
+        public PackageEditorThemeWidget ThemeWidgetPrefab;
 
+        public CrafterQuestionWidget QuestionWidgetPrefab;
+        
         [Header("Tools")]
         public GameObject SaveThemeButton;
         public GameObject SavePackageButton;
@@ -60,8 +63,14 @@ namespace Victorina
             {
                 foreach (Theme theme in Data.SelectedRound.Themes)
                 {
-                    PackageEditorThemeWidget themeWidget = Instantiate(ThemeWidget, ThemesRoot);
+                    PackageEditorThemeWidget themeWidget = Instantiate(ThemeWidgetPrefab, ThemesRoot);
                     themeWidget.Bind(theme, Data.SelectedTheme == theme);
+
+                    foreach (Question question in theme.Questions)
+                    {
+                        CrafterQuestionWidget questionWidget = Instantiate(QuestionWidgetPrefab, themeWidget.QuestionsRoot);
+                        questionWidget.Bind(question);
+                    }
                 }
             }
 
@@ -114,5 +123,16 @@ namespace Victorina
             PackageCrafterSystem.DeleteSelectedPackage();
             RefreshUI();
         }
+
+        public void OnSelectBagButtonClicked()
+        {
+            
+        }
+
+        public void OnCopyToBagButtonClicked()
+        {
+            PackageCrafterSystem.CopySelectedThemeToBag();
+        }
+        
     }
 }

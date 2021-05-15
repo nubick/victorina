@@ -11,7 +11,6 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private ServerService ServerService { get; set; }
         [Inject] private RoundView RoundView { get; set; }
-        [Inject] private SiqPackageOpenSystem SiqPackageOpenSystem { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private SiqLoadedPackageSystem SiqLoadedPackageSystem { get; set; }
         [Inject] private SiqLoadedPackageData SiqLoadedPackageData { get; set; }
@@ -70,16 +69,15 @@ namespace Victorina
 
         public void OnLoadPackButtonClicked()
         {
-            string siqFilePath = SiqPackageOpenSystem.GetPathUsingOpenDialogue();
-
-            if (string.IsNullOrWhiteSpace(siqFilePath))
+            string packageArchivePath = PackageFilesSystem.GetPackageArchivePathUsingOpenDialogue();
+            
+            if (string.IsNullOrWhiteSpace(packageArchivePath))
             {
-                Debug.Log("Package is not selected in file browser.");
+                Debug.Log("Package archive is not selected in file browser.");
                 return;
             }
             
-            SiqPackageOpenSystem.UnZipPackageToPlayFolder(siqFilePath);
-            string packagePath = SiqPackageOpenSystem.GetPackageName(siqFilePath);
+            string packagePath = PackageFilesSystem.UnZipArchiveToPlayFolder(packageArchivePath);
             StartPackage(packagePath);
         }
 

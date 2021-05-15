@@ -27,21 +27,23 @@ namespace Victorina
             
             Debug.Log($"Package is saved: {package.Name}");
         }
-        
-        public void SaveTheme(Package package, Theme theme)
+
+        public void SaveTheme(Theme theme, string rootFolderPath)
         {
             PackageJsonConverter jsonConverter = new PackageJsonConverter();
-
             string json = jsonConverter.ToJson(theme);
-
-            string folderName = theme.Name;
-            string themePath = $"{PathData.CrafterPath}/{folderName}";
+            
+            string themePath = $"{rootFolderPath}/{theme.Name}";
             Directory.CreateDirectory(themePath);
             File.WriteAllText($"{themePath}/theme.json", json);
             
             CopyFiles(theme, themePath);
-
             Debug.Log($"Theme is saved: {theme.Name}");
+        }
+        
+        public void SaveTheme(Theme theme)
+        {
+            SaveTheme(theme, PathData.CrafterPath);
         }
 
         private void CopyFiles(Package package, string packageFolderPath)
@@ -72,8 +74,8 @@ namespace Victorina
                     string fileName = Path.GetFileName(fileStoryDot.SiqPath);
                     string filePath = $"{path}/{fileName}";
 
-                    if (File.Exists(fileStoryDot.SiqPath))
-                        throw new Exception($"Can't copy file. File exists by path: '{fileStoryDot.SiqPath}'");
+                    if (File.Exists(filePath))
+                        throw new Exception($"Can't copy file. File exists by path: '{filePath}'");
                     
                     File.Copy(fileStoryDot.SiqPath, filePath);
                     Debug.Log($"File was copied: {fileName}");

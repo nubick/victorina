@@ -118,7 +118,6 @@ namespace Victorina
             _injector.Bind(new PlayerFilesRequestSystem());
             _injector.Bind(FindObjectOfType<PlayerFilesRequestData>());
             
-            _injector.Bind(new SiqPackageOpenSystem());
             _injector.Bind(new SiqLoadedPackageSystem());
             _injector.Bind(new SiqLoadedPackageData());
             _injector.Bind(new SiqConverter());

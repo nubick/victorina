@@ -13,11 +13,13 @@ namespace Victorina
             Data.DataPath = GetDataPath();
             Data.PackagesPath = $"{Data.DataPath}/Packages";
             Data.CrafterPath = $"{Data.DataPath}/Crafter";
+            Data.CrafterBagPath = $"{Data.DataPath}/CrafterBag";
             Data.PackageFilesPath = GetPackageFilesPath();
             Data.TempVideoFilePath = $"{Data.PackageFilesPath}/TempVideo.mp4";
             
             EnsurePath(Data.PackagesPath);
             EnsurePath(Data.CrafterPath);
+            EnsurePath(Data.CrafterBagPath);
             EnsurePath(Data.PackageFilesPath);
         }
 

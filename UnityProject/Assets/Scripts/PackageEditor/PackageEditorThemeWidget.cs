@@ -10,6 +10,7 @@ namespace Victorina
         public Text ThemeName;
         public Color ThemeDefaultColor;
         public Color ThemeSelectedColor;
+        public Transform QuestionsRoot;
 
         public void Bind(Theme theme, bool isSelected)
         {
