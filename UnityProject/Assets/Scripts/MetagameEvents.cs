@@ -39,7 +39,7 @@ namespace Victorina
         public static GameEvent ClientFileRequested { get; } = new GameEvent();
         
         //Package editor events
-        public static GameEvent<string> EditorPackageClicked { get; } = new GameEvent<string>();
+        public static GameEvent<Package> EditorPackageClicked { get; } = new GameEvent<Package>();
         public static GameEvent<Round> EditorRoundClicked { get; } = new GameEvent<Round>();
         public static GameEvent<Theme> EditorThemeClicked { get; } = new GameEvent<Theme>();
         

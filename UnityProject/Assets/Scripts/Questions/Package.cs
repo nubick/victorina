@@ -5,6 +5,7 @@ namespace Victorina
     public class Package
     {
         public string Name { get; set; }
+        public string Path { get; set; }
         public List<Round> Rounds { get; set; } = new List<Round>();
 
         public Package(string name)

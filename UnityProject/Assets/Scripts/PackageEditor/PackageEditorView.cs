@@ -6,12 +6,8 @@ namespace Victorina
     public class PackageEditorView : ViewBase
     {
         [Inject] private StartupView StartupView { get; set; }
-        [Inject] private SiqPackageOpenSystem SiqPackageOpenSystem { get; set; }
-        [Inject] private PackageEditorSystem System { get; set; }
         [Inject] private PackageEditorData Data { get; set; }
-        [Inject] private SiqConverter SiqConverter { get; set; }
-        [Inject] private PathData PathData { get; set; }
-        [Inject] private PackageEditorSaveSystem SaveSystem { get; set; }
+        [Inject] private PackageCrafterSystem PackageCrafterSystem { get; set; }
 
         public RectTransform OpenedPackagesRoot;
         public OpenedPackageWidget OpenedPackageWidgetPrefab;
@@ -25,6 +21,7 @@ namespace Victorina
         [Header("Tools")]
         public GameObject SaveThemeButton;
         public GameObject SavePackageButton;
+        public GameObject DeletePackageButton;
         
         public void Initialize()
         {
@@ -35,20 +32,17 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            Data.SelectedPackageName = null;
-            Data.SelectedPackage = null;
-            Data.SelectedRound = null;
-            
+            PackageCrafterSystem.LoadPackages();
             RefreshUI();
         }
 
         private void RefreshUI()
         {
             ClearChild(OpenedPackagesRoot);
-            foreach (string packageName in System.GetOpenedPackagesNames())
+            foreach (Package package in Data.Packages)
             {
                 OpenedPackageWidget widget = Instantiate(OpenedPackageWidgetPrefab, OpenedPackagesRoot);
-                widget.Bind(packageName, isSelected: Data.SelectedPackageName == packageName);
+                widget.Bind(package, isSelected: Data.SelectedPackage == package);
             }
 
             ClearChild(RoundsTabsRoot);
@@ -73,6 +67,7 @@ namespace Victorina
 
             SaveThemeButton.SetActive(Data.SelectedTheme != null);
             SavePackageButton.SetActive(Data.SelectedPackage != null);
+            DeletePackageButton.SetActive(Data.SelectedPackage != null);
         }
         
         public void OnBackButtonClicked()
@@ -82,64 +77,42 @@ namespace Victorina
 
         public void OnAddPackButtonClicked()
         {
-            string packagePath = SiqPackageOpenSystem.GetPathUsingOpenDialogue();
-
-            if (string.IsNullOrEmpty(packagePath))
-            {
-                Debug.Log("Package is not selected in file browser.");
-                return;
-            }
-
-            SiqPackageOpenSystem.UnZipPackageToEditorFolder(packagePath);
-
+            PackageCrafterSystem.AddPackage();
             RefreshUI();
         }
 
-        private void OnPackageClicked(string packageName)
+        private void OnPackageClicked(Package package)
         {
-            if (SiqConverter.IsValid(packageName, PathData.PackageEditorPath))
-            {
-                Data.SelectedPackage = SiqConverter.Convert(packageName, PathData.PackageEditorPath);
-            }
-            else
-            {
-                string path = $"{PathData.PackageEditorPath}/{packageName}/package.json";
-                Data.SelectedPackage = System.LoadPackage(path);
-            }
-            
-            Data.SelectedPackageName = packageName;
-            Data.SelectedRound = null;
-            Data.SelectedTheme = null;
+            PackageCrafterSystem.SelectPackage(package);
             RefreshUI();
         }
 
         private void OnRoundClicked(Round round)
         {
-            Data.SelectedRound = round;
-            Data.SelectedTheme = null;
+            PackageCrafterSystem.SelectRound(round);
             RefreshUI();
         }
         
         private void OnThemeClicked(Theme theme)
         {
-            Data.SelectedTheme = theme;
+            PackageCrafterSystem.SelectTheme(theme);
             RefreshUI();
         }
 
         public void OnSaveThemeButtonClicked()
         {
-            if (Data.SelectedTheme != null)
-            {
-                SaveSystem.SaveTheme(Data.SelectedPackage, Data.SelectedTheme);
-            }
+            PackageCrafterSystem.SaveSelectedTheme();
         }
 
         public void OnSavePackageButtonClicked()
         {
-            if (Data.SelectedPackage != null)
-            {
-                SaveSystem.SavePackage(Data.SelectedPackage);
-            }
+            PackageCrafterSystem.SaveSelectedPackage();
+        }
+
+        public void OnDeletePackageButtonClicked()
+        {
+            PackageCrafterSystem.DeleteSelectedPackage();
+            RefreshUI();
         }
     }
 }

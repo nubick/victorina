@@ -8,13 +8,12 @@ namespace Victorina
     public class PackageSystem
     {
         [Inject] private PackageData Data { get; set; }
-        [Inject] private SiqConverter SiqConverter { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
-        [Inject] private PathData PathData { get; set; }
+        [Inject] private PackageFilesSystem PackageFilesSystem { get; set; }
 
-        public void Initialize(string packageName)
+        public void Initialize(string packagePath)
         {
-            Data.Package = SiqConverter.Convert(packageName, PathData.PackagesPath);
+            Data.Package = PackageFilesSystem.LoadPackage(packagePath);
             WritePackageStatistics(Data.Package);
             Data.PackageProgress = new PackageProgress();
             MasterFilesRepository.AddPackageFiles(Data.Package);

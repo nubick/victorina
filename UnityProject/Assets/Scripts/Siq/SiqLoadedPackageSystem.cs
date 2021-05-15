@@ -12,25 +12,15 @@ namespace Victorina
         
         public void Refresh()
         {
-            Data.PackageNames.Clear();
             string[] fullPaths = Directory.GetDirectories(PathData.PackagesPath);
-            Data.PackageNames.AddRange(fullPaths.Select(Path.GetFileName));
-            Debug.Log($"Detected (converted before) packs amount: {Data.PackageNames.Count}");
-        }
 
-        public void Delete(string packageName)
-        {
-            string path = $"{PathData.PackagesPath}/{packageName}";
-            Debug.Log($"Delete directory: {path}");
-            if (Directory.Exists(path))
-            {
-                Directory.Delete(path, true);
-                Debug.Log("Deletion is done.");
-            }
-            else
-            {
-                Debug.Log($"Directory doesn't exist.");
-            }
+            Data.PackagesPaths.Clear();
+            Data.PackagesPaths.AddRange(fullPaths);
+         
+            Data.PackagesNames.Clear();
+            Data.PackagesNames.AddRange(fullPaths.Select(Path.GetFileName));
+            
+            Debug.Log($"Detected (converted before) packs amount: {Data.PackagesNames.Count}");
         }
     }
 }

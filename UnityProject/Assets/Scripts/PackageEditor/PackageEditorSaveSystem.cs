@@ -17,7 +17,7 @@ namespace Victorina
             string json = PackageJsonConverter.ToJson(package);
 
             string folderName = $"package_{package.Name}";
-            string packageFolderPath = $"{PathData.PackageEditorPath}/{folderName}";
+            string packageFolderPath = $"{PathData.CrafterPath}/{folderName}";
             Directory.CreateDirectory(packageFolderPath);
             File.WriteAllText($"{packageFolderPath}/package.json", json);
 
@@ -35,7 +35,7 @@ namespace Victorina
             string json = jsonConverter.ToJson(theme);
 
             string folderName = theme.Name;
-            string themePath = $"{PathData.PackageEditorPath}/{folderName}";
+            string themePath = $"{PathData.CrafterPath}/{folderName}";
             Directory.CreateDirectory(themePath);
             File.WriteAllText($"{themePath}/theme.json", json);
             

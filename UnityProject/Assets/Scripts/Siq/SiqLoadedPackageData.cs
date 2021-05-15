@@ -4,6 +4,7 @@ namespace Victorina
 {
     public class SiqLoadedPackageData
     {
-        public List<string> PackageNames { get; } = new List<string>();
+        public List<string> PackagesNames { get; } = new List<string>();
+        public List<string> PackagesPaths { get; } = new List<string>();
     }
 }

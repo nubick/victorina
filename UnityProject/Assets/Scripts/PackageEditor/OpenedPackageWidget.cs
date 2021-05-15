@@ -5,18 +5,21 @@ namespace Victorina
 {
     public class OpenedPackageWidget : MonoBehaviour
     {
+        private Package _package;
+        
         public Text PackageName;
         public GameObject SelectedState;
 
-        public void Bind(string packageName, bool isSelected)
+        public void Bind(Package package, bool isSelected)
         {
-            PackageName.text = packageName;
+            _package = package;
+            PackageName.text = _package.Name;
             SelectedState.SetActive(isSelected);
         }
         
         public void OnSelectButtonClicked()
         {
-            MetagameEvents.EditorPackageClicked.Publish(PackageName.text);
+            MetagameEvents.EditorPackageClicked.Publish(_package);
         }
     }
 }

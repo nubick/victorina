@@ -17,6 +17,7 @@ namespace Victorina
         [Inject] private SiqLoadedPackageData SiqLoadedPackageData { get; set; }
         [Inject] private ExternalIpData ExternalIpData { get; set; }
         [Inject] private IpCodeSystem IpCodeSystem { get; set; }
+        [Inject] private PackageFilesSystem PackageFilesSystem { get; set; }
 
         public GameObject AdminPart;
 
@@ -69,17 +70,17 @@ namespace Victorina
 
         public void OnLoadPackButtonClicked()
         {
-            string path = SiqPackageOpenSystem.GetPathUsingOpenDialogue();
+            string siqFilePath = SiqPackageOpenSystem.GetPathUsingOpenDialogue();
 
-            if (string.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrWhiteSpace(siqFilePath))
             {
                 Debug.Log("Package is not selected in file browser.");
                 return;
             }
             
-            SiqPackageOpenSystem.UnZipPackageToPlayFolder(path);
-            string packageName = SiqPackageOpenSystem.GetPackageName(path);
-            StartPackage(packageName);
+            SiqPackageOpenSystem.UnZipPackageToPlayFolder(siqFilePath);
+            string packagePath = SiqPackageOpenSystem.GetPackageName(siqFilePath);
+            StartPackage(packagePath);
         }
 
         private void RefreshButtons()
@@ -87,29 +88,29 @@ namespace Victorina
             SiqLoadedPackageSystem.Refresh();
             for (int i = 0; i < OpenPackButtons.Length; i++)
             {
-                OpenPackButtons[i].SetActive(i < SiqLoadedPackageData.PackageNames.Count);
-                DeletePackButtons[i].SetActive(i < SiqLoadedPackageData.PackageNames.Count);
-                OpenPackButtonTexts[i].text = i < SiqLoadedPackageData.PackageNames.Count ? SiqLoadedPackageData.PackageNames[i] : string.Empty;
+                OpenPackButtons[i].SetActive(i < SiqLoadedPackageData.PackagesNames.Count);
+                DeletePackButtons[i].SetActive(i < SiqLoadedPackageData.PackagesNames.Count);
+                OpenPackButtonTexts[i].text = i < SiqLoadedPackageData.PackagesNames.Count ? SiqLoadedPackageData.PackagesNames[i] : string.Empty;
             }
         }
 
         public void OnOpenPackButtonClicked(int index)
         {
-            string packageName = SiqLoadedPackageData.PackageNames[index];
-            StartPackage(packageName);
+            string packagePath = SiqLoadedPackageData.PackagesPaths[index];
+            StartPackage(packagePath);
         }
 
-        private void StartPackage(string packageName)
+        private void StartPackage(string packagePath)
         {
-            PackageSystem.Initialize(packageName);
+            PackageSystem.Initialize(packagePath);
             MatchSystem.StartMatch();
             SwitchTo(RoundView);
         }
 
         public void OnDeletePackButtonClicked(int index)
         {
-            string packageName = SiqLoadedPackageData.PackageNames[index];
-            SiqLoadedPackageSystem.Delete(packageName);
+            string packagePath = SiqLoadedPackageData.PackagesPaths[index];
+            PackageFilesSystem.Delete(packagePath);
             RefreshUI();
         }
 

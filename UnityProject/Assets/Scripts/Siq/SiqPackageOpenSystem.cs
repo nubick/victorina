@@ -50,12 +50,13 @@ namespace Victorina
 
         public void UnZipPackageToEditorFolder(string packagePath)
         {
-            UnZip(packagePath, PathData.PackageEditorPath);
+            UnZip(packagePath, PathData.CrafterPath);
         }
 
-        public string GetPackageName(string packagePath)
+        public string GetPackageName(string siqFilePath)
         {
-            return Path.GetFileNameWithoutExtension(packagePath);
+            string folderName = Path.GetFileNameWithoutExtension(siqFilePath);
+            return $"{PathData.PackagesPath}/{folderName}";
         }
 
         private void UnZip(string packagePath, string destinationPath)

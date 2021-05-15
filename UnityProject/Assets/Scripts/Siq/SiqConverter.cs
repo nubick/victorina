@@ -12,19 +12,19 @@ namespace Victorina
     {
         [Inject] private EncodingFixSystem EncodingFixSystem { get; set; }
 
-        public bool IsValid(string packageName, string packagesPath)
+        public bool IsValid(string packagePath)
         {
-            string path = $"{packagesPath}/{packageName}/content.xml";
+            string path = $"{packagePath}/content.xml";
             return File.Exists(path);
         }
         
-        public Package Convert(string packageName, string packagesPath)
+        public Package Convert(string packagePath)
         {
+            string packageName = Path.GetFileName(packagePath);
             Package package = new Package(packageName);
-            XmlReader xmlReader = XmlReader.Create($"{packagesPath}/{packageName}/content.xml");
+            XmlReader xmlReader = XmlReader.Create($"{packagePath}/content.xml");
             package.Rounds = ReadRounds(xmlReader);
 
-            string packagePath = $"{packagesPath}/{packageName}";
             EncodingFixSystem.TryFix(packagePath);
             InitializeStoryDots(package, packagePath);
             
