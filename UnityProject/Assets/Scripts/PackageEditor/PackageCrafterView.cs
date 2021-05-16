@@ -4,10 +4,10 @@ using UnityEngine.Serialization;
 
 namespace Victorina
 {
-    public class PackageEditorView : ViewBase
+    public class PackageCrafterView : ViewBase
     {
         [Inject] private StartupView StartupView { get; set; }
-        [Inject] private PackageEditorData Data { get; set; }
+        [Inject] private PackageCrafterData Data { get; set; }
         [Inject] private PackageCrafterSystem PackageCrafterSystem { get; set; }
 
         public RectTransform OpenedPackagesRoot;

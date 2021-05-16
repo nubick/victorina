@@ -13,7 +13,7 @@ namespace Victorina
         public void Bind(Package package, bool isSelected)
         {
             _package = package;
-            PackageName.text = _package.Name;
+            PackageName.text = _package.FolderName;
             SelectedState.SetActive(isSelected);
         }
         

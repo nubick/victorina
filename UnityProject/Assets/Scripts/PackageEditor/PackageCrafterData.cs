@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Victorina
 {
-    public class PackageEditorData
+    public class PackageCrafterData
     {
         public List<Package> Packages { get; set; } = new List<Package>();
         public Package SelectedPackage { get; set; }

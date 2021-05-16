@@ -5,9 +5,8 @@ namespace Victorina
 {
     public class PackageCrafterSystem
     {
-        [Inject] private PackageEditorData Data { get; set; }
+        [Inject] private PackageCrafterData Data { get; set; }
         [Inject] private PackageFilesSystem PackageFilesSystem { get; set; }
-        [Inject] private PackageEditorSaveSystem SaveSystem { get; set; }
         [Inject] private PathData PathData { get; set; }
 
         public void LoadPackages()
@@ -61,7 +60,7 @@ namespace Victorina
             if (Data.SelectedPackage == null)
                 return;
 
-            SaveSystem.SavePackage(Data.SelectedPackage);
+            PackageFilesSystem.SavePackage(Data.SelectedPackage, PathData.CrafterPath);
         }
 
         public void SaveSelectedTheme()
@@ -69,7 +68,7 @@ namespace Victorina
             if (Data.SelectedTheme == null)
                 return;
             
-            SaveSystem.SaveTheme(Data.SelectedTheme);
+            PackageFilesSystem.SaveTheme(Data.SelectedTheme);
         }
         
         public void DeleteSelectedPackage()
@@ -87,7 +86,7 @@ namespace Victorina
             if (Data.SelectedTheme == null)
                 return;
             
-            SaveSystem.SaveTheme(Data.SelectedTheme, PathData.CrafterBagPath);
+            PackageFilesSystem.SaveTheme(Data.SelectedTheme, PathData.CrafterBagPath);
         }
     }
 }

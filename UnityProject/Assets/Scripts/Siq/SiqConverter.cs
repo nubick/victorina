@@ -18,15 +18,15 @@ namespace Victorina
             return File.Exists(path);
         }
         
-        public Package Convert(string packagePath)
+        public Package Convert(string siqPackagePath)
         {
-            string packageName = Path.GetFileName(packagePath);
-            Package package = new Package(packageName);
-            XmlReader xmlReader = XmlReader.Create($"{packagePath}/content.xml");
+            Package package = new Package();
+            package.Path = siqPackagePath;
+            XmlReader xmlReader = XmlReader.Create($"{siqPackagePath}/content.xml");
             package.Rounds = ReadRounds(xmlReader);
 
-            EncodingFixSystem.TryFix(packagePath);
-            InitializeStoryDots(package, packagePath);
+            EncodingFixSystem.TryFix(siqPackagePath);
+            InitializeStoryDots(package, siqPackagePath);
             
             return package;
         }
@@ -276,21 +276,21 @@ namespace Victorina
             {
                 string fileName = xmlReader.Value; //format = "@_august_243_2.jpg"
                 ImageStoryDot imageStoryDot = new ImageStoryDot();
-                imageStoryDot.SiqPath = fileName.Substring(1);
+                imageStoryDot.FileName = fileName.Substring(1);
                 AddStoryDot(question, imageStoryDot, isAfterMarker);
             }
             else if (type == "voice")
             {
                 string fileName = xmlReader.Value;
                 AudioStoryDot audioStoryDot = new AudioStoryDot();
-                audioStoryDot.SiqPath = fileName.Substring(1);
+                audioStoryDot.FileName = fileName.Substring(1);
                 AddStoryDot(question, audioStoryDot, isAfterMarker);
             }
             else if (type == "video")
             {
                 string fileName = xmlReader.Value;
                 VideoStoryDot videoStoryDot = new VideoStoryDot();
-                videoStoryDot.SiqPath = fileName.Substring(1);
+                videoStoryDot.FileName = fileName.Substring(1);
                 AddStoryDot(question, videoStoryDot, isAfterMarker);
             }
             else
@@ -323,7 +323,7 @@ namespace Victorina
                     InitializeStory(question.AnswerStory, packagePath, question, theme);
                 }
             }
-            Debug.Log($"Package '{package.Name}' files are loaded");
+            Debug.Log($"Package '{package.Path}' files are loaded");
         }
 
         private void InitializeStory(List<StoryDot> story, string packagePath, Question question, Theme theme)
@@ -335,11 +335,11 @@ namespace Victorina
                 index++;
                     
                 if (storyDot is ImageStoryDot imageStoryDot)
-                    imageStoryDot.SiqPath = $"{GetImagesPath(packagePath)}/{imageStoryDot.SiqPath}";
+                    imageStoryDot.Path = $"{GetImagesPath(packagePath)}/{imageStoryDot.FileName}";
                 else if (storyDot is AudioStoryDot audioStoryDot)
-                    audioStoryDot.SiqPath = $"{GetAudioPath(packagePath)}/{audioStoryDot.SiqPath}";
+                    audioStoryDot.Path = $"{GetAudioPath(packagePath)}/{audioStoryDot.FileName}";
                 else if (storyDot is VideoStoryDot videoStoryDot)
-                    videoStoryDot.SiqPath = $"{GetVideoPath(packagePath)}/{videoStoryDot.SiqPath}";
+                    videoStoryDot.Path = $"{GetVideoPath(packagePath)}/{videoStoryDot.FileName}";
                 else if (storyDot is CatInBagStoryDot catInBagStoryDot)
                 {
                     if (catInBagStoryDot.Price == 0)

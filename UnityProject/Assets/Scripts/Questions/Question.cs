@@ -11,7 +11,7 @@ namespace Victorina
 
         public List<StoryDot> QuestionStory { get; } = new List<StoryDot>();
         public List<StoryDot> AnswerStory { get; } = new List<StoryDot>();
-        
+
         public Question() : this(Guid.NewGuid().ToString())
         {
         }
@@ -20,6 +20,14 @@ namespace Victorina
         {
             Id = id;
             Type = QuestionType.Simple;
+        }
+
+        public List<StoryDot> GetAllStories()
+        {
+            List<StoryDot> allStories = new List<StoryDot>();
+            allStories.AddRange(QuestionStory);
+            allStories.AddRange(AnswerStory);
+            return allStories;
         }
         
         public override string ToString()

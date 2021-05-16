@@ -1,17 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using SimpleJSON;
 
 namespace Victorina
 {
     public class PackageJsonConverter
     {
+        private const string FileNameKey = "FileName";
+        private const string StoryDotTypeKey = "StorDotType";
+        private const string TextKey = "Text";
+        private const string ImageKey = "Image";
+        private const string AudioKey = "Audio";
+        private const string VideoKey = "Video";
+        private const string QuestionStoryKey = "QuestionStory";
+        private const string AnswerStoryKey = "AnswerStory";
+        
         #region ToJson
         
         public string ToJson(Package package)
         {
             JSONNode packageNode = new JSONObject();
-            packageNode.Add("Name", package.Name);
+            //packageNode.Add("Name", package.Name);
             packageNode.Add("Scheme", "Package");
             
             JSONArray roundsArray = new JSONArray();
@@ -77,7 +87,7 @@ namespace Victorina
             jsonNode.Add("Price", question.Price);
 
             JSONArray questionStoryArray = new JSONArray();
-            jsonNode.Add("QuestionStory", questionStoryArray);
+            jsonNode.Add(QuestionStoryKey, questionStoryArray);
             foreach (StoryDot storyDot in question.QuestionStory)
             {
                 JSONNode storyDotNode = ToJsonNode(storyDot);
@@ -86,7 +96,7 @@ namespace Victorina
             }
 
             JSONArray answerStoryArray = new JSONArray();
-            jsonNode.Add("AnswerStory", answerStoryArray);
+            jsonNode.Add(AnswerStoryKey, answerStoryArray);
             foreach (StoryDot storyDot in question.AnswerStory)
             {
                 JSONNode storyDotNode = ToJsonNode(storyDot);
@@ -102,38 +112,38 @@ namespace Victorina
             if (storyDot is TextStoryDot textStoryDot)
             {
                 JSONNode node = new JSONObject();
-                node.Add("StoryDotType", "Text");
-                node.Add("Text", textStoryDot.Text);
-                return node;
-            }
-            
-            if(storyDot is ImageStoryDot imageStoryDot)
-            {
-                JSONNode node = new JSONObject();
-                node.Add("StoryDotType", "Image");
-                node.Add("Path", imageStoryDot.SiqPath);
+                node.Add(StoryDotTypeKey, TextKey);
+                node.Add(TextKey, textStoryDot.Text);
                 return node;
             }
 
-            if(storyDot is AudioStoryDot audioStoryDot)
+            if (storyDot is ImageStoryDot imageStoryDot)
             {
                 JSONNode node = new JSONObject();
-                node.Add("StoryDotType", "Audio");
-                node.Add("Path", audioStoryDot.SiqPath);
+                node.Add(StoryDotTypeKey, ImageKey);
+                node.Add(FileNameKey, imageStoryDot.FileName);
                 return node;
             }
 
-            if(storyDot is VideoStoryDot videoStoryDot)
+            if (storyDot is AudioStoryDot audioStoryDot)
             {
                 JSONNode node = new JSONObject();
-                node.Add("StoryDotType", "Video");
-                node.Add("Path", videoStoryDot.SiqPath);
+                node.Add(StoryDotTypeKey, AudioKey);
+                node.Add(FileNameKey, audioStoryDot.FileName);
                 return node;
             }
-            
+
+            if (storyDot is VideoStoryDot videoStoryDot)
+            {
+                JSONNode node = new JSONObject();
+                node.Add(StoryDotTypeKey, VideoKey);
+                node.Add(FileNameKey, videoStoryDot.FileName);
+                return node;
+            }
+
             return null;
         }
-        
+
         #endregion
         
         #region Read
@@ -142,8 +152,8 @@ namespace Victorina
         {
             JSONNode packageNode = JSON.Parse(packageJson);
 
-            string name = packageNode["Name"];
-            Package package = new Package(name);
+            //string name = packageNode["Name"];
+            Package package = new Package();
 
             JSONArray rounds = packageNode["Rounds"].AsArray;
             foreach (JSONNode roundNode in rounds)
@@ -192,8 +202,8 @@ namespace Victorina
             Question question = new Question(id);
             question.Type = (QuestionType) Enum.Parse(typeof(QuestionType), questionNode["Type"]);
             question.Price = questionNode["Price"].AsInt;
-            question.QuestionStory.AddRange(ReadStory(questionNode["QuestionStory"].AsArray));
-            question.AnswerStory.AddRange(ReadStory(questionNode["AnswerStory"].AsArray));
+            question.QuestionStory.AddRange(ReadStory(questionNode[QuestionStoryKey].AsArray));
+            question.AnswerStory.AddRange(ReadStory(questionNode[AnswerStoryKey].AsArray));
             return question;
         }
 
@@ -207,30 +217,26 @@ namespace Victorina
 
         private StoryDot ReadStoryDot(JSONNode storyDotNode)
         {
-            string type = storyDotNode["StoryDotType"];
+            string type = storyDotNode[StoryDotTypeKey];
 
-            if (type == "Text")
+            if (type == TextKey)
             {
-                string text = storyDotNode["Text"];
-                return new TextStoryDot(text);
+                return new TextStoryDot(storyDotNode[TextKey]);
             }
 
-            if (type == "Image")
+            if (type == ImageKey)
             {
-                string path = storyDotNode["Path"];
-                return new ImageStoryDot {SiqPath = path};
+                return new ImageStoryDot {FileName = storyDotNode[FileNameKey]};
             }
             
-            if (type == "Audio")
+            if (type == AudioKey)
             {
-                string path = storyDotNode["Path"];
-                return new AudioStoryDot {SiqPath = path};
+                return new AudioStoryDot {FileName = storyDotNode[FileNameKey]};
             }
 
-            if (type == "Video")
+            if (type == VideoKey)
             {
-                string path = storyDotNode["Path"];
-                return new VideoStoryDot() {SiqPath = path};
+                return new VideoStoryDot {FileName = storyDotNode[FileNameKey]};
             }
 
             throw new Exception($"Not supported StoryDotType: '{type}'");

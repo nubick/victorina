@@ -22,7 +22,7 @@ namespace Victorina
         private void WritePackageStatistics(Package package)
         {
             int themesAmount = package.Rounds.Sum(round => round.Themes.Count);
-            List<Question> questions = package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions)).ToList();
+            List<Question> questions = PackageTools.GetAllQuestions(package).ToList();
             int questionsAmount = questions.Count;
             int noRiskAmount = questions.Count(_ => _.Type == QuestionType.NoRisk);
             int catInBagAmount = questions.Count(_ => _.Type == QuestionType.CatInBag);
@@ -32,8 +32,7 @@ namespace Victorina
         
         public Question GetQuestion(string questionId)
         {
-            var questions = Data.Package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions));
-            return questions.Single(question => question.Id == questionId);
+            return PackageTools.GetAllQuestions(Data.Package).Single(question => question.Id == questionId);
         }
 
         public (int[], int[], int[]) GetPackageFilesInfo(Package package)

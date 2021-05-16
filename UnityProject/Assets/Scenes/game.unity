@@ -5323,7 +5323,7 @@ GameObject:
   - component: {fileID: 295682860}
   - component: {fileID: 295682861}
   m_Layer: 5
-  m_Name: PackageEditorView
+  m_Name: PackageCrafterView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40867,7 +40867,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2080475333}
   m_Layer: 5
-  m_Name: Editor
+  m_Name: Crafter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -25,8 +25,7 @@ namespace Victorina
             _fileBytesCache.Clear();
             _chunksCache.Clear();
             
-            var questions = package.Rounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions));
-            foreach (Question question in questions)
+            foreach (Question question in PackageTools.GetAllQuestions(package))
             {
                 AddStoryFiles(question.QuestionStory);
                 AddStoryFiles(question.AnswerStory);
@@ -41,7 +40,7 @@ namespace Victorina
             {
                 if (storyDot is FileStoryDot fileStoryDot)
                 {
-                    fileStoryDot.FileId = AddFile(fileStoryDot.SiqPath);
+                    fileStoryDot.FileId = AddFile(fileStoryDot.Path);
                     if (fileStoryDot.FileId != 0)
                     {
                         fileStoryDot.ChunksAmount = GetFileChunksAmount(fileStoryDot.FileId);

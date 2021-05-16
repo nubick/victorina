@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Injection;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using SFB;
 using UnityEngine;
 
@@ -40,8 +42,36 @@ namespace Victorina
         {
             string archiveName = Path.GetFileNameWithoutExtension(packageArchivePath);
             string destinationPath = $"{destinationFolderPath}/{archiveName}";
+            
             UnZip(packageArchivePath, destinationPath);
+            
+            if (SiqConverter.IsValid(destinationPath))
+            {
+                ConvertSiqPackage(destinationPath, destinationFolderPath);
+            }
+            
             return destinationPath;
+        }
+
+        private void ConvertSiqPackage(string siqPackagePath, string parentFolder)
+        {
+            Debug.Log($"Siq archive detected. Move to temp folder: {PathData.TempSiqUnZipPath}");
+            
+            if (Directory.Exists(PathData.TempSiqUnZipPath))
+            {
+                Debug.LogWarning($"Temp folder is not empty. Clear temp folder: {PathData.TempSiqUnZipPath}");
+                Directory.Delete(PathData.TempSiqUnZipPath, recursive: true);
+            }
+            
+            Directory.Move(siqPackagePath, PathData.TempSiqUnZipPath);
+            
+            Package package = SiqConverter.Convert(PathData.TempSiqUnZipPath);
+            
+            string folderName = Path.GetFileName(siqPackagePath);
+            SavePackage(package, parentFolder, folderName);
+            
+            Debug.Log($"Clear temp folder: {PathData.TempSiqUnZipPath}");
+            Directory.Delete(PathData.TempSiqUnZipPath, recursive: true);
         }
         
         private void UnZip(string packageArchivePath, string destinationPath)
@@ -61,22 +91,24 @@ namespace Victorina
         {
             return Directory.GetDirectories(PathData.CrafterPath);
         }
-        
+
         public Package LoadPackage(string packagePath)
         {
-            Package package;
-            if (SiqConverter.IsValid(packagePath))
-            {
-                package = SiqConverter.Convert(packagePath);
-            }
-            else
-            {
-                string jsonPath = $"{packagePath}/package.json";
-                string json = File.ReadAllText(jsonPath);
-                package = PackageJsonConverter.ReadPackage(json);
-            }
+            string jsonPath = $"{packagePath}/package.json";
+            string json = File.ReadAllText(jsonPath);
+            Package package = PackageJsonConverter.ReadPackage(json);
             package.Path = packagePath;
+            FillFilePaths(package);
             return package;
+        }
+
+        private void FillFilePaths(Package package)
+        {
+            foreach (StoryDot storyDot in PackageTools.GetAllStories(package))
+            {
+                if (storyDot is FileStoryDot fileStoryDot)
+                    fileStoryDot.Path = $"{package.Path}/{fileStoryDot.FileName}";
+            }
         }
 
         public void Delete(string packagePath)
@@ -96,6 +128,83 @@ namespace Victorina
         public void Delete(Package package)
         {
             Delete(package.Path);
+        }
+
+        public void SaveTheme(Theme theme, string rootFolderPath)
+        {
+            PackageJsonConverter jsonConverter = new PackageJsonConverter();
+            string json = jsonConverter.ToJson(theme);
+            
+            string themePath = $"{rootFolderPath}/{theme.Name}";
+            Directory.CreateDirectory(themePath);
+            File.WriteAllText($"{themePath}/theme.json", json);
+            
+            CopyFiles(theme, themePath);
+            Debug.Log($"Theme is saved: {theme.Name}");
+        }
+        
+        public void SaveTheme(Theme theme)
+        {
+            SaveTheme(theme, PathData.CrafterPath);
+        }
+
+        public void SavePackage(Package package, string parentFolderPath, string packageFolderName = null)
+        {
+            string json = PackageJsonConverter.ToJson(package);
+
+            string folderName = packageFolderName ?? package.FolderName;
+            string packageFolderPath = $"{parentFolderPath}/{folderName}";
+
+            if (Directory.Exists(packageFolderPath))
+                throw new Exception($"Can't save package. Folder exists: {packageFolderPath}");
+
+            Debug.Log($"Create directory: {packageFolderPath}");
+            Directory.CreateDirectory(packageFolderPath);
+            string jsonPath = $"{packageFolderPath}/package.json";
+            File.WriteAllText(jsonPath, json);
+            Debug.Log($"Package json is saved: {jsonPath}");
+            
+            CopyFiles(package, packageFolderPath);
+            
+            Debug.Log($"Package is saved: {packageFolderPath}");
+        }
+        
+        private void CopyFiles(Package package, string packageFolderPath)
+        {
+            CopyFiles(PackageTools.GetAllQuestions(package), packageFolderPath);
+        }
+        
+        private void CopyFiles(Theme theme, string themePath)
+        {
+            CopyFiles(theme.Questions, themePath);
+        }
+
+        private void CopyFiles(IEnumerable<Question> questions, string packageFolderPath)
+        {
+            foreach (Question question in questions)
+            {
+                CopyStoryFiles(question.QuestionStory, packageFolderPath);
+                CopyStoryFiles(question.AnswerStory, packageFolderPath);
+            }
+        }
+        
+        private void CopyStoryFiles(List<StoryDot> story, string packageFolderPath)
+        {
+            foreach (StoryDot storyDot in story)
+            {
+                if (storyDot is FileStoryDot fileStoryDot)
+                {
+                    string newFilePath = $"{packageFolderPath}/{fileStoryDot.FileName}";
+
+                    if (!File.Exists(fileStoryDot.Path))
+                        throw new Exception($"Can't copy file. File is missed: {fileStoryDot.Path}");
+                    
+                    if (File.Exists(newFilePath))
+                        throw new Exception($"Can't copy file. File exists by path: '{newFilePath}'");
+                    
+                    File.Copy(fileStoryDot.Path, newFilePath);
+                }
+            }
         }
     }
 }

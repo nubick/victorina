@@ -4,13 +4,8 @@ namespace Victorina
 {
     public class Package
     {
-        public string Name { get; set; }
         public string Path { get; set; }
+        public string FolderName => System.IO.Path.GetFileName(Path);
         public List<Round> Rounds { get; set; } = new List<Round>();
-
-        public Package(string name)
-        {
-            Name = name;
-        }
     }
 }
