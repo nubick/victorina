@@ -220,10 +220,11 @@ namespace Victorina
 
                     if (!File.Exists(fileStoryDot.Path))
                         throw new Exception($"Can't copy file. File is missed: {fileStoryDot.Path}");
-                    
+
                     if (File.Exists(newFilePath))
                         throw new Exception($"Can't copy file. File exists by path: '{newFilePath}'");
                     
+                    Debug.Log($"File: {fileStoryDot.FileName}");
                     File.Copy(fileStoryDot.Path, newFilePath);
                 }
             }

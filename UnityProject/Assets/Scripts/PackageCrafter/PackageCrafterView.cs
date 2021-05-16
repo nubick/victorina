@@ -9,6 +9,7 @@ namespace Victorina
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private PackageCrafterData Data { get; set; }
         [Inject] private PackageCrafterSystem PackageCrafterSystem { get; set; }
+        [Inject] private ThemesSelectionFromBagView ThemesSelectionFromBagView { get; set; }
 
         public RectTransform OpenedPackagesRoot;
         public OpenedPackageWidget OpenedPackageWidgetPrefab;
@@ -133,7 +134,7 @@ namespace Victorina
 
         public void OnSelectBagButtonClicked()
         {
-            
+            ThemesSelectionFromBagView.Show();
         }
 
         public void OnCopyToBagButtonClicked()
@@ -150,6 +151,25 @@ namespace Victorina
         public void OnDeleteQuestionButtonClicked()
         {
             PackageCrafterSystem.DeleteSelectedQuestion();
+            RefreshUI();
+        }
+
+        public void OnDeleteRoundButtonClicked()
+        {
+            if (Data.SelectedRound == null)
+                return;
+            
+            Data.SelectedPackage.Rounds.Remove(Data.SelectedRound);
+            Data.SelectedRound = null;
+            RefreshUI();
+        }
+
+        public void OnClearRoundButtonClicked()
+        {
+            if (Data.SelectedRound == null)
+                return;
+
+            Data.SelectedRound.Themes.Clear();
             RefreshUI();
         }
     }

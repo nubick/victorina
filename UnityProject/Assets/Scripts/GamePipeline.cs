@@ -130,6 +130,9 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<PackageCrafterView>());
             _injector.Bind(new PackageCrafterSystem());
             _injector.Bind(new PackageCrafterData());
+            
+            _injector.Bind(FindObjectOfType<ThemesSelectionFromBagView>());
+            _injector.Bind(new CrafterBagSystem());
 
             _injector.CommitBindings();
             
@@ -194,6 +197,7 @@ namespace Victorina
             
             //Package Editor
             _injector.Get<PackageCrafterView>().Initialize();
+            _injector.Get<ThemesSelectionFromBagView>().Initialize();
         }
         
         private void OnNetworkPlayerSpawned(NetworkPlayer networkPlayer)

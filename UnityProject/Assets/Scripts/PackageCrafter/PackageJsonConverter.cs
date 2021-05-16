@@ -180,6 +180,12 @@ namespace Victorina
             return round;
         }
 
+        public Theme ReadTheme(string themeJson)
+        {
+            JSONNode themeNode = JSON.Parse(themeJson);
+            return ReadTheme(themeNode);
+        }
+        
         private Theme ReadTheme(JSONNode themeNode)
         {
             string id = themeNode["Id"];

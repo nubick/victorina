@@ -38,11 +38,13 @@ namespace Victorina
         public static GameEvent<int> ClientFileDownloaded { get; } = new GameEvent<int>();
         public static GameEvent ClientFileRequested { get; } = new GameEvent();
         
-        //Package editor events
+        //Package crafter events
         public static GameEvent<Package> CrafterPackageClicked { get; } = new GameEvent<Package>();
         public static GameEvent<Round> CrafterRoundClicked { get; } = new GameEvent<Round>();
         public static GameEvent<Theme> CrafterThemeClicked { get; } = new GameEvent<Theme>();
         public static GameEvent<Question> CrafterQuestionClicked { get; } = new GameEvent<Question>();
+
+        public static GameEvent<Theme> CrafterBagThemeClicked { get; } = new GameEvent<Theme>();
         
         //Commands
         public static GameEvent<SoundEffect> PlaySoundEffectCommand = new GameEvent<SoundEffect>();

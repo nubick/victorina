@@ -9,5 +9,8 @@ namespace Victorina
         public Round SelectedRound { get; set; }
         public Theme SelectedTheme { get; set; }
         public Question SelectedQuestion { get; set; }
+
+        public List<Theme> BagAllThemes { get; set; } = new List<Theme>();
+        public List<Theme> BagSelectedThemes { get; set; } = new List<Theme>();
     }
 }
