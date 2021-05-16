@@ -28,9 +28,10 @@ namespace Victorina
         
         public void Initialize()
         {
-            MetagameEvents.EditorPackageClicked.Subscribe(OnPackageClicked);
-            MetagameEvents.EditorRoundClicked.Subscribe(OnRoundClicked);
-            MetagameEvents.EditorThemeClicked.Subscribe(OnThemeClicked);
+            MetagameEvents.CrafterPackageClicked.Subscribe(OnPackageClicked);
+            MetagameEvents.CrafterRoundClicked.Subscribe(OnRoundClicked);
+            MetagameEvents.CrafterThemeClicked.Subscribe(OnThemeClicked);
+            MetagameEvents.CrafterQuestionClicked.Subscribe(OnQuestionClicked);
         }
         
         protected override void OnShown()
@@ -69,7 +70,7 @@ namespace Victorina
                     foreach (Question question in theme.Questions)
                     {
                         CrafterQuestionWidget questionWidget = Instantiate(QuestionWidgetPrefab, themeWidget.QuestionsRoot);
-                        questionWidget.Bind(question);
+                        questionWidget.Bind(question, Data.SelectedQuestion == question);
                     }
                 }
             }
@@ -108,6 +109,12 @@ namespace Victorina
             RefreshUI();
         }
 
+        private void OnQuestionClicked(Question question)
+        {
+            PackageCrafterSystem.SelectQuestion(question);
+            RefreshUI();
+        }
+
         public void OnSaveThemeButtonClicked()
         {
             PackageCrafterSystem.SaveSelectedTheme();
@@ -133,6 +140,17 @@ namespace Victorina
         {
             PackageCrafterSystem.CopySelectedThemeToBag();
         }
-        
+
+        public void OnDeleteThemeButtonClicked()
+        {
+            PackageCrafterSystem.DeleteSelectedTheme();
+            RefreshUI();
+        }
+
+        public void OnDeleteQuestionButtonClicked()
+        {
+            PackageCrafterSystem.DeleteSelectedQuestion();
+            RefreshUI();
+        }
     }
 }

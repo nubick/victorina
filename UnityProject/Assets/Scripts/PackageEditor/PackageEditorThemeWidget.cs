@@ -21,7 +21,7 @@ namespace Victorina
 
         public void OnThemeButtonClicked()
         {
-            MetagameEvents.EditorThemeClicked.Publish(_theme);
+            MetagameEvents.CrafterThemeClicked.Publish(_theme);
         }
     }
 }

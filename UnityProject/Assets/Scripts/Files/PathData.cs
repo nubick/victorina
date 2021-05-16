@@ -8,6 +8,6 @@ namespace Victorina
         public string CrafterBagPath { get; set; }
         public string PackageFilesPath { get; set; }
         public string TempVideoFilePath { get; set; }
-        public string TempSiqUnZipPath { get; set; }
+        public string TempArchivePath { get; set; }
     }
 }

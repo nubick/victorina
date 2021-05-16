@@ -19,7 +19,7 @@ namespace Victorina
         
         public void OnSelectButtonClicked()
         {
-            MetagameEvents.EditorPackageClicked.Publish(_package);
+            MetagameEvents.CrafterPackageClicked.Publish(_package);
         }
     }
 }

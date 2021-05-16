@@ -8,5 +8,6 @@ namespace Victorina
         public Package SelectedPackage { get; set; }
         public Round SelectedRound { get; set; }
         public Theme SelectedTheme { get; set; }
+        public Question SelectedQuestion { get; set; }
     }
 }

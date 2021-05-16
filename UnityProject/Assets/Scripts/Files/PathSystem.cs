@@ -16,7 +16,7 @@ namespace Victorina
             Data.CrafterBagPath = $"{Data.DataPath}/CrafterBag";
             Data.PackageFilesPath = GetPackageFilesPath();
             Data.TempVideoFilePath = $"{Data.PackageFilesPath}/TempVideo.mp4";
-            Data.TempSiqUnZipPath = $"{Data.DataPath}/SiqArchiveTemp";
+            Data.TempArchivePath = $"{Data.DataPath}/ArchiveTemp";
             
             EnsurePath(Data.PackagesPath);
             EnsurePath(Data.CrafterPath);

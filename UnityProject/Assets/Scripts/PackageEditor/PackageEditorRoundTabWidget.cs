@@ -19,7 +19,7 @@ namespace Victorina
 
         public void OnClicked()
         {
-            MetagameEvents.EditorRoundClicked.Publish(_round);
+            MetagameEvents.CrafterRoundClicked.Publish(_round);
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Injection;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using SFB;
 using UnityEngine;
 
@@ -11,6 +10,11 @@ namespace Victorina
 {
     public class PackageFilesSystem
     {
+        private const string VumFilterName = "Vumka Files";
+        private const string VumFilterExtension = "vum";
+        private const string SiqFilterName = "SIQ Files";
+        private const string SiqFilterExtension = "siq";
+        
         [Inject] private PathData PathData { get; set; }
         [Inject] private SiqConverter SiqConverter { get; set; }
         [Inject] private PackageJsonConverter PackageJsonConverter { get; set; }
@@ -21,13 +25,22 @@ namespace Victorina
         {
             ExtensionFilter[] extensions =
             {
-                new ExtensionFilter("Vumka Files, vum"),
-                new ExtensionFilter("SIQ Files", "siq")
+                new ExtensionFilter(VumFilterName, VumFilterExtension),
+                new ExtensionFilter(SiqFilterName, SiqFilterExtension)
             };
             string[] paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
             return paths[0];
         }
-        
+
+        public string GetPackageArchivePathUsingSaveDialogue(string packageName)
+        {
+            ExtensionFilter[] extensions = {new ExtensionFilter(VumFilterName, VumFilterExtension)};
+            string dialogueTitle = "Save Vumka Package";
+            string rootDirectory = "";
+            string defaultName = packageName;
+            return StandaloneFileBrowser.SaveFilePanel(dialogueTitle, rootDirectory, defaultName, extensions);
+        }
+
         public string UnZipArchiveToPlayFolder(string packageArchivePath)
         {
             return UnZipArchiveToFolder(packageArchivePath, PathData.PackagesPath);
@@ -53,25 +66,34 @@ namespace Victorina
             return destinationPath;
         }
 
+        private void EnsureTempFolderIsEmpty()
+        {
+            if (Directory.Exists(PathData.TempArchivePath))
+            {
+                Debug.LogWarning($"Temp folder is not empty. Clear temp folder: {PathData.TempArchivePath}");
+                Directory.Delete(PathData.TempArchivePath, recursive: true);
+            }
+        }
+        
         private void ConvertSiqPackage(string siqPackagePath, string parentFolder)
         {
-            Debug.Log($"Siq archive detected. Move to temp folder: {PathData.TempSiqUnZipPath}");
-            
-            if (Directory.Exists(PathData.TempSiqUnZipPath))
-            {
-                Debug.LogWarning($"Temp folder is not empty. Clear temp folder: {PathData.TempSiqUnZipPath}");
-                Directory.Delete(PathData.TempSiqUnZipPath, recursive: true);
-            }
-            
-            Directory.Move(siqPackagePath, PathData.TempSiqUnZipPath);
-            
-            Package package = SiqConverter.Convert(PathData.TempSiqUnZipPath);
-            
+            Debug.Log($"Siq archive detected. Move to temp folder: {PathData.TempArchivePath}");
+            EnsureTempFolderIsEmpty();
+            Directory.Move(siqPackagePath, PathData.TempArchivePath);
+            Package package = SiqConverter.Convert(PathData.TempArchivePath);
             string folderName = Path.GetFileName(siqPackagePath);
             SavePackage(package, parentFolder, folderName);
-            
-            Debug.Log($"Clear temp folder: {PathData.TempSiqUnZipPath}");
-            Directory.Delete(PathData.TempSiqUnZipPath, recursive: true);
+            EnsureTempFolderIsEmpty();
+        }
+
+        public void SavePackageAsArchive(Package package, string packageArchivePath)
+        {
+            EnsureTempFolderIsEmpty();
+            SavePackage(package, PathData.TempArchivePath);
+            string sourceDirectoryName = $"{PathData.TempArchivePath}/{package.FolderName}";
+            ZipFile.CreateFromDirectory(sourceDirectoryName, packageArchivePath);
+            EnsureTempFolderIsEmpty();
+            Debug.Log($"Package is saved to archive: {packageArchivePath}");
         }
         
         private void UnZip(string packageArchivePath, string destinationPath)
@@ -82,7 +104,7 @@ namespace Victorina
             if (!exists)
                 throw new Exception($"File doesn't exist: {packageArchivePath}");
             
-            ZipFile.ExtractToDirectory(packageArchivePath, destinationPath, true);
+            ZipFile.ExtractToDirectory(packageArchivePath, destinationPath);
         }
         
         #endregion

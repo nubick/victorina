@@ -28,17 +28,24 @@ namespace Victorina
             Data.SelectedPackage = package;
             Data.SelectedRound = null;
             Data.SelectedTheme = null;
+            Data.SelectedQuestion = null;
         }
 
         public void SelectRound(Round round)
         {
             Data.SelectedRound = round;
             Data.SelectedTheme = null;
+            Data.SelectedQuestion = null;
         }
 
         public void SelectTheme(Theme theme)
         {
             Data.SelectedTheme = theme;
+        }
+
+        public void SelectQuestion(Question question)
+        {
+            Data.SelectedQuestion = question;
         }
         
         public void AddPackage()
@@ -60,7 +67,15 @@ namespace Victorina
             if (Data.SelectedPackage == null)
                 return;
 
-            PackageFilesSystem.SavePackage(Data.SelectedPackage, PathData.CrafterPath);
+            string packageArchivePath = PackageFilesSystem.GetPackageArchivePathUsingSaveDialogue(Data.SelectedPackage.FolderName);
+
+            if (string.IsNullOrEmpty(packageArchivePath))
+            {
+                Debug.Log($"Package archive path wat not selected. Cancel");
+                return;
+            }
+            
+            PackageFilesSystem.SavePackageAsArchive(Data.SelectedPackage, packageArchivePath);
         }
 
         public void SaveSelectedTheme()
@@ -87,6 +102,34 @@ namespace Victorina
                 return;
             
             PackageFilesSystem.SaveTheme(Data.SelectedTheme, PathData.CrafterBagPath);
+        }
+
+        public void DeleteSelectedTheme()
+        {
+            if (Data.SelectedTheme == null)
+                return;
+
+            PackageTools.DeleteTheme(Data.SelectedPackage, Data.SelectedTheme);
+
+            if (Data.SelectedTheme.Questions.Contains(Data.SelectedQuestion))
+                SelectQuestion(null);
+
+            SelectTheme(null);
+            
+            //todo: delete files
+            //todo: update package.json
+        }
+
+        public void DeleteSelectedQuestion()
+        {
+            if (Data.SelectedQuestion == null)
+                return;
+            
+            PackageTools.DeleteQuestion(Data.SelectedPackage, Data.SelectedQuestion);
+            SelectQuestion(null);
+            
+            //todo: delete files
+            //todo: update package.json
         }
     }
 }
