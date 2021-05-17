@@ -40,9 +40,17 @@ namespace Victorina
         
         //Package crafter events
         public static GameEvent<Package> CrafterPackageClicked { get; } = new GameEvent<Package>();
+        public static GameEvent<Package> CrafterPackageDeleteButtonClicked { get; } = new GameEvent<Package>();
+        
         public static GameEvent<Round> CrafterRoundClicked { get; } = new GameEvent<Round>();
+        public static GameEvent<Round> CrafterRoundDeleteButtonClicked { get; } = new GameEvent<Round>();
+        
         public static GameEvent<Theme> CrafterThemeClicked { get; } = new GameEvent<Theme>();
+        public static GameEvent<Theme> CrafterThemeDeleteButtonClicked { get; } = new GameEvent<Theme>();
+        
         public static GameEvent<Question> CrafterQuestionClicked { get; } = new GameEvent<Question>();
+        public static GameEvent<Question> CrafterQuestionDeleteButtonClicked { get; } = new GameEvent<Question>();
+        
 
         public static GameEvent<Theme> CrafterBagThemeClicked { get; } = new GameEvent<Theme>();
         

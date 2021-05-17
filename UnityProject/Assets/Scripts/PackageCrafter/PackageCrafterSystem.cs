@@ -86,14 +86,13 @@ namespace Victorina
             PackageFilesSystem.SaveTheme(Data.SelectedTheme);
         }
         
-        public void DeleteSelectedPackage()
+        public void DeletePackage(Package package)
         {
-            if (Data.SelectedPackage == null)
-                return;
-            
-            PackageFilesSystem.Delete(Data.SelectedPackage);
-            Data.Packages.Remove(Data.SelectedPackage);
-            SelectPackage(null);
+            PackageFilesSystem.Delete(package);
+            Data.Packages.Remove(package);
+
+            if (Data.SelectedPackage == package)
+                SelectPackage(null);
         }
 
         public void CopySelectedThemeToBag()
@@ -104,14 +103,11 @@ namespace Victorina
             PackageFilesSystem.SaveTheme(Data.SelectedTheme, PathData.CrafterBagPath);
         }
 
-        public void DeleteSelectedTheme()
+        public void DeleteTheme(Theme theme)
         {
-            if (Data.SelectedTheme == null)
-                return;
+            PackageTools.DeleteTheme(Data.SelectedPackage, theme);
 
-            PackageTools.DeleteTheme(Data.SelectedPackage, Data.SelectedTheme);
-
-            if (Data.SelectedTheme.Questions.Contains(Data.SelectedQuestion))
+            if (theme.Questions.Contains(Data.SelectedQuestion))
                 SelectQuestion(null);
 
             SelectTheme(null);
@@ -120,13 +116,23 @@ namespace Victorina
             //todo: update package.json
         }
 
-        public void DeleteSelectedQuestion()
+        public void DeleteQuestion(Question question)
         {
-            if (Data.SelectedQuestion == null)
-                return;
+            PackageTools.DeleteQuestion(Data.SelectedPackage, question);
+
+            if (Data.SelectedQuestion == question)
+                SelectQuestion(null);
+
+            //todo: delete files
+            //todo: update package.json
+        }
+
+        public void DeleteRound(Round round)
+        {
+            Data.SelectedPackage.Rounds.Remove(round);
             
-            PackageTools.DeleteQuestion(Data.SelectedPackage, Data.SelectedQuestion);
-            SelectQuestion(null);
+            if(Data.SelectedRound == round)
+                SelectRound(null);
             
             //todo: delete files
             //todo: update package.json

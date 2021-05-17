@@ -12,13 +12,13 @@ namespace Victorina
         [Inject] private ThemesSelectionFromBagView ThemesSelectionFromBagView { get; set; }
 
         public RectTransform OpenedPackagesRoot;
-        public OpenedPackageWidget OpenedPackageWidgetPrefab;
+        [FormerlySerializedAs("OpenedPackageWidgetPrefab")] public CrafterPackageTabWidget CrafterPackageTabWidgetPrefab;
 
         public RectTransform RoundsTabsRoot;
-        public PackageEditorRoundTabWidget RoundTabWidgetPrefab;
+        public CrafterRoundTabWidget RoundTabWidgetPrefab;
 
         public RectTransform ThemesRoot;
-        public PackageEditorThemeWidget ThemeWidgetPrefab;
+        [FormerlySerializedAs("ThemeWidgetPrefab")] public CrafterThemeLineWidget ThemeLineWidgetPrefab;
 
         public CrafterQuestionWidget QuestionWidgetPrefab;
         
@@ -33,6 +33,10 @@ namespace Victorina
             MetagameEvents.CrafterRoundClicked.Subscribe(OnRoundClicked);
             MetagameEvents.CrafterThemeClicked.Subscribe(OnThemeClicked);
             MetagameEvents.CrafterQuestionClicked.Subscribe(OnQuestionClicked);
+            MetagameEvents.CrafterQuestionDeleteButtonClicked.Subscribe(OnQuestionDeleteButtonClicked);
+            MetagameEvents.CrafterRoundDeleteButtonClicked.Subscribe(OnRoundDeleteButtonClicked);
+            MetagameEvents.CrafterThemeDeleteButtonClicked.Subscribe(OnThemeDeleteButtonClicked);
+            MetagameEvents.CrafterPackageDeleteButtonClicked.Subscribe(OnPackageDeleteButtonClicked);
         }
         
         protected override void OnShown()
@@ -46,8 +50,8 @@ namespace Victorina
             ClearChild(OpenedPackagesRoot);
             foreach (Package package in Data.Packages)
             {
-                OpenedPackageWidget widget = Instantiate(OpenedPackageWidgetPrefab, OpenedPackagesRoot);
-                widget.Bind(package, isSelected: Data.SelectedPackage == package);
+                CrafterPackageTabWidget tabWidget = Instantiate(CrafterPackageTabWidgetPrefab, OpenedPackagesRoot);
+                tabWidget.Bind(package, isSelected: Data.SelectedPackage == package);
             }
 
             ClearChild(RoundsTabsRoot);
@@ -55,7 +59,7 @@ namespace Victorina
             {
                 foreach (Round round in Data.SelectedPackage.Rounds)
                 {
-                    PackageEditorRoundTabWidget roundTabWidget = Instantiate(RoundTabWidgetPrefab, RoundsTabsRoot);
+                    CrafterRoundTabWidget roundTabWidget = Instantiate(RoundTabWidgetPrefab, RoundsTabsRoot);
                     roundTabWidget.Bind(round, round == Data.SelectedRound);
                 }
             }
@@ -65,12 +69,12 @@ namespace Victorina
             {
                 foreach (Theme theme in Data.SelectedRound.Themes)
                 {
-                    PackageEditorThemeWidget themeWidget = Instantiate(ThemeWidgetPrefab, ThemesRoot);
-                    themeWidget.Bind(theme, Data.SelectedTheme == theme);
+                    CrafterThemeLineWidget themeLineWidget = Instantiate(ThemeLineWidgetPrefab, ThemesRoot);
+                    themeLineWidget.Bind(theme, Data.SelectedTheme == theme);
 
                     foreach (Question question in theme.Questions)
                     {
-                        CrafterQuestionWidget questionWidget = Instantiate(QuestionWidgetPrefab, themeWidget.QuestionsRoot);
+                        CrafterQuestionWidget questionWidget = Instantiate(QuestionWidgetPrefab, themeLineWidget.QuestionsRoot);
                         questionWidget.Bind(question, Data.SelectedQuestion == question);
                     }
                 }
@@ -126,9 +130,9 @@ namespace Victorina
             PackageCrafterSystem.SaveSelectedPackage();
         }
 
-        public void OnDeletePackageButtonClicked()
+        public void OnPackageDeleteButtonClicked(Package package)
         {
-            PackageCrafterSystem.DeleteSelectedPackage();
+            PackageCrafterSystem.DeletePackage(package);
             RefreshUI();
         }
 
@@ -142,34 +146,21 @@ namespace Victorina
             PackageCrafterSystem.CopySelectedThemeToBag();
         }
 
-        public void OnDeleteThemeButtonClicked()
+        public void OnThemeDeleteButtonClicked(Theme theme)
         {
-            PackageCrafterSystem.DeleteSelectedTheme();
+            PackageCrafterSystem.DeleteTheme(theme);
             RefreshUI();
         }
 
-        public void OnDeleteQuestionButtonClicked()
+        public void OnQuestionDeleteButtonClicked(Question question)
         {
-            PackageCrafterSystem.DeleteSelectedQuestion();
+            PackageCrafterSystem.DeleteQuestion(question);
             RefreshUI();
         }
 
-        public void OnDeleteRoundButtonClicked()
+        public void OnRoundDeleteButtonClicked(Round round)
         {
-            if (Data.SelectedRound == null)
-                return;
-            
-            Data.SelectedPackage.Rounds.Remove(Data.SelectedRound);
-            Data.SelectedRound = null;
-            RefreshUI();
-        }
-
-        public void OnClearRoundButtonClicked()
-        {
-            if (Data.SelectedRound == null)
-                return;
-
-            Data.SelectedRound.Themes.Clear();
+            PackageCrafterSystem.DeleteRound(round);
             RefreshUI();
         }
     }
