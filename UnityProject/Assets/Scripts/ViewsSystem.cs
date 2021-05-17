@@ -119,7 +119,7 @@ namespace Victorina
                 RoundView.RefreshUI(MatchData.RoundData.Value);
             }
         }
-        
+
         public void UpdateStoryDot(QuestionAnswerData data)
         {
             HideAll();
@@ -131,37 +131,37 @@ namespace Victorina
 
                 if (NetworkData.IsMaster)
                     MasterQuestionPanelView.Show();
-                
-                if(NetworkData.IsClient)
+
+                if (NetworkData.IsClient)
                     PlayerButtonView.Show();
             }
             else if (data.CurrentStoryDot is AudioStoryDot)
             {
                 Debug.Log("Show: AudioStoryDotView");
                 AudioStoryDotView.Show();
-                
+
                 if (NetworkData.IsMaster)
                     MasterQuestionPanelView.Show();
 
-                if(NetworkData.IsClient)
+                if (NetworkData.IsClient)
                     PlayerButtonView.Show();
             }
             else if (data.CurrentStoryDot is VideoStoryDot)
             {
                 Debug.Log("Show: VideoStoryDotView");
                 VideoStoryDotView.Show();
-                
+
                 if (NetworkData.IsMaster)
                     MasterQuestionPanelView.Show();
 
-                if(NetworkData.IsClient)
+                if (NetworkData.IsClient)
                     PlayerButtonView.Show();
             }
             else if (data.CurrentStoryDot is NoRiskStoryDot)
             {
                 Debug.Log("Show: NoRiskStoryDotView");
                 NoRiskStoryDotView.Show();
-                
+
                 if (NetworkData.IsMaster)
                     MasterQuestionPanelView.Show();
             }
@@ -171,7 +171,7 @@ namespace Victorina
                 CatInBagStoryDotView.Show();
                 if (!CatInBagData.IsPlayerSelected.Value)
                     PlayersBoardView.Show();
-                
+
                 if (NetworkData.IsMaster)
                     MasterQuestionPanelView.Show();
             }
@@ -181,21 +181,25 @@ namespace Victorina
                 AuctionStoryDotView.Show();
                 PlayersBoardView.Show();
             }
-            else
+            else if (data.CurrentStoryDot is TextStoryDot)
             {
                 Debug.Log("Show: TextStoryDotView");
                 TextStoryDotView.Show();
-                
+
                 if (NetworkData.IsMaster)
                     MasterQuestionPanelView.Show();
 
-                if(NetworkData.IsClient)
+                if (NetworkData.IsClient)
                     PlayerButtonView.Show();
             }
-            
+            else
+            {
+                throw new Exception($"Not supported story dot: {data.CurrentStoryDot}");
+            }
+
             //MasterEffectsView.Show();
         }
-        
+
         private void OnQuestionAnswerPhaseChanged()
         {
             if (QuestionAnswerData.Phase.Value == QuestionPhase.AcceptingAnswer)

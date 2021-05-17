@@ -328,12 +328,8 @@ namespace Victorina
 
         private void InitializeStory(List<StoryDot> story, string packagePath, Question question, Theme theme)
         {
-            int index = 0;
             foreach (StoryDot storyDot in story)
             {
-                storyDot.Index = index;
-                index++;
-                    
                 if (storyDot is ImageStoryDot imageStoryDot)
                     imageStoryDot.Path = $"{GetImagesPath(packagePath)}/{imageStoryDot.FileName}";
                 else if (storyDot is AudioStoryDot audioStoryDot)

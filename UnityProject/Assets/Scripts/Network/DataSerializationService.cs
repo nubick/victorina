@@ -202,22 +202,19 @@ namespace Victorina
         private void SerializeTextStoryDot(Stream stream, TextStoryDot textStoryDot)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteInt32(textStoryDot.Index);
             writer.WriteString(textStoryDot.Text);
         }
 
         private TextStoryDot DeserializeTextStoryDot(Stream stream)
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
-            int index = reader.ReadInt32();
             string text = reader.ReadString().ToString();
-            return new TextStoryDot(index, text);
+            return new TextStoryDot(text);
         }
         
         private void SerializeFileStoryDot(Stream stream, FileStoryDot fileStoryDot)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteInt32(fileStoryDot.Index);
             writer.WriteInt32(fileStoryDot.FileId);
             writer.WriteInt32(fileStoryDot.ChunksAmount);
         }
@@ -240,13 +237,11 @@ namespace Victorina
         private void SerializeNoRiskStoryDot(Stream stream, NoRiskStoryDot noRiskStoryDot)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteInt32(noRiskStoryDot.Index);
         }
 
         private void SerializeCatInBagStoryDot(Stream stream, CatInBagStoryDot storyDot)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteInt32(storyDot.Index);
             writer.WriteString(storyDot.Theme);
             writer.WriteInt32(storyDot.Price);
             writer.WriteBool(storyDot.CanGiveYourself);
@@ -255,13 +250,11 @@ namespace Victorina
         private void SerializeAuctionStoryDot(Stream stream, AuctionStoryDot auctionStoryDot)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteInt32(auctionStoryDot.Index);
         }
         
         private void DeserializeFileStoryDot(Stream stream, FileStoryDot fileStoryDot)
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
-            fileStoryDot.Index = reader.ReadInt32();
             fileStoryDot.FileId = reader.ReadInt32();
             fileStoryDot.ChunksAmount = reader.ReadInt32();
         }
@@ -291,7 +284,6 @@ namespace Victorina
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             NoRiskStoryDot noRiskStoryDot = new NoRiskStoryDot();
-            noRiskStoryDot.Index = reader.ReadInt32();
             return noRiskStoryDot;
         }
 
@@ -299,7 +291,6 @@ namespace Victorina
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             CatInBagStoryDot storyDot = new CatInBagStoryDot();
-            storyDot.Index = reader.ReadInt32();
             storyDot.Theme = reader.ReadString().ToString();
             storyDot.Price = reader.ReadInt32();
             storyDot.CanGiveYourself = reader.ReadBool();
@@ -310,7 +301,6 @@ namespace Victorina
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             AuctionStoryDot auctionStoryDot = new AuctionStoryDot();
-            auctionStoryDot.Index = reader.ReadInt32();
             return auctionStoryDot;
         }
         

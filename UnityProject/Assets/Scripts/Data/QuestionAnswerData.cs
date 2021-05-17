@@ -42,7 +42,7 @@ namespace Victorina
 
         public override string ToString()
         {
-            return $"{MasterIntention}, {Phase.Value}, {CurrentStoryDotIndex}, {TimerState}";
+            return $"Intention:{MasterIntention}, {Phase.Value}, [{CurrentStoryDotIndex}], timer:{TimerState}";
         }
     }
 }

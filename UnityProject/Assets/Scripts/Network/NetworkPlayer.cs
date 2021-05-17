@@ -111,22 +111,22 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive AuctionData: {auctionData}");
             PlayerDataReceiver.OnReceiveAuctionData(auctionData);
         }
-        
+
         public void SendSelectedQuestion(NetQuestion netQuestion)
         {
             //Debug.Log($"Master: Send selected question: {netQuestion} to {OwnerClientId}");
             InvokeClientRpcOnOwner(ReceiveSelectedQuestion, netQuestion);
 
-            foreach (StoryDot storyDot in netQuestion.QuestionStory)
+            for (int index = 0; index < netQuestion.QuestionStory.Length; index++)
             {
                 //Debug.Log($"Master: Send question story dot to All: {storyDot}");
-                SendStoryDot(storyDot, isQuestion: true);
+                SendStoryDot(netQuestion.QuestionStory[index], isQuestion: true, index);
             }
 
-            foreach (StoryDot storyDot in netQuestion.AnswerStory)
+            for (int index = 0; index < netQuestion.AnswerStory.Length; index++)
             {
                 //Debug.Log($"Master: Send answer story dot to All: {storyDot}");
-                SendStoryDot(storyDot, isQuestion: false);
+                SendStoryDot(netQuestion.AnswerStory[index], isQuestion: false, index);
             }
         }
 
@@ -139,85 +139,85 @@ namespace Victorina
             MatchData.QuestionAnswerData.SelectedQuestion.Value = netQuestion;
         }
 
-        public void SendStoryDot(StoryDot storyDot, bool isQuestion)
+        public void SendStoryDot(StoryDot storyDot, bool isQuestion, int index)
         {
             //Debug.Log($"Master: Send story dot: {storyDot} to {OwnerClientId}");
             if (storyDot is TextStoryDot textStoryDot)
-                InvokeClientRpcOnOwner(ReceiveTextStoryDot, textStoryDot, isQuestion, "RFS");
+                InvokeClientRpcOnOwner(ReceiveTextStoryDot, textStoryDot, isQuestion, index, "RFS");
             else if (storyDot is ImageStoryDot imageStoryDot)
-                InvokeClientRpcOnOwner(ReceiveImageStoryDot, imageStoryDot, isQuestion);
+                InvokeClientRpcOnOwner(ReceiveImageStoryDot, imageStoryDot, isQuestion, index);
             else if (storyDot is AudioStoryDot audioStoryDot)
-                InvokeClientRpcOnOwner(ReceiveAudioStoryDot, audioStoryDot, isQuestion);
+                InvokeClientRpcOnOwner(ReceiveAudioStoryDot, audioStoryDot, isQuestion, index);
             else if (storyDot is VideoStoryDot videoStoryDot)
-                InvokeClientRpcOnOwner(ReceiveVideoStoryDot, videoStoryDot, isQuestion);
+                InvokeClientRpcOnOwner(ReceiveVideoStoryDot, videoStoryDot, isQuestion, index);
             else if (storyDot is NoRiskStoryDot noRiskStoryDot)
-                InvokeClientRpcOnOwner(ReceiveNoRiskStoryDot, noRiskStoryDot);
+                InvokeClientRpcOnOwner(ReceiveNoRiskStoryDot, noRiskStoryDot, index);
             else if (storyDot is CatInBagStoryDot catInBagStoryDot)
-                InvokeClientRpcOnOwner(ReceiveCatInBagStoryDot, catInBagStoryDot);
+                InvokeClientRpcOnOwner(ReceiveCatInBagStoryDot, catInBagStoryDot, index);
             else if (storyDot is AuctionStoryDot auctionStoryDot)
-                InvokeClientRpcOnOwner(ReceiveAuctionStoryDot, auctionStoryDot);
+                InvokeClientRpcOnOwner(ReceiveAuctionStoryDot, auctionStoryDot, index);
             else
                 throw new Exception($"Not supported story dot: {storyDot}");
         }
 
-        private void SetStoryDot(StoryDot storyDot, bool isQuestion)
+        private void SetStoryDot(StoryDot storyDot, bool isQuestion, int index)
         {
             if (isQuestion)
-                MatchData.QuestionAnswerData.SelectedQuestion.Value.QuestionStory[storyDot.Index] = storyDot;
+                MatchData.QuestionAnswerData.SelectedQuestion.Value.QuestionStory[index] = storyDot;
             else
-                MatchData.QuestionAnswerData.SelectedQuestion.Value.AnswerStory[storyDot.Index] = storyDot;
+                MatchData.QuestionAnswerData.SelectedQuestion.Value.AnswerStory[index] = storyDot;
         }
         
         [ClientRPC]
-        private void ReceiveTextStoryDot(TextStoryDot textStoryDot, bool isQuestion)
+        private void ReceiveTextStoryDot(TextStoryDot textStoryDot, bool isQuestion, int index)
         {
-            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}:Receive text story dot: {textStoryDot}");
-            SetStoryDot(textStoryDot, isQuestion);
+            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}[{index}]: Receive text story dot: {textStoryDot}");
+            SetStoryDot(textStoryDot, isQuestion, index);
         }
 
         [ClientRPC]
-        private void ReceiveImageStoryDot(ImageStoryDot imageStoryDot, bool isQuestion)
+        private void ReceiveImageStoryDot(ImageStoryDot imageStoryDot, bool isQuestion, int index)
         {
-            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}:Receive image story dot: {imageStoryDot}");
-            SetStoryDot(imageStoryDot, isQuestion);
+            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}[{index}]: Receive image story dot: {imageStoryDot}");
+            SetStoryDot(imageStoryDot, isQuestion, index);
             PlayerDataReceiver.OnFileStoryDotReceived(imageStoryDot);
         }
 
         [ClientRPC]
-        private void ReceiveAudioStoryDot(AudioStoryDot audioStoryDot, bool isQuestion)
+        private void ReceiveAudioStoryDot(AudioStoryDot audioStoryDot, bool isQuestion, int index)
         {
-            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}:Receive audio story dot: {audioStoryDot}");
-            SetStoryDot(audioStoryDot, isQuestion);
+            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}[{index}]: Receive audio story dot: {audioStoryDot}");
+            SetStoryDot(audioStoryDot, isQuestion, index);
             PlayerDataReceiver.OnFileStoryDotReceived(audioStoryDot);
         }
 
         [ClientRPC]
-        private void ReceiveVideoStoryDot(VideoStoryDot videoStoryDot, bool isQuestion)
+        private void ReceiveVideoStoryDot(VideoStoryDot videoStoryDot, bool isQuestion, int index)
         {
-            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}:Receive video story dot: {videoStoryDot}");
-            SetStoryDot(videoStoryDot, isQuestion);
+            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}[{index}]: Receive video story dot: {videoStoryDot}");
+            SetStoryDot(videoStoryDot, isQuestion, index);
             PlayerDataReceiver.OnFileStoryDotReceived(videoStoryDot);
         }
 
         [ClientRPC]
-        private void ReceiveNoRiskStoryDot(NoRiskStoryDot noRiskStoryDot)
+        private void ReceiveNoRiskStoryDot(NoRiskStoryDot noRiskStoryDot, int index)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive no risk story dot");
-            SetStoryDot(noRiskStoryDot, isQuestion: true);
+            Debug.Log($"Player {OwnerClientId}: [{index}]: Receive no risk story dot");
+            SetStoryDot(noRiskStoryDot, isQuestion: true, index);
         }
 
         [ClientRPC]
-        private void ReceiveCatInBagStoryDot(CatInBagStoryDot catInBagStoryDot)
+        private void ReceiveCatInBagStoryDot(CatInBagStoryDot catInBagStoryDot, int index)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive cat in bag story dot: {catInBagStoryDot}");
-            SetStoryDot(catInBagStoryDot, isQuestion: true);
+            Debug.Log($"Player {OwnerClientId}: [{index}]: Receive cat in bag story dot: {catInBagStoryDot}");
+            SetStoryDot(catInBagStoryDot, isQuestion: true, index);
         }
 
         [ClientRPC]
-        private void ReceiveAuctionStoryDot(AuctionStoryDot auctionStoryDot)
+        private void ReceiveAuctionStoryDot(AuctionStoryDot auctionStoryDot, int index)
         {
-            Debug.Log($"Player {OwnerClientId}: Receive auction story dot");
-            SetStoryDot(auctionStoryDot, isQuestion: true);
+            Debug.Log($"Player {OwnerClientId}: [{index}]: Receive auction story dot");
+            SetStoryDot(auctionStoryDot, isQuestion: true, index);
         }
         
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)

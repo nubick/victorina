@@ -8,10 +8,5 @@ namespace Victorina
         {
             Text = text;
         }
-
-        public TextStoryDot(int index, string text) : this(text)
-        {
-            Index = index;
-        }
     }
 }
