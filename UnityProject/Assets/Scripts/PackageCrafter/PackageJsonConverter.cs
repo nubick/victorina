@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using SimpleJSON;
+using UnityEngine;
 
 namespace Victorina
 {
@@ -9,12 +11,17 @@ namespace Victorina
     {
         private const string FileNameKey = "FileName";
         private const string StoryDotTypeKey = "StorDotType";
+        private const string PriceKey = "Price";
         private const string TextKey = "Text";
         private const string ImageKey = "Image";
         private const string AudioKey = "Audio";
         private const string VideoKey = "Video";
         private const string QuestionStoryKey = "QuestionStory";
         private const string AnswerStoryKey = "AnswerStory";
+
+        private const string CatInBagKey = "CatInBag";
+        private const string ThemeKey = "Theme";
+        private const string CanGiveYourselfKey = "CanGiveYourself";
         
         #region ToJson
         
@@ -84,8 +91,15 @@ namespace Victorina
             jsonNode.Add("Type", question.Type.ToString());
             jsonNode.Add("Scheme", "Question");
             jsonNode.Add("Id", question.Id);
-            jsonNode.Add("Price", question.Price);
+            jsonNode.Add(PriceKey, question.Price);
 
+            if (question.Type == QuestionType.CatInBag)
+            {
+                CatInBagStoryDot catInBagStoryDot = question.QuestionStory.First() as CatInBagStoryDot;
+                JSONNode catInBagNode = ToJsonNode(catInBagStoryDot);
+                jsonNode.Add(CatInBagKey, catInBagNode);
+            }
+            
             JSONArray questionStoryArray = new JSONArray();
             jsonNode.Add(QuestionStoryKey, questionStoryArray);
             foreach (StoryDot storyDot in question.QuestionStory)
@@ -107,6 +121,15 @@ namespace Victorina
             return jsonNode;
         }
 
+        private JSONNode ToJsonNode(CatInBagStoryDot catInBagStoryDot)
+        {
+            JSONNode node = new JSONObject();
+            node.Add(ThemeKey, catInBagStoryDot.Theme);
+            node.Add(PriceKey, catInBagStoryDot.Price);
+            node.Add(CanGiveYourselfKey, catInBagStoryDot.CanGiveYourself);
+            return node;
+        }
+        
         private JSONNode ToJsonNode(StoryDot storyDot)
         {
             if (storyDot is TextStoryDot textStoryDot)
@@ -141,6 +164,13 @@ namespace Victorina
                 return node;
             }
 
+            if (storyDot is NoRiskStoryDot || storyDot is AuctionStoryDot || storyDot is CatInBagStoryDot)
+            {
+                return null;
+            }
+            
+            Debug.LogWarning($"Not supported story dot json serialization: {storyDot}");
+            
             return null;
         }
 
@@ -207,12 +237,37 @@ namespace Victorina
             string id = questionNode["Id"];
             Question question = new Question(id);
             question.Type = (QuestionType) Enum.Parse(typeof(QuestionType), questionNode["Type"]);
-            question.Price = questionNode["Price"].AsInt;
+            question.Price = questionNode[PriceKey].AsInt;
             question.QuestionStory.AddRange(ReadStory(questionNode[QuestionStoryKey].AsArray));
             question.AnswerStory.AddRange(ReadStory(questionNode[AnswerStoryKey].AsArray));
+
+            if (question.Type == QuestionType.CatInBag)
+            {
+                CatInBagStoryDot catInBagStoryDot = ReadCatInBag(questionNode[CatInBagKey]);
+                question.QuestionStory.Insert(0, catInBagStoryDot);
+            }
+            else if (question.Type == QuestionType.NoRisk)
+            {
+                NoRiskStoryDot noRiskStoryDot = new NoRiskStoryDot();
+                question.QuestionStory.Insert(0, noRiskStoryDot);
+            }
+            else if (question.Type == QuestionType.Auction)
+            {
+                AuctionStoryDot auctionStoryDot = new AuctionStoryDot();
+                question.QuestionStory.Insert(0, auctionStoryDot);
+            }
+            
             return question;
         }
 
+        private CatInBagStoryDot ReadCatInBag(JSONNode catInBagNode)
+        {
+            string theme = catInBagNode[ThemeKey];
+            int price = catInBagNode[PriceKey].AsInt;
+            bool canGiveYourself = catInBagNode[CanGiveYourselfKey].AsBool;
+            return new CatInBagStoryDot(theme, price, canGiveYourself);
+        }
+        
         private List<StoryDot> ReadStory(JSONArray storyArrayNode)
         {
             List<StoryDot> story = new List<StoryDot>();

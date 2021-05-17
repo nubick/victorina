@@ -70,7 +70,7 @@ namespace Victorina
         {
             if (Directory.Exists(PathData.TempArchivePath))
             {
-                Debug.LogWarning($"Temp folder is not empty. Clear temp folder: {PathData.TempArchivePath}");
+                Debug.Log($"Temp folder is not empty. Clear temp folder: {PathData.TempArchivePath}");
                 Directory.Delete(PathData.TempArchivePath, recursive: true);
             }
         }
