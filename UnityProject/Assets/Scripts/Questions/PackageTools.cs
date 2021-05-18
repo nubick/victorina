@@ -50,6 +50,12 @@ namespace Victorina
             throw new Exception($"Package '{package}' doesn't contain question '{question}'");
         }
 
+        public static Round GetQuestionRound(Package package, Question question)
+        {
+            Theme theme = GetQuestionTheme(package, question);
+            return GetThemeRound(package, theme);
+        }
+
         public static IEnumerable<FileStoryDot> GetAllFileStoryDots(Theme theme)
         {
             return GetAllStories(theme).Where(storyDot => storyDot is FileStoryDot).Cast<FileStoryDot>();

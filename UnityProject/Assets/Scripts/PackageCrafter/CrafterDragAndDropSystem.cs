@@ -1,3 +1,4 @@
+using System.Linq;
 using Injection;
 using UnityEngine;
 
@@ -7,22 +8,37 @@ namespace Victorina
     {
         [Inject] private CrafterDragAndDropData Data { get; set; }
         [Inject] private CrafterData CrafterData { get; set; }
-        [Inject] private PackageFilesSystem PackageFilesSystem { get; set; }
         [Inject] private PackageCrafterView PackageCrafterView { get; set; }
         
         public void Initialize()
         {
             MetagameEvents.CrafterQuestionBeginDrag.Subscribe(OnBeginDrag);
+            MetagameEvents.CrafterQuestionEndDrag.Subscribe(OnEndDrag);
             MetagameEvents.CrafterQuestionDrop.Subscribe(OnQuestionDropped);
             MetagameEvents.CrafterQuestionDropOnQuestion.Subscribe(OnQuestionDropOnQuestion);
             MetagameEvents.CrafterQuestionDropOnTheme.Subscribe(OnQuestionDropOnTheme);
+            MetagameEvents.CrafterQuestionDropOnRound.Subscribe(OnQuestionDropOnRound);
         }
 
         private void OnBeginDrag(CrafterQuestionDragItem questionItem)
         {
-            //questionItem.transform.SetParent(Data.DragArea);
+            questionItem.transform.SetParent(Data.DragArea);
         }
-        
+
+        private void OnEndDrag(CrafterQuestionDragItem questionItem)
+        {
+            if (questionItem.QuestionWidget == null)
+                Object.Destroy(questionItem.gameObject);
+            else
+                questionItem.transform.SetParent(questionItem.QuestionWidget.transform, worldPositionStays: true);
+
+            if (Data.WasChanges)
+            {
+                PackageCrafterView.RefreshUI();
+                Data.WasChanges = false;
+            }
+        }
+
         private void OnQuestionDropped(CrafterQuestionDragItem questionItem)
         {
             if (CrafterData.SelectedTheme == null)
@@ -53,7 +69,7 @@ namespace Victorina
             int insertIndex = targetTheme.Questions.IndexOf(targetQuestion);
             targetTheme.Questions.Insert(insertIndex, droppedQuestion);
 
-            PackageCrafterView.RefreshUI();
+            Data.WasChanges = true;
         }
 
         private void OnQuestionDropOnTheme(Question question, Theme theme)
@@ -61,7 +77,21 @@ namespace Victorina
             Theme sourceTheme = PackageTools.GetQuestionTheme(CrafterData.SelectedPackage, question);
             sourceTheme.Questions.Remove(question);
             theme.Questions.Add(question);
-            PackageCrafterView.RefreshUI();
+            Data.WasChanges = true;
+        }
+
+        private void OnQuestionDropOnRound(Question question, Round newRound)
+        {
+            Round questionRound = PackageTools.GetQuestionRound(CrafterData.SelectedPackage, question);
+            if (newRound != questionRound && newRound.Themes.Any())
+            {
+                PackageTools.DeleteQuestion(CrafterData.SelectedPackage, question);
+                if (newRound.Themes.Any())
+                {
+                    newRound.Themes.Last().Questions.Add(question);
+                    Data.WasChanges = true;
+                }
+            }
         }
     }
 }

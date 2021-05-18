@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class CrafterRoundTabWidget : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class CrafterRoundTabWidget : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDropHandler
     {
         private Round _round;
         
@@ -23,8 +23,7 @@ namespace Victorina
         {
             MetagameEvents.CrafterRoundClicked.Publish(_round);
         }
-
-
+        
         public void OnPointerEnter(PointerEventData eventData)
         {
             DeleteButton.SetActive(true);
@@ -38,6 +37,13 @@ namespace Victorina
         public void OnDeleteButtonClicked()
         {
             MetagameEvents.CrafterRoundDeleteButtonClicked.Publish(_round);
+        }
+
+        public void OnDrop(PointerEventData eventData)
+        {
+            Debug.Log($"Drop: On Round");
+            CrafterQuestionDragItem droppedItem = eventData.pointerDrag.GetComponent<CrafterQuestionDragItem>();
+            MetagameEvents.CrafterQuestionDropOnRound.Publish(droppedItem.QuestionWidget.Question, _round);
         }
     }
 }

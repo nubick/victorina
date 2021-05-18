@@ -1,7 +1,6 @@
 using Assets.Scripts.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Victorina
 {
@@ -26,11 +25,11 @@ namespace Victorina
             if (transform == null)
                 return;
             
-            Debug.Log($"End Drag");
+            Debug.Log("End Drag");
             Image.SetActive(false);
             StartDragArea.SetActive(true);
             RectTransform.SetLeftTopRightBottom(0f, 0f, 0f, 0f);
-            //MetagameEvents.CrafterQuestionDrop.Publish(this);
+            MetagameEvents.CrafterQuestionEndDrag.Publish(this);
         }
 
         public void OnDrag(PointerEventData eventData)
