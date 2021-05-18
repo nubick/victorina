@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class CrafterThemeLineWidget : MonoBehaviour
+    public class CrafterThemeLineWidget : MonoBehaviour, IDropHandler
     {
         private Theme _theme;
         
@@ -28,6 +29,11 @@ namespace Victorina
         public void OnThemeDeleteButtonClicked()
         {
             MetagameEvents.CrafterThemeDeleteButtonClicked.Publish(_theme);
+        }
+
+        public void OnDrop(PointerEventData eventData)
+        {
+            Debug.Log($"OnDrop: {_theme.Name}");
         }
     }
 }

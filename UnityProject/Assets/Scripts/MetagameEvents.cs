@@ -53,8 +53,12 @@ namespace Victorina
         public static GameEvent<Question> CrafterQuestionDeleteButtonClicked { get; } = new GameEvent<Question>();
 
         public static GameEvent<int> CrafterStoryDotPreviewIndexChanged { get; } = new GameEvent<int>();
-        
 
+        public static GameEvent<CrafterQuestionDragItem> CrafterQuestionBeginDrag { get; } = new GameEvent<CrafterQuestionDragItem>();
+        public static GameEvent<CrafterQuestionDragItem> CrafterQuestionDrop { get; } = new GameEvent<CrafterQuestionDragItem>();
+        public static GameEvent<CrafterQuestionDragItem, CrafterQuestionDragItem> CrafterQuestionDropOnQuestion { get; } = new GameEvent<CrafterQuestionDragItem, CrafterQuestionDragItem>();
+        public static GameEvent<Question, Theme> CrafterQuestionDropOnTheme { get; } = new GameEvent<Question, Theme>();
+        
         public static GameEvent<Theme> CrafterBagThemeClicked { get; } = new GameEvent<Theme>();
         
         //Commands

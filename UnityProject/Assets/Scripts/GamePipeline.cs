@@ -133,9 +133,11 @@ namespace Victorina
             
             _injector.Bind(FindObjectOfType<CrafterQuestionPreview>());
             
+            _injector.Bind(new CrafterDragAndDropSystem());
+            _injector.Bind(FindObjectOfType<CrafterDragAndDropData>());
+            
             _injector.Bind(FindObjectOfType<ThemesSelectionFromBagView>());
             _injector.Bind(new CrafterBagSystem());
-            
             //End Crafter
             
             _injector.CommitBindings();
@@ -203,6 +205,7 @@ namespace Victorina
             _injector.Get<PackageCrafterView>().Initialize();
             _injector.Get<ThemesSelectionFromBagView>().Initialize();
             _injector.Get<CrafterQuestionPreview>().Initialize();
+            _injector.Get<CrafterDragAndDropSystem>().Initialize();
         }
         
         private void OnNetworkPlayerSpawned(NetworkPlayer networkPlayer)

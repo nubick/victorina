@@ -41,7 +41,7 @@ namespace Victorina
             theme.Questions.Remove(question);
         }
 
-        private static Theme GetQuestionTheme(Package package, Question question)
+        public static Theme GetQuestionTheme(Package package, Question question)
         {
             foreach(Theme theme in GetAllThemes(package))
                 if (theme.Questions.Contains(question))

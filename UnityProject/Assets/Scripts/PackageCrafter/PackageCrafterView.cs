@@ -1,6 +1,5 @@
 using Injection;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Victorina
 {
@@ -12,15 +11,16 @@ namespace Victorina
         [Inject] private ThemesSelectionFromBagView ThemesSelectionFromBagView { get; set; }
 
         public RectTransform OpenedPackagesRoot;
-        [FormerlySerializedAs("OpenedPackageWidgetPrefab")] public CrafterPackageTabWidget CrafterPackageTabWidgetPrefab;
+        public CrafterPackageTabWidget CrafterPackageTabWidgetPrefab;
 
         public RectTransform RoundsTabsRoot;
         public CrafterRoundTabWidget RoundTabWidgetPrefab;
 
         public RectTransform ThemesRoot;
-        [FormerlySerializedAs("ThemeWidgetPrefab")] public CrafterThemeLineWidget ThemeLineWidgetPrefab;
+        public CrafterThemeLineWidget ThemeLineWidgetPrefab;
 
         public CrafterQuestionWidget QuestionWidgetPrefab;
+        public CrafterAddQuestionWidget AddQuestionWidgetPrefab;
         
         [Header("Tools")]
         public GameObject SaveThemeButton;
@@ -44,7 +44,7 @@ namespace Victorina
             RefreshUI();
         }
 
-        private void RefreshUI()
+        public void RefreshUI()
         {
             ClearChild(OpenedPackagesRoot);
             foreach (Package package in Data.Packages)
@@ -76,6 +76,9 @@ namespace Victorina
                         CrafterQuestionWidget questionWidget = Instantiate(QuestionWidgetPrefab, themeLineWidget.QuestionsRoot);
                         questionWidget.Bind(question, Data.SelectedQuestion == question);
                     }
+
+                    CrafterAddQuestionWidget addQuestionWidget = Instantiate(AddQuestionWidgetPrefab, themeLineWidget.QuestionsRoot);
+                    addQuestionWidget.Bind(theme);
                 }
             }
 
