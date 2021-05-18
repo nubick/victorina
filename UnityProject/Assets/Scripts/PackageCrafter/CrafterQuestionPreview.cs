@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -49,7 +50,7 @@ namespace Victorina
 
         private void RefreshSmallPreview(Question question, int index)
         {
-            StoryDot storyDot = question.GetAllMainStories()[index];
+            StoryDot storyDot = question.GetAllStories().Where(_ => _.IsMain).ToList()[index];
             
             ImagePreviewSmall.gameObject.SetActive(false);
             ImagePreviewSmall.sprite = null;
@@ -85,6 +86,9 @@ namespace Victorina
             int index = 0;
             foreach (StoryDot storyDot in question.QuestionStory)
             {
+                if (!storyDot.IsMain)
+                    continue;
+                
                 StoryDotPreviewWidget previewWidget = Instantiate(StoryDotPreviewWidgetPrefab, StoryDotRoot);
                 previewWidget.Bind(storyDot, isQuestion: true, index);
                 index++;
@@ -92,6 +96,9 @@ namespace Victorina
 
             foreach (StoryDot storyDot in question.AnswerStory)
             {
+                if(!storyDot.IsMain)
+                    continue;
+
                 StoryDotPreviewWidget previewWidget = Instantiate(StoryDotPreviewWidgetPrefab, StoryDotRoot);
                 previewWidget.Bind(storyDot, isQuestion: false, index);
                 index++;
