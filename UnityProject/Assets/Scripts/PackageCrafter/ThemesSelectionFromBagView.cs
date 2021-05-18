@@ -6,7 +6,7 @@ namespace Victorina
 {
     public class ThemesSelectionFromBagView : ViewBase
     {
-        [Inject] private PackageCrafterData Data { get; set; }
+        [Inject] private CrafterData Data { get; set; }
         [Inject] private CrafterBagSystem CrafterBagSystem { get; set; }
 
         public RectTransform ThemesRoot;

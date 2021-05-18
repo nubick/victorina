@@ -5,7 +5,7 @@ namespace Victorina
 {
     public class PackageCrafterSystem
     {
-        [Inject] private PackageCrafterData Data { get; set; }
+        [Inject] private CrafterData Data { get; set; }
         [Inject] private PackageFilesSystem PackageFilesSystem { get; set; }
         [Inject] private PathData PathData { get; set; }
 
@@ -46,6 +46,7 @@ namespace Victorina
         public void SelectQuestion(Question question)
         {
             Data.SelectedQuestion = question;
+            MetagameEvents.CrafterQuestionSelected.Publish(question);
         }
         
         public void AddPackage()

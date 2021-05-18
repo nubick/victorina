@@ -6,5 +6,10 @@ namespace Victorina
         {
             return "[auction]";
         }
+
+        public override char ToLetter()
+        {
+            return 'A';
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ namespace Victorina
         public GameObject DefaultBackground;
         public GameObject SelectedBackground;
         public GameObject DeleteButton;
+        public Text StoriesInfo;
 
         public void Bind(Question question, bool isSelected)
         {
@@ -20,6 +22,22 @@ namespace Victorina
             DefaultBackground.SetActive(!isSelected);
             SelectedBackground.SetActive(isSelected);
             DeleteButton.SetActive(false);
+            FillStoriesInfo(_question);
+        }
+
+        private void FillStoriesInfo(Question question)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (StoryDot storyDot in question.QuestionStory)
+                sb.Append(storyDot.ToLetter());
+
+            sb.Append("=>");
+
+            foreach (StoryDot storyDot in question.AnswerStory)
+                sb.Append(storyDot.ToLetter());
+
+            StoriesInfo.text = sb.ToString();
         }
 
         public void OnPointerClick(PointerEventData eventData)

@@ -7,7 +7,7 @@ namespace Victorina
     public class PackageCrafterView : ViewBase
     {
         [Inject] private StartupView StartupView { get; set; }
-        [Inject] private PackageCrafterData Data { get; set; }
+        [Inject] private CrafterData Data { get; set; }
         [Inject] private PackageCrafterSystem PackageCrafterSystem { get; set; }
         [Inject] private ThemesSelectionFromBagView ThemesSelectionFromBagView { get; set; }
 
@@ -25,8 +25,7 @@ namespace Victorina
         [Header("Tools")]
         public GameObject SaveThemeButton;
         public GameObject SavePackageButton;
-        public GameObject DeletePackageButton;
-        
+
         public void Initialize()
         {
             MetagameEvents.CrafterPackageClicked.Subscribe(OnPackageClicked);
@@ -82,7 +81,6 @@ namespace Victorina
 
             SaveThemeButton.SetActive(Data.SelectedTheme != null);
             SavePackageButton.SetActive(Data.SelectedPackage != null);
-            DeletePackageButton.SetActive(Data.SelectedPackage != null);
         }
         
         public void OnBackButtonClicked()

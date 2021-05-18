@@ -126,14 +126,18 @@ namespace Victorina
             _injector.Bind(new PackageFilesSystem());
             _injector.Bind(new PackageJsonConverter());
             
-            //Package Crafter
+            //Crafter
             _injector.Bind(FindObjectOfType<PackageCrafterView>());
             _injector.Bind(new PackageCrafterSystem());
-            _injector.Bind(new PackageCrafterData());
+            _injector.Bind(new CrafterData());
+            
+            _injector.Bind(FindObjectOfType<CrafterQuestionPreview>());
             
             _injector.Bind(FindObjectOfType<ThemesSelectionFromBagView>());
             _injector.Bind(new CrafterBagSystem());
-
+            
+            //End Crafter
+            
             _injector.CommitBindings();
             
             VolumeSettingsWidget[] widgets = viewsData.ViewsRoot.GetComponentsInChildren<VolumeSettingsWidget>(includeInactive: true);
@@ -195,9 +199,10 @@ namespace Victorina
             
             _injector.Get<AnsweringTimerSystem>().Initialize();
             
-            //Package Editor
+            //Crafter
             _injector.Get<PackageCrafterView>().Initialize();
             _injector.Get<ThemesSelectionFromBagView>().Initialize();
+            _injector.Get<CrafterQuestionPreview>().Initialize();
         }
         
         private void OnNetworkPlayerSpawned(NetworkPlayer networkPlayer)

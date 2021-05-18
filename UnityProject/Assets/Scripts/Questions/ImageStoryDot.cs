@@ -6,5 +6,10 @@ namespace Victorina
         {
             return $"[isd|{FileId}]";
         }
+
+        public override char ToLetter()
+        {
+            return 'I';
+        }
     }
 }

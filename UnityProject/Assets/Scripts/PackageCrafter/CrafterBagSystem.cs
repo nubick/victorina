@@ -7,7 +7,7 @@ namespace Victorina
 {
     public class CrafterBagSystem
     {
-        [Inject] private PackageCrafterData Data { get; set; }
+        [Inject] private CrafterData Data { get; set; }
         [Inject] private PathData PathData { get; set; }
         [Inject] private PackageJsonConverter PackageJsonConverter { get; set; }
         
