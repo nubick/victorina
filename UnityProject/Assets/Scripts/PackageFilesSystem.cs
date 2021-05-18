@@ -14,6 +14,7 @@ namespace Victorina
         private const string VumFilterExtension = "vum";
         private const string SiqFilterName = "SIQ Files";
         private const string SiqFilterExtension = "siq";
+        private const string PackageJsonFileName = "package.json";
         
         [Inject] private PathData PathData { get; set; }
         [Inject] private SiqConverter SiqConverter { get; set; }
@@ -116,7 +117,7 @@ namespace Victorina
 
         public Package LoadPackage(string packagePath)
         {
-            string jsonPath = $"{packagePath}/package.json";
+            string jsonPath = $"{packagePath}/{PackageJsonFileName}";
             string json = File.ReadAllText(jsonPath);
             Package package = PackageJsonConverter.ReadPackage(json);
             package.Path = packagePath;
@@ -133,6 +134,21 @@ namespace Victorina
             }
         }
 
+        public void UpdatePackageJson(Package package)
+        {
+            string jsonPath = $"{package.Path}/{PackageJsonFileName}";
+            if (File.Exists(jsonPath))
+            {
+                string packageJson = PackageJsonConverter.ToJson(package);
+                File.WriteAllText(jsonPath, packageJson);
+                Debug.Log($"'{jsonPath}' is updated.");
+            }
+            else
+            {
+                Debug.LogWarning($"Can't update '{PackageJsonFileName}' file. It doesn't exist by path: {jsonPath}");
+            }
+        }
+        
         public void Delete(string packagePath)
         {
             Debug.Log($"Delete package with path: {packagePath}");
@@ -154,8 +170,7 @@ namespace Victorina
 
         public void SaveTheme(Theme theme, string rootFolderPath)
         {
-            PackageJsonConverter jsonConverter = new PackageJsonConverter();
-            string json = jsonConverter.ToJson(theme);
+            string json = PackageJsonConverter.ToJson(theme);
             
             string themePath = $"{rootFolderPath}/{theme.Name}";
             Directory.CreateDirectory(themePath);
@@ -168,6 +183,34 @@ namespace Victorina
         public void SaveTheme(Theme theme)
         {
             SaveTheme(theme, PathData.CrafterPath);
+        }
+
+        public void DeleteFiles(Round round)
+        {
+            foreach(Theme theme in round.Themes)
+                DeleteFiles(theme);
+        }
+
+        private void DeleteFiles(IEnumerable<FileStoryDot> fileStoryDots)
+        {
+            foreach (FileStoryDot fileStoryDot in fileStoryDots)
+            {
+                Debug.Log($"Delete file: {fileStoryDot.Path}");
+                if (File.Exists(fileStoryDot.Path))
+                    File.Delete(fileStoryDot.Path);
+                else
+                    Debug.LogWarning($"Can't delete file. It doesn't exist: {fileStoryDot.Path}");
+            }
+        }
+
+        public void DeleteFiles(Theme theme)
+        {
+            DeleteFiles(PackageTools.GetAllFileStoryDots(theme));
+        }
+
+        public void DeleteFiles(Question question)
+        {
+            DeleteFiles(PackageTools.GetAllFileStoryDots(question));
         }
 
         public void SavePackage(Package package, string parentFolderPath, string packageFolderName = null)

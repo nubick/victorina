@@ -49,7 +49,7 @@ namespace Victorina
 
         private void RefreshSmallPreview(Question question, int index)
         {
-            StoryDot storyDot = question.GetAllStories()[index];
+            StoryDot storyDot = question.GetAllMainStories()[index];
             
             ImagePreviewSmall.gameObject.SetActive(false);
             ImagePreviewSmall.sprite = null;

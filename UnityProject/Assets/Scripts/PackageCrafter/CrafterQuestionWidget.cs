@@ -15,6 +15,10 @@ namespace Victorina
         public GameObject DeleteButton;
         public Text StoriesInfo;
 
+        public GameObject CatInBagIcon;
+        public GameObject AuctionIcon;
+        public GameObject NoRiskIcon;
+        
         public void Bind(Question question, bool isSelected)
         {
             _question = question;
@@ -22,6 +26,9 @@ namespace Victorina
             DefaultBackground.SetActive(!isSelected);
             SelectedBackground.SetActive(isSelected);
             DeleteButton.SetActive(false);
+            CatInBagIcon.SetActive(question.Type == QuestionType.CatInBag);
+            AuctionIcon.SetActive(question.Type == QuestionType.Auction);
+            NoRiskIcon.SetActive(question.Type == QuestionType.NoRisk);
             FillStoriesInfo(_question);
         }
 

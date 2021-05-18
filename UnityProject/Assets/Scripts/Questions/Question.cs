@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Victorina
 {
@@ -27,6 +28,17 @@ namespace Victorina
             List<StoryDot> allStories = new List<StoryDot>();
             allStories.AddRange(QuestionStory);
             allStories.AddRange(AnswerStory);
+            return allStories;
+        }
+
+        public List<StoryDot> GetAllMainStories()
+        {
+            //todo: remove this when special questions be refactored as not story dots.
+            List<StoryDot> allStories = GetAllStories().Where(
+                storyDot => storyDot is TextStoryDot ||
+                            storyDot is ImageStoryDot ||
+                            storyDot is AudioStoryDot ||
+                            storyDot is VideoStoryDot).ToList();
             return allStories;
         }
         

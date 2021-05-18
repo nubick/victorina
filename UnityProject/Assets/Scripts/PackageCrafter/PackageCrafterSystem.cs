@@ -104,17 +104,40 @@ namespace Victorina
             PackageFilesSystem.SaveTheme(Data.SelectedTheme, PathData.CrafterBagPath);
         }
 
+        public void DeleteRound(Round round)
+        {
+            if (!Data.SelectedPackage.Rounds.Contains(round))
+            {
+                Debug.LogWarning($"Can't delete round '{round}'. Selected package '{Data.SelectedPackage}' doesn't contain this round");
+                return;
+            }
+            
+            Data.SelectedPackage.Rounds.Remove(round);
+            
+            if(Data.SelectedRound == round)
+                SelectRound(null);
+            
+            PackageFilesSystem.DeleteFiles(round);
+            PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
+        }
+        
         public void DeleteTheme(Theme theme)
         {
-            PackageTools.DeleteTheme(Data.SelectedPackage, theme);
+            if (!Data.SelectedRound.Themes.Contains(theme))
+            {
+                Debug.LogWarning($"Can't delete theme '{theme}'. Selected round '{Data.SelectedRound}' doesn't contain this theme.");
+                return;
+            }
+
+            Data.SelectedRound.Themes.Remove(theme);
 
             if (theme.Questions.Contains(Data.SelectedQuestion))
                 SelectQuestion(null);
 
             SelectTheme(null);
-            
-            //todo: delete files
-            //todo: update package.json
+
+            PackageFilesSystem.DeleteFiles(theme);
+            PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
         }
 
         public void DeleteQuestion(Question question)
@@ -124,19 +147,8 @@ namespace Victorina
             if (Data.SelectedQuestion == question)
                 SelectQuestion(null);
 
-            //todo: delete files
-            //todo: update package.json
-        }
-
-        public void DeleteRound(Round round)
-        {
-            Data.SelectedPackage.Rounds.Remove(round);
-            
-            if(Data.SelectedRound == round)
-                SelectRound(null);
-            
-            //todo: delete files
-            //todo: update package.json
+            PackageFilesSystem.DeleteFiles(question);
+            PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
         }
     }
 }
