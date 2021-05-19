@@ -126,6 +126,8 @@ namespace Victorina
             _injector.Bind(new PackageFilesSystem());
             _injector.Bind(new PackageJsonConverter());
             
+            _injector.Bind(FindObjectOfType<InputDialogueView>());
+            
             //Crafter
             _injector.Bind(FindObjectOfType<PackageCrafterView>());
             _injector.Bind(new PackageCrafterSystem());

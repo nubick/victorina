@@ -26,7 +26,6 @@ namespace Victorina
 
         public void OnDrop(PointerEventData eventData)
         {
-            Debug.Log($"OnDrop: Question Add Placeholder");
             CrafterQuestionDragItem droppedItem = eventData.pointerDrag.GetComponent<CrafterQuestionDragItem>();
             MetagameEvents.CrafterQuestionDropOnTheme.Publish(droppedItem.QuestionWidget.Question, _theme);
         }

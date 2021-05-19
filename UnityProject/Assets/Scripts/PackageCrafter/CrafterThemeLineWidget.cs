@@ -1,10 +1,9 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class CrafterThemeLineWidget : MonoBehaviour, IDropHandler
+    public class CrafterThemeLineWidget : MonoBehaviour
     {
         private Theme _theme;
         
@@ -12,28 +11,35 @@ namespace Victorina
         public GameObject DefaultBackground;
         public GameObject SelectedBackground;
         public Transform QuestionsRoot;
+        public CrafterThemeButton ThemeButton;
         
         public void Bind(Theme theme, bool isSelected)
         {
             _theme = theme;
             ThemeName.text = theme.Name;
+            SetSelectedState(isSelected);
+            ThemeButton.Bind(_theme);
+        }
+
+        public void Select()
+        {
+            SetSelectedState(isSelected: true);
+        }
+
+        public void UnSelect()
+        {
+            SetSelectedState(isSelected: false);
+        }
+        
+        private void SetSelectedState(bool isSelected)
+        {
             DefaultBackground.SetActive(!isSelected);
             SelectedBackground.SetActive(isSelected);
         }
-
-        public void OnThemeButtonClicked()
-        {
-            MetagameEvents.CrafterThemeClicked.Publish(_theme);
-        }
-
+        
         public void OnThemeDeleteButtonClicked()
         {
             MetagameEvents.CrafterThemeDeleteButtonClicked.Publish(_theme);
-        }
-
-        public void OnDrop(PointerEventData eventData)
-        {
-            Debug.Log($"OnDrop: {_theme.Name}");
         }
     }
 }

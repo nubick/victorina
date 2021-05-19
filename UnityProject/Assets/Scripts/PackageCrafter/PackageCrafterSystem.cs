@@ -150,5 +150,20 @@ namespace Victorina
             PackageFilesSystem.DeleteFiles(question);
             PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
         }
+
+        public void ChangeName(Theme theme, string newName)
+        {
+            bool isValid = !string.IsNullOrWhiteSpace(newName);
+            if (isValid)
+            {
+                Debug.Log($"Change theme name from '{theme.Name}' to '{newName}'");
+                theme.Name = newName;
+                PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
+            }
+            else
+            {
+                Debug.Log($"Theme new name '{newName}' is not valid");
+            }
+        }
     }
 }

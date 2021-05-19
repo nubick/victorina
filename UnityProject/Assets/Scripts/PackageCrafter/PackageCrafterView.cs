@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using Injection;
 using UnityEngine;
 
@@ -5,10 +7,13 @@ namespace Victorina
 {
     public class PackageCrafterView : ViewBase
     {
+        private Dictionary<Theme, CrafterThemeLineWidget> _themeLineWidgetsCache = new Dictionary<Theme, CrafterThemeLineWidget>();
+        
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private CrafterData Data { get; set; }
         [Inject] private PackageCrafterSystem PackageCrafterSystem { get; set; }
         [Inject] private ThemesSelectionFromBagView ThemesSelectionFromBagView { get; set; }
+        [Inject] private InputDialogueView InputDialogueView { get; set; }
 
         public RectTransform OpenedPackagesRoot;
         public CrafterPackageTabWidget CrafterPackageTabWidgetPrefab;
@@ -36,6 +41,7 @@ namespace Victorina
             MetagameEvents.CrafterRoundDeleteButtonClicked.Subscribe(OnRoundDeleteButtonClicked);
             MetagameEvents.CrafterThemeDeleteButtonClicked.Subscribe(OnThemeDeleteButtonClicked);
             MetagameEvents.CrafterPackageDeleteButtonClicked.Subscribe(OnPackageDeleteButtonClicked);
+            MetagameEvents.CrafterThemeNameEditRequested.Subscribe(OnNameEditRequested);
         }
         
         protected override void OnShown()
@@ -64,6 +70,7 @@ namespace Victorina
             }
             
             ClearChild(ThemesRoot);
+            _themeLineWidgetsCache.Clear();
             if (Data.SelectedRound != null)
             {
                 foreach (Theme theme in Data.SelectedRound.Themes)
@@ -79,6 +86,8 @@ namespace Victorina
 
                     CrafterAddQuestionWidget addQuestionWidget = Instantiate(AddQuestionWidgetPrefab, themeLineWidget.QuestionsRoot);
                     addQuestionWidget.Bind(theme);
+                    
+                    _themeLineWidgetsCache.Add(theme, themeLineWidget);
                 }
             }
 
@@ -111,8 +120,12 @@ namespace Victorina
         
         private void OnThemeClicked(Theme theme)
         {
+            if (Data.SelectedTheme != null)
+                _themeLineWidgetsCache[Data.SelectedTheme].UnSelect();
+            
             PackageCrafterSystem.SelectTheme(theme);
-            RefreshUI();
+
+            _themeLineWidgetsCache[theme].Select();
         }
 
         private void OnQuestionClicked(Question question)
@@ -163,6 +176,21 @@ namespace Victorina
         {
             PackageCrafterSystem.DeleteRound(round);
             RefreshUI();
+        }
+        
+        private void OnNameEditRequested(Theme theme)
+        {
+            StartCoroutine(NameEditCoroutine(theme));
+        }
+
+        private IEnumerator NameEditCoroutine(Theme theme)
+        {
+            yield return InputDialogueView.ShowAndWaitForFinish("Название темы" ,theme.Name);
+            if (InputDialogueView.IsOk)
+            {
+                PackageCrafterSystem.ChangeName(theme, InputDialogueView.Text);
+                RefreshUI();
+            }
         }
     }
 }
