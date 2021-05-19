@@ -26,6 +26,8 @@ namespace Victorina
 
         public CrafterQuestionWidget QuestionWidgetPrefab;
         public CrafterAddQuestionWidget AddQuestionWidgetPrefab;
+
+        public RectTransform AddThemePanel;
         
         [Header("Tools")]
         public GameObject SaveThemeButton;
@@ -69,8 +71,9 @@ namespace Victorina
                 }
             }
             
-            ClearChild(ThemesRoot);
+            ClearChild(ThemesRoot, AddThemePanel.gameObject);
             _themeLineWidgetsCache.Clear();
+            ThemesRoot.gameObject.SetActive(Data.SelectedRound != null);
             if (Data.SelectedRound != null)
             {
                 foreach (Theme theme in Data.SelectedRound.Themes)
@@ -89,6 +92,7 @@ namespace Victorina
                     
                     _themeLineWidgetsCache.Add(theme, themeLineWidget);
                 }
+                AddThemePanel.SetSiblingIndex(ThemesRoot.childCount - 1);
             }
 
             SaveThemeButton.SetActive(Data.SelectedTheme != null);
@@ -190,6 +194,16 @@ namespace Victorina
             {
                 PackageCrafterSystem.ChangeName(theme, InputDialogueView.Text);
                 RefreshUI();
+            }
+        }
+
+        public void OnAddThemeButtonClicked()
+        {
+            Theme newTheme = PackageCrafterSystem.AddNewTheme();
+            if (newTheme != null)
+            {
+                RefreshUI();
+                OnNameEditRequested(newTheme);
             }
         }
     }

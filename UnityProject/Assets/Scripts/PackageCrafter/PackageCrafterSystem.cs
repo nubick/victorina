@@ -165,5 +165,21 @@ namespace Victorina
                 Debug.Log($"Theme new name '{newName}' is not valid");
             }
         }
+
+        public Theme AddNewTheme()
+        {
+            Theme newTheme = null;
+            if (Data.SelectedRound == null)
+            {
+                Debug.LogWarning("Can't add new theme. Selected round is null.");
+            }
+            else
+            {
+                newTheme = new Theme {Name = "Новая тема"};
+                Data.SelectedRound.Themes.Add(newTheme);
+                PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
+            }
+            return newTheme;
+        }
     }
 }

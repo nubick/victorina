@@ -10,6 +10,7 @@ namespace Victorina
         [Inject] private CrafterDragAndDropData Data { get; set; }
         [Inject] private CrafterData CrafterData { get; set; }
         [Inject] private PackageCrafterView PackageCrafterView { get; set; }
+        [Inject] private PackageFilesSystem PackageFilesSystem { get; set; }
         
         public void Initialize()
         {
@@ -76,6 +77,7 @@ namespace Victorina
             targetTheme.Questions.Insert(insertIndex, droppedQuestion);
 
             Data.WasChanges = true;
+            PackageFilesSystem.UpdatePackageJson(CrafterData.SelectedPackage);
         }
 
         private void OnQuestionDropOnTheme(Question question, Theme theme)
@@ -83,7 +85,9 @@ namespace Victorina
             Theme sourceTheme = PackageTools.GetQuestionTheme(CrafterData.SelectedPackage, question);
             sourceTheme.Questions.Remove(question);
             theme.Questions.Add(question);
+            
             Data.WasChanges = true;
+            PackageFilesSystem.UpdatePackageJson(CrafterData.SelectedPackage);
         }
 
         private void OnQuestionDropOnRound(Question question, Round newRound)
