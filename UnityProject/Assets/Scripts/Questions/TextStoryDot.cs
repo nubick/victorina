@@ -10,10 +10,5 @@ namespace Victorina
         {
             Text = text;
         }
-
-        public override char ToLetter()
-        {
-            return 'T';
-        }
     }
 }

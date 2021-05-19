@@ -6,10 +6,5 @@ namespace Victorina
         {
             return "[nrsd]";
         }
-
-        public override char ToLetter()
-        {
-            return 'R';
-        }
     }
 }

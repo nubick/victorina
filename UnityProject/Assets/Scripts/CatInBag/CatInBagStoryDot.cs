@@ -19,10 +19,5 @@ namespace Victorina
         {
             return $"[cibsd|{Theme}|{Price}|{CanGiveYourself}]";
         }
-
-        public override char ToLetter()
-        {
-            return 'C';
-        }
     }
 }
