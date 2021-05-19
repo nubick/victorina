@@ -7,6 +7,7 @@ namespace Victorina
     public class CrafterQuestionDragItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
     {
         public CrafterQuestionWidget QuestionWidget;
+        public RectTransform Container;
         public GameObject StartDragArea;
         public GameObject Image;
         

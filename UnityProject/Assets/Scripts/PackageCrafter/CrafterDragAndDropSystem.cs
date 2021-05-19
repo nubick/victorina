@@ -1,4 +1,5 @@
 using System.Linq;
+using Assets.Scripts.Utils;
 using Injection;
 using UnityEngine;
 
@@ -28,9 +29,14 @@ namespace Victorina
         private void OnEndDrag(CrafterQuestionDragItem questionItem)
         {
             if (questionItem.QuestionWidget == null)
+            {
                 Object.Destroy(questionItem.gameObject);
+            }
             else
-                questionItem.transform.SetParent(questionItem.QuestionWidget.transform, worldPositionStays: true);
+            {
+                questionItem.transform.SetParent(questionItem.Container);
+                (questionItem.transform as RectTransform).SetLeftTopRightBottom(0f, 0f, 0f, 0f);
+            }
 
             if (Data.WasChanges)
             {
