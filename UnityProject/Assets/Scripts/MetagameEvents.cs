@@ -44,6 +44,7 @@ namespace Victorina
         
         public static GameEvent<Round> CrafterRoundClicked { get; } = new GameEvent<Round>();
         public static GameEvent<Round> CrafterRoundDeleteButtonClicked { get; } = new GameEvent<Round>();
+        public static GameEvent<Round> CrafterRoundNameEditRequested { get; } = new GameEvent<Round>();
         
         public static GameEvent<Theme> CrafterThemeClicked { get; } = new GameEvent<Theme>();
         public static GameEvent<Theme> CrafterThemeDeleteButtonClicked { get; } = new GameEvent<Theme>();

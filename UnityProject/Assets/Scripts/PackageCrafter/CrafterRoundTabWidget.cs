@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class CrafterRoundTabWidget : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDropHandler
+    public class CrafterRoundTabWidget : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDropHandler, IPointerClickHandler
     {
         private Round _round;
         
@@ -19,9 +19,14 @@ namespace Victorina
             SelectedState.SetActive(isSelected);
         }
 
-        public void OnClicked()
+        public void Select()
         {
-            MetagameEvents.CrafterRoundClicked.Publish(_round);
+            SelectedState.SetActive(true);
+        }
+
+        public void UnSelect()
+        {
+            SelectedState.SetActive(false);
         }
         
         public void OnPointerEnter(PointerEventData eventData)
@@ -41,9 +46,16 @@ namespace Victorina
 
         public void OnDrop(PointerEventData eventData)
         {
-            Debug.Log($"Drop: On Round");
             CrafterQuestionDragItem droppedItem = eventData.pointerDrag.GetComponent<CrafterQuestionDragItem>();
             MetagameEvents.CrafterQuestionDropOnRound.Publish(droppedItem.QuestionWidget.Question, _round);
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.clickCount == 1)
+                MetagameEvents.CrafterRoundClicked.Publish(_round);
+            else if (eventData.clickCount == 2)
+                MetagameEvents.CrafterRoundNameEditRequested.Publish(_round);
         }
     }
 }

@@ -48,27 +48,32 @@ namespace Victorina
             if (exist)
             {
                 _pendingFileId = null;
-                string requestPath = $"file://{path}";
-                Debug.Log($"Request audio path: '{requestPath}'");
-                UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(requestPath, AudioType.MPEG);
-
-                yield return request.SendWebRequest();
-
-                if (request.error != null)
-                {
-                    Debug.Log($"Audio file loading error: {request.error}");
-                }
-                else
-                {
-                    AudioClip audioClip = DownloadHandlerAudioClip.GetContent(request);
-                    AudioSource.clip = audioClip;
-                    AudioSource.Play();
-                }
+                yield return PlayAudioByPath(AudioSource, path);
             }
             else
             {
                 _pendingFileId = fileId;
                 Debug.Log($"Can't play audio. File doesn't exist: '{path}'");
+            }
+        }
+
+        public static IEnumerator PlayAudioByPath(AudioSource audioSource, string path)
+        {
+            string requestPath = $"file://{path}";
+            Debug.Log($"Request audio path: '{requestPath}'");
+            UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(requestPath, AudioType.MPEG);
+
+            yield return request.SendWebRequest();
+
+            if (request.error != null)
+            {
+                Debug.Log($"Audio file loading error: {request.error}");
+            }
+            else
+            {
+                AudioClip audioClip = DownloadHandlerAudioClip.GetContent(request);
+                audioSource.clip = audioClip;
+                audioSource.Play();
             }
         }
         

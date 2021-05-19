@@ -1,3 +1,4 @@
+using System.Linq;
 using Injection;
 using UnityEngine;
 
@@ -26,9 +27,7 @@ namespace Victorina
         public void SelectPackage(Package package)
         {
             Data.SelectedPackage = package;
-            Data.SelectedRound = null;
-            Data.SelectedTheme = null;
-            Data.SelectedQuestion = null;
+            SelectRound(package?.Rounds.FirstOrDefault());
         }
 
         public void SelectRound(Round round)
@@ -180,6 +179,21 @@ namespace Victorina
                 PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
             }
             return newTheme;
+        }
+
+        public void ChangeName(Round round, string newName)
+        {
+            bool isValid = !string.IsNullOrWhiteSpace(newName);
+            if (isValid)
+            {
+                Debug.Log($"Change round name from '{round.Name}' to '{newName}'");
+                round.Name = newName;
+                PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
+            }
+            else
+            {
+                Debug.Log($"Round new name '{newName}' is not valid");
+            }
         }
     }
 }

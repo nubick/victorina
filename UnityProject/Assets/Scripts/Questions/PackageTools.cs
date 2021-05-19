@@ -15,7 +15,7 @@ namespace Victorina
         {
             return package.Rounds.SelectMany(round => round.Themes);
         }
-        
+
         public static IEnumerable<StoryDot> GetAllStories(Package package)
         {
             return GetAllQuestions(package).SelectMany(question => question.GetAllStories());
@@ -25,10 +25,10 @@ namespace Victorina
         {
             return theme.Questions.SelectMany(question => question.GetAllStories());
         }
-        
+
         private static Round GetThemeRound(Package package, Theme theme)
         {
-            foreach(Round round in package.Rounds)
+            foreach (Round round in package.Rounds)
                 if (round.Themes.Contains(theme))
                     return round;
 
@@ -43,7 +43,7 @@ namespace Victorina
 
         public static Theme GetQuestionTheme(Package package, Question question)
         {
-            foreach(Theme theme in GetAllThemes(package))
+            foreach (Theme theme in GetAllThemes(package))
                 if (theme.Questions.Contains(question))
                     return theme;
 
@@ -54,6 +54,11 @@ namespace Victorina
         {
             Theme theme = GetQuestionTheme(package, question);
             return GetThemeRound(package, theme);
+        }
+
+        public static IEnumerable<FileStoryDot> GetAllFileStoryDots(Package package)
+        {
+            return GetAllStories(package).Where(storyDot => storyDot is FileStoryDot).Cast<FileStoryDot>();
         }
 
         public static IEnumerable<FileStoryDot> GetAllFileStoryDots(Theme theme)

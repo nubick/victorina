@@ -7,7 +7,8 @@ namespace Victorina
 {
     public class PackageCrafterView : ViewBase
     {
-        private Dictionary<Theme, CrafterThemeLineWidget> _themeLineWidgetsCache = new Dictionary<Theme, CrafterThemeLineWidget>();
+        private readonly Dictionary<Theme, CrafterThemeLineWidget> _themeLineWidgetsCache = new Dictionary<Theme, CrafterThemeLineWidget>();
+        private readonly Dictionary<Round, CrafterRoundTabWidget> _roundTabWidgetsCache = new Dictionary<Round, CrafterRoundTabWidget>();
         
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private CrafterData Data { get; set; }
@@ -36,14 +37,17 @@ namespace Victorina
         public void Initialize()
         {
             MetagameEvents.CrafterPackageClicked.Subscribe(OnPackageClicked);
-            MetagameEvents.CrafterRoundClicked.Subscribe(OnRoundClicked);
-            MetagameEvents.CrafterThemeClicked.Subscribe(OnThemeClicked);
             MetagameEvents.CrafterQuestionClicked.Subscribe(OnQuestionClicked);
             MetagameEvents.CrafterQuestionDeleteButtonClicked.Subscribe(OnQuestionDeleteButtonClicked);
-            MetagameEvents.CrafterRoundDeleteButtonClicked.Subscribe(OnRoundDeleteButtonClicked);
-            MetagameEvents.CrafterThemeDeleteButtonClicked.Subscribe(OnThemeDeleteButtonClicked);
             MetagameEvents.CrafterPackageDeleteButtonClicked.Subscribe(OnPackageDeleteButtonClicked);
-            MetagameEvents.CrafterThemeNameEditRequested.Subscribe(OnNameEditRequested);
+
+            MetagameEvents.CrafterRoundClicked.Subscribe(OnRoundClicked);
+            MetagameEvents.CrafterRoundDeleteButtonClicked.Subscribe(OnRoundDeleteButtonClicked);
+            MetagameEvents.CrafterRoundNameEditRequested.Subscribe(OnRoundNameEditRequested);
+            
+            MetagameEvents.CrafterThemeClicked.Subscribe(OnThemeClicked);
+            MetagameEvents.CrafterThemeNameEditRequested.Subscribe(OnThemeNameEditRequested);
+            MetagameEvents.CrafterThemeDeleteButtonClicked.Subscribe(OnThemeDeleteButtonClicked);
         }
         
         protected override void OnShown()
@@ -61,6 +65,7 @@ namespace Victorina
                 tabWidget.Bind(package, isSelected: Data.SelectedPackage == package);
             }
 
+            _roundTabWidgetsCache.Clear();
             ClearChild(RoundsTabsRoot);
             if (Data.SelectedPackage != null)
             {
@@ -68,11 +73,20 @@ namespace Victorina
                 {
                     CrafterRoundTabWidget roundTabWidget = Instantiate(RoundTabWidgetPrefab, RoundsTabsRoot);
                     roundTabWidget.Bind(round, round == Data.SelectedRound);
+                    _roundTabWidgetsCache.Add(round, roundTabWidget);
                 }
             }
             
-            ClearChild(ThemesRoot, AddThemePanel.gameObject);
+            RefreshThemes();
+            
+            SaveThemeButton.SetActive(Data.SelectedTheme != null);
+            SavePackageButton.SetActive(Data.SelectedPackage != null);
+        }
+
+        private void RefreshThemes()
+        {
             _themeLineWidgetsCache.Clear();
+            ClearChild(ThemesRoot, AddThemePanel.gameObject);
             ThemesRoot.gameObject.SetActive(Data.SelectedRound != null);
             if (Data.SelectedRound != null)
             {
@@ -94,9 +108,6 @@ namespace Victorina
                 }
                 AddThemePanel.SetSiblingIndex(ThemesRoot.childCount - 1);
             }
-
-            SaveThemeButton.SetActive(Data.SelectedTheme != null);
-            SavePackageButton.SetActive(Data.SelectedPackage != null);
         }
         
         public void OnBackButtonClicked()
@@ -118,8 +129,16 @@ namespace Victorina
 
         private void OnRoundClicked(Round round)
         {
+            if (round == Data.SelectedRound)
+                return;
+            
+            if (Data.SelectedRound != null)
+                _roundTabWidgetsCache[Data.SelectedRound].UnSelect();
+            
             PackageCrafterSystem.SelectRound(round);
-            RefreshUI();
+            _roundTabWidgetsCache[round].Select();
+            
+            RefreshThemes();
         }
         
         private void OnThemeClicked(Theme theme)
@@ -128,7 +147,6 @@ namespace Victorina
                 _themeLineWidgetsCache[Data.SelectedTheme].UnSelect();
             
             PackageCrafterSystem.SelectTheme(theme);
-
             _themeLineWidgetsCache[theme].Select();
         }
 
@@ -182,12 +200,12 @@ namespace Victorina
             RefreshUI();
         }
         
-        private void OnNameEditRequested(Theme theme)
+        private void OnThemeNameEditRequested(Theme theme)
         {
-            StartCoroutine(NameEditCoroutine(theme));
+            StartCoroutine(ThemeNameEditCoroutine(theme));
         }
 
-        private IEnumerator NameEditCoroutine(Theme theme)
+        private IEnumerator ThemeNameEditCoroutine(Theme theme)
         {
             yield return InputDialogueView.ShowAndWaitForFinish("Название темы" ,theme.Name);
             if (InputDialogueView.IsOk)
@@ -203,7 +221,22 @@ namespace Victorina
             if (newTheme != null)
             {
                 RefreshUI();
-                OnNameEditRequested(newTheme);
+                OnThemeNameEditRequested(newTheme);
+            }
+        }
+
+        private void OnRoundNameEditRequested(Round round)
+        {
+            StartCoroutine(RoundNameEditCoroutine(round));
+        }
+
+        private IEnumerator RoundNameEditCoroutine(Round round)
+        {
+            yield return InputDialogueView.ShowAndWaitForFinish("Название раунда", round.Name);
+            if (InputDialogueView.IsOk)
+            {
+                PackageCrafterSystem.ChangeName(round, InputDialogueView.Text);
+                RefreshUI();
             }
         }
     }
