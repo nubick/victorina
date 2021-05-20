@@ -133,6 +133,7 @@ namespace Victorina
             _injector.Bind(new CrafterData());
             
             _injector.Bind(FindObjectOfType<CrafterQuestionPreview>());
+            _injector.Bind(FindObjectOfType<CrafterQuestionEditView>());
             
             _injector.Bind(new CrafterDragAndDropSystem());
             _injector.Bind(FindObjectOfType<CrafterDragAndDropData>());

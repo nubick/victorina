@@ -9,12 +9,14 @@ namespace Victorina
     {
         private readonly Dictionary<Theme, CrafterThemeLineWidget> _themeLineWidgetsCache = new Dictionary<Theme, CrafterThemeLineWidget>();
         private readonly Dictionary<Round, CrafterRoundTabWidget> _roundTabWidgetsCache = new Dictionary<Round, CrafterRoundTabWidget>();
+        private readonly Dictionary<Question, CrafterQuestionWidget> _questionWidgetsCache = new Dictionary<Question, CrafterQuestionWidget>();
         
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private CrafterData Data { get; set; }
         [Inject] private PackageCrafterSystem PackageCrafterSystem { get; set; }
         [Inject] private ThemesSelectionFromBagView ThemesSelectionFromBagView { get; set; }
         [Inject] private InputDialogueView InputDialogueView { get; set; }
+        [Inject] private CrafterQuestionEditView QuestionEditView { get; set; }
 
         public RectTransform OpenedPackagesRoot;
         public CrafterPackageTabWidget CrafterPackageTabWidgetPrefab;
@@ -38,9 +40,11 @@ namespace Victorina
         public void Initialize()
         {
             MetagameEvents.CrafterPackageClicked.Subscribe(OnPackageClicked);
+            
             MetagameEvents.CrafterQuestionClicked.Subscribe(OnQuestionClicked);
             MetagameEvents.CrafterQuestionDeleteButtonClicked.Subscribe(OnQuestionDeleteButtonClicked);
             MetagameEvents.CrafterPackageDeleteButtonClicked.Subscribe(OnPackageDeleteButtonClicked);
+            MetagameEvents.CrafterQuestionEditRequested.Subscribe(OnQuestionEditRequested);
 
             MetagameEvents.CrafterRoundClicked.Subscribe(OnRoundClicked);
             MetagameEvents.CrafterRoundDeleteButtonClicked.Subscribe(OnRoundDeleteButtonClicked);
@@ -90,6 +94,7 @@ namespace Victorina
         private void RefreshThemes()
         {
             _themeLineWidgetsCache.Clear();
+            _questionWidgetsCache.Clear();
             ClearChild(ThemesRoot, AddThemePanel.gameObject);
             ThemesRoot.gameObject.SetActive(Data.SelectedRound != null);
             if (Data.SelectedRound != null)
@@ -103,6 +108,7 @@ namespace Victorina
                     {
                         CrafterQuestionWidget questionWidget = Instantiate(QuestionWidgetPrefab, themeLineWidget.QuestionsRoot);
                         questionWidget.Bind(question, Data.SelectedQuestion == question);
+                        _questionWidgetsCache.Add(question, questionWidget);
                     }
 
                     CrafterAddQuestionWidget addQuestionWidget = Instantiate(AddQuestionWidgetPrefab, themeLineWidget.QuestionsRoot);
@@ -156,8 +162,11 @@ namespace Victorina
 
         private void OnQuestionClicked(Question question)
         {
+            if (Data.SelectedQuestion != null)
+                _questionWidgetsCache[Data.SelectedQuestion].UnSelect();
+            
             PackageCrafterSystem.SelectQuestion(question);
-            RefreshUI();
+            _questionWidgetsCache[Data.SelectedQuestion].Select();
         }
 
         public void OnSaveThemeButtonClicked()
@@ -253,7 +262,18 @@ namespace Victorina
 
         public void OnAddRoundButtonClicked()
         {
-            Round newRound = PackageCrafterSystem.AddNewRound();
+            PackageCrafterSystem.AddNewRound();
+            RefreshUI();
+        }
+        
+        private void OnQuestionEditRequested(Question question)
+        {
+            StartCoroutine(EditQuestionCoroutine());
+        }
+
+        private IEnumerator EditQuestionCoroutine()
+        {
+            yield return QuestionEditView.ShowAndWaitForFinish();
             RefreshUI();
         }
     }

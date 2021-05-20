@@ -211,5 +211,29 @@ namespace Victorina
                 Debug.Log($"Round new name '{newName}' is not valid");
             }
         }
+
+        public void UpdateSelectedQuestion(QuestionType questionType, int price)
+        {
+            //todo: Remove this block when question types will not be as story dots.
+            if (Data.SelectedQuestion.Type != questionType)
+            {
+                if (!Data.SelectedQuestion.QuestionStory.First().IsMain)
+                    Data.SelectedQuestion.QuestionStory.RemoveAt(0);
+
+                if (questionType == QuestionType.CatInBag)
+                    Data.SelectedQuestion.QuestionStory.Insert(0, new CatInBagStoryDot(string.Empty, price, true));
+
+                if (questionType == QuestionType.NoRisk)
+                    Data.SelectedQuestion.QuestionStory.Insert(0, new NoRiskStoryDot());
+
+                if (questionType == QuestionType.Auction)
+                    Data.SelectedQuestion.QuestionStory.Insert(0, new AuctionStoryDot());
+            }
+            
+            Data.SelectedQuestion.Type = questionType;
+            Data.SelectedQuestion.Price = price;
+            
+            PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
+        }
     }
 }
