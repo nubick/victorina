@@ -94,15 +94,7 @@ namespace Victorina
             if (Data.SelectedPackage == package)
                 SelectPackage(null);
         }
-
-        public void CopySelectedThemeToBag()
-        {
-            if (Data.SelectedTheme == null)
-                return;
-            
-            PackageFilesSystem.SaveTheme(Data.SelectedTheme, PathData.CrafterBagPath);
-        }
-
+        
         public void DeleteRound(Round round)
         {
             if (!Data.SelectedPackage.Rounds.Contains(round))
@@ -138,7 +130,13 @@ namespace Victorina
             PackageFilesSystem.DeleteFiles(theme);
             PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
         }
-
+        
+        public void MoveThemeToBag(Theme theme)
+        {
+            PackageFilesSystem.SaveTheme(theme, PathData.CrafterBagPath);
+            DeleteTheme(theme);
+        }
+        
         public void DeleteQuestion(Question question)
         {
             PackageTools.DeleteQuestion(Data.SelectedPackage, question);

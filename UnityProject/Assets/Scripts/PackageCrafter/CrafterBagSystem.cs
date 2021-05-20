@@ -29,8 +29,14 @@ namespace Victorina
             return themes;
         }
         
-        public void AddSelectedThemesToRound()
+        public void MoveSelectedThemesToRound()
         {
+            if (Data.SelectedRound == null)
+            {
+                Debug.Log($"Round is not selected. Don't move.");
+                return;
+            }
+            
             Debug.Log($"Add {Data.BagSelectedThemes.Count} to round: {Data.SelectedRound.Name}");
             foreach (Theme theme in Data.BagSelectedThemes)
             {
@@ -38,6 +44,7 @@ namespace Victorina
                 PackageFilesSystem.FillFilePaths(theme, Data.SelectedPackage.Path);
                 Data.SelectedRound.Themes.Add(theme);
                 PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
+                PackageFilesSystem.DeleteBagTheme(theme);
             }
         }
     }

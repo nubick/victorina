@@ -182,7 +182,6 @@ namespace Victorina
             {
                 string packageJson = PackageJsonConverter.ToJson(package);
                 File.WriteAllText(jsonPath, packageJson);
-                //Debug.Log($"'{jsonPath}' is updated.");
             }
             else
             {
@@ -190,17 +189,17 @@ namespace Victorina
             }
         }
         
-        public void Delete(string packagePath)
+        public void Delete(string folderPath)
         {
-            Debug.Log($"Delete package with path: {packagePath}");
-            if (Directory.Exists(packagePath))
+            Debug.Log($"Delete folder with path: {folderPath}");
+            if (Directory.Exists(folderPath))
             {
-                Directory.Delete(packagePath, true);
-                Debug.Log("Package deletion is done.");
+                Directory.Delete(folderPath, true);
+                Debug.Log("Folder deletion is done.");
             }
             else
             {
-                Debug.Log($"Package directory doesn't exist: {packagePath}");
+                Debug.Log($"Folder doesn't exist: {folderPath}");
             }
         }
 
@@ -261,6 +260,12 @@ namespace Victorina
             DeleteFiles(PackageTools.GetAllFileStoryDots(question));
         }
 
+        public void DeleteBagTheme(Theme theme)
+        {
+            string themeFolderPath = $"{PathData.CrafterBagPath}/{theme.Name}";
+            Delete(themeFolderPath);
+        }
+        
         public void SavePackage(Package package, string parentFolderPath, string packageFolderName = null)
         {
             string json = PackageJsonConverter.ToJson(package);

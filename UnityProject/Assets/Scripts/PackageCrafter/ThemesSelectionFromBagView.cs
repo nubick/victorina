@@ -51,7 +51,7 @@ namespace Victorina
         
         public void OnAddButtonClicked()
         {
-            CrafterBagSystem.AddSelectedThemesToRound();
+            CrafterBagSystem.MoveSelectedThemesToRound();
             Hide();
         }
     }

@@ -49,6 +49,7 @@ namespace Victorina
             MetagameEvents.CrafterThemeClicked.Subscribe(OnThemeClicked);
             MetagameEvents.CrafterThemeNameEditRequested.Subscribe(OnThemeNameEditRequested);
             MetagameEvents.CrafterThemeDeleteButtonClicked.Subscribe(OnThemeDeleteButtonClicked);
+            MetagameEvents.CrafterThemeMoveToBagButtonClicked.Subscribe(OnThemeMoveToBagButtonClicked);
         }
         
         protected override void OnShown()
@@ -68,6 +69,7 @@ namespace Victorina
 
             _roundTabWidgetsCache.Clear();
             ClearChild(RoundsTabsRoot, AddRoundPanel.gameObject);
+            RoundsTabsRoot.gameObject.SetActive(Data.SelectedPackage != null);
             if (Data.SelectedPackage != null)
             {
                 foreach (Round round in Data.SelectedPackage.Rounds)
@@ -185,11 +187,12 @@ namespace Victorina
             RefreshUI();
         }
         
-        public void OnCopyToBagButtonClicked()
+        private void OnThemeMoveToBagButtonClicked(Theme theme)
         {
-            PackageCrafterSystem.CopySelectedThemeToBag();
+            PackageCrafterSystem.MoveThemeToBag(theme);
+            RefreshUI();
         }
-
+        
         public void OnThemeDeleteButtonClicked(Theme theme)
         {
             PackageCrafterSystem.DeleteTheme(theme);

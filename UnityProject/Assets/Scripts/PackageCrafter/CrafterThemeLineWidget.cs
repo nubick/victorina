@@ -41,5 +41,10 @@ namespace Victorina
         {
             MetagameEvents.CrafterThemeDeleteButtonClicked.Publish(_theme);
         }
+
+        public void OnMoveToBagButtonClicked()
+        {
+            MetagameEvents.CrafterThemeMoveToBagButtonClicked.Publish(_theme);
+        }
     }
 }
