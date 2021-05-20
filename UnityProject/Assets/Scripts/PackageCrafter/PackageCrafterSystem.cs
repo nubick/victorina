@@ -181,6 +181,24 @@ namespace Victorina
             return newTheme;
         }
 
+        public Round AddNewRound()
+        {
+            Round newRound = null;
+            if (Data.SelectedPackage == null)
+            {
+                Debug.LogWarning("Can't add new round. Selected package is null.");
+            }
+            else
+            {
+                int nextNumber = Data.SelectedPackage.Rounds.Count + 1;
+                newRound = new Round {Name = $"Раунд {nextNumber}"};
+                Data.SelectedPackage.Rounds.Add(newRound);
+                PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
+                SelectRound(newRound);
+            }
+            return newRound;
+        }
+        
         public void ChangeName(Round round, string newName)
         {
             bool isValid = !string.IsNullOrWhiteSpace(newName);

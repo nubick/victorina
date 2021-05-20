@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using Injection;
 using UnityEngine;
 
 namespace Victorina
 {
     public class SiqConverter
     {
-        [Inject] private EncodingFixSystem EncodingFixSystem { get; set; }
-
         public bool IsValid(string packagePath)
         {
             string path = $"{packagePath}/content.xml";
@@ -24,10 +21,7 @@ namespace Victorina
             package.Path = siqPackagePath;
             XmlReader xmlReader = XmlReader.Create($"{siqPackagePath}/content.xml");
             package.Rounds = ReadRounds(xmlReader);
-
-            EncodingFixSystem.TryFix(siqPackagePath);
             InitializeStoryDots(package, siqPackagePath);
-            
             return package;
         }
         

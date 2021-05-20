@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Injection;
+using UnityEngine;
 
 namespace Victorina
 {
@@ -9,7 +9,7 @@ namespace Victorina
     {
         [Inject] private CrafterData Data { get; set; }
         [Inject] private PathData PathData { get; set; }
-        [Inject] private PackageJsonConverter PackageJsonConverter { get; set; }
+        [Inject] private PackageFilesSystem PackageFilesSystem { get; set; }
         
         public void RefreshBags()
         {
@@ -21,23 +21,23 @@ namespace Victorina
         {
             List<Theme> themes = new List<Theme>();
             string[] themesPaths = Directory.GetDirectories(PathData.CrafterBagPath);
-            foreach (string themePath in themesPaths)
+            foreach (string themeFolderPath in themesPaths)
             {
-                string themeJson = File.ReadAllText($"{themePath}/theme.json");
-                Theme theme = PackageJsonConverter.ReadTheme(themeJson);
-                FillFilePaths(theme, themePath);
+                Theme theme = PackageFilesSystem.LoadTheme(themeFolderPath);
                 themes.Add(theme);
             }
             return themes;
         }
         
-        private void FillFilePaths(Theme theme, string themePath)
+        public void AddSelectedThemesToRound()
         {
-            var allStories = theme.Questions.SelectMany(question => question.GetAllStories());
-            foreach (StoryDot storyDot in allStories)
+            Debug.Log($"Add {Data.BagSelectedThemes.Count} to round: {Data.SelectedRound.Name}");
+            foreach (Theme theme in Data.BagSelectedThemes)
             {
-                if (storyDot is FileStoryDot fileStoryDot)
-                    fileStoryDot.Path = $"{themePath}/{fileStoryDot.FileName}";
+                PackageFilesSystem.CopyFiles(theme, Data.SelectedPackage);
+                PackageFilesSystem.FillFilePaths(theme, Data.SelectedPackage.Path);
+                Data.SelectedRound.Themes.Add(theme);
+                PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
             }
         }
     }

@@ -28,8 +28,9 @@ namespace Victorina
         public CrafterQuestionWidget QuestionWidgetPrefab;
         public CrafterAddQuestionWidget AddQuestionWidgetPrefab;
 
+        public RectTransform AddRoundPanel;
         public RectTransform AddThemePanel;
-        
+
         [Header("Tools")]
         public GameObject SaveThemeButton;
         public GameObject SavePackageButton;
@@ -66,7 +67,7 @@ namespace Victorina
             }
 
             _roundTabWidgetsCache.Clear();
-            ClearChild(RoundsTabsRoot);
+            ClearChild(RoundsTabsRoot, AddRoundPanel.gameObject);
             if (Data.SelectedPackage != null)
             {
                 foreach (Round round in Data.SelectedPackage.Rounds)
@@ -75,6 +76,7 @@ namespace Victorina
                     roundTabWidget.Bind(round, round == Data.SelectedRound);
                     _roundTabWidgetsCache.Add(round, roundTabWidget);
                 }
+                AddRoundPanel.SetSiblingIndex(RoundsTabsRoot.childCount - 1);
             }
             
             RefreshThemes();
@@ -174,9 +176,15 @@ namespace Victorina
 
         public void OnSelectBagButtonClicked()
         {
-            ThemesSelectionFromBagView.Show();
+            StartCoroutine(SelectFromBagCoroutine());
         }
 
+        private IEnumerator SelectFromBagCoroutine()
+        {
+            yield return ThemesSelectionFromBagView.ShowAndWaitForFinish();
+            RefreshUI();
+        }
+        
         public void OnCopyToBagButtonClicked()
         {
             PackageCrafterSystem.CopySelectedThemeToBag();
@@ -238,6 +246,12 @@ namespace Victorina
                 PackageCrafterSystem.ChangeName(round, InputDialogueView.Text);
                 RefreshUI();
             }
+        }
+
+        public void OnAddRoundButtonClicked()
+        {
+            Round newRound = PackageCrafterSystem.AddNewRound();
+            RefreshUI();
         }
     }
 }

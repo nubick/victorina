@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using SFB;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Victorina
 {
@@ -15,6 +16,7 @@ namespace Victorina
         private const string SiqFilterName = "SIQ Files";
         private const string SiqFilterExtension = "siq";
         private const string PackageJsonFileName = "package.json";
+        private const string ThemeJsonFileName = "theme.json";
         
         [Inject] private PathData PathData { get; set; }
         [Inject] private SiqConverter SiqConverter { get; set; }
@@ -104,8 +106,25 @@ namespace Victorina
             bool exists = File.Exists(packageArchivePath);
             if (!exists)
                 throw new Exception($"File doesn't exist: {packageArchivePath}");
+
+            if (!Directory.Exists(destinationPath))
+                Directory.CreateDirectory(destinationPath);
             
-            ZipFile.ExtractToDirectory(packageArchivePath, destinationPath);
+            ZipArchive zipArchive = ZipFile.OpenRead(packageArchivePath);
+            foreach (ZipArchiveEntry entry in zipArchive.Entries)
+            {
+                string fullName = entry.FullName;
+                if (fullName.Contains("%"))
+                    fullName = UnityWebRequest.UnEscapeURL(entry.FullName);
+                
+                string filePath = $"{destinationPath}/{fullName}";
+                string fileDirectory = Path.GetDirectoryName(filePath);
+
+                if (!Directory.Exists(fileDirectory))
+                    Directory.CreateDirectory(fileDirectory);
+
+                entry.ExtractToFile(filePath);
+            }
         }
         
         #endregion
@@ -115,22 +134,44 @@ namespace Victorina
             return Directory.GetDirectories(PathData.CrafterPath);
         }
 
-        public Package LoadPackage(string packagePath)
+        public Package LoadPackage(string packageFolderPath)
         {
-            string jsonPath = $"{packagePath}/{PackageJsonFileName}";
+            string jsonPath = $"{packageFolderPath}/{PackageJsonFileName}";
             string json = File.ReadAllText(jsonPath);
             Package package = PackageJsonConverter.ReadPackage(json);
-            package.Path = packagePath;
-            FillFilePaths(package);
+            package.Path = packageFolderPath;
+            FillFilePaths(PackageTools.GetAllFileStoryDots(package), package.Path);
+            ValidateFilesPresence(PackageTools.GetAllFileStoryDots(package));
             return package;
         }
 
-        private void FillFilePaths(Package package)
+        public Theme LoadTheme(string themeFolderPath)
         {
-            foreach (StoryDot storyDot in PackageTools.GetAllStories(package))
+            string jsonFilePath = $"{themeFolderPath}/{ThemeJsonFileName}";
+            string json = File.ReadAllText(jsonFilePath);
+            Theme theme = PackageJsonConverter.ReadTheme(json);
+            FillFilePaths(theme, themeFolderPath);
+            ValidateFilesPresence(PackageTools.GetAllFileStoryDots(theme));
+            return theme;
+        }
+
+        public void FillFilePaths(Theme theme, string folderPath)
+        {
+            FillFilePaths(PackageTools.GetAllFileStoryDots(theme), folderPath);
+        }
+        
+        private void FillFilePaths(IEnumerable<FileStoryDot> fileStoryDots, string folderPath)
+        {
+            foreach(FileStoryDot fileStoryDot in fileStoryDots)
+                fileStoryDot.Path = $"{folderPath}/{fileStoryDot.FileName}";
+        }
+        
+        private void ValidateFilesPresence(IEnumerable<FileStoryDot> fileStoryDots)
+        {
+            foreach (FileStoryDot fileStoryDot in fileStoryDots)
             {
-                if (storyDot is FileStoryDot fileStoryDot)
-                    fileStoryDot.Path = $"{package.Path}/{fileStoryDot.FileName}";
+                if (!File.Exists(fileStoryDot.Path))
+                    Debug.LogWarning($"File doesn't exist by path: '{fileStoryDot.Path}'");
             }
         }
 
@@ -141,7 +182,7 @@ namespace Victorina
             {
                 string packageJson = PackageJsonConverter.ToJson(package);
                 File.WriteAllText(jsonPath, packageJson);
-                Debug.Log($"'{jsonPath}' is updated.");
+                //Debug.Log($"'{jsonPath}' is updated.");
             }
             else
             {
@@ -170,13 +211,20 @@ namespace Victorina
 
         public void SaveTheme(Theme theme, string rootFolderPath)
         {
+            string themeFolderPath = $"{rootFolderPath}/{theme.Name}";
+
+            if (Directory.Exists(themeFolderPath))
+            {
+                Debug.LogWarning($"Can't save theme, folder exists: {themeFolderPath}");
+                return;
+            }
+            
+            Directory.CreateDirectory(themeFolderPath);
+            CopyFiles(theme, themeFolderPath);
+            
             string json = PackageJsonConverter.ToJson(theme);
+            File.WriteAllText($"{themeFolderPath}/{ThemeJsonFileName}", json);
             
-            string themePath = $"{rootFolderPath}/{theme.Name}";
-            Directory.CreateDirectory(themePath);
-            File.WriteAllText($"{themePath}/theme.json", json);
-            
-            CopyFiles(theme, themePath);
             Debug.Log($"Theme is saved: {theme.Name}");
         }
         
@@ -225,7 +273,7 @@ namespace Victorina
 
             Debug.Log($"Create directory: {packageFolderPath}");
             Directory.CreateDirectory(packageFolderPath);
-            string jsonPath = $"{packageFolderPath}/package.json";
+            string jsonPath = $"{packageFolderPath}/{PackageJsonFileName}";
             File.WriteAllText(jsonPath, json);
             Debug.Log($"Package json is saved: {jsonPath}");
             
@@ -236,40 +284,90 @@ namespace Victorina
         
         private void CopyFiles(Package package, string packageFolderPath)
         {
-            CopyFiles(PackageTools.GetAllQuestions(package), packageFolderPath);
+            CopyStoryFiles(PackageTools.GetAllFileStoryDots(package), packageFolderPath);
         }
         
-        private void CopyFiles(Theme theme, string themePath)
+        private void CopyFiles(Theme theme, string themeFolderPath)
         {
-            CopyFiles(theme.Questions, themePath);
+            CopyStoryFiles(PackageTools.GetAllFileStoryDots(theme), themeFolderPath);
         }
+        
+        public void CopyFiles(Theme theme, Package package)
+        {
+            CopyStoryFiles(PackageTools.GetAllFileStoryDots(theme), package.Path);
+        }
+        
+        private void CopyStoryFiles(IEnumerable<FileStoryDot> fileStoryDots, string destinationFolderPath)
+        {
+            foreach (FileStoryDot fileStoryDot in fileStoryDots)
+            {
+                string newFilePath = $"{destinationFolderPath}/{fileStoryDot.FileName}";
 
-        private void CopyFiles(IEnumerable<Question> questions, string packageFolderPath)
-        {
-            foreach (Question question in questions)
-            {
-                CopyStoryFiles(question.QuestionStory, packageFolderPath);
-                CopyStoryFiles(question.AnswerStory, packageFolderPath);
-            }
-        }
-        
-        private void CopyStoryFiles(List<StoryDot> story, string packageFolderPath)
-        {
-            foreach (StoryDot storyDot in story)
-            {
-                if (storyDot is FileStoryDot fileStoryDot)
+                if (!File.Exists(fileStoryDot.Path))
                 {
-                    string newFilePath = $"{packageFolderPath}/{fileStoryDot.FileName}";
+                    Debug.LogWarning($"Can't copy file. File is missed: {fileStoryDot.Path}");
+                    continue;
+                }
 
-                    if (!File.Exists(fileStoryDot.Path))
-                        throw new Exception($"Can't copy file. File is missed: {fileStoryDot.Path}");
-
-                    if (File.Exists(newFilePath))
-                        throw new Exception($"Can't copy file. File exists by path: '{newFilePath}'");
-                    
-                    Debug.Log($"File: {fileStoryDot.FileName}");
+                if (File.Exists(newFilePath))
+                {
+                    if (IsSameFiles(fileStoryDot.Path, newFilePath))
+                    {
+                        Debug.Log($"Don't need to copy. The same file exists by path: {newFilePath}");
+                    }
+                    else
+                    {
+                        string emptyFileName = GetEmptyFileName(fileStoryDot.FileName, destinationFolderPath);
+                        Debug.Log($"Different files with the same file name '{fileStoryDot.FileName}', take new file name: {emptyFileName}");
+                        string emptyFilePath = $"{destinationFolderPath}/{emptyFileName}";
+                        File.Copy(fileStoryDot.Path, emptyFilePath);
+                        fileStoryDot.FileName = emptyFileName;
+                    }
+                }
+                else
+                {
+                    Debug.Log($"Copy file '{fileStoryDot.FileName}' to '{newFilePath}'");
                     File.Copy(fileStoryDot.Path, newFilePath);
                 }
+            }
+        }
+
+        private bool IsSameFiles(string path1, string path2)
+        {
+            if (path1 == path2)
+                return true;
+
+            if (!File.Exists(path1))
+                throw new Exception($"Can't compare two files. File doesn't exist: {path1}");
+
+            if (!File.Exists(path2))
+                throw new Exception($"Can't compare two files. File doesn't exist: {path2}");
+            
+            byte[] bytes1 = File.ReadAllBytes(path1);
+            byte[] bytes2 = File.ReadAllBytes(path2);
+
+            if (bytes1.Length != bytes2.Length)
+                return false;
+
+            for (int i = 0; i < bytes1.Length; i++)
+            {
+                if (bytes1[i] != bytes2[i])
+                    return false;
+            }
+
+            return true;
+        }
+
+        private string GetEmptyFileName(string fileName, string folderPath)
+        {
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+            string extension = Path.GetExtension(fileName);
+            for (int number = 2;; number++)
+            {
+                string newFileName = $"{fileNameWithoutExtension} ({number}){extension}";
+                string filePath = $"{folderPath}/{newFileName}";
+                if (!File.Exists(filePath))
+                    return newFileName;
             }
         }
     }

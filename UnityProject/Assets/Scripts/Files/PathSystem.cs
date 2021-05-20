@@ -41,13 +41,12 @@ namespace Victorina
             return Application.persistentDataPath;
 #endif
         }
-        
+
         private string GetPackageFilesPath()
         {
 #if UNITY_EDITOR
             return $"{Data.DataPath}/PackageFiles";
-#endif
-
+#else
             if (Static.BuildMode == BuildMode.Development)
             {
                 string folderPrefix = $"test{Random.Range(100, 10000)}";
@@ -57,8 +56,9 @@ namespace Victorina
             {
                 return $"{Data.DataPath}/PackageFiles";
             }
+#endif
         }
-        
+
         public string GetPath(int fileId)
         {
             return $"{Data.PackageFilesPath}/{fileId.ToString()}.dat";

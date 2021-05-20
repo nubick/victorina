@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace Victorina
@@ -13,18 +14,19 @@ namespace Victorina
 
         public void Show()
         {
-            // if (Static.BuildMode == BuildMode.Development)
-            //     Debug.Log($"Show '{name}' view, {Time.time}");
-            
             Content.SetActive(true);
             OnShown();
         }
 
+        public IEnumerator ShowAndWaitForFinish()
+        {
+            Show();
+            while (IsActive)
+                yield return null;
+        }
+
         public void Hide()
         {
-            // if (Static.BuildMode == BuildMode.Development)
-            //     Debug.Log($"Hide '{name}' view, {Time.time}");
-            
             Content.SetActive(false);
             OnHide();
         }

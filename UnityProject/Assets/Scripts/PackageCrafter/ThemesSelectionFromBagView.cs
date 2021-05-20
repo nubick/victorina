@@ -1,6 +1,6 @@
 using Injection;
 using UnityEngine;
-using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Victorina
 {
@@ -11,6 +11,7 @@ namespace Victorina
 
         public RectTransform ThemesRoot;
         public BagThemeWidget ThemeWidgetPrefab;
+        public GridLayoutGroup ThemesGrid;
         
         public void Initialize()
         {
@@ -26,6 +27,12 @@ namespace Victorina
         private void RefreshUI()
         {
             ClearChild(ThemesRoot);
+
+            if (Data.BagAllThemes.Count <= 16)
+                ThemesGrid.cellSize = new Vector2(250f, 100f);
+            else
+                ThemesGrid.cellSize = new Vector2(207f, 73f);
+
             foreach (Theme theme in Data.BagAllThemes)
             {
                 BagThemeWidget themeWidget = Instantiate(ThemeWidgetPrefab, ThemesRoot);
@@ -44,8 +51,8 @@ namespace Victorina
         
         public void OnAddButtonClicked()
         {
-            Debug.Log($"Themes: {Data.SelectedRound.Themes.Count}, selected: {Data.BagSelectedThemes}");
-            Data.SelectedRound.Themes.AddRange(Data.BagSelectedThemes);
+            CrafterBagSystem.AddSelectedThemesToRound();
+            Hide();
         }
     }
 }
