@@ -96,8 +96,8 @@ namespace Victorina
             LobbyView.Show();
             PlayersBoardView.Show();
             
-            if (NetworkData.IsMaster)
-                MasterEffectsView.Show();
+            //if (NetworkData.IsMaster)
+            //    MasterEffectsView.Show();
         }
 
         private void ShowRoundViews()
@@ -108,8 +108,8 @@ namespace Victorina
             RoundView.Show();
             PlayersBoardView.Show();
             
-            if (NetworkData.IsMaster)
-                MasterEffectsView.Show();
+            //if (NetworkData.IsMaster)
+            //    MasterEffectsView.Show();
         }
 
         private void OnRoundDataChanged()

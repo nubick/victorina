@@ -221,7 +221,11 @@ namespace Victorina
                     Data.SelectedQuestion.QuestionStory.RemoveAt(0);
 
                 if (questionType == QuestionType.CatInBag)
-                    Data.SelectedQuestion.QuestionStory.Insert(0, new CatInBagStoryDot(string.Empty, price, true));
+                {
+                    Theme theme = PackageTools.GetQuestionTheme(Data.SelectedPackage, Data.SelectedQuestion);
+                    Debug.Log($"Theme: {theme.Name}");
+                    Data.SelectedQuestion.QuestionStory.Insert(0, new CatInBagStoryDot(theme.Name, price, true));
+                }
 
                 if (questionType == QuestionType.NoRisk)
                     Data.SelectedQuestion.QuestionStory.Insert(0, new NoRiskStoryDot());
