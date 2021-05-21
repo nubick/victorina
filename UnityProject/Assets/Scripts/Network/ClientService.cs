@@ -12,8 +12,8 @@ namespace Victorina
         [Inject] private NetworkingManager NetworkingManager { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private IpCodeSystem IpCodeSystem { get; set; }
-        [Inject] private ViewsSystem ViewsSystem { get; set; }
         [Inject] private AppState AppState { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
 
         public void Initialize()
         {
@@ -86,6 +86,7 @@ namespace Victorina
             
             Debug.Log($"Player {NetworkingManager.LocalClientId}. OnClientDisconnect: {clientId}");
             NetworkData.ClientConnectingState = ClientConnectingState.Fail;
+            MatchData.QuestionAnswerData.PlayersButtonClickData.Clear();
             MetagameEvents.DisconnectedAsClient.Publish();
         }
     }

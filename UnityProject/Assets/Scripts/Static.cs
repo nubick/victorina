@@ -13,11 +13,11 @@ namespace Victorina
         public static int MinorVersion = 2;
 
         public static string EmptyPlayerName = "Баба-Яга";
-        
+
         public static BuildMode BuildMode => DevSettings.BuildMode;
 
         public static int AuctionMinStep = 100;
-        
+
         private static DevSettings _devSettings;
         public static DevSettings DevSettings
         {
@@ -26,6 +26,17 @@ namespace Victorina
                 if (_devSettings == null)
                     _devSettings = Resources.LoadAll<DevSettings>(string.Empty).Single();
                 return _devSettings;
+            }
+        }
+
+        private static DebugSettings _debugSettings;
+        public static DebugSettings DebugSettings
+        {
+            get
+            {
+                if (_debugSettings == null)
+                    _debugSettings = Resources.LoadAll<DebugSettings>(string.Empty).Single();
+                return _debugSettings;
             }
         }
     }

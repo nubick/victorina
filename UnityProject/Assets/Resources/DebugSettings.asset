@@ -9,10 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 994afc43011c4718a8b1e7d7c0925b45, type: 3}
-  m_Name: DevSettings
+  m_Script: {fileID: 11500000, guid: 3acbdbd2b0034341816124e2fc63fa7f, type: 3}
+  m_Name: DebugSettings
   m_EditorClassIdentifier: 
-  LastMajorVersion: 0
-  LastMinorVersion: 2
-  BuildNumber: 64
-  BuildMode: 1
+  DisconnectPanel: 0

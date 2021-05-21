@@ -84,7 +84,7 @@ namespace Victorina
             _injector.Bind(new PlayEffectsSystem());
             _injector.Bind(FindObjectOfType<PlayEffectsData>());
             
-            //Master only
+            //Master Only
             _injector.Bind(new ServerService());
             _injector.Bind(new ConnectedPlayersData());
             _injector.Bind(new FilesDeliveryStatusManager());
@@ -100,6 +100,9 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<MasterPlayerSettingsView>());
             _injector.Bind(FindObjectOfType<MasterEffectsView>());
             _injector.Bind(FindObjectOfType<DataSyncService>());
+            
+            //Master Only - Debug
+            _injector.Bind(FindObjectOfType<DisconnectPanelView>());
             
             //Client only
             _injector.Bind(FindObjectOfType<DownloadingFilesPanelView>());
@@ -202,6 +205,10 @@ namespace Victorina
             _injector.Get<AuctionStoryDotView>().Initialize();
             
             _injector.Get<AnsweringTimerSystem>().Initialize();
+            
+            //Debug
+            _injector.Get<DisconnectPanelView>().Initialize();
+            
             
             //Crafter
             _injector.Get<PackageCrafterView>().Initialize();
