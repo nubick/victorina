@@ -266,7 +266,7 @@ namespace Victorina
             Delete(themeFolderPath);
         }
         
-        public void SavePackage(Package package, string parentFolderPath, string packageFolderName = null)
+        public string SavePackage(Package package, string parentFolderPath, string packageFolderName = null)
         {
             string json = PackageJsonConverter.ToJson(package);
 
@@ -285,6 +285,7 @@ namespace Victorina
             CopyFiles(package, packageFolderPath);
             
             Debug.Log($"Package is saved: {packageFolderPath}");
+            return packageFolderPath;
         }
         
         private void CopyFiles(Package package, string packageFolderPath)

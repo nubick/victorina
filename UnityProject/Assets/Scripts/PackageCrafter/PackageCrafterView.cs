@@ -16,6 +16,7 @@ namespace Victorina
         [Inject] private PackageCrafterSystem PackageCrafterSystem { get; set; }
         [Inject] private ThemesSelectionFromBagView ThemesSelectionFromBagView { get; set; }
         [Inject] private InputDialogueView InputDialogueView { get; set; }
+        [Inject] private MessageDialogueView MessageDialogueView { get; set; }
         [Inject] private CrafterQuestionEditView QuestionEditView { get; set; }
 
         public RectTransform OpenedPackagesRoot;
@@ -125,9 +126,9 @@ namespace Victorina
             SwitchTo(StartupView);
         }
 
-        public void OnAddPackButtonClicked()
+        public void OnOpenPackageButtonClicked()
         {
-            PackageCrafterSystem.AddPackage();
+            PackageCrafterSystem.OpenPackage();
             RefreshUI();
         }
 
@@ -275,6 +276,36 @@ namespace Victorina
         {
             yield return QuestionEditView.ShowAndWaitForFinish();
             RefreshUI();
+        }
+
+        public void OnAddPackageButtonClicked()
+        {
+            StartCoroutine(AddPackageCoroutine());
+        }
+
+        private IEnumerator AddPackageCoroutine()
+        {
+            string packageName = "VumkaPackage";
+            for (;;)
+            {
+                yield return InputDialogueView.ShowAndWaitForFinish("Название пака", packageName);
+                if (InputDialogueView.IsOk)
+                {
+                    packageName = InputDialogueView.Text;
+                    if (PackageCrafterSystem.CanUseFolderNameForNewPackage(packageName))
+                    {
+                        PackageCrafterSystem.AddNewPackage(packageName);
+                        RefreshUI();
+                        yield break;
+                    }
+
+                    yield return MessageDialogueView.ShowAndWaitForFinish("Название занято", "Пак с таким названием уже есть! Введите другое название пака!");
+                }
+                else
+                {
+                    yield break;
+                }
+            }
         }
     }
 }

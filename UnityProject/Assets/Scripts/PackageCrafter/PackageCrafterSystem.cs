@@ -48,7 +48,7 @@ namespace Victorina
             MetagameEvents.CrafterQuestionSelected.Publish(question);
         }
         
-        public void AddPackage()
+        public void OpenPackage()
         {
             string packageArchivePath = PackageFilesSystem.GetPackageArchivePathUsingOpenDialogue();
             
@@ -238,6 +238,22 @@ namespace Victorina
             Data.SelectedQuestion.Price = price;
             
             PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
+        }
+
+        public void AddNewPackage(string folderName)
+        {
+            folderName = folderName.Replace("/", string.Empty);
+            Debug.Log($"AddNewPackage: folderName: '{folderName}'");
+            
+            Package package = new Package();
+            package.Path = PackageFilesSystem.SavePackage(package, PathData.CrafterPath, folderName);
+            Data.SelectedPackage = package;
+            Data.Packages.Add(package);
+        }
+
+        public bool CanUseFolderNameForNewPackage(string folderName)
+        {
+            return PackageFilesSystem.GetCrafterPackagesPaths().Select(System.IO.Path.GetFileName).All(existFolderName => existFolderName != folderName);
         }
     }
 }

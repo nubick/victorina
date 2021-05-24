@@ -16,9 +16,7 @@ namespace Victorina
             IsOk = false;
             Title.text = title;
             InputField.text = currentString;
-            Show();
-            while (IsActive)
-                yield return null;
+            return ShowAndWaitForFinish();
         }
 
         public void OnOkButtonClicked()
