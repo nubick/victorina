@@ -26,7 +26,7 @@ namespace Victorina
             return theme.Questions.SelectMany(question => question.GetAllStories());
         }
 
-        private static Round GetThemeRound(Package package, Theme theme)
+        public static Round GetThemeRound(Package package, Theme theme)
         {
             foreach (Round round in package.Rounds)
                 if (round.Themes.Contains(theme))

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Assets.Scripts.Utils;
 using Injection;
@@ -14,29 +15,29 @@ namespace Victorina
         
         public void Initialize()
         {
-            MetagameEvents.CrafterQuestionBeginDrag.Subscribe(OnBeginDrag);
-            MetagameEvents.CrafterQuestionEndDrag.Subscribe(OnEndDrag);
-            MetagameEvents.CrafterQuestionDrop.Subscribe(OnQuestionDropped);
+            MetagameEvents.CrafterBeginDrag.Subscribe(OnBeginDrag);
+            MetagameEvents.CrafterEndDrag.Subscribe(OnEndDrag);
             MetagameEvents.CrafterQuestionDropOnQuestion.Subscribe(OnQuestionDropOnQuestion);
             MetagameEvents.CrafterQuestionDropOnTheme.Subscribe(OnQuestionDropOnTheme);
             MetagameEvents.CrafterQuestionDropOnRound.Subscribe(OnQuestionDropOnRound);
+            MetagameEvents.CrafterThemeDropOnTheme.Subscribe(OnThemDropOnTheme);
+        }
+        
+        private void OnBeginDrag(DragItemBase dragItem)
+        {
+            dragItem.transform.SetParent(Data.DragArea);
         }
 
-        private void OnBeginDrag(CrafterQuestionDragItem questionItem)
+        private void OnEndDrag(DragItemBase dragItem)
         {
-            questionItem.transform.SetParent(Data.DragArea);
-        }
-
-        private void OnEndDrag(CrafterQuestionDragItem questionItem)
-        {
-            if (questionItem.QuestionWidget == null)
+            // if (questionItem.QuestionWidget == null)
+            // {
+            //     Object.Destroy(questionItem.gameObject);
+            // }
+            // else
             {
-                Object.Destroy(questionItem.gameObject);
-            }
-            else
-            {
-                questionItem.transform.SetParent(questionItem.Container);
-                (questionItem.transform as RectTransform).SetLeftTopRightBottom(0f, 0f, 0f, 0f);
+                dragItem.transform.SetParent(dragItem.Container);
+                (dragItem.transform as RectTransform).SetLeftTopRightBottom(0f, 0f, 0f, 0f);
             }
 
             if (Data.WasChanges)
@@ -45,30 +46,9 @@ namespace Victorina
                 Data.WasChanges = false;
             }
         }
-
-        private void OnQuestionDropped(CrafterQuestionDragItem questionItem)
+        
+        private void OnQuestionDropOnQuestion(Question droppedQuestion, Question targetQuestion)
         {
-            if (CrafterData.SelectedTheme == null)
-                return;
-
-            Question question = questionItem.QuestionWidget.Question;
-
-            Theme questionTheme = PackageTools.GetQuestionTheme(CrafterData.SelectedPackage, question);
-
-            if (CrafterData.SelectedTheme != questionTheme)
-            {
-                Debug.Log($"Move question to theme: {CrafterData.SelectedTheme}");
-                //questionTheme.Questions.Remove(question);
-                //CrafterData.SelectedTheme.Questions.Add(question);
-                //PackageFilesSystem.UpdatePackageJson(CrafterData.SelectedPackage);
-            }
-        }
-
-        private void OnQuestionDropOnQuestion(CrafterQuestionDragItem droppedItem, CrafterQuestionDragItem targetItem)
-        {
-            Question droppedQuestion = droppedItem.QuestionWidget.Question;
-            Question targetQuestion = targetItem.QuestionWidget.Question;
-            
             Theme sourceTheme = PackageTools.GetQuestionTheme(CrafterData.SelectedPackage, droppedQuestion);
             Theme targetTheme = PackageTools.GetQuestionTheme(CrafterData.SelectedPackage, targetQuestion);
 
@@ -102,6 +82,31 @@ namespace Victorina
                     Data.WasChanges = true;
                 }
             }
+        }
+
+        private void OnThemDropOnTheme(Theme dropTheme, Theme receiverTheme)
+        {
+            Round round = PackageTools.GetThemeRound(CrafterData.SelectedPackage, dropTheme);
+
+            if (!round.Themes.Contains(dropTheme))
+                throw new Exception($"Round '{round}' doesn't contain theme '{dropTheme}'");
+
+            if (receiverTheme != null && !round.Themes.Contains(receiverTheme))
+                throw new Exception($"Round '{round}' doesn't contain theme '{receiverTheme}'");
+
+            round.Themes.Remove(dropTheme);
+
+            if (receiverTheme == null)
+            {
+                round.Themes.Add(dropTheme);
+            }
+            else
+            {
+                int index = round.Themes.IndexOf(receiverTheme);
+                round.Themes.Insert(index, dropTheme);
+            }
+            
+            Data.WasChanges = true;
         }
     }
 }

@@ -58,16 +58,16 @@ namespace Victorina
 
         public static GameEvent<int> CrafterStoryDotPreviewIndexChanged { get; } = new GameEvent<int>();
 
-        public static GameEvent<CrafterQuestionDragItem> CrafterQuestionBeginDrag { get; } = new GameEvent<CrafterQuestionDragItem>();
-        public static GameEvent<CrafterQuestionDragItem> CrafterQuestionEndDrag { get; } = new GameEvent<CrafterQuestionDragItem>();
-        public static GameEvent<CrafterQuestionDragItem> CrafterQuestionDrop { get; } = new GameEvent<CrafterQuestionDragItem>();
-        public static GameEvent<CrafterQuestionDragItem, CrafterQuestionDragItem> CrafterQuestionDropOnQuestion { get; } = new GameEvent<CrafterQuestionDragItem, CrafterQuestionDragItem>();
+        public static GameEvent<DragItemBase> CrafterBeginDrag { get; } = new GameEvent<DragItemBase>();
+        public static GameEvent<DragItemBase> CrafterEndDrag { get; } = new GameEvent<DragItemBase>();
+        public static GameEvent<Question, Question> CrafterQuestionDropOnQuestion { get; } = new GameEvent<Question, Question>();
         public static GameEvent<Question, Theme> CrafterQuestionDropOnTheme { get; } = new GameEvent<Question, Theme>();
         public static GameEvent<Question, Round> CrafterQuestionDropOnRound { get; } = new GameEvent<Question, Round>();
+        public static GameEvent<Theme, Theme> CrafterThemeDropOnTheme { get; } = new GameEvent<Theme, Theme>();
         
         public static GameEvent<Theme> CrafterBagThemeClicked { get; } = new GameEvent<Theme>();
         
         //Commands
-        public static GameEvent<SoundEffect> PlaySoundEffectCommand = new GameEvent<SoundEffect>();
+        public static GameEvent<SoundEffect> PlaySoundEffectCommand { get; } = new GameEvent<SoundEffect>();
     }
 }

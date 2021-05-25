@@ -3,9 +3,9 @@ using UnityEngine.EventSystems;
 
 namespace Victorina
 {
-    public class CrafterQuestionDragItem : DragItemBase
+    public class CrafterThemeDragItem : DragItemBase
     {
-        public CrafterQuestionWidget QuestionWidget;
+        public CrafterThemeLineWidget ThemeWidget;
 
         public override void OnDrop(PointerEventData eventData)
         {
@@ -15,7 +15,9 @@ namespace Victorina
                 throw new Exception($"Not supported drag item which was dropped on Theme Drag Item: {eventData.pointerDrag.name}");
 
             if (dragItem is CrafterQuestionDragItem questionDragItem)
-                MetagameEvents.CrafterQuestionDropOnQuestion.Publish(questionDragItem.QuestionWidget.Question, QuestionWidget.Question);
+                MetagameEvents.CrafterQuestionDropOnTheme.Publish(questionDragItem.QuestionWidget.Question, ThemeWidget.Theme);
+            else if (dragItem is CrafterThemeDragItem themeDragItem)
+                MetagameEvents.CrafterThemeDropOnTheme.Publish(themeDragItem.ThemeWidget.Theme, ThemeWidget.Theme);
         }
     }
 }

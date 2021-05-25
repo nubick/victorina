@@ -1,24 +1,24 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class CrafterThemeLineWidget : MonoBehaviour
+    public class CrafterThemeLineWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
     {
-        private Theme _theme;
+        public Theme Theme { get; private set; }
         
         public Text ThemeName;
         public GameObject DefaultBackground;
         public GameObject SelectedBackground;
         public Transform QuestionsRoot;
-        public CrafterThemeButton ThemeButton;
-        
+        public GameObject HoverState;
+
         public void Bind(Theme theme, bool isSelected)
         {
-            _theme = theme;
+            Theme = theme;
             ThemeName.text = theme.Name;
             SetSelectedState(isSelected);
-            ThemeButton.Bind(_theme);
         }
 
         public void Select()
@@ -39,12 +39,30 @@ namespace Victorina
         
         public void OnThemeDeleteButtonClicked()
         {
-            MetagameEvents.CrafterThemeDeleteButtonClicked.Publish(_theme);
+            MetagameEvents.CrafterThemeDeleteButtonClicked.Publish(Theme);
         }
 
         public void OnMoveToBagButtonClicked()
         {
-            MetagameEvents.CrafterThemeMoveToBagButtonClicked.Publish(_theme);
+            MetagameEvents.CrafterThemeMoveToBagButtonClicked.Publish(Theme);
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.clickCount == 1)
+                MetagameEvents.CrafterThemeClicked.Publish(Theme);
+            else if (eventData.clickCount == 2)
+                MetagameEvents.CrafterThemeNameEditRequested.Publish(Theme);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            HoverState.SetActive(true);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            HoverState.SetActive(false);
         }
     }
 }
