@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -46,8 +47,15 @@ namespace Victorina
 
         public void OnDrop(PointerEventData eventData)
         {
-            CrafterQuestionDragItem droppedItem = eventData.pointerDrag.GetComponent<CrafterQuestionDragItem>();
-            MetagameEvents.CrafterQuestionDropOnRound.Publish(droppedItem.QuestionWidget.Question, _round);
+            DragItemBase dragItem = eventData.pointerDrag.GetComponent<DragItemBase>();
+
+            if (dragItem == null)
+                throw new Exception($"Not supported drag item which was dropped on Round Tab Widget: {eventData.pointerDrag.name}");
+
+            if (dragItem is CrafterQuestionDragItem questionDragItem)
+                MetagameEvents.CrafterQuestionDropOnRound.Publish(questionDragItem.QuestionWidget.Question, _round);
+            else if (dragItem is CrafterThemeDragItem themeDragItem)
+                MetagameEvents.CrafterThemeDropOnRound.Publish(themeDragItem.ThemeWidget.Theme, _round);
         }
 
         public void OnPointerClick(PointerEventData eventData)

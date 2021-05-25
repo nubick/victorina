@@ -21,6 +21,7 @@ namespace Victorina
             MetagameEvents.CrafterQuestionDropOnTheme.Subscribe(OnQuestionDropOnTheme);
             MetagameEvents.CrafterQuestionDropOnRound.Subscribe(OnQuestionDropOnRound);
             MetagameEvents.CrafterThemeDropOnTheme.Subscribe(OnThemDropOnTheme);
+            MetagameEvents.CrafterThemeDropOnRound.Subscribe(OnThemeDropOnRound);
         }
         
         private void OnBeginDrag(DragItemBase dragItem)
@@ -30,15 +31,8 @@ namespace Victorina
 
         private void OnEndDrag(DragItemBase dragItem)
         {
-            // if (questionItem.QuestionWidget == null)
-            // {
-            //     Object.Destroy(questionItem.gameObject);
-            // }
-            // else
-            {
-                dragItem.transform.SetParent(dragItem.Container);
-                (dragItem.transform as RectTransform).SetLeftTopRightBottom(0f, 0f, 0f, 0f);
-            }
+            dragItem.transform.SetParent(dragItem.Container);
+            (dragItem.transform as RectTransform).SetLeftTopRightBottom(0f, 0f, 0f, 0f);
 
             if (Data.WasChanges)
             {
@@ -46,44 +40,44 @@ namespace Victorina
                 Data.WasChanges = false;
             }
         }
-        
-        private void OnQuestionDropOnQuestion(Question droppedQuestion, Question targetQuestion)
+
+        private void OnQuestionDropOnQuestion(Question droppedQuestion, Question receiverQuestion)
         {
             Theme sourceTheme = PackageTools.GetQuestionTheme(CrafterData.SelectedPackage, droppedQuestion);
-            Theme targetTheme = PackageTools.GetQuestionTheme(CrafterData.SelectedPackage, targetQuestion);
+            Theme targetTheme = PackageTools.GetQuestionTheme(CrafterData.SelectedPackage, receiverQuestion);
 
             sourceTheme.Questions.Remove(droppedQuestion);
-            int insertIndex = targetTheme.Questions.IndexOf(targetQuestion);
+            int insertIndex = targetTheme.Questions.IndexOf(receiverQuestion);
             targetTheme.Questions.Insert(insertIndex, droppedQuestion);
 
             Data.WasChanges = true;
             PackageFilesSystem.UpdatePackageJson(CrafterData.SelectedPackage);
         }
 
-        private void OnQuestionDropOnTheme(Question question, Theme theme)
+        private void OnQuestionDropOnTheme(Question question, Theme receiverTheme)
         {
             Theme sourceTheme = PackageTools.GetQuestionTheme(CrafterData.SelectedPackage, question);
             sourceTheme.Questions.Remove(question);
-            theme.Questions.Add(question);
+            receiverTheme.Questions.Add(question);
             
             Data.WasChanges = true;
             PackageFilesSystem.UpdatePackageJson(CrafterData.SelectedPackage);
         }
 
-        private void OnQuestionDropOnRound(Question question, Round newRound)
+        private void OnQuestionDropOnRound(Question question, Round receiverRound)
         {
             Round questionRound = PackageTools.GetQuestionRound(CrafterData.SelectedPackage, question);
-            if (newRound != questionRound && newRound.Themes.Any())
+            if (receiverRound != questionRound && receiverRound.Themes.Any())
             {
                 PackageTools.DeleteQuestion(CrafterData.SelectedPackage, question);
-                if (newRound.Themes.Any())
+                if (receiverRound.Themes.Any())
                 {
-                    newRound.Themes.Last().Questions.Add(question);
+                    receiverRound.Themes.Last().Questions.Add(question);
                     Data.WasChanges = true;
                 }
             }
         }
-
+        
         private void OnThemDropOnTheme(Theme dropTheme, Theme receiverTheme)
         {
             Round round = PackageTools.GetThemeRound(CrafterData.SelectedPackage, dropTheme);
@@ -106,6 +100,18 @@ namespace Victorina
                 round.Themes.Insert(index, dropTheme);
             }
             
+            Data.WasChanges = true;
+        }
+        
+        private void OnThemeDropOnRound(Theme theme, Round receiverRound)
+        {
+            Round themeRound = PackageTools.GetThemeRound(CrafterData.SelectedPackage, theme);
+
+            if (themeRound == receiverRound)
+                return;//do nothing
+
+            themeRound.Themes.Remove(theme);
+            receiverRound.Themes.Add(theme);
             Data.WasChanges = true;
         }
     }

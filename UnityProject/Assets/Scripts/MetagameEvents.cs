@@ -64,6 +64,7 @@ namespace Victorina
         public static GameEvent<Question, Theme> CrafterQuestionDropOnTheme { get; } = new GameEvent<Question, Theme>();
         public static GameEvent<Question, Round> CrafterQuestionDropOnRound { get; } = new GameEvent<Question, Round>();
         public static GameEvent<Theme, Theme> CrafterThemeDropOnTheme { get; } = new GameEvent<Theme, Theme>();
+        public static GameEvent<Theme, Round> CrafterThemeDropOnRound { get; } = new GameEvent<Theme, Round>();
         
         public static GameEvent<Theme> CrafterBagThemeClicked { get; } = new GameEvent<Theme>();
         
