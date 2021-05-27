@@ -130,7 +130,7 @@ namespace Victorina
             
             _injector.Bind(FindObjectOfType<InputDialogueView>());
             _injector.Bind(FindObjectOfType<MessageDialogueView>());
-            
+
             //Crafter
             _injector.Bind(FindObjectOfType<PackageCrafterView>());
             _injector.Bind(new PackageCrafterSystem());
@@ -138,6 +138,8 @@ namespace Victorina
             
             _injector.Bind(FindObjectOfType<CrafterQuestionPreview>());
             _injector.Bind(FindObjectOfType<CrafterQuestionEditView>());
+            _injector.Bind(FindObjectOfType<RoundAutoPriceInputView>());
+            _injector.Bind(FindObjectOfType<SettingsTabsView>());
             
             _injector.Bind(new CrafterDragAndDropSystem());
             _injector.Bind(FindObjectOfType<CrafterDragAndDropData>());

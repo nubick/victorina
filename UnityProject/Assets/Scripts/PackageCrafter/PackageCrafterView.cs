@@ -16,8 +16,10 @@ namespace Victorina
         [Inject] private PackageCrafterSystem PackageCrafterSystem { get; set; }
         [Inject] private ThemesSelectionFromBagView ThemesSelectionFromBagView { get; set; }
         [Inject] private InputDialogueView InputDialogueView { get; set; }
+        [Inject] private RoundAutoPriceInputView RoundAutoPriceInputView { get; set; }
         [Inject] private MessageDialogueView MessageDialogueView { get; set; }
         [Inject] private CrafterQuestionEditView QuestionEditView { get; set; }
+        [Inject] private SettingsTabsView SettingsTabsView { get; set; }
 
         public RectTransform OpenedPackagesRoot;
         public CrafterPackageTabWidget CrafterPackageTabWidgetPrefab;
@@ -253,7 +255,27 @@ namespace Victorina
 
         private IEnumerator RoundNameEditCoroutine(Round round)
         {
-            yield return InputDialogueView.ShowAndWaitForFinish("Название раунда", round.Name);
+            (int currentBasePrice, int currentPriceStep) = PackageCrafterSystem.GetBasePriceAndStep(round);
+            RoundAutoPriceInputView.SetDefault(currentBasePrice, currentPriceStep);
+
+            InputDialogueView.SetDefault("Название раунда", round.Name);
+            
+            yield return SettingsTabsView.ShowAndWaitForFinish(InputDialogueView, "Имя Раунда", RoundAutoPriceInputView, "Авто-Стоимость");
+            
+            if (RoundAutoPriceInputView.IsOk)
+            {
+                int basePrice = 100;
+                if (int.TryParse(RoundAutoPriceInputView.BasePriceInputField.text, out int parsedBasePrice))
+                    basePrice = parsedBasePrice;
+            
+                int priceStep = 100;
+                if (int.TryParse(RoundAutoPriceInputView.PriceStepInputField.text, out int parsedPriceStep))
+                    priceStep = parsedPriceStep;
+                
+                PackageCrafterSystem.FillRoundPrices(round, basePrice, priceStep);
+                RefreshUI();
+            }
+            
             if (InputDialogueView.IsOk)
             {
                 PackageCrafterSystem.ChangeName(round, InputDialogueView.Text);

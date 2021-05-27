@@ -255,5 +255,31 @@ namespace Victorina
         {
             return PackageFilesSystem.GetCrafterPackagesPaths().Select(System.IO.Path.GetFileName).All(existFolderName => existFolderName != folderName);
         }
+
+        public (int, int) GetBasePriceAndStep(Round round)
+        {
+            int basePrice = 100;
+            int priceStep = 100;
+            Theme theme = round.Themes.FirstOrDefault(_ => _.Questions.Count >= 2);
+            if (theme != null)
+            {
+                basePrice = theme.Questions[0].Price;
+                priceStep = theme.Questions[1].Price - basePrice;
+            }
+            return (basePrice, priceStep);
+        }
+
+        public void FillRoundPrices(Round round, int basePrice, int priceStep)
+        {
+            foreach (Theme theme in round.Themes)
+            {
+                int nextPrice = basePrice;
+                foreach (Question question in theme.Questions)
+                {
+                    question.Price = nextPrice;
+                    nextPrice += priceStep;
+                }
+            }
+        }
     }
 }

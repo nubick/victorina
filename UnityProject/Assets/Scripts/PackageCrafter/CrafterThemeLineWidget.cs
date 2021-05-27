@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class CrafterThemeLineWidget : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+    public class CrafterThemeLineWidget : MonoBehaviour, IPointerClickHandler
     {
         public Theme Theme { get; private set; }
         
@@ -12,7 +12,6 @@ namespace Victorina
         public GameObject DefaultBackground;
         public GameObject SelectedBackground;
         public Transform QuestionsRoot;
-        public GameObject HoverState;
 
         public void Bind(Theme theme, bool isSelected)
         {
@@ -53,16 +52,6 @@ namespace Victorina
                 MetagameEvents.CrafterThemeClicked.Publish(Theme);
             else if (eventData.clickCount == 2)
                 MetagameEvents.CrafterThemeNameEditRequested.Publish(Theme);
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            HoverState.SetActive(true);
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            HoverState.SetActive(false);
         }
     }
 }

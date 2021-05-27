@@ -10,23 +10,23 @@ namespace Victorina
 
         public bool IsOk { get; set; }
         public string Text => InputField.text;
-        
-        public IEnumerator ShowAndWaitForFinish(string title, string currentString)
+
+        public void SetDefault(string title, string currentString)
         {
             IsOk = false;
             Title.text = title;
             InputField.text = currentString;
+        }
+
+        public IEnumerator ShowAndWaitForFinish(string title, string currentString)
+        {
+            SetDefault(title, currentString);
             return ShowAndWaitForFinish();
         }
 
         public void OnOkButtonClicked()
         {
             IsOk = true;
-            Hide();
-        }
-
-        public void OnCancelButtonClicked()
-        {
             Hide();
         }
     }
