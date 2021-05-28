@@ -1,10 +1,9 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class CrafterThemeLineWidget : MonoBehaviour, IPointerClickHandler
+    public class CrafterThemeLineWidget : MonoBehaviour
     {
         public Theme Theme { get; private set; }
         
@@ -44,14 +43,6 @@ namespace Victorina
         public void OnMoveToBagButtonClicked()
         {
             MetagameEvents.CrafterThemeMoveToBagButtonClicked.Publish(Theme);
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (eventData.clickCount == 1)
-                MetagameEvents.CrafterThemeClicked.Publish(Theme);
-            else if (eventData.clickCount == 2)
-                MetagameEvents.CrafterThemeNameEditRequested.Publish(Theme);
         }
     }
 }
