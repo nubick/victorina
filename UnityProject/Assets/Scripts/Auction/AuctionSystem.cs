@@ -14,20 +14,20 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         
-        private AuctionData Data => QuestionAnswerData.AuctionData.Value;
+        private AuctionData AuctionData => QuestionAnswerData.AuctionData.Value;
         private PlayersBoard PlayersBoard => MatchData.PlayersBoard.Value;
 
         public void StartNew(PlayerData currentPlayer, int questionPrice)
         {
-            Data.Bet = questionPrice;
-            Data.Player = null;
-            Data.BettingPlayer = currentPlayer;
-            Data.IsAllIn = false;
-            Data.PassedPlayers.Clear();
-            Data.SelectedPlayerByMaster = null;
+            AuctionData.Bet = questionPrice;
+            AuctionData.Player = null;
+            AuctionData.BettingPlayer = currentPlayer;
+            AuctionData.IsAllIn = false;
+            AuctionData.PassedPlayers.Clear();
+            AuctionData.SelectedPlayerByMaster = null;
             AddAutomaticPasses();
             
-            SendToPlayersService.SendAuctionData(Data);
+            SendToPlayersService.SendAuctionData(AuctionData);
             QuestionAnswerData.AuctionData.NotifyChanged();
         }
         
@@ -49,18 +49,18 @@ namespace Victorina
                 SendToMasterService.SendBetAuction(bet);
 
             if (NetworkData.IsMaster)
-                MasterMakeBetForPlayer(bet, Data.SelectedPlayerByMaster);
+                MasterMakeBetForPlayer(bet, AuctionData.SelectedPlayerByMaster);
         }
 
         #endregion
 
         private PlayerData SelectNextBettingPlayer()
         {
-            int lastIndex = PlayersBoard.Players.IndexOf(Data.BettingPlayer);
+            int lastIndex = PlayersBoard.Players.IndexOf(AuctionData.BettingPlayer);
             for (int dIndex = 1; dIndex <= PlayersBoard.Players.Count; dIndex++)
             {
                 PlayerData player = PlayersBoard.Players[(lastIndex + dIndex) % PlayersBoard.Players.Count];
-                if (!Data.PassedPlayers.Contains(player))
+                if (!AuctionData.PassedPlayers.Contains(player))
                     return player;
             }
             throw new Exception("Logic error! It looks like all players are passed.");
@@ -68,14 +68,14 @@ namespace Victorina
 
         private void MasterMakeBetForPlayer(int bet, PlayerData player)
         {
-            Data.Bet = bet;
-            Data.Player = player;
-            Data.PassedPlayers.Remove(player);
-            Data.BettingPlayer = player;
+            AuctionData.Bet = bet;
+            AuctionData.Player = player;
+            AuctionData.PassedPlayers.Remove(player);
+            AuctionData.BettingPlayer = player;
             AddAutomaticPasses();
-            Data.BettingPlayer = SelectNextBettingPlayer();
+            AuctionData.BettingPlayer = SelectNextBettingPlayer();
 
-            SendToPlayersService.SendAuctionData(Data);
+            SendToPlayersService.SendAuctionData(AuctionData);
             QuestionAnswerData.AuctionData.NotifyChanged();
         }
 
@@ -87,59 +87,59 @@ namespace Victorina
                 return;
             }
             
-            if (Data.PassedPlayers.Contains(player))
+            if (AuctionData.PassedPlayers.Contains(player))
             {
                 Debug.Log($"Receive pass request from player '{player}' who passed before");
             }
             else
             {
-                Data.PassedPlayers.Add(player);
-                if (Data.BettingPlayer == player)
-                    Data.BettingPlayer = SelectNextBettingPlayer();
+                AuctionData.PassedPlayers.Add(player);
+                if (AuctionData.BettingPlayer == player)
+                    AuctionData.BettingPlayer = SelectNextBettingPlayer();
 
-                SendToPlayersService.SendAuctionData(Data);
+                SendToPlayersService.SendAuctionData(AuctionData);
                 QuestionAnswerData.AuctionData.NotifyChanged();
             }
         }
 
         public void MasterOnReceivePlayerAllIn(PlayerData player)
         {
-            bool canAllIn = Data.BettingPlayer == player && player.Score >= Data.NextMinBet;
+            bool canAllIn = AuctionData.BettingPlayer == player && player.Score >= AuctionData.NextMinBet;
             if (canAllIn)
             {
-                Data.IsAllIn = true;
-                Data.Bet = player.Score;
-                Data.Player = player;
+                AuctionData.IsAllIn = true;
+                AuctionData.Bet = player.Score;
+                AuctionData.Player = player;
                 AddAutomaticPasses();
-                Data.BettingPlayer = SelectNextBettingPlayer();
+                AuctionData.BettingPlayer = SelectNextBettingPlayer();
                 
-                SendToPlayersService.SendAuctionData(Data);
+                SendToPlayersService.SendAuctionData(AuctionData);
                 QuestionAnswerData.AuctionData.NotifyChanged();
             }
             else
             {
-                Debug.Log($"Player '{player}' can't all in {Data}");
+                Debug.Log($"Player '{player}' can't all in {AuctionData}");
             }
         }
 
         public void MasterOnReceivePlayerBet(PlayerData player, int bet)
         {
-            bool isForceBet = Data.Player == null && player.Score < bet;
-            bool canBet = Data.BettingPlayer == player && !Data.IsAllIn && bet >= Data.NextMinBet &&
+            bool isForceBet = AuctionData.Player == null && player.Score < bet;
+            bool canBet = AuctionData.BettingPlayer == player && !AuctionData.IsAllIn && bet >= AuctionData.NextMinBet &&
                           (player.Score >= bet || isForceBet);
             if (canBet)
             {
-                Data.Bet = bet;
-                Data.Player = player;
+                AuctionData.Bet = bet;
+                AuctionData.Player = player;
                 AddAutomaticPasses();
-                Data.BettingPlayer = SelectNextBettingPlayer();
+                AuctionData.BettingPlayer = SelectNextBettingPlayer();
                 
-                SendToPlayersService.SendAuctionData(Data);
+                SendToPlayersService.SendAuctionData(AuctionData);
                 QuestionAnswerData.AuctionData.NotifyChanged();
             }
             else
             {
-                Debug.Log($"Player '{player}' can't do bet '{bet}', {Data}");
+                Debug.Log($"Player '{player}' can't do bet '{bet}', {AuctionData}");
             }
         }
 
@@ -147,21 +147,21 @@ namespace Victorina
         {
             foreach (PlayerData player in PlayersBoard.Players)
             {
-                if(Data.PassedPlayers.Contains(player))
+                if(AuctionData.PassedPlayers.Contains(player))
                     continue;
 
                 if(!CanPass(player))
                     continue;
                 
-                if (player.Score < Data.NextMinBet)
-                    Data.PassedPlayers.Add(player);
+                if (player.Score < AuctionData.NextMinBet)
+                    AuctionData.PassedPlayers.Add(player);
             }
         }
 
         public bool CanPass(PlayerData player)
         {
-            bool canPass1 = Data.Player != player;//Player is not who hold bet
-            bool canPass2 = !(Data.Player == null && Data.BettingPlayer == player);
+            bool canPass1 = AuctionData.Player != player;//Player is not who hold bet
+            bool canPass2 = !(AuctionData.Player == null && AuctionData.BettingPlayer == player);
             return canPass1 && canPass2;
         }
         
@@ -169,8 +169,15 @@ namespace Victorina
         {
             if (NetworkData.IsMaster)
             {
-                PlayersBoardSystem.MakePlayerCurrent(Data.Player);
-                QuestionAnswerSystem.ShowNext();
+                if (AuctionData.Player == null)
+                {
+                    Debug.LogWarning("Auction player is null. Can't finish auction.");
+                }
+                else
+                {
+                    PlayersBoardSystem.MakePlayerCurrent(AuctionData.Player);
+                    QuestionAnswerSystem.StartQuestionStory();
+                }
             }
             else
             {

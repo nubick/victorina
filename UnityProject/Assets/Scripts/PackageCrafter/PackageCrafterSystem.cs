@@ -229,9 +229,6 @@ namespace Victorina
 
                 if (questionType == QuestionType.NoRisk)
                     Data.SelectedQuestion.QuestionStory.Insert(0, new NoRiskStoryDot());
-
-                if (questionType == QuestionType.Auction)
-                    Data.SelectedQuestion.QuestionStory.Insert(0, new AuctionStoryDot());
             }
             
             Data.SelectedQuestion.Type = questionType;

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class AuctionStoryDotView : ViewBase
+    public class AuctionView : ViewBase
     {
         [Inject] private AuctionSystem AuctionSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }

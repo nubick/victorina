@@ -32,7 +32,7 @@ namespace Victorina
 
             Data.TimerState = QuestionTimerState.NotStarted;
             Data.WrongAnsweredIds.Clear();
-            Data.Phase.Value = QuestionPhase.ShowQuestion;
+            Data.Phase.Value = netQuestion.Type == QuestionType.Auction ? QuestionPhase.Auction : QuestionPhase.ShowQuestion;
             Data.CurrentStoryDotIndex = 0;
             
             Data.AnswerTip = GetAnswerTip(Data.SelectedQuestion.Value);
@@ -47,7 +47,7 @@ namespace Victorina
                 SendToPlayersService.SendCatInBagData(CatInBagData);
             }
 
-            if (Data.CurrentStoryDot is AuctionStoryDot)
+            if (Data.Phase.Value == QuestionPhase.Auction)
             {
                 AuctionSystem.StartNew(MatchData.PlayersBoard.Value.Current, MatchData.SelectedRoundQuestion.Price);
             }
@@ -68,6 +68,17 @@ namespace Victorina
             bool isWaitingWhoGetCatInBag = Data.CurrentStoryDot is CatInBagStoryDot && !CatInBagData.IsPlayerSelected.Value;
             return !Data.IsLastDot && !isWaitingWhoGetCatInBag;
         }
+
+        public void StartQuestionStory()
+        {
+            Data.Phase.Value = QuestionPhase.ShowQuestion;
+            Data.CurrentStoryDotIndex = 0;
+            
+            if(IsLastQuestionStoryDot())
+                StartTimer();
+            
+            SendData(MasterIntention.ShowStoryDot);
+        }
         
         public void ShowNext()
         {
@@ -83,8 +94,7 @@ namespace Victorina
         {
             return Data.CurrentStoryDotIndex > 0 &&
                    !(Data.PreviousStoryDot is CatInBagStoryDot) &&
-                   !(Data.PreviousStoryDot is NoRiskStoryDot) &&
-                   !(Data.PreviousStoryDot is AuctionStoryDot);
+                   !(Data.PreviousStoryDot is NoRiskStoryDot);
         }
         
         public void ShowPrevious()

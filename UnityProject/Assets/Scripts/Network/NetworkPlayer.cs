@@ -154,8 +154,6 @@ namespace Victorina
                 InvokeClientRpcOnOwner(ReceiveNoRiskStoryDot, noRiskStoryDot, index);
             else if (storyDot is CatInBagStoryDot catInBagStoryDot)
                 InvokeClientRpcOnOwner(ReceiveCatInBagStoryDot, catInBagStoryDot, index);
-            else if (storyDot is AuctionStoryDot auctionStoryDot)
-                InvokeClientRpcOnOwner(ReceiveAuctionStoryDot, auctionStoryDot, index);
             else
                 throw new Exception($"Not supported story dot: {storyDot}");
         }
@@ -211,13 +209,6 @@ namespace Victorina
         {
             Debug.Log($"Player {OwnerClientId}: [{index}]: Receive cat in bag story dot: {catInBagStoryDot}");
             SetStoryDot(catInBagStoryDot, isQuestion: true, index);
-        }
-
-        [ClientRPC]
-        private void ReceiveAuctionStoryDot(AuctionStoryDot auctionStoryDot, int index)
-        {
-            Debug.Log($"Player {OwnerClientId}: [{index}]: Receive auction story dot");
-            SetStoryDot(auctionStoryDot, isQuestion: true, index);
         }
         
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)

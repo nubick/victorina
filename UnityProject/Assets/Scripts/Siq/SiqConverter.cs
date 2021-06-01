@@ -123,8 +123,6 @@ namespace Victorina
                         else if (typeName == "auction")
                         {
                             question.Type = QuestionType.Auction;
-                            AuctionStoryDot auctionStoryDot = new AuctionStoryDot();
-                            AddStoryDot(question, auctionStoryDot, isAfterMarker: false);
                         }
                         else
                         {

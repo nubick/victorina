@@ -18,7 +18,7 @@ namespace Victorina
         [Inject] private VideoStoryDotView VideoStoryDotView { get; set; }
         [Inject] private NoRiskStoryDotView NoRiskStoryDotView { get; set; }
         [Inject] private CatInBagStoryDotView CatInBagStoryDotView { get; set; }
-        [Inject] private AuctionStoryDotView AuctionStoryDotView { get; set; }
+        [Inject] private AuctionView AuctionView { get; set; }
 
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
@@ -85,7 +85,11 @@ namespace Victorina
         private IEnumerator SwitchToQuestionView(NetRoundQuestion netRoundQuestion, QuestionAnswerData data)
         {
             yield return RoundView.ShowQuestionBlinkEffect(netRoundQuestion);
-            UpdateStoryDot(data);
+
+            if (data.QuestionType == QuestionType.Auction)
+                ShowAuction();
+            else
+                UpdateStoryDot(data);
         }
 
         private void ShowLobbyViews()
@@ -175,12 +179,6 @@ namespace Victorina
                 if (NetworkData.IsMaster)
                     MasterQuestionPanelView.Show();
             }
-            else if (data.CurrentStoryDot is AuctionStoryDot)
-            {
-                Debug.Log("Show: AuctionStoryDotView");
-                AuctionStoryDotView.Show();
-                PlayersBoardView.Show();
-            }
             else if (data.CurrentStoryDot is TextStoryDot)
             {
                 Debug.Log("Show: TextStoryDotView");
@@ -200,6 +198,13 @@ namespace Victorina
             //MasterEffectsView.Show();
         }
 
+        private void ShowAuction()
+        {
+            Debug.Log("Show: AuctionView");
+            AuctionView.Show();
+            PlayersBoardView.Show();
+        }
+        
         private void OnQuestionAnswerPhaseChanged()
         {
             if (QuestionAnswerData.Phase.Value == QuestionPhase.AcceptingAnswer)

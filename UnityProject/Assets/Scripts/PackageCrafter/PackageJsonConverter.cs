@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using SimpleJSON;
 using UnityEngine;
@@ -164,7 +163,7 @@ namespace Victorina
                 return node;
             }
 
-            if (storyDot is NoRiskStoryDot || storyDot is AuctionStoryDot || storyDot is CatInBagStoryDot)
+            if (storyDot is NoRiskStoryDot || storyDot is CatInBagStoryDot)
             {
                 return null;
             }
@@ -250,11 +249,6 @@ namespace Victorina
             {
                 NoRiskStoryDot noRiskStoryDot = new NoRiskStoryDot();
                 question.QuestionStory.Insert(0, noRiskStoryDot);
-            }
-            else if (question.Type == QuestionType.Auction)
-            {
-                AuctionStoryDot auctionStoryDot = new AuctionStoryDot();
-                question.QuestionStory.Insert(0, auctionStoryDot);
             }
             
             return question;

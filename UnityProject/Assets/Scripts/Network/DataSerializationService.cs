@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Assets.Scripts.Utils;
@@ -29,8 +28,6 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeVideoStoryDot, DeserializeVideoStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeNoRiskStoryDot, DeserializeNoRiskStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeCatInBagStoryDot, DeserializeCatInBagStoryDot);
-            SerializationManager.RegisterSerializationHandlers(SerializeAuctionStoryDot, DeserializeAuctionStoryDot);
-            
 
             SerializationManager.RegisterSerializationHandlers(SerializeBytesArray, DeserializeBytesArray);
         }
@@ -246,11 +243,6 @@ namespace Victorina
             writer.WriteInt32(storyDot.Price);
             writer.WriteBool(storyDot.CanGiveYourself);
         }
-
-        private void SerializeAuctionStoryDot(Stream stream, AuctionStoryDot auctionStoryDot)
-        {
-            using PooledBitWriter writer = PooledBitWriter.Get(stream);
-        }
         
         private void DeserializeFileStoryDot(Stream stream, FileStoryDot fileStoryDot)
         {
@@ -295,13 +287,6 @@ namespace Victorina
             storyDot.Price = reader.ReadInt32();
             storyDot.CanGiveYourself = reader.ReadBool();
             return storyDot;
-        }
-        
-        private AuctionStoryDot DeserializeAuctionStoryDot(Stream stream)
-        {
-            using PooledBitReader reader = PooledBitReader.Get(stream);
-            AuctionStoryDot auctionStoryDot = new AuctionStoryDot();
-            return auctionStoryDot;
         }
         
         #endregion
