@@ -29126,6 +29126,7 @@ MonoBehaviour:
   AllInButton: {fileID: 1430133028}
   PassButton: {fileID: 1917676854}
   RoughBetText: {fileID: 87290770}
+  AuctionStartSoundEffect: {fileID: 11400000, guid: fb1e222738f684279a087db8aea1b592, type: 2}
   FinishAuctionButton: {fileID: 599806413}
 --- !u!1 &1152160268
 GameObject:

@@ -1,3 +1,4 @@
+using Assets.Scripts.Data;
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,6 +26,8 @@ namespace Victorina
         public Button PassButton;
         public Text RoughBetText;
 
+        public SoundEffect AuctionStartSoundEffect;
+        
         public Button FinishAuctionButton;
         
         private AuctionData AuctionData => MatchData.QuestionAnswerData.AuctionData.Value;
@@ -37,6 +40,7 @@ namespace Victorina
         
         protected override void OnShown()
         {
+            AuctionStartSoundEffect.Play();
             RefreshUI();
         }
 
