@@ -25,7 +25,7 @@ namespace Victorina
         public Button PassButton;
         public Text RoughBetText;
 
-        public GameObject FinishAuctionButton;
+        public Button FinishAuctionButton;
         
         private AuctionData AuctionData => MatchData.QuestionAnswerData.AuctionData.Value;
         
@@ -67,7 +67,8 @@ namespace Victorina
             BetText.text = AuctionData.Bet.ToString();
             Theme.text = MatchData.SelectedRoundQuestion.Theme;
             
-            FinishAuctionButton.SetActive(NetworkData.IsMaster);
+            FinishAuctionButton.gameObject.SetActive(NetworkData.IsMaster);
+            FinishAuctionButton.interactable = AuctionData.Player != null;
             
             if (NetworkData.IsClient)
                 SetRoughBet(AuctionData.NextMinBet);
