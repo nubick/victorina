@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
+using Assets.Scripts.Utils;
 using Injection;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -16,6 +19,8 @@ namespace Victorina
         
         public GameObject NoVideoImage;
         public VideoPlayer VideoPlayer;
+        public RectTransform RawImageParent;
+        public RectTransform RawImage;
 
         public void Initialize()
         {
@@ -54,6 +59,7 @@ namespace Victorina
             bool exists = MasterFilesRepository.Has(fileId);
             VideoPlayer.gameObject.SetActive(exists);
             NoVideoImage.SetActive(!exists);
+            RawImageParent.gameObject.SetActive(false);
             
             if (exists)
             {
@@ -67,7 +73,14 @@ namespace Victorina
                 while (!VideoPlayer.isPrepared)
                         yield return null;
                 
+                RefreshRawImageSize(VideoPlayer.width, VideoPlayer.height);
                 VideoPlayer.Play();
+
+                //to rid of frame from previous video
+                while (VideoPlayer.frame < 0)
+                    yield return null;
+
+                RawImageParent.gameObject.SetActive(true);
             }
             else
             {
@@ -117,6 +130,30 @@ namespace Victorina
         private void SetVolume(float volume)
         {
             VideoPlayer.SetDirectAudioVolume(0, volume);
+        }
+
+        private void OnRectTransformDimensionsChange()
+        {
+            if(IsActive && VideoPlayer.isPrepared)
+                RefreshRawImageSize(VideoPlayer.width, VideoPlayer.height);
+        }
+
+        private void RefreshRawImageSize(uint videoWidth, uint videoHeight)
+        {
+            float parentHeight = RawImageParent.GetHeight();
+            float parentWidth = RawImageParent.GetWidth();
+            float imageWidth, imageHeight;
+            if (videoWidth * 1f / videoHeight > parentWidth / parentHeight)
+            {
+                imageWidth = parentWidth;
+                imageHeight = parentWidth / videoWidth * videoHeight;
+            }
+            else
+            {
+                imageHeight = parentHeight;
+                imageWidth = parentHeight / videoHeight * videoWidth;
+            }
+            RawImage.SetWidthHeight(imageWidth, imageHeight);
         }
     }
 }
