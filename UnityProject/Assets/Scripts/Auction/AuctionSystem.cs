@@ -69,6 +69,7 @@ namespace Victorina
         private void MasterMakeBetForPlayer(int bet, PlayerData player)
         {
             AuctionData.Bet = bet;
+            AuctionData.IsAllIn = false;
             AuctionData.Player = player;
             AuctionData.PassedPlayers.Remove(player);
             AuctionData.BettingPlayer = player;

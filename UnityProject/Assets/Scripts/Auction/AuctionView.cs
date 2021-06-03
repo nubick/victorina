@@ -76,6 +76,8 @@ namespace Victorina
             
             if (NetworkData.IsClient)
                 SetRoughBet(AuctionData.NextMinBet);
+            else if(NetworkData.IsMaster && AuctionData.SelectedPlayerByMaster != null)
+                SetRoughBet(100);
         }
         
         private void RefreshPlayersWidgets(PlayersBoard playersBoard)
