@@ -16,6 +16,7 @@ namespace Victorina
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
+        [Inject] private MessageDialogueView MessageDialogueView { get; set; }
 
         private PlayersBoard PlayersBoard => MatchData.PlayersBoard.Value;
         
@@ -42,7 +43,10 @@ namespace Victorina
             }
             else if (NetworkData.IsMaster)
             {
-                SelectQuestion(netRoundQuestion);
+                if (PlayersBoard.Current == null)
+                    MessageDialogueView.Show("Текущий игрок?", "Для старта необходим текущий игрок! Выберите игрока в верхней панели и сделайте его текущим!");
+                else
+                    SelectQuestion(netRoundQuestion);
             }
             else if (NetworkData.IsClient)
             {

@@ -26,9 +26,9 @@ namespace Victorina
             if(Static.BuildMode == BuildMode.Development && !netRoundQuestion.IsAnswered)
             {
                 if (netRoundQuestion.Type == QuestionType.CatInBag)
-                    Price.text += ":cat in bag";
+                    Price.text += ":cat";
                 else if (netRoundQuestion.Type == QuestionType.NoRisk)
-                    Price.text += ":no risk";
+                    Price.text += ":risk";
                 else if (netRoundQuestion.Type == QuestionType.Auction)
                     Price.text += ":auction";
             }
