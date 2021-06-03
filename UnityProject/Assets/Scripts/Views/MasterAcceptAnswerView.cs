@@ -7,13 +7,14 @@ namespace Victorina
     {
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         
         public Text Header;
         public Text AnswerTip;
 
         protected override void OnShown()
         {
-            Header.text = $"Отвечает: {QuestionAnswerData.AnsweringPlayerName}";
+            Header.text = $"Отвечает: {PlayersBoardSystem.GetPlayerName(QuestionAnswerData.AnsweringPlayerId)}";
             AnswerTip.text = $"Ответ: \n{QuestionAnswerData.AnswerTip}";
         }
         

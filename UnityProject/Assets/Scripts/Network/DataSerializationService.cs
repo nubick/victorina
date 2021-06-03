@@ -321,32 +321,26 @@ namespace Victorina
             writer.WriteSingle(data.TimerLeftSeconds);
 
             writer.WriteByte(data.AnsweringPlayerId);
-            writer.WriteString(data.AnsweringPlayerName ?? string.Empty);
-
-            writer.WriteInt32(data.WrongAnsweredIds.Count);
-            foreach (byte playerId in data.WrongAnsweredIds)
-                writer.WriteByte(playerId);
+            SerializeBytesArray(stream, data.WrongAnsweredIds.ToArray());
+            SerializeBytesArray(stream, data.AdmittedPlayersIds.ToArray());
         }
 
         private QuestionAnswerData DeserializeQuestionAnswerData(Stream stream)
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             QuestionAnswerData data = new QuestionAnswerData();
-            
+
             data.Phase.Value = (QuestionPhase) reader.ReadInt32();
             data.MasterIntention = (MasterIntention) reader.ReadInt32();
             data.CurrentStoryDotIndex = reader.ReadInt32();
-            
+
             data.TimerState = (QuestionTimerState) reader.ReadInt32();
             data.TimerResetSeconds = reader.ReadSingle();
             data.TimerLeftSeconds = reader.ReadSingle();
 
             data.AnsweringPlayerId = (byte) reader.ReadByte();
-            data.AnsweringPlayerName = reader.ReadString().ToString();
-
-            int amount = reader.ReadInt32();
-            for (int i = 0; i < amount; i++)
-                data.WrongAnsweredIds.Add((byte) reader.ReadByte());
+            data.WrongAnsweredIds.AddRange(DeserializeBytesArray(stream));
+            data.AdmittedPlayersIds.AddRange(DeserializeBytesArray(stream));
 
             return data;
         }

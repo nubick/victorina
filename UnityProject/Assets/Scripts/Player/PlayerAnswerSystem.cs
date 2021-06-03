@@ -27,21 +27,19 @@ namespace Victorina
 
         private void SendAnswerIntention()
         {
-            if (!CanSendAnswerIntention())
-                return;
-            
             float spentSeconds = (float) (DateTime.UtcNow - MatchData.EnableAnswerTime).TotalSeconds;
             SendToMasterService.SendPlayerButton(spentSeconds);
         }
 
         public void OnAnswerButtonClicked()
         {
-            SendAnswerIntention();
+            if (CanSendAnswerIntention())
+                SendAnswerIntention();
         }
         
         public void OnKeyPressed(KeyCode keyCode)
         {
-            if(keyCode == KeyCode.Space)
+            if(keyCode == KeyCode.Space && CanSendAnswerIntention())
                 SendAnswerIntention();
         }
         
@@ -51,20 +49,12 @@ namespace Victorina
                 MatchData.Phase.Value != MatchPhase.Question ||
                 QuestionAnswerData.Phase.Value != QuestionPhase.ShowQuestion ||
                 QuestionAnswerData.TimerState == QuestionTimerState.NotStarted ||
-                WasIntentionSent())
+                WasIntentionSent() ||
+                WasWrongAnswer() ||
+                !IsAdmitted())
                 return false;
 
-            switch (QuestionAnswerData.QuestionType)
-            {
-                case QuestionType.Simple:
-                    return !WasWrongAnswer();
-                case QuestionType.NoRisk:
-                case QuestionType.CatInBag:
-                case QuestionType.Auction:
-                    return MatchData.IsMeCurrentPlayer;
-                default:
-                    throw new Exception($"Not supported QuestionType: {QuestionAnswerData.QuestionType}");
-            }
+            return true;
         }
 
         public bool WasWrongAnswer()
@@ -75,6 +65,11 @@ namespace Victorina
         public bool WasIntentionSent()
         {
             return QuestionAnswerData.PlayersButtonClickData.Players.Any(_ => _.PlayerId == NetworkData.RegisteredPlayerId);
-        } 
+        }
+
+        public bool IsAdmitted()
+        {
+            return QuestionAnswerData.AdmittedPlayersIds.Contains(NetworkData.RegisteredPlayerId);
+        }
     }
 }

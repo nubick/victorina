@@ -87,6 +87,7 @@ namespace Victorina
         {
             PlayersBoardSystem.MakePlayerCurrent(playerId);
             CatInBagData.IsPlayerSelected.Value = true;
+            QuestionAnswerData.AdmittedPlayersIds.Add(playerId);
             SendToPlayersService.SendCatInBagData(CatInBagData);
         }
     }

@@ -106,7 +106,7 @@ namespace Victorina
             
             //Client only
             _injector.Bind(FindObjectOfType<DownloadingFilesPanelView>());
-            _injector.Bind(FindObjectOfType<PlayerButtonView>());
+            _injector.Bind(FindObjectOfType<PlayerGiveAnswerView>());
             _injector.Bind(new PlayerDataReceiver());
             _injector.Bind(new PlayerAnswerSystem());
 
@@ -193,7 +193,7 @@ namespace Victorina
             _injector.Get<PlayersButtonClickPanelView>().Initialize();
             
             _injector.Get<DownloadingFilesPanelView>().Initialize();
-            _injector.Get<PlayerButtonView>().Initialize();
+            _injector.Get<PlayerGiveAnswerView>().Initialize();
 
             _injector.Get<MatchSystem>().Initialize();
             

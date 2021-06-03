@@ -22,5 +22,11 @@ namespace Victorina
             Debug.Log($"frame: {videoPlayer.frame}, count: {videoPlayer.frameCount}");
             return videoPlayer.frame >= (long) videoPlayer.frameCount - 1;
         }
+
+        public static void AddRange<T>(this HashSet<T> hashSet, IEnumerable<T> items)
+        {
+            foreach (T item in items)
+                hashSet.Add(item);
+        }
     }
 }

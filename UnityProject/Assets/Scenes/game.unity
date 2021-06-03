@@ -7719,7 +7719,7 @@ RectTransform:
   m_Children:
   - {fileID: 837033058}
   m_Father: {fileID: 892555853}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -12050,7 +12050,7 @@ GameObject:
   - component: {fileID: 497190884}
   - component: {fileID: 497190883}
   m_Layer: 5
-  m_Name: AnswerText
+  m_Name: WaitingText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12117,6 +12117,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 497190881}
   m_CullTransparentMesh: 1
+--- !u!1 &498313336
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 498313337}
+  m_Layer: 5
+  m_Name: Players
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &498313337
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498313336}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1266744350}
+  m_Father: {fileID: 1143375783}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &500096401
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21302,7 +21338,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &892555853
 RectTransform:
   m_ObjectHideFlags: 0
@@ -21317,9 +21353,9 @@ RectTransform:
   - {fileID: 164389860}
   - {fileID: 1608513663}
   - {fileID: 1226871789}
+  - {fileID: 938261221}
   - {fileID: 321733970}
   - {fileID: 2116699954}
-  - {fileID: 938261221}
   - {fileID: 761492010}
   m_Father: {fileID: 1266744350}
   m_RootOrder: 0
@@ -22406,7 +22442,7 @@ GameObject:
   - component: {fileID: 938261223}
   - component: {fileID: 938261222}
   m_Layer: 5
-  m_Name: WasWrongAnswerPanel
+  m_Name: WasWrongAnswerState
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22425,7 +22461,7 @@ RectTransform:
   m_Children:
   - {fileID: 1119210087}
   m_Father: {fileID: 892555853}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -28611,7 +28647,7 @@ RectTransform:
   - {fileID: 1150041003}
   - {fileID: 1654645296}
   - {fileID: 49460888}
-  - {fileID: 1266744350}
+  - {fileID: 498313337}
   - {fileID: 749395944}
   - {fileID: 955234340}
   - {fileID: 1193967916}
@@ -31167,12 +31203,12 @@ GameObject:
   - component: {fileID: 1226871791}
   - component: {fileID: 1226871790}
   m_Layer: 5
-  m_Name: SayAnswerButton
+  m_Name: SayAnswerState
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1226871789
 RectTransform:
   m_ObjectHideFlags: 0
@@ -32444,7 +32480,7 @@ GameObject:
   - component: {fileID: 1266744350}
   - component: {fileID: 1266744351}
   m_Layer: 5
-  m_Name: PlayerButtonView
+  m_Name: PlayerGiveAnswerView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32457,13 +32493,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1266744349}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 892555853}
-  m_Father: {fileID: 1143375783}
-  m_RootOrder: 13
+  m_Father: {fileID: 498313337}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -32484,11 +32520,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Content: {fileID: 892555852}
   TimerStrip: {fileID: 761492011}
-  SayAnswerButton: {fileID: 1226871788}
+  WaitingState: {fileID: 1608513660}
+  SayAnswerState: {fileID: 1226871788}
+  WasWrongAnswerState: {fileID: 938261220}
   AnsweringPanel: {fileID: 321733969}
   AnsweringText: {fileID: 837033059}
   AnswerDemonstrationPanel: {fileID: 2116699953}
-  WasWrongAnswerPanel: {fileID: 938261220}
   ThemeText: {fileID: 1608468983}
 --- !u!1 &1269633595
 GameObject:
@@ -41111,12 +41148,12 @@ GameObject:
   - component: {fileID: 1608513662}
   - component: {fileID: 1608513661}
   m_Layer: 5
-  m_Name: WaitingPanel
+  m_Name: WaitingState
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1608513661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55040,7 +55077,7 @@ RectTransform:
   m_Children:
   - {fileID: 487264175}
   m_Father: {fileID: 892555853}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}

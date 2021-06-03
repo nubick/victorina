@@ -8,8 +8,7 @@ namespace Victorina
         public MasterIntention MasterIntention { get; set; }
         public ReactiveProperty<QuestionPhase> Phase { get; } = new ReactiveProperty<QuestionPhase>();
         public ReactiveProperty<NetQuestion> SelectedQuestion { get; } = new ReactiveProperty<NetQuestion>();
-        public QuestionType QuestionType => SelectedQuestion.Value.Type;
-        
+
         public int CurrentStoryDotIndex { get; set; }
         
         public QuestionTimerState TimerState { get; set; }
@@ -19,17 +18,15 @@ namespace Victorina
         public PlayersButtonClickData PlayersButtonClickData { get; set; } = new PlayersButtonClickData();
         public ReactiveProperty<AuctionData> AuctionData { get; } = new ReactiveProperty<AuctionData>();
         
-        public string AnsweringPlayerName { get; set; }
         public byte AnsweringPlayerId { get; set; }
         public HashSet<byte> WrongAnsweredIds { get; set; } = new HashSet<byte>();
-        
+        public HashSet<byte> AdmittedPlayersIds { get; set; } = new HashSet<byte>();
+
+        public QuestionType QuestionType => SelectedQuestion.Value.Type;
         public StoryDot CurrentStoryDot => CurrentStory[CurrentStoryDotIndex];
         public StoryDot PreviousStoryDot => CurrentStory[CurrentStoryDotIndex - 1];
         public bool IsLastDot => CurrentStoryDot == CurrentStory.Last();
-
-        public StoryDot[] CurrentStory => Phase.Value == QuestionPhase.ShowAnswer ? 
-            SelectedQuestion.Value.AnswerStory : 
-            SelectedQuestion.Value.QuestionStory;
+        public StoryDot[] CurrentStory => Phase.Value == QuestionPhase.ShowAnswer ? SelectedQuestion.Value.AnswerStory : SelectedQuestion.Value.QuestionStory;
         
         //Master Only
         public bool IsAnswerTipEnabled { get; set; }

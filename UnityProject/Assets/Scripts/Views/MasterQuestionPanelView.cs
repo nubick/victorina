@@ -43,6 +43,9 @@ namespace Victorina
         
         public void RefreshUI()
         {
+            if (!IsActive)
+                return;
+            
             QuestionType questionType = Data.SelectedQuestion.Value.Type;
             QuestionPhase phase = Data.Phase.Value;
 

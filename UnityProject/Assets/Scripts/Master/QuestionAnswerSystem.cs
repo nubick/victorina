@@ -23,6 +23,8 @@ namespace Victorina
                                                  Data.Phase.Value == QuestionPhase.ShowQuestion &&
                                                  Data.CurrentStoryDot == Data.SelectedQuestion.Value.QuestionStory.Last();
 
+        private PlayersBoard PlayersBoard => MatchData.PlayersBoard.Value;
+        
         public void StartAnswer(NetQuestion netQuestion)
         {
             Data.SelectedQuestion.Value = netQuestion;
@@ -32,8 +34,10 @@ namespace Victorina
 
             Data.TimerState = QuestionTimerState.NotStarted;
             Data.WrongAnsweredIds.Clear();
+            ResetAdmittedPlayersIds(netQuestion.Type);
             Data.Phase.Value = netQuestion.Type == QuestionType.Auction ? QuestionPhase.Auction : QuestionPhase.ShowQuestion;
             Data.CurrentStoryDotIndex = 0;
+            Data.AnsweringPlayerId = 0;
             
             Data.AnswerTip = GetAnswerTip(Data.SelectedQuestion.Value);
             Data.IsAnswerTipEnabled = false;
@@ -53,6 +57,28 @@ namespace Victorina
             }
             
             SendData(MasterIntention.StartAnswering);
+        }
+
+        private void ResetAdmittedPlayersIds(QuestionType questionType)
+        {
+            Data.AdmittedPlayersIds.Clear();
+            switch (questionType)
+            {
+                case QuestionType.Simple:
+                    Data.AdmittedPlayersIds.AddRange(PlayersBoard.Players.Select(_ => _.PlayerId));
+                    break;
+                case QuestionType.NoRisk:
+                    Data.AdmittedPlayersIds.Add(PlayersBoard.Current.PlayerId);
+                    break;
+                case QuestionType.CatInBag:
+                    //add who will get cat in bag
+                    break;
+                case QuestionType.Auction:
+                    //add who will win auction later
+                    break;
+                default:
+                    throw new Exception($"Not supported question type: {questionType}");
+            }
         }
         
         private void SendData(MasterIntention intention)
@@ -197,7 +223,6 @@ namespace Victorina
             if (NetworkData.IsClient)
                 return;
             
-            Data.AnsweringPlayerName = PlayersBoardSystem.GetPlayer(playerId).Name;
             Data.AnsweringPlayerId = playerId;
             Data.Phase.Value = QuestionPhase.AcceptingAnswer;
             SendToPlayersService.Send(Data);

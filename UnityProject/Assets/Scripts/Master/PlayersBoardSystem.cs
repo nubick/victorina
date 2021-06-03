@@ -122,5 +122,10 @@ namespace Victorina
         {
             return PlayersBoard.Current == null ? Static.EmptyPlayerName : PlayersBoard.Current.Name;
         }
+
+        public string GetPlayerName(byte playerId)
+        {
+            return GetPlayer(playerId).Name;
+        }
     }
 }

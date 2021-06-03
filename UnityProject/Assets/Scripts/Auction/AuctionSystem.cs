@@ -175,6 +175,7 @@ namespace Victorina
                 }
                 else
                 {
+                    QuestionAnswerData.AdmittedPlayersIds.Add(AuctionData.Player.PlayerId);
                     PlayersBoardSystem.MakePlayerCurrent(AuctionData.Player);
                     QuestionAnswerSystem.StartQuestionStory();
                 }

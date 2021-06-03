@@ -24,7 +24,7 @@ namespace Victorina
         [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
         [Inject] private MasterEffectsView MasterEffectsView { get; set; }
         
-        [Inject] private PlayerButtonView PlayerButtonView { get; set; }
+        [Inject] private PlayerGiveAnswerView PlayerGiveAnswerView { get; set; }
 
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
@@ -137,7 +137,7 @@ namespace Victorina
                     MasterQuestionPanelView.Show();
 
                 if (NetworkData.IsClient)
-                    PlayerButtonView.Show();
+                    PlayerGiveAnswerView.Show();
             }
             else if (data.CurrentStoryDot is AudioStoryDot)
             {
@@ -148,7 +148,7 @@ namespace Victorina
                     MasterQuestionPanelView.Show();
 
                 if (NetworkData.IsClient)
-                    PlayerButtonView.Show();
+                    PlayerGiveAnswerView.Show();
             }
             else if (data.CurrentStoryDot is VideoStoryDot)
             {
@@ -159,7 +159,7 @@ namespace Victorina
                     MasterQuestionPanelView.Show();
 
                 if (NetworkData.IsClient)
-                    PlayerButtonView.Show();
+                    PlayerGiveAnswerView.Show();
             }
             else if (data.CurrentStoryDot is NoRiskStoryDot)
             {
@@ -188,7 +188,7 @@ namespace Victorina
                     MasterQuestionPanelView.Show();
 
                 if (NetworkData.IsClient)
-                    PlayerButtonView.Show();
+                    PlayerGiveAnswerView.Show();
             }
             else
             {

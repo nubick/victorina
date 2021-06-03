@@ -52,8 +52,8 @@ namespace Victorina
             QuestionAnswerData.MasterIntention = data.MasterIntention;
             
             QuestionAnswerData.AnsweringPlayerId = data.AnsweringPlayerId;
-            QuestionAnswerData.AnsweringPlayerName = data.AnsweringPlayerName;
             QuestionAnswerData.WrongAnsweredIds = data.WrongAnsweredIds;
+            QuestionAnswerData.AdmittedPlayersIds = data.AdmittedPlayersIds;
 
             bool wasPhaseChanged = QuestionAnswerData.Phase.Value != data.Phase.Value;
             if (wasPhaseChanged)
