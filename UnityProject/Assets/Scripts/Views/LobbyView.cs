@@ -1,4 +1,5 @@
 using System.Collections;
+using System.IO;
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -79,6 +80,9 @@ namespace Victorina
             
             string packagePath = PackageFilesSystem.UnZipArchiveToPlayFolder(packageArchivePath);
             StartPackage(packagePath);
+
+            string packageName = Path.GetFileName(packageArchivePath);
+            AnalyticsEvents.LoadPackageToPlay.Publish(packageName);
         }
 
         private void RefreshButtons()

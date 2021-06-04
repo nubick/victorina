@@ -71,7 +71,7 @@ namespace Victorina
 
             if (string.IsNullOrEmpty(packageArchivePath))
             {
-                Debug.Log($"Package archive path wat not selected. Cancel");
+                Debug.Log("Package archive path was not selected. Cancel");
                 return;
             }
             

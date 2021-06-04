@@ -28,6 +28,7 @@ namespace Victorina
 
         public void OnEditorButtonClicked()
         {
+            AnalyticsEvents.CrafterOpen.Publish();
             SwitchTo(PackageCrafterView);
         }
     }

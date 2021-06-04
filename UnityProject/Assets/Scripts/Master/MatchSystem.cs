@@ -69,6 +69,8 @@ namespace Victorina
 
         public void SelectQuestion(NetRoundQuestion netRoundQuestion)
         {
+            SendSelectQuestionEvents();
+            
             MatchData.SelectedRoundQuestion = netRoundQuestion;
             SendToPlayersService.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
             
@@ -77,6 +79,17 @@ namespace Victorina
 
             NetQuestion netQuestion = BuildNetQuestion(netRoundQuestion);
             QuestionAnswerSystem.StartAnswer(netQuestion);
+        }
+
+        private void SendSelectQuestionEvents()
+        {
+            int answered = MatchData.RoundData.Value.Themes.SelectMany(theme => theme.Questions).Count(question => question.IsAnswered);
+            int notAnswered = MatchData.RoundData.Value.Themes.SelectMany(theme => theme.Questions).Count(question => !question.IsAnswered);
+
+            if (answered == 0)
+                AnalyticsEvents.FirstRoundQuestionStart.Publish(MatchData.RoundsInfo.Value.CurrentRoundNumber);
+            else if (notAnswered == 1)
+                AnalyticsEvents.LastRoundQuestionStart.Publish(MatchData.RoundsInfo.Value.CurrentRoundNumber);
         }
 
         private NetQuestion BuildNetQuestion(NetRoundQuestion netRoundQuestion)

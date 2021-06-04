@@ -97,6 +97,8 @@ namespace Victorina
             ZipFile.CreateFromDirectory(sourceDirectoryName, packageArchivePath);
             EnsureTempFolderIsEmpty();
             Debug.Log($"Package is saved to archive: {packageArchivePath}");
+            string archiveName = Path.GetFileName(packageArchivePath);
+            AnalyticsEvents.SavePackageAsArchive.Publish(archiveName);
         }
         
         private void UnZip(string packageArchivePath, string destinationPath)

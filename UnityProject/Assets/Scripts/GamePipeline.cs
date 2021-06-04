@@ -131,6 +131,9 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<InputDialogueView>());
             _injector.Bind(FindObjectOfType<MessageDialogueView>());
 
+            //Analytics
+            _injector.Bind(new AnalyticsSystem());
+            
             //Crafter
             _injector.Bind(FindObjectOfType<PackageCrafterView>());
             _injector.Bind(new PackageCrafterSystem());
@@ -209,6 +212,9 @@ namespace Victorina
             
             _injector.Get<AnsweringTimerSystem>().Initialize();
             
+            //Analytics
+            _injector.Get<AnalyticsSystem>().Initialize();
+            
             //Debug
             _injector.Get<DisconnectPanelView>().Initialize();
             
@@ -248,6 +254,12 @@ namespace Victorina
                     _injector.Get<SaveSystem>().Save();
                 }
             }
+        }
+
+        private void OnDestroy()
+        {
+            Debug.Log($"GamePipeline.OnDestroy");
+            _injector.Get<AnalyticsSystem>().OnDestroy();
         }
     }
 }
