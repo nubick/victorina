@@ -3,16 +3,9 @@ using System.Linq;
 
 namespace Victorina
 {
-    public class PlayersButtonClickData
+    public class PlayersButtonClickData : SyncData
     {
         public List<PlayerButtonClickData> Players { get; } = new List<PlayerButtonClickData>();
-
-        public bool HasChanges { get; private set; }
-
-        public void ApplyChanges()
-        {
-            HasChanges = false;
-        }
         
         public void Add(byte playerId, string name, float spentSeconds)
         {
@@ -21,7 +14,7 @@ namespace Victorina
             clickData.Name = name;
             clickData.Time = spentSeconds;
             Players.Add(clickData);
-            HasChanges = true;
+            MarkAsChanged();
             MetagameEvents.PlayersButtonClickDataChanged.Publish();
         }
         
@@ -30,7 +23,7 @@ namespace Victorina
             if (Players.Any())
             {
                 Players.Clear();
-                HasChanges = true;
+                MarkAsChanged();
                 MetagameEvents.PlayersButtonClickDataChanged.Publish();
             }
         }

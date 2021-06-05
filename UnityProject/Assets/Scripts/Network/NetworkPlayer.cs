@@ -99,19 +99,7 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive cat in bag data, isPlayerSelected: {isPlayerSelected}");
             PlayerDataReceiver.OnReceiveCatInBagData(isPlayerSelected);
         }
-
-        public void SendAuctionData(AuctionData auctionData)
-        {
-            InvokeClientRpcOnOwner(ReceiveAuctionData, auctionData);
-        }
-
-        [ClientRPC]
-        private void ReceiveAuctionData(AuctionData auctionData)
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive AuctionData: {auctionData}");
-            PlayerDataReceiver.OnReceiveAuctionData(auctionData);
-        }
-
+        
         public void SendSelectedQuestion(NetQuestion netQuestion)
         {
             //Debug.Log($"Master: Send selected question: {netQuestion} to {OwnerClientId}");
@@ -436,6 +424,47 @@ namespace Victorina
         {
             Debug.Log($"Master: Receive bet '{bet}' auction from Player {GetPlayerInfo()}");
             MasterDataReceiver.OnReceiveBetAuction(OwnerClientId, bet);
+        }
+        
+        public void SendAuctionData(AuctionData auctionData)
+        {
+            InvokeClientRpcOnOwner(ReceiveAuctionData, auctionData);
+        }
+
+        [ClientRPC]
+        private void ReceiveAuctionData(AuctionData auctionData)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive AuctionData: {auctionData}");
+            PlayerDataReceiver.OnReceiveAuctionData(auctionData);
+        }
+        
+        #endregion
+        
+        #region Final Round
+
+        public void SendRemoveTheme(int index)
+        {
+            Debug.Log($"Player {OwnerClientId}: send remove theme '{index}'");
+            InvokeServerRpc(MasterReceiveRemoveTheme, index);
+        }
+
+        [ServerRPC]
+        private void MasterReceiveRemoveTheme(int index)
+        {
+            Debug.Log($"Master: Receive remove theme '{index}' from Player {GetPlayerInfo()}");
+            MasterDataReceiver.OnReceiveRemoveTheme(OwnerClientId, index);
+        }
+
+        public void SendFinalRoundData(FinalRoundData finalRoundData)
+        {
+            InvokeClientRpcOnOwner(ReceiveFinalRoundData, finalRoundData);
+        }
+
+        [ClientRPC]
+        private void ReceiveFinalRoundData(FinalRoundData finalRoundData)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive FinalRoundData: {finalRoundData}");
+            PlayerDataReceiver.OnReceiveFinalRoundData(finalRoundData);
         }
         
         #endregion

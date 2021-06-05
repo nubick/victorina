@@ -17,8 +17,10 @@ namespace Victorina
         [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private MessageDialogueView MessageDialogueView { get; set; }
-
-        private PlayersBoard PlayersBoard => MatchData.PlayersBoard.Value;
+        [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
+        [Inject] private PlayersBoard PlayersBoard { get; set; }
+        
+        private NetRoundsInfo RoundsInfo => MatchData.RoundsInfo.Value; 
         
         public void Initialize()
         {
@@ -28,6 +30,7 @@ namespace Victorina
         private void OnServerStarted()
         {
             MatchData.Clear();
+            PlayersBoard.Clear();
         }
         
         public void StartMatch()
@@ -87,9 +90,9 @@ namespace Victorina
             int notAnswered = MatchData.RoundData.Value.Themes.SelectMany(theme => theme.Questions).Count(question => !question.IsAnswered);
 
             if (answered == 0)
-                AnalyticsEvents.FirstRoundQuestionStart.Publish(MatchData.RoundsInfo.Value.CurrentRoundNumber);
+                AnalyticsEvents.FirstRoundQuestionStart.Publish(RoundsInfo.CurrentRoundNumber);
             else if (notAnswered == 1)
-                AnalyticsEvents.LastRoundQuestionStart.Publish(MatchData.RoundsInfo.Value.CurrentRoundNumber);
+                AnalyticsEvents.LastRoundQuestionStart.Publish(RoundsInfo.CurrentRoundNumber);
         }
 
         private NetQuestion BuildNetQuestion(NetRoundQuestion netRoundQuestion)
@@ -107,7 +110,7 @@ namespace Victorina
         public void BackToRound()
         {
             PackageData.PackageProgress.SetQuestionAsAnswered(MatchData.SelectedRoundQuestion.QuestionId);
-            SelectRound(MatchData.RoundsInfo.Value.CurrentRoundNumber );
+            SelectRound(RoundsInfo.CurrentRoundNumber );
         }
 
         public void SelectRound(int number)
@@ -115,9 +118,10 @@ namespace Victorina
             if (NetworkData.IsClient)
                 return;
 
-            MatchData.RoundsInfo.Value.RoundsAmount = PackageData.Package.Rounds.Count;
-            MatchData.RoundsInfo.Value.CurrentRoundNumber = number;
-            SendToPlayersService.SendNetRoundsInfo(MatchData.RoundsInfo.Value);
+            RoundsInfo.RoundsAmount = PackageData.Package.Rounds.Count;
+            RoundsInfo.CurrentRoundNumber = number;
+            RoundsInfo.RoundTypes = PackageData.Package.Rounds.Select(_ => _.Type).ToArray();
+            SendToPlayersService.SendNetRoundsInfo(RoundsInfo);
             
             SyncCurrentRound();
             
@@ -127,10 +131,18 @@ namespace Victorina
 
         public void SyncCurrentRound()
         {
-            int number = MatchData.RoundsInfo.Value.CurrentRoundNumber;
+            int number = RoundsInfo.CurrentRoundNumber;
             Round round = PackageData.Package.Rounds[number - 1];
-            MatchData.RoundData.Value = BuildNetRound(round, PackageData.PackageProgress);
-            SendToPlayersService.SendNetRound(MatchData.RoundData.Value);
+
+            if (round.Type == RoundType.Simple)
+            {
+                MatchData.RoundData.Value = BuildNetRound(round, PackageData.PackageProgress);
+                SendToPlayersService.SendNetRound(MatchData.RoundData.Value);
+            }
+            else if (round.Type == RoundType.Final)
+            {
+                FinalRoundSystem.Select(round);
+            }
         }
 
         private NetRound BuildNetRound(Round round, PackageProgress packageProgress)
@@ -163,8 +175,7 @@ namespace Victorina
             PlayerData player = PlayersBoardSystem.GetPlayer(playerId);
             player.Score += price;
             Debug.Log($"Reward player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
-            MatchData.PlayersBoard.NotifyChanged();
-            SendToPlayersService.Send(PlayersBoard);
+            PlayersBoard.MarkAsChanged();
         }
         
         public void FinePlayer(byte playerId)
@@ -173,8 +184,7 @@ namespace Victorina
             PlayerData player = PlayersBoardSystem.GetPlayer(playerId);
             player.Score -= price;
             Debug.Log($"Fine player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
-            MatchData.PlayersBoard.NotifyChanged();
-            SendToPlayersService.Send(PlayersBoard);
+            PlayersBoard.MarkAsChanged();
         }
         
         private int GetQuestionPrice(NetQuestion netQuestion, NetRoundQuestion netRoundQuestion)

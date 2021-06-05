@@ -86,5 +86,17 @@ namespace Victorina
         }
 
         #endregion
+        
+        #region Final Round
+
+        public void SendRemoveTheme(int index)
+        {
+            if (NetworkingManager.IsConnectedClient)
+                Player.SendRemoveTheme(index);
+            else
+                Debug.Log($"Client is not connected: SendRemoveTheme: {index}");
+        }
+        
+        #endregion
     }
 }

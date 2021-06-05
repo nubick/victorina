@@ -13,6 +13,7 @@ namespace Victorina
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private PackageData PackageData { get; set; }
+        [Inject] private PlayersBoard PlayersBoard { get; set; }
         
         private string All => $"All: ({GetPlayersInfo()})";
         
@@ -25,8 +26,8 @@ namespace Victorina
         {
             networkPlayer.SendRegisteredPlayerId(registeredPlayerId);
             
-            Debug.Log($"Master: Send PlayersBoard: {MatchData.PlayersBoard.Value} to {networkPlayer.GetPlayerInfo()}");
-            networkPlayer.SendPlayersBoard(MatchData.PlayersBoard.Value);
+            Debug.Log($"Master: Send PlayersBoard: {PlayersBoard} to {networkPlayer.GetPlayerInfo()}");
+            networkPlayer.SendPlayersBoard(PlayersBoard);
 
             if (MatchData.Phase.Value == MatchPhase.WaitingInLobby)
             {
@@ -130,6 +131,12 @@ namespace Victorina
         {
             Debug.Log($"Master: Send AuctionData to {All}: {auctionData}");
             GetPlayers().ForEach(player => player.SendAuctionData(auctionData));
+        }
+
+        public void SendFinalRoundData(FinalRoundData finalRoundData)
+        {
+            Debug.Log($"Master: Send FinalRoundData to {All}: {finalRoundData}");
+            GetPlayers().ForEach(player => player.SendFinalRoundData(finalRoundData));
         }
     }
 }

@@ -12,9 +12,8 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private ServerService ServerService { get; set; }
+        [Inject] private PlayersBoard PlayersBoard { get; set; }
 
-        private PlayersBoard PlayersBoard => MatchData.PlayersBoard.Value;
-        
         public void Initialize()
         {
             MetagameEvents.MasterClientConnected.Subscribe(_ => UpdatePlayersBoard());
@@ -42,15 +41,14 @@ namespace Victorina
                 boardPlayer.IsConnected = joinedPlayer.IsConnected;
             }
             
-            MatchData.PlayersBoard.NotifyChanged();
-            SendToPlayersService.Send(PlayersBoard);
+            PlayersBoard.MarkAsChanged();
         }
 
         private void OnServerStopped()
         {
             if (NetworkData.IsMaster)
             {
-                PlayersBoard.Players.Clear();
+                PlayersBoard.Clear();
             }
         }
 
@@ -72,9 +70,7 @@ namespace Victorina
                 return;
             
             Debug.Log($"MakePlayerCurrent: {playerData}");
-            PlayersBoard.Current = playerData;
-            MatchData.PlayersBoard.NotifyChanged();
-            SendToPlayersService.Send(MatchData.PlayersBoard.Value);
+            PlayersBoard.SetCurrent(playerData);
         }
 
         public void UpdateFilesLoadingPercentage(byte playerId, byte percentage)
@@ -84,8 +80,7 @@ namespace Victorina
 
             PlayerData playerData = GetPlayer(playerId);
             playerData.FilesLoadingPercentage = percentage;
-            MatchData.PlayersBoard.NotifyChanged();
-            SendToPlayersService.Send(PlayersBoard);
+            PlayersBoard.MarkAsChanged();
         }
 
         public void UpdatePlayerName(PlayerData playerData, string newPlayerName)

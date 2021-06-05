@@ -10,7 +10,9 @@ namespace Victorina
         
         public static GameEvent<NetRoundQuestion> RoundQuestionClicked { get; } = new GameEvent<NetRoundQuestion>();
         public static GameEvent<int> RoundInfoClicked { get; } = new GameEvent<int>();
+        
         public static GameEvent<PlayerData> PlayerBoardWidgetClicked { get; } = new GameEvent<PlayerData>();
+        public static GameEvent PlayersBoardChanged { get; } = new GameEvent();
 
         public static GameEvent<PlayerButtonClickData> PlayerButtonClickWidgetClicked { get; } = new GameEvent<PlayerButtonClickData>();
         public static GameEvent<PlayerData> AuctionPlayerClicked { get; } = new GameEvent<PlayerData>();
@@ -19,6 +21,10 @@ namespace Victorina
         public static GameEvent QuestionTimerPaused { get; } = new GameEvent();
         
         public static GameEvent MediaRestarted { get; } = new GameEvent();
+        
+        //Final Round
+        public static GameEvent<int> FinalRoundThemeClicked { get; } = new GameEvent<int>();
+        public static GameEvent FinalRoundDataChanged { get; } = new GameEvent();
         
         //Data changed
         public static GameEvent PlayersButtonClickDataChanged { get; } = new GameEvent();

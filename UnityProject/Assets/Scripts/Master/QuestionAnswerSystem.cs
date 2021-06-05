@@ -18,12 +18,11 @@ namespace Victorina
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
+        [Inject] private PlayersBoard PlayersBoard { get; set; }
         
         private bool IsLastQuestionStoryDot() => Data.TimerState == QuestionTimerState.NotStarted &&
                                                  Data.Phase.Value == QuestionPhase.ShowQuestion &&
                                                  Data.CurrentStoryDot == Data.SelectedQuestion.Value.QuestionStory.Last();
-
-        private PlayersBoard PlayersBoard => MatchData.PlayersBoard.Value;
         
         public void StartAnswer(NetQuestion netQuestion)
         {
@@ -53,7 +52,7 @@ namespace Victorina
 
             if (Data.Phase.Value == QuestionPhase.Auction)
             {
-                AuctionSystem.StartNew(MatchData.PlayersBoard.Value.Current, MatchData.SelectedRoundQuestion.Price);
+                AuctionSystem.StartNew(PlayersBoard.Current, MatchData.SelectedRoundQuestion.Price);
             }
             
             SendData(MasterIntention.StartAnswering);
@@ -180,8 +179,8 @@ namespace Victorina
                 return;
 
             bool isNotCurrentForNoRiskQuestion = Data.QuestionType == QuestionType.NoRisk &&
-                                                 MatchData.PlayersBoard.Value.Current != null &&
-                                                 MatchData.PlayersBoard.Value.Current.PlayerId != playerId;
+                                                 PlayersBoard.Current != null &&
+                                                 PlayersBoard.Current.PlayerId != playerId;
             if (isNotCurrentForNoRiskQuestion)
                 return;
 
@@ -231,14 +230,14 @@ namespace Victorina
 
         public void AcceptNoRiskAnswer()
         {
-            if (MatchData.PlayersBoard.Value.Current == null)
+            if (PlayersBoard.Current == null)
             {
                 Debug.Log("Master. Error. Can't accept no risk answer. Current player is null.");
             }
             else
             {
                 PauseTimer();
-                SelectPlayerForAnswer(MatchData.PlayersBoard.Value.Current.PlayerId);
+                SelectPlayerForAnswer(PlayersBoard.Current.PlayerId);
             }
         }
         

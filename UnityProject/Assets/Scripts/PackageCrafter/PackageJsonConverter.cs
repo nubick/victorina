@@ -17,6 +17,7 @@ namespace Victorina
         private const string VideoKey = "Video";
         private const string QuestionStoryKey = "QuestionStory";
         private const string AnswerStoryKey = "AnswerStory";
+        private const string TypeKey = "Type";
 
         private const string CatInBagKey = "CatInBag";
         private const string ThemeKey = "Theme";
@@ -46,6 +47,7 @@ namespace Victorina
         {
             JSONNode roundNode = new JSONObject();
             roundNode.Add("Name", round.Name);
+            roundNode.Add(TypeKey, round.Type.ToString());
             roundNode.Add("Scheme", "Round");
             
             JSONArray themesArray = new JSONArray();
@@ -87,7 +89,7 @@ namespace Victorina
         private JSONNode ToJsonNode(Question question)
         {
             JSONNode jsonNode = new JSONObject();
-            jsonNode.Add("Type", question.Type.ToString());
+            jsonNode.Add(TypeKey, question.Type.ToString());
             jsonNode.Add("Scheme", "Question");
             jsonNode.Add("Id", question.Id);
             jsonNode.Add(PriceKey, question.Price);
@@ -198,7 +200,8 @@ namespace Victorina
         {
             Round round = new Round();
             round.Name = roundNode["Name"];
-
+            round.Type = (RoundType) Enum.Parse(typeof(RoundType), roundNode[TypeKey]);
+            
             JSONArray themes = roundNode["Themes"].AsArray;
             foreach (JSONNode themeNode in themes)
             {
@@ -235,7 +238,7 @@ namespace Victorina
         {
             string id = questionNode["Id"];
             Question question = new Question(id);
-            question.Type = (QuestionType) Enum.Parse(typeof(QuestionType), questionNode["Type"]);
+            question.Type = (QuestionType) Enum.Parse(typeof(QuestionType), questionNode[TypeKey]);
             question.Price = questionNode[PriceKey].AsInt;
             question.QuestionStory.AddRange(ReadStory(questionNode[QuestionStoryKey].AsArray));
             question.AnswerStory.AddRange(ReadStory(questionNode[AnswerStoryKey].AsArray));

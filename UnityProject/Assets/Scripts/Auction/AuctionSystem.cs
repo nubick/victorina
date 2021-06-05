@@ -10,12 +10,11 @@ namespace Victorina
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
+        [Inject] private PlayersBoard PlayersBoard { get; set; }
         
         private AuctionData AuctionData => QuestionAnswerData.AuctionData.Value;
-        private PlayersBoard PlayersBoard => MatchData.PlayersBoard.Value;
 
         public void StartNew(PlayerData currentPlayer, int questionPrice)
         {

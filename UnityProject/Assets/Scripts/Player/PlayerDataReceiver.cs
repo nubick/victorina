@@ -16,7 +16,9 @@ namespace Victorina
         [Inject] private PlayEffectsSystem PlayEffectsSystem { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
         [Inject] private AnsweringTimerData AnsweringTimerData { get; set; }
-
+        [Inject] private FinalRoundData FinalRoundData { get; set; }
+        [Inject] private PlayersBoard PlayersBoard { get; set; }
+        
         public void OnReceiveRegisteredPlayerId(byte playerId)
         {
             NetworkData.RegisteredPlayerId = playerId;
@@ -30,13 +32,17 @@ namespace Victorina
 
         private void InitializePlayerData()
         {
-            MatchData.IsMeCurrentPlayer = MatchSystem.IsCurrentPlayer(NetworkData.RegisteredPlayerId);
-            MatchData.ThisPlayer = PlayersBoardSystem.GetPlayer(NetworkData.RegisteredPlayerId);
+            if (PlayersBoard.Players.Any(_ => _.PlayerId == NetworkData.RegisteredPlayerId))
+            {
+                MatchData.IsMeCurrentPlayer = MatchSystem.IsCurrentPlayer(NetworkData.RegisteredPlayerId);
+                MatchData.ThisPlayer = PlayersBoardSystem.GetPlayer(NetworkData.RegisteredPlayerId);
+            }
         }
         
         public void OnReceive(PlayersBoard playersBoard)
         {
-            MatchData.PlayersBoard.Value = playersBoard;
+            PlayersBoard.Update(playersBoard);
+            MetagameEvents.PlayersBoardChanged.Publish();
             if (NetworkData.RegisteredPlayerId > 0)
                 InitializePlayerData();
         }
@@ -112,6 +118,12 @@ namespace Victorina
         public void OnReceiveAuctionData(AuctionData auctionData)
         {
             QuestionAnswerData.AuctionData.Value = auctionData;
+        }
+
+        public void OnReceiveFinalRoundData(FinalRoundData finalRoundData)
+        {
+            FinalRoundData.Update(finalRoundData);
+            MetagameEvents.FinalRoundDataChanged.Publish();
         }
     }
 }

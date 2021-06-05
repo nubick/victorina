@@ -42,13 +42,28 @@ namespace Victorina
             }
             return rounds;
         }
-        
+
         private Round ReadRound(XmlReader xmlReader)
         {
             Round round = new Round();
             round.Name = xmlReader.GetAttribute("name");
+            round.Type = ReadRoundType(xmlReader);
             round.Themes = ReadThemes(xmlReader);
             return round;
+        }
+
+        private RoundType ReadRoundType(XmlReader xmlReader)
+        {
+            RoundType roundType = RoundType.Simple;
+            string roundTypeValue = xmlReader.GetAttribute("type");
+            if (!string.IsNullOrEmpty(roundTypeValue))
+            {
+                if (roundTypeValue == "final")
+                    roundType = RoundType.Final;
+                else
+                    Debug.LogWarning($"Not supported round type: {roundTypeValue}");
+            }
+            return roundType;
         }
 
         private List<Theme> ReadThemes(XmlReader xmlReader)

@@ -10,6 +10,7 @@ namespace Victorina
         [Inject] private AuctionSystem AuctionSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private PlayersBoard PlayersBoard { get; set; }
         
         private int _roughBet;
         
@@ -46,7 +47,7 @@ namespace Victorina
 
         private void RefreshUI()
         {
-            RefreshPlayersWidgets(MatchData.PlayersBoard.Value);
+            RefreshPlayersWidgets(PlayersBoard);
 
             if (NetworkData.IsClient)
             {

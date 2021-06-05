@@ -11,6 +11,7 @@ namespace Victorina
         [Inject] private StartupView StartupView { get; set; }
         [Inject] private LobbyView LobbyView { get; set; }
         [Inject] private RoundView RoundView { get; set; }
+        [Inject] private FinalRoundView FinalRoundView { get; set; }
         [Inject] private PlayersBoardView PlayersBoardView { get; set; }
         [Inject] private TextStoryDotView TextStoryDotView { get; set; }
         [Inject] private ImageStoryDotView ImageStoryDotView { get; set; }
@@ -106,11 +107,27 @@ namespace Victorina
 
         private void ShowRoundViews()
         {
-            HideAll();   
+            HideAll();
+
+            int number = MatchData.RoundsInfo.Value.CurrentRoundNumber;
+            RoundType roundType = MatchData.RoundsInfo.Value.RoundTypes[number - 1];
+
+            switch (roundType)
+            {
+                case RoundType.Simple:
+                    Debug.Log("Show: RoundView");
+                    RoundView.Show();
+                    PlayersBoardView.Show();
+                    break;
+                case RoundType.Final:
+                    Debug.Log("Show: FinalRoundView");
+                    FinalRoundView.Show();
+                    PlayersBoardView.Show();
+                    break;
+                default:
+                    throw new Exception($"Not supported round type: {roundType}");
+            }
             
-            Debug.Log("Show: RoundView");
-            RoundView.Show();
-            PlayersBoardView.Show();
             
             //if (NetworkData.IsMaster)
             //    MasterEffectsView.Show();

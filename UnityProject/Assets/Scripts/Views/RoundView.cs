@@ -113,7 +113,9 @@ namespace Victorina
                 RoundProgress roundProgress =
                     number < roundsInfo.CurrentRoundNumber ? RoundProgress.Passed :
                     number > roundsInfo.CurrentRoundNumber ? RoundProgress.Next : RoundProgress.Current;
-                widget.Bind($"Раунд {number}", number, roundProgress); //passed, current, next
+
+                string title = roundsInfo.RoundTypes[number - 1] == RoundType.Final ? "Финал" : $"Раунд {number}";
+                widget.Bind(title, number, roundProgress); //passed, current, next
             }
         }
 

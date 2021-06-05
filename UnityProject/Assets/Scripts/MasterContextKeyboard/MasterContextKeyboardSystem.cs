@@ -100,7 +100,7 @@ namespace Victorina
             if (NetworkData.IsClient)
                 return;
             
-            Debug.Log($"Master keyboard: OnKeyPressed: {keyCode}");
+            //Debug.Log($"Master keyboard: OnKeyPressed: {keyCode}");
 
             foreach (ContextCommand command in Commands)
             {

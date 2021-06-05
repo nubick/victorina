@@ -10,13 +10,14 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MasterPlayerSettingsView MasterPlayerSettingsView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
-
+        [Inject] private PlayersBoard PlayersBoard { get; set; }
+        
         public PlayerBoardWidget WidgetPrefab;
         public RectTransform WidgetsRoot;
         
         public void Initialize()
         {
-            MatchData.PlayersBoard.SubscribeChanged(RefreshUI);
+            MetagameEvents.PlayersBoardChanged.Subscribe(RefreshUI);
             MetagameEvents.PlayerBoardWidgetClicked.Subscribe(OnPlayerBoardWidgetClicked);
         }
 
@@ -31,26 +32,24 @@ namespace Victorina
         
         private void RefreshUI()
         {
-            PlayersBoard playersBoard = MatchData.PlayersBoard.Value;
-
-            while (_widgets.Count < playersBoard.Players.Count)
+            while (_widgets.Count < PlayersBoard.Players.Count)
             {
                 PlayerBoardWidget widget = Instantiate(WidgetPrefab, WidgetsRoot);
                 _widgets.Add(widget);
             }
 
-            while (_widgets.Count > playersBoard.Players.Count)
+            while (_widgets.Count > PlayersBoard.Players.Count)
             {
                 PlayerBoardWidget widget = _widgets.Last();
                 _widgets.Remove(widget);
                 Destroy(widget.gameObject);
             }
 
-            for (int i = 0; i < playersBoard.Players.Count; i++)
+            for (int i = 0; i < PlayersBoard.Players.Count; i++)
             {
                 PlayerBoardWidget widget = _widgets[i];
-                PlayerData player = playersBoard.Players[i];
-                widget.Bind(player, playersBoard.Current == player);
+                PlayerData player = PlayersBoard.Players[i];
+                widget.Bind(player, PlayersBoard.Current == player);
             }
         }
 

@@ -15,6 +15,7 @@ namespace Victorina
         [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
+        [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
         
         public void OnPlayerButtonClickReceived(ulong clientId, float spentSeconds)
         {
@@ -67,28 +68,37 @@ namespace Victorina
             PlayersBoardSystem.UpdateFilesLoadingPercentage(playerId, percentage);
             FilesDeliveryStatusManager.UpdateDownloadedFilesIds(playerId, downloadedFilesIds);
         }
+
+        private PlayerData GetPlayer(ulong clientId)
+        {
+            byte playerId = ConnectedPlayersData.GetPlayerId(clientId);
+            return PlayersBoardSystem.GetPlayer(playerId);
+        }
         
         #region Auction
 
         public void OnReceivePassAuction(ulong clientId)
         {
-            byte playerId = ConnectedPlayersData.GetPlayerId(clientId);
-            PlayerData playerData = PlayersBoardSystem.GetPlayer(playerId);
-            AuctionSystem.MasterOnReceivePlayerPass(playerData);
+            AuctionSystem.MasterOnReceivePlayerPass(GetPlayer(clientId));
         }
 
         public void OnReceiveAllInAuction(ulong clientId)
         {
-            byte playerId = ConnectedPlayersData.GetPlayerId(clientId);
-            PlayerData playerData = PlayersBoardSystem.GetPlayer(playerId);
-            AuctionSystem.MasterOnReceivePlayerAllIn(playerData);
+            AuctionSystem.MasterOnReceivePlayerAllIn(GetPlayer(clientId));
         }
 
         public void OnReceiveBetAuction(ulong clientId, int bet)
         {
-            byte playerId = ConnectedPlayersData.GetPlayerId(clientId);
-            PlayerData playerData = PlayersBoardSystem.GetPlayer(playerId);
-            AuctionSystem.MasterOnReceivePlayerBet(playerData, bet);
+            AuctionSystem.MasterOnReceivePlayerBet(GetPlayer(clientId), bet);
+        }
+        
+        #endregion
+        
+        #region Final Round
+
+        public void OnReceiveRemoveTheme(ulong clientId, int index)
+        {
+            FinalRoundSystem.MasterOnReceiveRemoveTheme(GetPlayer(clientId), index);
         }
         
         #endregion

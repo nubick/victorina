@@ -60,6 +60,7 @@ namespace Victorina
             MatchData matchData = new MatchData();
             _injector.Bind(matchData);
             _injector.Bind(matchData.QuestionAnswerData);
+            _injector.Bind(new PlayersBoard());
 
             _injector.Bind(new CatInBagSystem());
             _injector.Bind(FindObjectOfType<CatInBagStoryDotView>());
@@ -83,6 +84,11 @@ namespace Victorina
             _injector.Bind(new DataChangeHandler());
             _injector.Bind(new PlayEffectsSystem());
             _injector.Bind(FindObjectOfType<PlayEffectsData>());
+            
+            //Final Round
+            _injector.Bind(FindObjectOfType<FinalRoundView>());
+            _injector.Bind(new FinalRoundSystem());
+            _injector.Bind(new FinalRoundData());
             
             //Master Only
             _injector.Bind(new ServerService());
@@ -209,9 +215,9 @@ namespace Victorina
             _injector.Get<CatInBagStoryDotView>().Initialize();
             
             _injector.Get<AuctionView>().Initialize();
-            
             _injector.Get<AnsweringTimerSystem>().Initialize();
-            
+            _injector.Get<FinalRoundView>().Initialize();
+
             //Analytics
             _injector.Get<AnalyticsSystem>().Initialize();
             
