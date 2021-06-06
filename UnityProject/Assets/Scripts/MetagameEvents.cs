@@ -15,7 +15,7 @@ namespace Victorina
         public static GameEvent PlayersBoardChanged { get; } = new GameEvent();
 
         public static GameEvent<PlayerButtonClickData> PlayerButtonClickWidgetClicked { get; } = new GameEvent<PlayerButtonClickData>();
-        public static GameEvent<PlayerData> AuctionPlayerClicked { get; } = new GameEvent<PlayerData>();
+        public static GameEvent<PlayerData> PlayerMoreInfoClicked { get; } = new GameEvent<PlayerData>();
         
         public static GameEvent QuestionTimerStarted { get; } = new GameEvent();
         public static GameEvent QuestionTimerPaused { get; } = new GameEvent();
@@ -28,6 +28,7 @@ namespace Victorina
         
         //Data changed
         public static GameEvent PlayersButtonClickDataChanged { get; } = new GameEvent();
+        public static GameEvent PlayersMoreInfoDataChanged { get; } = new GameEvent();
         
         //Master events
         public static GameEvent ServerStarted { get; } = new GameEvent();

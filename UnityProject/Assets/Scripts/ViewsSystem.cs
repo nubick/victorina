@@ -20,6 +20,7 @@ namespace Victorina
         [Inject] private NoRiskStoryDotView NoRiskStoryDotView { get; set; }
         [Inject] private CatInBagStoryDotView CatInBagStoryDotView { get; set; }
         [Inject] private AuctionView AuctionView { get; set; }
+        [Inject] private PlayersMoreInfoView PlayersMoreInfoView { get; set; }
 
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
@@ -220,6 +221,7 @@ namespace Victorina
             Debug.Log("Show: AuctionView");
             AuctionView.Show();
             PlayersBoardView.Show();
+            PlayersMoreInfoView.Show();
         }
         
         private void OnQuestionAnswerPhaseChanged()

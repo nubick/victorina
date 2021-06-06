@@ -11,10 +11,8 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private PlayersMoreInfoData PlayersMoreInfoData { get; set; }
         
-        public AuctionPlayerWidget WidgetPrefab;
-        public RectTransform WidgetsRoot;
-
         public Text PlayerText;
         public Text BetText;
         public Text Theme;
@@ -30,7 +28,7 @@ namespace Victorina
         public void Initialize()
         {
             MatchData.QuestionAnswerData.AuctionData.SubscribeChanged(RefreshUI);
-            MetagameEvents.AuctionPlayerClicked.Subscribe(OnAuctionPlayerClicked);
+            MetagameEvents.PlayerMoreInfoClicked.Subscribe(OnPlayerMoreInfoClicked);
 
             BetBoardWidget.MakeBetEvent += OnMakeBet;
             BetBoardWidget.AllInEvent += OnAllIn;
@@ -45,8 +43,8 @@ namespace Victorina
 
         private void RefreshUI()
         {
-            RefreshPlayersWidgets(PlayersBoard);
-
+            RefreshPlayersMoreInfoView(PlayersMoreInfoData, PlayersBoard);
+            
             if (NetworkData.IsClient)
             {
                 bool isBetPanelActive = !AuctionData.IsFinished && !AuctionData.PassedPlayers.Contains(MatchData.ThisPlayer);
@@ -80,18 +78,34 @@ namespace Victorina
             else if(NetworkData.IsMaster && AuctionData.SelectedPlayerByMaster != null)
                 BetBoardWidget.Bind(minBet, maxBet, 100);
         }
-        
-        private void RefreshPlayersWidgets(PlayersBoard playersBoard)
+
+        private void RefreshPlayersMoreInfoView(PlayersMoreInfoData data, PlayersBoard playersBoard)
         {
-            ClearChild(WidgetsRoot);
-            foreach (PlayerData playerData in playersBoard.Players)
+            string[] infoTexts = new string[playersBoard.Players.Count];
+            bool[] highlights = new bool[playersBoard.Players.Count];
+            bool[] selections = new bool[playersBoard.Players.Count];
+            for (int i = 0; i < playersBoard.Players.Count; i++)
             {
-                AuctionPlayerWidget widget = Instantiate(WidgetPrefab, WidgetsRoot);
-                bool isSelected = NetworkData.IsMaster && AuctionData.SelectedPlayerByMaster == playerData;
-                widget.Bind(playerData, AuctionData, isSelected);
+                PlayerData player = playersBoard.Players[i];
+                infoTexts[i] = GetPlayerInfo(player, AuctionData);
+                highlights[i] = AuctionData.BettingPlayer == player && AuctionData.Player != player;
+                selections[i] = NetworkData.IsMaster && AuctionData.SelectedPlayerByMaster == player;
             }
+            data.Update(infoTexts, highlights, selections);
         }
 
+        private string GetPlayerInfo(PlayerData player, AuctionData auctionData)
+        {
+            string infoText;
+            if (auctionData.BettingPlayer == player)
+                infoText = auctionData.Player == player ? "Выиграл" : "Делает ставку";
+            else if (auctionData.Player == player)
+                infoText = auctionData.IsAllIn ? "Ва-Банк" : auctionData.Bet.ToString();
+            else
+                infoText = auctionData.PassedPlayers.Contains(player) ? "Пас" : "Ожидание";
+            return infoText;
+        }
+        
         private void OnMakeBet(int bet)
         {
             AuctionSystem.SendPlayerBet(bet);
@@ -112,9 +126,9 @@ namespace Victorina
             AuctionSystem.MasterFinishAuction();
         }
         
-        private void OnAuctionPlayerClicked(PlayerData player)
+        private void OnPlayerMoreInfoClicked(PlayerData player)
         {
-            if (NetworkData.IsMaster)
+            if (IsActive && NetworkData.IsMaster)
             {
                 AuctionData.SelectedPlayerByMaster = player;
                 RefreshUI();
