@@ -15,5 +15,10 @@ namespace Victorina
         }
 
         public int Size => InfoTexts.Length;
+
+        public override string ToString()
+        {
+            return $"{nameof(Size)}: {Size}, {nameof(InfoTexts)}: [{string.Join(",", InfoTexts)}], {nameof(Highlights)}: [{string.Join(",", Highlights)}], {nameof(Selections)}: [{string.Join(",", Selections)}]";
+        }
     }
 }

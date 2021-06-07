@@ -454,7 +454,7 @@ namespace Victorina
             Debug.Log($"Master: Receive remove theme '{index}' from Player {GetPlayerInfo()}");
             MasterDataReceiver.OnReceiveRemoveTheme(OwnerClientId, index);
         }
-
+        
         public void SendFinalRoundData(FinalRoundData finalRoundData)
         {
             InvokeClientRpcOnOwner(ReceiveFinalRoundData, finalRoundData);
@@ -466,7 +466,20 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive FinalRoundData: {finalRoundData}");
             PlayerDataReceiver.OnReceiveFinalRoundData(finalRoundData);
         }
-        
+
+        public void SendFinalRoundBet(int bet)
+        {
+            Debug.Log($"Player {OwnerClientId}: send final round bet '{bet}'");
+            InvokeServerRpc(MasterReceiveFinalRoundBet, bet);
+        }
+
+        [ServerRPC]
+        private void MasterReceiveFinalRoundBet(int bet)
+        {
+            Debug.Log($"Master: Receive final round bet '{bet}' from Player {GetPlayerInfo()}");
+            MasterDataReceiver.OnReceiveFinalRoundBet(OwnerClientId, bet);
+        }
+
         #endregion
     }
 }

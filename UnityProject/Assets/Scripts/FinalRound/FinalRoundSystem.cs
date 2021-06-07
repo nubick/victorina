@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Injection;
 using UnityEngine;
@@ -22,6 +23,7 @@ namespace Victorina
         public void Reset()
         {
             Data.Reset(Data.Round.Themes.Select(_ => _.Name).ToArray());
+            Data.SetPhase(FinalRoundPhase.ThemesRemoving);
             if (CanAnyParticipate())
             {
                 SelectFirstPlayerForCrossOut();
@@ -63,7 +65,7 @@ namespace Victorina
             }
         }
 
-        private bool CanParticipate(PlayerData player)
+        public bool CanParticipate(PlayerData player)
         {
             return player.Score > 0;
         }
@@ -133,5 +135,66 @@ namespace Victorina
         {
             return GetRemainedThemesAmount() == 1;
         }
+
+        public string GetSelectedTheme()
+        {
+            for (int i = 0; i < Data.RemovedThemes.Length; i++)
+                if (!Data.RemovedThemes[i])
+                    return Data.Themes[i];
+
+            throw new Exception($"All themes are removed: {Data}");
+        }
+
+        public void ChangePhase(FinalRoundPhase phase)
+        {
+            Debug.Log($"FinalRound change phase: {phase}");
+            Data.SetPhase(phase);
+
+            if (phase == FinalRoundPhase.Betting)
+            {
+                Data.ClearBets(PlayersBoard.Players.Count);
+                Data.SetDoneBets(PlayersBoard.Players.Select(player => !CanParticipate(player)).ToArray());
+            }
+        }
+        
+        #region Phase 2: Betting
+
+        public void TryMakeBet(int bet)
+        {
+            if (NetworkData.IsClient)
+                SendToMasterService.SendFinalRoundBet(bet);
+
+            if (NetworkData.IsMaster && Data.SelectedPlayerByMaster != null)
+                MakeBet(Data.SelectedPlayerByMaster, bet);
+        }
+
+        public void TryMakeAllInBet()
+        {
+            if (NetworkData.IsClient)
+                SendToMasterService.SendFinalRoundBet(MatchData.ThisPlayer.Score);
+
+            if (NetworkData.IsMaster && Data.SelectedPlayerByMaster != null)
+                MakeBet(Data.SelectedPlayerByMaster, Data.SelectedPlayerByMaster.Score);
+        }
+
+        public void MasterOnReceiveBet(PlayerData player, int bet)
+        {
+            if (bet <= 0 || bet > player.Score)
+            {
+                Debug.Log($"Can't accept bet '{bet}' from player '{player}'.");
+                return;
+            }
+
+            MakeBet(player, bet);
+        }
+
+        private void MakeBet(PlayerData player, int bet)
+        {
+            Debug.Log($"Make bet '{bet}' for player '{player}'");
+            int index = PlayersBoard.Players.IndexOf(player);
+            Data.SetBet(index, bet);
+        }
+        
+        #endregion
     }
 }

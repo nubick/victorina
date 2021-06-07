@@ -200,8 +200,13 @@ namespace Victorina
         {
             Round round = new Round();
             round.Name = roundNode["Name"];
-            round.Type = (RoundType) Enum.Parse(typeof(RoundType), roundNode[TypeKey]);
-            
+
+            round.Type = RoundType.Simple;
+            if (Enum.TryParse(roundNode[TypeKey], out RoundType parsedRoundType))
+                round.Type = parsedRoundType;
+            else
+                Debug.Log($"Can't parse round type '{roundNode[TypeKey]}'. Use 'Simple' type as default");
+
             JSONArray themes = roundNode["Themes"].AsArray;
             foreach (JSONNode themeNode in themes)
             {

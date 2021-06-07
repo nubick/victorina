@@ -122,26 +122,24 @@ namespace Victorina
             RoundsInfo.CurrentRoundNumber = number;
             RoundsInfo.RoundTypes = PackageData.Package.Rounds.Select(_ => _.Type).ToArray();
             SendToPlayersService.SendNetRoundsInfo(RoundsInfo);
-            
-            SyncCurrentRound();
-            
+
+            Round round = PackageData.Package.Rounds[RoundsInfo.CurrentRoundNumber - 1];
+            if (round.Type == RoundType.Simple)
+                SyncSimpleRound();
+            else if (round.Type == RoundType.Final)
+                FinalRoundSystem.Select(round);
+
             MatchData.Phase.Value = MatchPhase.Round;
             SendToPlayersService.SendMatchPhase(MatchData.Phase.Value);
         }
-
-        public void SyncCurrentRound()
+        
+        public void SyncSimpleRound()
         {
-            int number = RoundsInfo.CurrentRoundNumber;
-            Round round = PackageData.Package.Rounds[number - 1];
-
+            Round round = PackageData.Package.Rounds[RoundsInfo.CurrentRoundNumber - 1];
             if (round.Type == RoundType.Simple)
             {
                 MatchData.RoundData.Value = BuildNetRound(round, PackageData.PackageProgress);
                 SendToPlayersService.SendNetRound(MatchData.RoundData.Value);
-            }
-            else if (round.Type == RoundType.Final)
-            {
-                FinalRoundSystem.Select(round);
             }
         }
 

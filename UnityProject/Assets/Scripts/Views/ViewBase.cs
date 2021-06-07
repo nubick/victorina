@@ -16,6 +16,7 @@ namespace Victorina
         {
             Content.SetActive(true);
             OnShown();
+            //Debug.Log($"Show: {GetType()}");
         }
 
         public IEnumerator ShowAndWaitForFinish()
@@ -29,6 +30,7 @@ namespace Victorina
         {
             Content.SetActive(false);
             OnHide();
+            //Debug.Log($"Hide: {GetType()}");
         }
 
         protected void SwitchTo(ViewBase otherView)

@@ -423,30 +423,20 @@ namespace Victorina
         private void SerializeFinalRoundData(Stream stream, FinalRoundData data)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteInt32(data.Themes.Length);
-            
-            foreach(string theme in data.Themes)
-                writer.WriteString(theme);
-
-            foreach (bool isRemoved in data.RemovedThemes)
-                writer.WriteBool(isRemoved);
+            writer.WriteInt32((int) data.Phase);
+            SerializeStringsArray(writer, data.Themes);
+            SerializeBooleansArray(writer, data.RemovedThemes);
+            SerializeBooleansArray(writer, data.DoneBets);
         }
 
         private FinalRoundData DeserializeFinalRoundData(Stream stream)
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
-            
-            int length = reader.ReadInt32();
-            
-            string[] themes = new string[length];
-            for (int i = 0; i < length; i++)
-                themes[i] = reader.ReadString().ToString();
-            
-            bool[] removedThemes = new bool[length];
-            for (int i = 0; i < length; i++)
-                removedThemes[i] = reader.ReadBool();
-            
-            return new FinalRoundData(themes, removedThemes);
+            FinalRoundPhase phase = (FinalRoundPhase) reader.ReadInt32();
+            string[] themes = DeserializeStringsArray(reader);
+            bool[] removedThemes = DeserializeBooleanArray(reader);
+            bool[] doneBets = DeserializeBooleanArray(reader);
+            return new FinalRoundData(phase, themes, removedThemes, doneBets);
         }
         
         #region Tools
@@ -466,7 +456,55 @@ namespace Victorina
             stream.Read(bytes, 0, length);
             return bytes;
         }
-        
+
+        private void SerializeIntsArray(PooledBitWriter writer, int[] ints)
+        {
+            writer.WriteInt32(ints.Length);
+            foreach(int intVal in ints)
+                writer.WriteInt32(intVal);
+        }
+
+        private int[] DeserializeIntsArray(PooledBitReader reader)
+        {
+            int size = reader.ReadInt32();
+            int[] array = new int[size];
+            for (int i = 0; i < size; i++)
+                array[i] = reader.ReadInt32();
+            return array;
+        }
+
+        private void SerializeBooleansArray(PooledBitWriter writer, bool[] booleans)
+        {
+            writer.WriteInt32(booleans.Length);
+            foreach (bool boolean in booleans)
+                writer.WriteBool(boolean);
+        }
+
+        private bool[] DeserializeBooleanArray(PooledBitReader reader)
+        {
+            int size = reader.ReadInt32();
+            bool[] array = new bool[size];
+            for (int i = 0; i < size; i++)
+                array[i] = reader.ReadBool();
+            return array;
+        }
+
+        private void SerializeStringsArray(PooledBitWriter writer, string[] strings)
+        {
+            writer.WriteInt32(strings.Length);
+            foreach (string str in strings)
+                writer.WriteString(str);
+        }
+
+        private string[] DeserializeStringsArray(PooledBitReader reader)
+        {
+            int size = reader.ReadInt32();
+            string[] array = new string[size];
+            for (int i = 0; i < size; i++)
+                array[i] = reader.ReadString().ToString();
+            return array;
+        }
+
         #endregion
     }
 }

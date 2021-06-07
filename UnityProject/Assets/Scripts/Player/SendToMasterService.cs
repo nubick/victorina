@@ -24,7 +24,7 @@ namespace Victorina
             if (NetworkingManager.IsConnectedClient)
                 Player.SendFileChunkRequestToMaster(fileId, chunkIndex);
             else
-                Debug.Log("Client is not connected: SendFileChunkRequest");
+                Debug.Log($"Client is not connected: {nameof(SendFileChunkRequest)}");
         }
 
         public void SendPlayerButton(float spentSeconds)
@@ -32,7 +32,7 @@ namespace Victorina
             if (NetworkingManager.IsConnectedClient)
                 Player.SendPlayerButtonClickToMaster(spentSeconds);
             else
-                Debug.Log("Client is not connected: SendPlayerButton");
+                Debug.Log($"Client is not connected: {nameof(SendPlayerButton)}");
         }
 
         public void SendSelectRoundQuestion(NetRoundQuestion netRoundQuestion)
@@ -40,7 +40,7 @@ namespace Victorina
             if (NetworkingManager.IsConnectedClient)
                 Player.SendSelectRoundQuestionToMaster(netRoundQuestion);
             else
-                Debug.Log("Client is not connected: SendSelectRoundQuestion");
+                Debug.Log($"Client is not connected: {nameof(SendSelectRoundQuestion)}");
         }
 
         public void SendFilesLoadingPercentage(byte percentage, int[] downloadedFileIds)
@@ -48,7 +48,7 @@ namespace Victorina
             if (NetworkingManager.IsConnectedClient)
                 Player.SendFilesLoadingProgressToMaster(percentage, downloadedFileIds);
             else
-                Debug.Log("Client is not connected: SendFilesLoadingPercentage");
+                Debug.Log($"Client is not connected: {nameof(SendFilesLoadingPercentage)}");
         }
 
         public void SendWhoWillGetCatInBag(byte playerId)
@@ -56,7 +56,7 @@ namespace Victorina
             if (NetworkingManager.IsConnectedClient)
                 Player.SendWhoWillGetCatInBag(playerId);
             else
-                Debug.Log("Client is not connected: SendWhoWillGetCatInBag");
+                Debug.Log($"Client is not connected: {nameof(SendWhoWillGetCatInBag)}");
         }
         
         #region Auction
@@ -66,7 +66,7 @@ namespace Victorina
             if (NetworkingManager.IsConnectedClient)
                 Player.SendPassAuction();
             else
-                Debug.Log("Client is not connected: SendPassAuction");
+                Debug.Log($"Client is not connected: {nameof(SendPassAuction)}");
         }
 
         public void SendAllInAuction()
@@ -74,7 +74,7 @@ namespace Victorina
             if (NetworkingManager.IsConnectedClient)
                 Player.SendAllInAuction();
             else
-                Debug.Log("Client is not connected: SendAllInAuction");
+                Debug.Log($"Client is not connected: {nameof(SendAllInAuction)}");
         }
 
         public void SendBetAuction(int bet)
@@ -82,7 +82,7 @@ namespace Victorina
             if (NetworkingManager.IsConnectedClient)
                 Player.SendBetAuction(bet);
             else
-                Debug.Log($"Client is not connected: SendBetAuction");
+                Debug.Log($"Client is not connected: {nameof(SendBetAuction)}");
         }
 
         #endregion
@@ -94,9 +94,17 @@ namespace Victorina
             if (NetworkingManager.IsConnectedClient)
                 Player.SendRemoveTheme(index);
             else
-                Debug.Log($"Client is not connected: SendRemoveTheme: {index}");
+                Debug.Log($"Client is not connected: {nameof(SendRemoveTheme)}: {index}");
         }
-        
+
+        public void SendFinalRoundBet(int bet)
+        {
+            if (NetworkingManager.IsConnectedClient)
+                Player.SendFinalRoundBet(bet);
+            else
+                Debug.Log($"Client is not connected: {nameof(SendFinalRoundBet)}: {bet}");
+        }
+
         #endregion
     }
 }

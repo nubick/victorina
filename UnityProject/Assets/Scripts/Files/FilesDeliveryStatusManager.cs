@@ -50,7 +50,7 @@ namespace Victorina
 
                 if (_isSyncRequired && MatchData.Phase.Value == MatchPhase.Round)
                 {
-                    MatchSystem.SyncCurrentRound();
+                    MatchSystem.SyncSimpleRound();
                     MatchData.RoundData.NotifyChanged();
                     _isSyncRequired = false;
                 }
