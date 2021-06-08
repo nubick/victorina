@@ -13,7 +13,7 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            Version.text = $"Версия: {Static.DevSettings.GetVersion()}";
+            Version.text = $"Версия: {Static.DevSettings.GetAppVersion()}";
         }
 
         public void OnCreateNewGameButtonClicked()

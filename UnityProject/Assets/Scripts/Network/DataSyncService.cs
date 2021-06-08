@@ -50,7 +50,7 @@ namespace Victorina
 
                 if (PlayersBoard.HasChanges)
                 {
-                    Debug.Log("DataSync: PlayersBoard");
+                    //Debug.Log("DataSync: PlayersBoard");
                     PlayersBoard.ApplyChanges();
                     SendToPlayersService.Send(PlayersBoard);
                     MetagameEvents.PlayersBoardChanged.Publish();

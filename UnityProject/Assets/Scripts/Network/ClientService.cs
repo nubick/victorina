@@ -23,9 +23,9 @@ namespace Victorina
         
         public IEnumerator JoinGame(string playerName, string gameCode)
         {
-            Debug.Log($"JoinGame: '{playerName}', game code: {gameCode}");
-            Debug.Log($"Client Version: {Static.DevSettings.GetVersion()}");
-
+            string clientVersion = Static.DevSettings.GetAppVersion().ToString();
+            Debug.Log($"JoinGame: '{playerName}', game code: {gameCode}, client version: {clientVersion}");
+            
             NetworkData.IsMaster = false;
             NetworkData.RegisteredPlayerId = 0;
             
@@ -39,7 +39,8 @@ namespace Victorina
             ConnectionMessage connectionMessage = new ConnectionMessage
             {
                 Name = playerName,
-                Guid = AppState.PlayerGuid
+                Guid = AppState.PlayerGuid,
+                ClientVersion = clientVersion
             };
             
             NetworkingManager.NetworkConfig.ConnectionData = connectionMessage.ToBytes();

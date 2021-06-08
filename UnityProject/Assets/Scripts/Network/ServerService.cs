@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Injection;
 using MLAPI;
@@ -44,12 +45,24 @@ namespace Victorina
         private void OnConnectionApprovalCallback(byte[] connectionData, ulong clientId, NetworkingManager.ConnectionApprovedDelegate callback)
         {
             Debug.Log($"Master: OnConnectionApproval, clientId: {clientId}");
-            ConnectionMessage connectionMessage = ConnectionMessage.FromBytes(connectionData);
-            Debug.Log($"PlayerName: {connectionMessage.Name}, guid: {connectionMessage.Guid}");
+
+            if (!TryParse(connectionData, out ConnectionMessage connectionMessage))
+            {
+                Debug.Log($"Master: Can't parse connection data from client");
+                SendNotApproveMessage(callback);
+                return;
+            }
+            
+            Debug.Log($"PlayerName: {connectionMessage.Name}, guid: {connectionMessage.Guid}, client version: {connectionMessage.ClientVersion}");
+            
             if (IsAnotherConnection(connectionMessage))
             {
-                Debug.Log($"Master: Can't approve more than one connection from single player.");
-                callback(false, null, false, null, null);
+                Debug.Log("Master: Can't approve more than one connection from single player.");
+                SendNotApproveMessage(callback);
+            }
+            else if (!IsSupportedVersion(connectionMessage))
+            {
+                SendNotApproveMessage(callback);
             }
             else
             {
@@ -59,12 +72,49 @@ namespace Victorina
             }
         }
 
+        private void SendNotApproveMessage(NetworkingManager.ConnectionApprovedDelegate callback)
+        {
+            callback(createPlayerObject: false, playerPrefabHash: null, approved: false, position: null, rotation: null);
+        }
+        
+        private bool TryParse(byte[] connectionData, out ConnectionMessage connectionMessage)
+        {
+            try
+            {
+                connectionMessage = ConnectionMessage.FromBytes(connectionData);
+                return true;
+            }
+            catch (ArgumentException ex)
+            {
+                connectionMessage = null;
+                return false;
+            }
+        }
+
         private bool IsAnotherConnection(ConnectionMessage connectionMessage)
         {
             JoinedPlayer joinedPlayer = ConnectedPlayersData.GetByGuid(connectionMessage.Guid);
             return joinedPlayer != null && NetworkingManager.ConnectedClients.Keys.Contains(joinedPlayer.ClientId);
         }
-        
+
+        private bool IsSupportedVersion(ConnectionMessage connectionMessage)
+        {
+            bool isSupported = false;
+            if (Version.TryParse(connectionMessage.ClientVersion, out Version parsedVersion))
+            {
+                Version minSupportedVersion = Static.DevSettings.GetMinSupportedClientVersion();
+                Version appVersion = Static.DevSettings.GetAppVersion();
+                isSupported = parsedVersion >= minSupportedVersion && parsedVersion <= appVersion;
+                if (!isSupported)
+                    Debug.Log($"Master: Client version '{parsedVersion}' is not supported, min supported version: {minSupportedVersion}, app version: {appVersion}");
+            }
+            else
+            {
+                Debug.Log($"Master: Can't parse client version: {connectionMessage.ClientVersion}");
+            }
+            return isSupported;
+        }
+
         private void RegisterPlayer(ulong clientId, ConnectionMessage connectionMessage)
         {
             JoinedPlayer player = ConnectedPlayersData.GetByGuid(connectionMessage.Guid);

@@ -29,7 +29,7 @@ namespace Victorina
             }
 
             devSettings.BuildNumber++;
-            Debug.Log($"Build number is increased: {devSettings.GetVersion()}");
+            Debug.Log($"Build number is increased: {devSettings.GetAppVersion()}");
             EditorUtility.SetDirty(devSettings);
         }
     }

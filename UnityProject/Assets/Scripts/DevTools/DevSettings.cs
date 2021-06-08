@@ -11,9 +11,21 @@ namespace Victorina
 
         public BuildMode BuildMode;
 
-        public Version GetVersion()
+        public string MinSupportedClientVersion;
+        
+        public Version GetAppVersion()
         {
             return new Version(LastMajorVersion, LastMinorVersion, BuildNumber);
+        }
+
+        public Version GetMinSupportedClientVersion()
+        {
+            Version version = GetAppVersion();
+            if (Version.TryParse(MinSupportedClientVersion, out Version parsedVersion))
+                version = parsedVersion;
+            else
+                Debug.LogWarning($"Can't parse min supported client version: {MinSupportedClientVersion}");
+            return version;
         }
     }
 }

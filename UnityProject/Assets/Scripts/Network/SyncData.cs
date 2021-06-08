@@ -8,7 +8,7 @@ namespace Victorina
 
         public void MarkAsChanged()
         {
-            Debug.Log($"Mark As Changed: {GetType()}");
+            //Debug.Log($"Mark As Changed: {GetType()}");
             HasChanges = true;
         }
         

@@ -1,28 +1,28 @@
 using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using UnityEngine;
 
 namespace Victorina
 {
     [Serializable]
     public class ConnectionMessage
     {
-        public string Guid { get; set; }
-        public string Name { get; set; }
+        public string Guid;
+        public string Name;
+        public string ClientVersion;
 
         public byte[] ToBytes()
         {
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            using MemoryStream memoryStream = new MemoryStream();
-            binaryFormatter.Serialize(memoryStream, this);
-            return memoryStream.ToArray();
+            Debug.Log($"ConnectionMessage to bytes, Guid: {Guid}, Name: {Name}, ClientVersion: {ClientVersion}");
+            string json = JsonUtility.ToJson(this);
+            return Encoding.Unicode.GetBytes(json);
         }
 
         public static ConnectionMessage FromBytes(byte[] bytes)
         {
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            using MemoryStream memoryStream = new MemoryStream(bytes);
-            return (ConnectionMessage) binaryFormatter.Deserialize(memoryStream);
+            string json = Encoding.Unicode.GetString(bytes);
+            Debug.Log($"ConnectionMessage:'{json}'");
+            return JsonUtility.FromJson<ConnectionMessage>(json);
         }
     }
 }
