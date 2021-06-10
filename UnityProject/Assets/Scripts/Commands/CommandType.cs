@@ -2,6 +2,8 @@ namespace Victorina.Commands
 {
     public enum CommandType
     {
-       SelectRoundQuestion 
+       SelectRoundQuestion,
+       RemoveFinalRoundTheme,
+       MakeFinalRoundBet
     }
 }

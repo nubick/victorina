@@ -80,26 +80,6 @@ namespace Victorina
 
         #endregion
         
-        #region Final Round
-
-        public void SendRemoveTheme(int index)
-        {
-            if (NetworkingManager.IsConnectedClient)
-                Player.SendRemoveTheme(index);
-            else
-                Debug.Log($"Client is not connected: {nameof(SendRemoveTheme)}: {index}");
-        }
-
-        public void SendFinalRoundBet(int bet)
-        {
-            if (NetworkingManager.IsConnectedClient)
-                Player.SendFinalRoundBet(bet);
-            else
-                Debug.Log($"Client is not connected: {nameof(SendFinalRoundBet)}: {bet}");
-        }
-
-        #endregion
-
         public void SendCommand(CommandBase command)
         {
             if (NetworkingManager.IsConnectedClient)

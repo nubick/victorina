@@ -72,7 +72,7 @@ namespace Victorina
         private void RefreshThemesRemovingUI()
         {
             MasterPanelPhase1.SetActive(NetworkData.IsMaster);
-            AcceptBetsButton.interactable = FinalRoundSystem.IsRemovingFinished();
+            AcceptBetsButton.interactable = FinalRoundData.IsAllThemesRemoved;
 
             ClearChild(ThemeButtonsRoot);
             for (int i = 0; i < FinalRoundData.Themes.Length; i++)

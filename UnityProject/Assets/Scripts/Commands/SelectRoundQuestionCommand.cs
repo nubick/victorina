@@ -13,7 +13,8 @@ namespace Victorina.Commands
 
         public string QuestionId { get; private set; }
         public override CommandType Type => CommandType.SelectRoundQuestion;
-
+        private bool IsOwnerCurrentPlayerOrMaster => Owner == CommandOwner.Master || MatchSystem.IsCurrentPlayer(OwnerPlayer);
+        
         public SelectRoundQuestionCommand() { }
         
         public SelectRoundQuestionCommand(NetRoundQuestion question)
@@ -37,7 +38,7 @@ namespace Victorina.Commands
                 return false;
             }
 
-            if (!IsOwnerCurrentPlayerOrMaster())
+            if (!IsOwnerCurrentPlayerOrMaster)
             {
                 Debug.Log($"Only Master or Current player can select question: {question}");
                 return false;
@@ -51,15 +52,10 @@ namespace Victorina.Commands
             NetRoundQuestion netRoundQuestion = GetQuestion(QuestionId);
             MatchSystem.SelectQuestion(netRoundQuestion);
         }
-
-        private bool IsOwnerCurrentPlayerOrMaster()
-        {
-            return Owner == CommandOwner.Master || MatchSystem.IsCurrentPlayer(OwnerPlayer);
-        }
         
         public override bool CanExecuteOnServer()
         {
-            if (!IsOwnerCurrentPlayerOrMaster())
+            if (!IsOwnerCurrentPlayerOrMaster)
             {
                 Debug.Log($"Master. Validation Error. Player: {OwnerPlayer} is not current. Can't select round question: {QuestionId}");
                 return false;

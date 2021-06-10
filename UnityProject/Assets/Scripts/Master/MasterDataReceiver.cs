@@ -59,20 +59,6 @@ namespace Victorina
         
         #endregion
         
-        #region Final Round
-
-        public void OnReceiveRemoveTheme(ulong clientId, int index)
-        {
-            FinalRoundSystem.MasterOnReceiveRemoveTheme(GetPlayer(clientId), index);
-        }
-
-        public void OnReceiveFinalRoundBet(ulong clientId, int bet)
-        {
-            FinalRoundSystem.MasterOnReceiveBet(GetPlayer(clientId), bet);
-        }
-        
-        #endregion
-
         public void OnReceiveCommand(ulong clientId, CommandBase command)
         {
             PlayerData player = GetPlayer(clientId);

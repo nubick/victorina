@@ -11,6 +11,8 @@ namespace Victorina
         
         public bool[] DoneBets { get; private set; }
         public bool IsAllBetsDone => DoneBets.All(isDone => isDone);
+        public int RemainedThemesAmount => RemovedThemes.Count(isRemoved => !isRemoved);
+        public bool IsAllThemesRemoved => RemainedThemesAmount == 1;
         
         //Master Only, Don't Sync
         public Round Round { get; set; }
