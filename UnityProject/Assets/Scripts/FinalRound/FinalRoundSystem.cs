@@ -12,7 +12,6 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MessageDialogueView MessageDialogueView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
-        [Inject] private SendToMasterService SendToMasterService { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         
@@ -77,6 +76,11 @@ namespace Victorina
                 Data.ClearBets(PlayersBoard.Players.Count);
                 Data.SetDoneBets(PlayersBoard.Players.Select(player => !CanParticipate(player)).ToArray());
             }
+            else if (phase == FinalRoundPhase.Answering)
+            {
+                Data.ClearAnswers(PlayersBoard.Players.Count);
+                Data.SetDoneAnswers(PlayersBoard.Players.Select(player => !CanParticipate(player)).ToArray());
+            }
         }
         
         #region Phase 2: Betting
@@ -96,5 +100,21 @@ namespace Victorina
         }
         
         #endregion
+
+        public void SendAnswer(string answerText)
+        {
+            if (string.IsNullOrWhiteSpace(answerText))
+                MessageDialogueView.Show("Нет ответа?", "Ну отправьте хоть что-нибудь!");
+            else
+                CommandsSystem.AddNewCommand(new SendFinalRoundAnswerCommand {AnswerText = answerText});
+        }
+
+        public void ClearAnswer()
+        {
+            if (Data.SelectedPlayerByMaster == null)
+                throw new Exception("Should not be possible to click Clear Answer button when player is not selected.");
+            
+            CommandsSystem.AddNewCommand(new ClearFinalRoundAnswerCommand {Player = Data.SelectedPlayerByMaster});
+        }
     }
 }

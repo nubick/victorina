@@ -441,10 +441,10 @@ namespace Victorina
 
         #region Command
         
-        public void SendCommand(CommandBase command)
+        public void SendCommand(PlayerCommand playerCommand)
         {
-            Debug.Log($"Player {OwnerClientId}: send command '{command}'");
-            CommandNetworkData commandNetworkData = new CommandNetworkData(command);
+            Debug.Log($"Player {OwnerClientId}: send command '{playerCommand}'");
+            CommandNetworkData commandNetworkData = new CommandNetworkData(playerCommand);
             InvokeServerRpc(SendCommandServerRpc, commandNetworkData);
         }
 

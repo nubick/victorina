@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Victorina.Commands
 {
-    public class RemoveFinalRoundThemeCommand : CommandBase
+    public class RemoveFinalRoundThemeCommand : PlayerCommand
     {
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
         [Inject] private FinalRoundData FinalRoundData { get; set; }
@@ -69,7 +69,7 @@ namespace Victorina.Commands
 
         private void SelectNextPlayer()
         {
-            int index = PlayersBoard.Players.IndexOf(PlayersBoard.Current);
+            int index = PlayersBoard.GetPlayerIndex(PlayersBoard.Current);
             int i = index;
             for (;;)
             {

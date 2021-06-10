@@ -29,6 +29,18 @@ namespace Victorina
         public GameObject MakeYourBetsLabel;
         public GameObject BetsDoneLabel;
         public GameObject YouPassLabel;
+
+        [Header("Phase 4: Answering")]
+        public GameObject Phase4State;
+        public GameObject PlayerPanelPhase4;
+        public GameObject MasterPanelPhase4;
+        public InputField AnswerInputField;
+        public Button SendAnswerButton;
+        public GameObject AnswerPreviewPanel;
+        public Text AnswerPreviewText;
+        public GameObject SendYourAnswerLabel;
+        public GameObject YouPassedLabelPhase4;
+        public GameObject AnswerAcceptedLabel;
         
         public void Initialize()
         {
@@ -49,24 +61,29 @@ namespace Victorina
         {
             RefreshUI();
         }
-        
+
         public void RefreshUI()
         {
             Phase1State.SetActive(FinalRoundData.Phase == FinalRoundPhase.ThemesRemoving);
             Phase2State.SetActive(FinalRoundData.Phase == FinalRoundPhase.Betting);
-            
+            Phase4State.SetActive(FinalRoundData.Phase == FinalRoundPhase.Answering);
+
             UpdatePlayersMoreInfoView(FinalRoundData.Phase);
-            
-            if (FinalRoundData.Phase == FinalRoundPhase.ThemesRemoving)
+
+            switch (FinalRoundData.Phase)
             {
-                RefreshThemesRemovingUI();
-            }
-            else if (FinalRoundData.Phase == FinalRoundPhase.Betting)
-            {
-                RefreshBettingUI();
+                case FinalRoundPhase.ThemesRemoving:
+                    RefreshThemesRemovingUI();
+                    break;
+                case FinalRoundPhase.Betting:
+                    RefreshBettingUI();
+                    break;
+                case FinalRoundPhase.Answering:
+                    RefreshAnsweringUI();
+                    break;
             }
         }
-        
+
         #region Themes Removing
         
         private void RefreshThemesRemovingUI()
@@ -195,7 +212,7 @@ namespace Victorina
 
         public void OnShowQuestionButtonClicked()
         {
-            FinalRoundSystem.ChangePhase(FinalRoundPhase.ThemesRemoving);
+            FinalRoundSystem.ChangePhase(FinalRoundPhase.Answering);
         }
 
         public void OnBackButtonClicked()
@@ -205,9 +222,76 @@ namespace Victorina
         
         #endregion
         
+        #region Phase 4: Answering
+
+        public void RefreshAnsweringUI()
+        {
+            PlayerPanelPhase4.SetActive(NetworkData.IsClient);
+            MasterPanelPhase4.SetActive(NetworkData.IsMaster);
+
+            AnswerAcceptedLabel.SetActive(true);
+            SendYourAnswerLabel.SetActive(true);
+            YouPassedLabelPhase4.SetActive(false);
+            
+            int size = PlayersBoard.Players.Count;
+            string[] infoTexts = new string[size];
+            bool[] highlights = new bool[size];
+            bool[] selections = new bool[size];
+
+            for (int i = 0; i < size; i++)
+            {
+                PlayerData player = PlayersBoard.Players[i];
+                bool canParticipate = FinalRoundSystem.CanParticipate(player);
+
+                if (!canParticipate)
+                    infoTexts[i] = "Пас";
+                else if (FinalRoundData.DoneAnswers[i])
+                    infoTexts[i] = "Ответ принят";
+                else
+                    infoTexts[i] = "Отвечает";
+
+                highlights[i] = canParticipate && !FinalRoundData.DoneAnswers[i];
+
+                if (NetworkData.IsMaster)
+                    selections[i] = PlayersBoard.Players[i] == FinalRoundData.SelectedPlayerByMaster;
+                
+                if (NetworkData.IsClient && MatchData.ThisPlayer == player)
+                {
+                    bool isAnswered = FinalRoundData.DoneAnswers[i];
+                    SendAnswerButton.interactable = !isAnswered;
+                    AnswerInputField.interactable = !isAnswered;
+                    AnswerAcceptedLabel.SetActive(canParticipate && isAnswered);
+                    SendYourAnswerLabel.SetActive(canParticipate);
+                    YouPassedLabelPhase4.SetActive(!canParticipate);
+                }
+            }
+            
+            AnswerPreviewPanel.SetActive(false);
+            if (NetworkData.IsMaster && FinalRoundData.SelectedPlayerByMaster != null)
+            {
+                AnswerPreviewPanel.SetActive(true);
+                int selectedPlayerIndex = PlayersBoard.Players.IndexOf(FinalRoundData.SelectedPlayerByMaster);
+                AnswerPreviewText.text = FinalRoundData.Answers[selectedPlayerIndex];
+            }
+            
+            PlayersMoreInfoData.Update(infoTexts, highlights, selections);
+        }
+        
+        public void OnSendAnswerButtonClicked()
+        {
+            FinalRoundSystem.SendAnswer(AnswerInputField.text);
+        }
+
+        public void OnClearAnswerButtonClicked()
+        {
+            FinalRoundSystem.ClearAnswer();
+        }
+        
+        #endregion
+        
         private void UpdatePlayersMoreInfoView(FinalRoundPhase phase)
         {
-            bool shouldBeVisible = phase == FinalRoundPhase.Betting;
+            bool shouldBeVisible = phase == FinalRoundPhase.Betting || phase == FinalRoundPhase.Answering;
 
             if (shouldBeVisible && !PlayersMoreInfoView.IsActive)
                 PlayersMoreInfoView.Show();
@@ -224,5 +308,6 @@ namespace Victorina
                 RefreshBetBoardWidget();
             }
         }
+        
     }
 }

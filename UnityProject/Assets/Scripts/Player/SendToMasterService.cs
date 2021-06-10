@@ -80,10 +80,10 @@ namespace Victorina
 
         #endregion
         
-        public void SendCommand(CommandBase command)
+        public void SendCommand(PlayerCommand playerCommand)
         {
             if (NetworkingManager.IsConnectedClient)
-                Player.SendCommand(command);
+                Player.SendCommand(playerCommand);
             else
                 Debug.Log($"Client is not connected: {nameof(SendCommand)}");
         }

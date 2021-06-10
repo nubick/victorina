@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Victorina.Commands
 {
-    public class MakeFinalRoundBetCommand : CommandBase
+    public class MakeFinalRoundBetCommand : PlayerCommand
     {
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
@@ -35,7 +35,7 @@ namespace Victorina.Commands
         {
             PlayerData bettingPlayer = GetBettingPlayer();
             Debug.Log($"Make bet '{Bet}' for player '{bettingPlayer}'");
-            int index = PlayersBoard.Players.IndexOf(bettingPlayer);
+            int index = PlayersBoard.GetPlayerIndex(bettingPlayer);
             FinalRoundData.SetBet(index, Bet);
         }
 

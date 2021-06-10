@@ -2,9 +2,9 @@ namespace Victorina.Commands
 {
     public class CommandNetworkData
     {
-        public CommandBase Command { get; }
+        public PlayerCommand Command { get; }
 
-        public CommandNetworkData(CommandBase command)
+        public CommandNetworkData(PlayerCommand command)
         {
             Command = command;
         }

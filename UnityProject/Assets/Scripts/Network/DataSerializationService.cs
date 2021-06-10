@@ -431,6 +431,7 @@ namespace Victorina
             SerializeStringsArray(writer, data.Themes);
             SerializeBooleansArray(writer, data.RemovedThemes);
             SerializeBooleansArray(writer, data.DoneBets);
+            SerializeBooleansArray(writer, data.DoneAnswers);
         }
 
         private FinalRoundData DeserializeFinalRoundData(Stream stream)
@@ -439,8 +440,10 @@ namespace Victorina
             FinalRoundPhase phase = (FinalRoundPhase) reader.ReadInt32();
             string[] themes = DeserializeStringsArray(reader);
             bool[] removedThemes = DeserializeBooleanArray(reader);
-            bool[] doneBets = DeserializeBooleanArray(reader);
-            return new FinalRoundData(phase, themes, removedThemes, doneBets);
+            FinalRoundData finalRoundData = new FinalRoundData(phase, themes, removedThemes);
+            finalRoundData.SetDoneBets(DeserializeBooleanArray(reader));
+            finalRoundData.SetDoneAnswers(DeserializeBooleanArray(reader));
+            return finalRoundData;
         }
         
         #region Tools
@@ -524,7 +527,7 @@ namespace Victorina
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             CommandType commandType = (CommandType) reader.ReadInt32();
-            CommandBase command = CommandsSystem.Create(commandType);
+            PlayerCommand command = CommandsSystem.CreatePlayerCommand(commandType);
             command.Deserialize(reader);
             return new CommandNetworkData(command);
         }

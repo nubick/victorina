@@ -23,17 +23,24 @@ namespace Victorina.Commands
             
             if (NetworkData.IsClient)
             {
-                command.Owner = CommandOwner.Player;
-                command.OwnerPlayer = MatchData.ThisPlayer;
-
-                if (command.CanSendToServer())
+                if (command is PlayerCommand playerCommand)
                 {
+                    playerCommand.Owner = CommandOwner.Player;
+                    playerCommand.OwnerPlayer = MatchData.ThisPlayer;
+
+                    if (playerCommand.CanSendToServer())
+                    {
 #if UNITY_EDITOR
-                    Debug.Log($"<color=#AAAAFF>SEND: {command}</color>");
+                        Debug.Log($"<color=#AAAAFF>SEND: {playerCommand}</color>");
 #else
-                    Debug.Log($"SEND: {command}");
+                        Debug.Log($"SEND: {playerCommand}");
 #endif
-                    SendToMasterService.SendCommand(command);
+                        SendToMasterService.SendCommand(playerCommand);
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Client can't create not PlayerCommand: {command}");
                 }
             }
             else if (NetworkData.IsMaster)
@@ -65,7 +72,7 @@ namespace Victorina.Commands
             }
         }
         
-        public CommandBase Create(CommandType commandType)
+        public PlayerCommand CreatePlayerCommand(CommandType commandType)
         {
             switch (commandType)
             {
@@ -75,6 +82,8 @@ namespace Victorina.Commands
                     return new RemoveFinalRoundThemeCommand();
                 case CommandType.MakeFinalRoundBet:
                     return new MakeFinalRoundBetCommand();
+                case CommandType.SendFinalRoundAnswer:
+                    return new SendFinalRoundAnswerCommand();
                 default:
                     throw new NotSupportedException($"Command type '{commandType}' is not supported.");
             }

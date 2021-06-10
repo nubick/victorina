@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Victorina.Commands
 {
-    public class SelectRoundQuestionCommand : CommandBase
+    public class SelectRoundQuestionCommand : PlayerCommand
     {
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }

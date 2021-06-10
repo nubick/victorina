@@ -84,7 +84,7 @@ namespace Victorina
                 connectionMessage = ConnectionMessage.FromBytes(connectionData);
                 return true;
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 connectionMessage = null;
                 return false;

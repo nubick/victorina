@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Victorina
@@ -26,7 +27,15 @@ namespace Victorina
             Current = playersBoard.Current;
             MarkAsChanged();
         }
-        
+
+        public int GetPlayerIndex(PlayerData player)
+        {
+            if (Players.Contains(player))
+                return Players.IndexOf(player);
+
+            throw new Exception($"PlayersBoard doesn't contain player: {player}");
+        }
+
         public override string ToString()
         {
             return $"[PB, amount: {Players.Count}, {string.Join(",", Players)}, cur: {(Current == null ? "none" : Current.ToString())}]";

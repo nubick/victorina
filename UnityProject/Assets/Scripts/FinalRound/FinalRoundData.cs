@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Victorina
 {
@@ -14,10 +15,13 @@ namespace Victorina
         public int RemainedThemesAmount => RemovedThemes.Count(isRemoved => !isRemoved);
         public bool IsAllThemesRemoved => RemainedThemesAmount == 1;
         
+        public bool[] DoneAnswers { get; private set; }
+        
         //Master Only, Don't Sync
         public Round Round { get; set; }
         public PlayerData SelectedPlayerByMaster { get; private set; }
         public int[] Bets { get; set; }
+        public string[] Answers { get; set; }
         
         public FinalRoundData()
         {
@@ -25,15 +29,19 @@ namespace Victorina
             RemovedThemes = new bool[0];
             DoneBets = new bool[0];
             Bets = new int[0];
+            Answers = new string[0];
+            DoneAnswers = new bool[0];
         }
 
-        public FinalRoundData(FinalRoundPhase phase, string[] themes, bool[] removedThemes, bool[] doneBets)
+        public FinalRoundData(FinalRoundPhase phase, string[] themes, bool[] removedThemes)
         {
             Phase = phase;
             Themes = themes;
             RemovedThemes = removedThemes;
-            DoneBets = doneBets;
             Bets = new int[0];
+            DoneBets = new bool[0];
+            Answers = new string[0];
+            DoneAnswers = new bool[0];
         }
 
         public void Reset(string[] themes)
@@ -55,6 +63,7 @@ namespace Victorina
             Themes = finalRoundData.Themes;
             RemovedThemes = finalRoundData.RemovedThemes;
             DoneBets = finalRoundData.DoneBets;
+            DoneAnswers = finalRoundData.DoneAnswers;
             MarkAsChanged();
         }
 
@@ -86,6 +95,32 @@ namespace Victorina
         public void SelectPlayer(PlayerData player)
         {
             SelectedPlayerByMaster = player;
+            MarkAsChanged();
+        }
+
+        public void ClearAnswers(int playersAmount)
+        {
+            Answers = new string[playersAmount];
+            MarkAsChanged();
+        }
+
+        public void SetDoneAnswers(bool[] doneAnswer)
+        {
+            DoneAnswers = doneAnswer;
+            MarkAsChanged();
+        }
+
+        public void SetAnswer(int index, string answerText)
+        {
+            Answers[index] = answerText;
+            DoneAnswers[index] = true;
+            MarkAsChanged();
+        }
+
+        public void ClearAnswer(int index)
+        {
+            Answers[index] = null;
+            DoneAnswers[index] = false;
             MarkAsChanged();
         }
         
