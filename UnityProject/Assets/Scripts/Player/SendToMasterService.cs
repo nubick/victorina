@@ -2,6 +2,7 @@ using System.Linq;
 using Injection;
 using MLAPI;
 using UnityEngine;
+using Victorina.Commands;
 
 namespace Victorina
 {
@@ -34,15 +35,7 @@ namespace Victorina
             else
                 Debug.Log($"Client is not connected: {nameof(SendPlayerButton)}");
         }
-
-        public void SendSelectRoundQuestion(NetRoundQuestion netRoundQuestion)
-        {
-            if (NetworkingManager.IsConnectedClient)
-                Player.SendSelectRoundQuestionToMaster(netRoundQuestion);
-            else
-                Debug.Log($"Client is not connected: {nameof(SendSelectRoundQuestion)}");
-        }
-
+        
         public void SendFilesLoadingPercentage(byte percentage, int[] downloadedFileIds)
         {
             if (NetworkingManager.IsConnectedClient)
@@ -106,5 +99,13 @@ namespace Victorina
         }
 
         #endregion
+
+        public void SendCommand(CommandBase command)
+        {
+            if (NetworkingManager.IsConnectedClient)
+                Player.SendCommand(command);
+            else
+                Debug.Log($"Client is not connected: {nameof(SendCommand)}");
+        }
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using Injection;
 using MLAPI;
 using MLAPI.Messaging;
+using Victorina.Commands;
 using Debug = UnityEngine.Debug;
 
 namespace Victorina
@@ -305,24 +306,7 @@ namespace Victorina
         }
 
         #endregion
-
-        #region Send Select Round Question to MASTER
         
-        public void SendSelectRoundQuestionToMaster(NetRoundQuestion netRoundQuestion)
-        {
-            Debug.Log($"Player {OwnerClientId}: send select round question to Master: {netRoundQuestion}");
-            InvokeServerRpc(MasterReceiveSelectRoundQuestion, netRoundQuestion);
-        }
-
-        [ServerRPC]
-        private void MasterReceiveSelectRoundQuestion(NetRoundQuestion netRoundQuestion)
-        {
-            Debug.Log($"Master: Receive select round question, Player {GetPlayerInfo()}, netRoundQuestion: {netRoundQuestion}");
-            MasterDataReceiver.OnCurrentPlayerSelectRoundQuestionReceived(OwnerClientId, netRoundQuestion);
-        }
-        
-        #endregion
-
         #region Files Loading Percentage to MASTER
 
         public void SendFilesLoadingProgressToMaster(byte percentage, int[] downloadedFileIds)
@@ -480,6 +464,23 @@ namespace Victorina
             MasterDataReceiver.OnReceiveFinalRoundBet(OwnerClientId, bet);
         }
 
+        #endregion
+
+        #region Command
+        
+        public void SendCommand(CommandBase command)
+        {
+            Debug.Log($"Player {OwnerClientId}: send command '{command}'");
+            CommandNetworkData commandNetworkData = new CommandNetworkData(command);
+            InvokeServerRpc(SendCommandServerRpc, commandNetworkData);
+        }
+
+        [ServerRPC]
+        private void SendCommandServerRpc(CommandNetworkData commandNetworkData)
+        {
+            MasterDataReceiver.OnReceiveCommand(OwnerClientId, commandNetworkData.Command);
+        }
+        
         #endregion
     }
 }

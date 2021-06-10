@@ -2,13 +2,13 @@ using System;
 using System.Linq;
 using Injection;
 using UnityEngine;
+using Victorina.Commands;
 
 namespace Victorina
 {
     public class MatchSystem
     {
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
-        [Inject] private SendToMasterService SendToMasterService { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private PackageData PackageData { get; set; }
@@ -16,9 +16,10 @@ namespace Victorina
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private MessageDialogueView MessageDialogueView { get; set; }
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private CommandsSystem CommandsSystem { get; set; }
+        [Inject] private MessageDialogueView MessageDialogueView { get; set; }
         
         private NetRoundsInfo RoundsInfo => MatchData.RoundsInfo.Value; 
         
@@ -40,34 +41,23 @@ namespace Victorina
 
         public void TrySelectQuestion(NetRoundQuestion netRoundQuestion)
         {
-            if (netRoundQuestion.IsAnswered)
+            if (NetworkData.IsMaster && PlayersBoard.Current == null)
             {
-                Debug.Log($"Selected question is answered: {netRoundQuestion}");
+                MessageDialogueView.Show("Текущий игрок?", "Для старта необходим текущий игрок! Выберите игрока в верхней панели и сделайте его текущим!");
+                return;
             }
-            else if (NetworkData.IsMaster)
-            {
-                if (PlayersBoard.Current == null)
-                    MessageDialogueView.Show("Текущий игрок?", "Для старта необходим текущий игрок! Выберите игрока в верхней панели и сделайте его текущим!");
-                else
-                    SelectQuestion(netRoundQuestion);
-            }
-            else if (NetworkData.IsClient)
-            {
-                if (MatchData.IsMeCurrentPlayer)
-                {
-                    Debug.Log($"Player: Current player selected round question: {netRoundQuestion}");
-                    SendToMasterService.SendSelectRoundQuestion(netRoundQuestion);
-                }
-                else
-                {
-                    Debug.Log($"Only Master or Current player can select question: {netRoundQuestion}");
-                }
-            }
+            
+            CommandsSystem.AddNewCommand(new SelectRoundQuestionCommand(netRoundQuestion));
         }
 
         public bool IsCurrentPlayer(byte playerId)
         {
             return PlayersBoard.Current != null && PlayersBoard.Current.PlayerId == playerId;
+        }
+
+        public bool IsCurrentPlayer(PlayerData player)
+        {
+            return IsCurrentPlayer(player.PlayerId);
         }
 
         public void SelectQuestion(NetRoundQuestion netRoundQuestion)

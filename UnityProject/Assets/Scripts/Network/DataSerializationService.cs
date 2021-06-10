@@ -5,13 +5,15 @@ using Injection;
 using MLAPI.Serialization;
 using MLAPI.Serialization.Pooled;
 using UnityEngine.Assertions;
+using Victorina.Commands;
 
 namespace Victorina
 {
     public class DataSerializationService
     {
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        
+        [Inject] private CommandsSystem CommandsSystem { get; set; }
+
         public void Initialize()
         {
             SerializationManager.RegisterSerializationHandlers(SerializePlayersBoard, DeserializePlayersBoard);
@@ -31,6 +33,8 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeNoRiskStoryDot, DeserializeNoRiskStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeCatInBagStoryDot, DeserializeCatInBagStoryDot);
 
+            SerializationManager.RegisterSerializationHandlers(SerializeCommandNetworkData, DeserializeCommandNetworkData);
+            
             SerializationManager.RegisterSerializationHandlers(SerializeBytesArray, DeserializeBytesArray);
         }
         
@@ -505,6 +509,26 @@ namespace Victorina
             return array;
         }
 
+        #endregion
+
+        #region Commands
+        
+        private void SerializeCommandNetworkData(Stream stream, CommandNetworkData data)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32((int) data.Command.Type);
+            data.Command.Serialize(writer);
+        }
+
+        private CommandNetworkData DeserializeCommandNetworkData(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            CommandType commandType = (CommandType) reader.ReadInt32();
+            CommandBase command = CommandsSystem.Create(commandType);
+            command.Deserialize(reader);
+            return new CommandNetworkData(command);
+        }
+        
         #endregion
     }
 }

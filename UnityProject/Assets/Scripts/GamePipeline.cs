@@ -3,6 +3,7 @@ using Assets.Scripts.Utils;
 using Injection;
 using MLAPI;
 using UnityEngine;
+using Victorina.Commands;
 
 namespace Victorina
 {
@@ -87,6 +88,8 @@ namespace Victorina
             _injector.Bind(new DataChangeHandler());
             _injector.Bind(new PlayEffectsSystem());
             _injector.Bind(FindObjectOfType<PlayEffectsData>());
+            
+            _injector.Bind(new CommandsSystem());
             
             //Final Round
             _injector.Bind(FindObjectOfType<FinalRoundView>());
@@ -222,6 +225,8 @@ namespace Victorina
             _injector.Get<AnsweringTimerSystem>().Initialize();
             _injector.Get<FinalRoundView>().Initialize();
 
+            _injector.Get<CommandsSystem>().Initialize(_injector);
+            
             //Analytics
             _injector.Get<AnalyticsSystem>().Initialize();
             
