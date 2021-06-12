@@ -4,6 +4,7 @@ using Injection;
 using MLAPI;
 using UnityEngine;
 using Victorina.Commands;
+using Victorina.DevTools;
 
 namespace Victorina
 {
@@ -143,8 +144,10 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<InputDialogueView>());
             _injector.Bind(FindObjectOfType<MessageDialogueView>());
 
-            //Analytics
+            //DevTools
             _injector.Bind(new AnalyticsSystem());
+            _injector.Bind(new LogsTrackingSystem());
+            _injector.Bind(new LogsTrackingData());
             
             //Crafter
             _injector.Bind(FindObjectOfType<PackageCrafterView>());
@@ -179,6 +182,8 @@ namespace Victorina
         
         private void Initialize()
         {
+            _injector.Get<LogsTrackingSystem>().Initialize();
+
             _injector.Get<SaveSystem>().LoadAll();
             
             GeneratePlayerGuid();//after load app state
@@ -227,9 +232,10 @@ namespace Victorina
 
             _injector.Get<CommandsSystem>().Initialize(_injector);
             
+            //DevTools
             //Analytics
             _injector.Get<AnalyticsSystem>().Initialize();
-            
+
             //Debug
             _injector.Get<DisconnectPanelView>().Initialize();
             

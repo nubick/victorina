@@ -9,5 +9,6 @@ namespace Victorina
         public string PackageFilesPath { get; set; }
         public string TempVideoFilePath { get; set; }
         public string TempArchivePath { get; set; }
+        public string LogsPath { get; set; }
     }
 }

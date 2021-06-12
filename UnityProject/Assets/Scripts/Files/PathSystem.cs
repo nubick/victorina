@@ -17,11 +17,13 @@ namespace Victorina
             Data.PackageFilesPath = GetPackageFilesPath();
             Data.TempVideoFilePath = $"{Data.PackageFilesPath}/TempVideo.mp4";
             Data.TempArchivePath = $"{Data.DataPath}/ArchiveTemp";
+            Data.LogsPath = $"{Data.DataPath}/Logs";
             
             EnsurePath(Data.PackagesPath);
             EnsurePath(Data.CrafterPath);
             EnsurePath(Data.CrafterBagPath);
             EnsurePath(Data.PackageFilesPath);
+            EnsurePath(Data.LogsPath);
         }
 
         private void EnsurePath(string path)
