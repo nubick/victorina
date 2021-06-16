@@ -23,6 +23,14 @@ namespace Victorina
             return player.PlayerId;
         }
 
+        public ulong GetClientId(byte playerId)
+        {
+            JoinedPlayer player = GetByPlayerId(playerId);
+            if (player == null)
+                throw new Exception($"Can't find JoinedPlayer by player id: {playerId}");
+            return player.ClientId;
+        }
+
         public JoinedPlayer GetByClientId(ulong clientId)
         {
             return Players.SingleOrDefault(_ => _.ClientId == clientId);

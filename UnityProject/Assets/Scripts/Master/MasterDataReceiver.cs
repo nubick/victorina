@@ -12,7 +12,6 @@ namespace Victorina
         [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
-        [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         
         public void OnPlayerButtonClickReceived(ulong clientId, float spentSeconds)
@@ -59,7 +58,7 @@ namespace Victorina
         
         #endregion
         
-        public void OnReceiveCommand(ulong clientId, CommandBase command)
+        public void OnReceiveCommand(ulong clientId, INetworkCommand command)
         {
             PlayerData player = GetPlayer(clientId);
             Debug.Log($"Master: Receive command from Player {player}: '{command}'");

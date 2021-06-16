@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Victorina.Commands
 {
-    public class MakeFinalRoundBetCommand : PlayerCommand
+    public class MakeFinalRoundBetCommand : Command, INetworkCommand, IServerCommand
     {
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
@@ -14,12 +14,12 @@ namespace Victorina.Commands
 
         public override CommandType Type => CommandType.MakeFinalRoundBet;
         
-        public override bool CanSendToServer()
+        public bool CanSend()
         {
             return CanExecuteOnServer();
         }
 
-        public override bool CanExecuteOnServer()
+        public bool CanExecuteOnServer()
         {
             PlayerData bettingPlayer = GetBettingPlayer();
             if (Bet <= 0 || Bet > bettingPlayer.Score)
@@ -31,7 +31,7 @@ namespace Victorina.Commands
             return true;
         }
 
-        public override void ExecuteOnServer()
+        public void ExecuteOnServer()
         {
             PlayerData bettingPlayer = GetBettingPlayer();
             Debug.Log($"Make bet '{Bet}' for player '{bettingPlayer}'");
@@ -54,12 +54,12 @@ namespace Victorina.Commands
         
         #region Serialization
 
-        public override void Serialize(PooledBitWriter writer)
+        public void Serialize(PooledBitWriter writer)
         {
             writer.WriteInt32(Bet);
         }
 
-        public override void Deserialize(PooledBitReader reader)
+        public void Deserialize(PooledBitReader reader)
         {
             Bet = reader.ReadInt32();
         }

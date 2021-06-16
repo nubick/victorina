@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Victorina.Commands
 {
-    public class RemoveFinalRoundThemeCommand : PlayerCommand
+    public class RemoveFinalRoundThemeCommand : Command, INetworkCommand, IServerCommand
     {
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
         [Inject] private FinalRoundData FinalRoundData { get; set; }
@@ -16,7 +16,7 @@ namespace Victorina.Commands
         public override CommandType Type => CommandType.RemoveFinalRoundTheme;
         private bool IsOwnerCurrentPlayerOrMaster => Owner == CommandOwner.Master || MatchSystem.IsCurrentPlayer(OwnerPlayer);
         
-        public override bool CanSendToServer()
+        public bool CanSend()
         {
             if (!IsOwnerCurrentPlayerOrMaster)
             {
@@ -26,7 +26,7 @@ namespace Victorina.Commands
             return true;
         }
 
-        public override bool CanExecuteOnServer()
+        public bool CanExecuteOnServer()
         {
             if (!IsOwnerCurrentPlayerOrMaster)
             {
@@ -55,7 +55,7 @@ namespace Victorina.Commands
             return true;
         }
 
-        public override void ExecuteOnServer()
+        public void ExecuteOnServer()
         {
             Debug.Log($"Master. Remove theme '{ThemeIndex}' for player '{PlayersBoard.Current}' by '{OwnerString}'");
             FinalRoundData.RemoveTheme(ThemeIndex);
@@ -88,12 +88,12 @@ namespace Victorina.Commands
         
         #region Serialization
 
-        public override void Serialize(PooledBitWriter writer)
+        public void Serialize(PooledBitWriter writer)
         {
             writer.WriteInt32(ThemeIndex);
         }
 
-        public override void Deserialize(PooledBitReader reader)
+        public void Deserialize(PooledBitReader reader)
         {
             ThemeIndex = reader.ReadInt32();
         }

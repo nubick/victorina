@@ -527,7 +527,7 @@ namespace Victorina
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             CommandType commandType = (CommandType) reader.ReadInt32();
-            PlayerCommand command = CommandsSystem.CreatePlayerCommand(commandType);
+            INetworkCommand command = CommandsSystem.CreateNetworkCommand(commandType);
             command.Deserialize(reader);
             return new CommandNetworkData(command);
         }

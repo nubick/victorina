@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Victorina.Commands
 {
-    public class SendFinalRoundAnswerCommand : PlayerCommand
+    public class SendFinalRoundAnswerCommand : Command, INetworkCommand, IServerCommand
     {
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
@@ -12,18 +12,14 @@ namespace Victorina.Commands
         public string AnswerText { get; set; }
 
         public override CommandType Type => CommandType.SendFinalRoundAnswer;
+        public bool CanSend() => true;
 
-        public override bool CanSendToServer()
-        {
-            return true;
-        }
-
-        public override bool CanExecuteOnServer()
+        public bool CanExecuteOnServer()
         {
             return Owner == CommandOwner.Player;
         }
 
-        public override void ExecuteOnServer()
+        public void ExecuteOnServer()
         {
             Debug.Log($"Set player '{OwnerPlayer}' answer '{AnswerText}");
             int index = PlayersBoard.GetPlayerIndex(OwnerPlayer);
@@ -32,12 +28,12 @@ namespace Victorina.Commands
 
         #region Serialization
 
-        public override void Serialize(PooledBitWriter writer)
+        public void Serialize(PooledBitWriter writer)
         {
             writer.WriteString(AnswerText);
         }
 
-        public override void Deserialize(PooledBitReader reader)
+        public void Deserialize(PooledBitReader reader)
         {
             AnswerText = reader.ReadString().ToString();
         }

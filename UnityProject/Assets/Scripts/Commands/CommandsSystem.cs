@@ -1,6 +1,7 @@
 using System;
 using Injection;
 using UnityEngine;
+using Victorina.DevTools;
 
 namespace Victorina.Commands
 {
@@ -11,47 +12,65 @@ namespace Victorina.Commands
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private SendToMasterService SendToMasterService { get; set; }
+        [Inject] private SendToPlayersService SendToPlayersService { get; set; }
 
         public void Initialize(Injector injector)
         {
             _injector = injector;
         }
         
-        public void AddNewCommand(CommandBase command)
+        public void AddNewCommand(Command command)
         {
             _injector.InjectTo(command);
-            
-            if (NetworkData.IsClient)
-            {
-                if (command is PlayerCommand playerCommand)
-                {
-                    playerCommand.Owner = CommandOwner.Player;
-                    playerCommand.OwnerPlayer = MatchData.ThisPlayer;
 
-                    if (playerCommand.CanSendToServer())
-                    {
-#if UNITY_EDITOR
-                        Debug.Log($"<color=#AAAAFF>SEND: {playerCommand}</color>");
-#else
-                        Debug.Log($"SEND: {playerCommand}");
-#endif
-                        SendToMasterService.SendCommand(playerCommand);
-                    }
-                }
-                else
-                {
-                    throw new Exception($"Client can't create not PlayerCommand: {command}");
-                }
+            if (NetworkData.IsMaster)
+                AddNewCommandByMaster(command);
+            else if (NetworkData.IsClient)
+                AddNewCommandByPlayer(command);
+        }
+
+        private void AddNewCommandByMaster(Command command)
+        {
+            if (command is IndividualPlayerCommand individualPlayerCommand)
+            {
+                Dev.Log($"SEND: {individualPlayerCommand}", new Color(0.67f, 0.67f, 1f));
+                SendToPlayersService.SendCommand(individualPlayerCommand);
             }
-            else if (NetworkData.IsMaster)
+            else
             {
                 command.Owner = CommandOwner.Master;
                 TryExecute(command);
             }
         }
-        
-        public void AddReceivedPlayerCommand(CommandBase command, PlayerData player)
+
+        private void AddNewCommandByPlayer(Command command)
         {
+            if (command is INetworkCommand networkCommand)
+            {
+                command.Owner = CommandOwner.Player;
+                command.OwnerPlayer = MatchData.ThisPlayer;
+
+                if (networkCommand.CanSend())
+                {
+                    Dev.Log($"SEND: {networkCommand}", new Color(0.67f, 0.67f, 1f));
+                    SendToMasterService.SendCommand(networkCommand);
+                }
+            }
+            else
+            {
+                throw new Exception($"Client can't create not PlayerCommand: {command}");
+            }
+        }
+        
+        public void AddReceivedPlayerCommand(INetworkCommand networkCommand, PlayerData player)
+        {
+            Command command = networkCommand as Command;
+            if (command == null)
+            {
+                Debug.Log($"Received player command '{networkCommand}' is null");
+                return;
+            }
+            
             _injector.InjectTo(command);
 
             command.Owner = CommandOwner.Player;
@@ -59,20 +78,39 @@ namespace Victorina.Commands
             TryExecute(command);
         }
 
-        private void TryExecute(CommandBase command)
+        public void AddReceivedMasterCommand(INetworkCommand networkCommand)
         {
-            if (command.CanExecuteOnServer())
+            Command command = networkCommand as Command;
+            if (command == null)
             {
-#if UNITY_EDITOR
-                Debug.Log($"<color=#AAAAFF>EXECUTE: {command}</color>");
-#else
-                Debug.Log($"EXECUTE: {command}");
-#endif
-                command.ExecuteOnServer();
+                Debug.Log($"Received master command '{networkCommand}' is null");
+                return;
+            }
+
+            _injector.InjectTo(command);
+
+            command.Owner = CommandOwner.Master;
+            TryExecute(command);
+        }
+
+        private void TryExecute(Command command)
+        {
+            if (command is IndividualPlayerCommand individualPlayerCommand)
+            {
+                Dev.Log($"EXECUTE: {command}", new Color(0.67f, 0.67f, 1f));
+                individualPlayerCommand.ExecuteOnClient();
+            }
+            else if (command is IServerCommand serverCommand)
+            {
+                if (serverCommand.CanExecuteOnServer())
+                {
+                    Dev.Log($"EXECUTE: {command}", new Color(0.67f, 0.67f, 1f));
+                    serverCommand.ExecuteOnServer();
+                }
             }
         }
-        
-        public PlayerCommand CreatePlayerCommand(CommandType commandType)
+
+        public INetworkCommand CreateNetworkCommand(CommandType commandType)
         {
             switch (commandType)
             {
@@ -84,6 +122,10 @@ namespace Victorina.Commands
                     return new MakeFinalRoundBetCommand();
                 case CommandType.SendFinalRoundAnswer:
                     return new SendFinalRoundAnswerCommand();
+                case CommandType.SendPlayerLogs:
+                    return new SendPlayerLogsCommand();
+                case CommandType.SavePlayerLogs:
+                    return new SavePlayerLogsCommand();
                 default:
                     throw new NotSupportedException($"Command type '{commandType}' is not supported.");
             }

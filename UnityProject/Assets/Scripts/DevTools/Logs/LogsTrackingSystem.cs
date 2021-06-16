@@ -36,12 +36,19 @@ namespace Victorina.DevTools
                     Data.LastSaveTimesQueue.Dequeue();
             }
         }
-        
-        private string AsString()
+
+        public string GetAllLogs()
         {
             return ToString(Data.AllEntities);
         }
 
+        public string GetLastLogs(int amount)
+        {
+            int skip = Mathf.Max(0, Data.AllEntities.Count - amount);
+            var entities = Data.AllEntities.Skip(skip).Take(amount);
+            return ToString(entities);
+        }
+        
         private string ToString(IEnumerable<LogEntity> entities)
         {
             StringBuilder sb = new StringBuilder();
@@ -64,16 +71,13 @@ namespace Victorina.DevTools
         
         private void SaveLastExceptionToFile()
         {
-            const int bunchSize = 30;
-            int skip = Mathf.Max(0, Data.AllEntities.Count - bunchSize);
-            var entities = Data.AllEntities.Skip(skip).Take(bunchSize);
-            string logs = ToString(entities);
+            string logs = GetLastLogs(30);
             string fileName = $"ex_{DateTime.Now:yyyy.MM.dd.hh.mm.ss.ffff}.txt";
             string filePath = $"{PathData.LogsPath}/{fileName}";
             File.WriteAllText(filePath, logs);
             Debug.Log($"Last exception saved to file: {filePath}");
         }
-        
+
         private void SaveToFile(string filePath)
         {
             Debug.Log($"Save logs to file '{filePath}', entities: {Data.AllEntities.Count}, exceptions:  {Data.ExceptionsAmount}");
@@ -83,7 +87,7 @@ namespace Victorina.DevTools
             }
             else
             {
-                string logs = AsString();
+                string logs = GetAllLogs();
                 File.WriteAllText(filePath, logs);
                 Debug.Log("Logs successfully saved.");
             }

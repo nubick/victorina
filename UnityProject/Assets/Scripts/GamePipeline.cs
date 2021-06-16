@@ -145,6 +145,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<MessageDialogueView>());
 
             //DevTools
+            _injector.Bind(new DevToolsSystem());
             _injector.Bind(new AnalyticsSystem());
             _injector.Bind(new LogsTrackingSystem());
             _injector.Bind(new LogsTrackingData());

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Victorina.Commands
 {
-    public class SelectRoundQuestionCommand : PlayerCommand
+    public class SelectRoundQuestionCommand : Command, INetworkCommand, IServerCommand
     {
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
@@ -28,7 +28,7 @@ namespace Victorina.Commands
             return roundQuestions.SingleOrDefault(_ => _.QuestionId == questionId);
         }
 
-        public override bool CanSendToServer()
+        public bool CanSend()
         {
             NetRoundQuestion question = GetQuestion(QuestionId);
             
@@ -47,13 +47,13 @@ namespace Victorina.Commands
             return true;
         }
         
-        public override void ExecuteOnServer()
+        public void ExecuteOnServer()
         {
             NetRoundQuestion netRoundQuestion = GetQuestion(QuestionId);
             MatchSystem.SelectQuestion(netRoundQuestion);
         }
         
-        public override bool CanExecuteOnServer()
+        public bool CanExecuteOnServer()
         {
             if (!IsOwnerCurrentPlayerOrMaster)
             {
@@ -84,12 +84,12 @@ namespace Victorina.Commands
             return true;
         }
         
-        public override void Serialize(PooledBitWriter writer)
+        public void Serialize(PooledBitWriter writer)
         {
             writer.WriteString(QuestionId);
         }
 
-        public override void Deserialize(PooledBitReader reader)
+        public void Deserialize(PooledBitReader reader)
         {
             QuestionId = reader.ReadString().ToString();
         }

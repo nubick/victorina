@@ -1,6 +1,7 @@
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
+using Victorina.DevTools;
 
 namespace Victorina
 {
@@ -10,14 +11,18 @@ namespace Victorina
         
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private ServerService ServerService { get; set; }
+        [Inject] private DevToolsSystem DevToolsSystem { get; set; }
         
         public Text PlayerId;
         public ValidatedInputField PlayerNameInputField;
         public ValidatedInputField PlayerScoreInputField;
+
+        public GameObject DevToolsPanel;
         
         public void Show(PlayerData playerData)
         {
             _playerData = playerData;
+            DevToolsPanel.SetActive(Static.BuildMode == BuildMode.Development);
             Show();
         }
         
@@ -85,6 +90,11 @@ namespace Victorina
         public void OnCancelButtonClicked()
         {
             Hide();
+        }
+
+        public void OnRequestPlayerLogsButtonClicked()
+        {
+            DevToolsSystem.RequestPlayerLogs(_playerData);
         }
     }
 }

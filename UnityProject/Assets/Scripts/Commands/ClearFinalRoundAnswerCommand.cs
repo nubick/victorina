@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Victorina.Commands
 {
-    public class ClearFinalRoundAnswerCommand : CommandBase
+    public class ClearFinalRoundAnswerCommand : Command, IServerCommand
     {
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
@@ -13,7 +13,7 @@ namespace Victorina.Commands
         
         public override CommandType Type => CommandType.ClearFinalRoundAnswer;
         
-        public override bool CanExecuteOnServer()
+        public bool CanExecuteOnServer()
         {
             if (!FinalRoundSystem.CanParticipate(Player))
             {
@@ -31,7 +31,7 @@ namespace Victorina.Commands
             return true;
         }
 
-        public override void ExecuteOnServer()
+        public void ExecuteOnServer()
         {
             int index = PlayersBoard.GetPlayerIndex(Player);
             FinalRoundData.ClearAnswer(index);

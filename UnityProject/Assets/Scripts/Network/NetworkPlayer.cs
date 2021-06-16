@@ -441,17 +441,29 @@ namespace Victorina
 
         #region Command
         
-        public void SendCommand(PlayerCommand playerCommand)
+        public void SendCommand(INetworkCommand networkCommand)
         {
-            Debug.Log($"Player {OwnerClientId}: send command '{playerCommand}'");
-            CommandNetworkData commandNetworkData = new CommandNetworkData(playerCommand);
-            InvokeServerRpc(SendCommandServerRpc, commandNetworkData);
+            Debug.Log($"Player {OwnerClientId}: send command '{networkCommand}'");
+            CommandNetworkData commandNetworkData = new CommandNetworkData(networkCommand);
+            InvokeServerRpc(SendCommandServerRpc, commandNetworkData, "RFS");
         }
 
         [ServerRPC]
         private void SendCommandServerRpc(CommandNetworkData commandNetworkData)
         {
             MasterDataReceiver.OnReceiveCommand(OwnerClientId, commandNetworkData.Command);
+        }
+
+        public void SendCommandToPlayer(IndividualPlayerCommand command)
+        {
+            CommandNetworkData commandNetworkData = new CommandNetworkData(command);
+            InvokeClientRpcOnOwner(ReceiveCommandClientRpc, commandNetworkData, "RFS");
+        }
+
+        [ClientRPC]
+        private void ReceiveCommandClientRpc(CommandNetworkData commandNetworkData)
+        {
+            PlayerDataReceiver.OnReceiveCommand(commandNetworkData.Command);
         }
         
         #endregion

@@ -1,5 +1,7 @@
 using System.Linq;
 using Injection;
+using UnityEngine;
+using Victorina.Commands;
 
 namespace Victorina
 {
@@ -18,6 +20,7 @@ namespace Victorina
         [Inject] private AnsweringTimerData AnsweringTimerData { get; set; }
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private CommandsSystem CommandsSystem { get; set; }
         
         public void OnReceiveRegisteredPlayerId(byte playerId)
         {
@@ -124,6 +127,12 @@ namespace Victorina
         {
             FinalRoundData.Update(finalRoundData);
             MetagameEvents.FinalRoundDataChanged.Publish();
+        }
+
+        public void OnReceiveCommand(INetworkCommand command)
+        {
+            Debug.Log($"Receive command from Master, {command}");
+            CommandsSystem.AddReceivedMasterCommand(command);
         }
     }
 }

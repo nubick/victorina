@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Injection;
 using MLAPI;
+using MLAPI.Connection;
 using UnityEngine;
+using Victorina.Commands;
 
 namespace Victorina
 {
@@ -14,12 +17,22 @@ namespace Victorina
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         
         private string All => $"All: ({GetPlayersInfo()})";
         
         private List<NetworkPlayer> GetPlayers()
         {
             return NetworkingManager.ConnectedClientsList.Where(_ => _.PlayerObject != null).Select(_ => _.PlayerObject.GetComponent<NetworkPlayer>()).ToList();
+        }
+
+        private NetworkPlayer GetPlayer(PlayerData player)
+        {
+            ulong clientId = ConnectedPlayersData.GetClientId(player.PlayerId);
+            NetworkedClient networkedClient = NetworkingManager.ConnectedClientsList.SingleOrDefault(_ => _.ClientId == clientId);
+            if (networkedClient == null)
+                throw new Exception($"Can't find networkedClient for player {player}");
+            return networkedClient.PlayerObject.GetComponent<NetworkPlayer>();
         }
 
         public void SendConnectionData(NetworkPlayer networkPlayer, byte registeredPlayerId)
@@ -137,6 +150,13 @@ namespace Victorina
         {
             Debug.Log($"Master: Send FinalRoundData to {All}: {finalRoundData}");
             GetPlayers().ForEach(player => player.SendFinalRoundData(finalRoundData));
+        }
+
+        public void SendCommand(IndividualPlayerCommand command)
+        {
+            Debug.Log($"Master: Send individual player command to {command.Receiver}");
+            NetworkPlayer networkPlayer = GetPlayer(command.Receiver);
+            networkPlayer.SendCommandToPlayer(command);
         }
     }
 }

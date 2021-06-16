@@ -8,6 +8,10 @@ namespace Victorina.Commands
        RemoveFinalRoundTheme,
        MakeFinalRoundBet,
        SendFinalRoundAnswer,
-       ClearFinalRoundAnswer
+       ClearFinalRoundAnswer,
+       
+       //DevTools
+       SendPlayerLogs,
+       SavePlayerLogs
     }
 }
