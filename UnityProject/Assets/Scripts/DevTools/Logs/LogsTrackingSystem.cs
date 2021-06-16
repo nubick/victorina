@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Injection;
 using UnityEngine;
+using Victorina.Commands;
 using Application = UnityEngine.Application;
 
 namespace Victorina.DevTools
@@ -13,6 +14,8 @@ namespace Victorina.DevTools
     {
         [Inject] private LogsTrackingData Data { get; set; }
         [Inject] private PathData PathData { get; set; }
+        [Inject] private CommandsSystem CommandsSystem { get; set; }
+        [Inject] private NetworkData NetworkData { get; set; }
         
         public void Initialize()
         {
@@ -76,6 +79,12 @@ namespace Victorina.DevTools
             string filePath = $"{PathData.LogsPath}/{fileName}";
             File.WriteAllText(filePath, logs);
             Debug.Log($"Last exception saved to file: {filePath}");
+
+            if (NetworkData.IsClient)
+            {
+                Debug.Log("Send last exception to Master");
+                CommandsSystem.AddNewCommand(new SavePlayerLogsCommand {Logs = logs});
+            }
         }
 
         private void SaveToFile(string filePath)

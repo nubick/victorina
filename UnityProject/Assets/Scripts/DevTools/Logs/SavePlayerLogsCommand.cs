@@ -18,7 +18,7 @@ namespace Victorina.DevTools
 
         public void ExecuteOnServer()
         {
-            string fileName = $"{OwnerPlayer.Name} - {DateTime.Now:yyyy.MM.dd.hh.mm}.txt";
+            string fileName = $"{OwnerPlayer.Name} - {DateTime.Now:yyyy.MM.dd.hh:mm:ss}.txt";
             string filePath = $"{PathData.LogsPath}/{fileName}";
             File.WriteAllText(filePath, Logs);
         }

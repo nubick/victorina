@@ -1,7 +1,5 @@
-using System.Text;
 using Injection;
 using MLAPI.Serialization.Pooled;
-using UnityEngine;
 using Victorina.Commands;
 
 namespace Victorina.DevTools
@@ -20,10 +18,6 @@ namespace Victorina.DevTools
         public override void ExecuteOnClient()
         {
             string logs = LogsTrackingSystem.GetLastLogs(300);
-
-            int size = Encoding.Unicode.GetBytes(logs).Length;
-            Debug.Log($"logs: {logs.Length}, size: {size}");
-            
             CommandsSystem.AddNewCommand(new SavePlayerLogsCommand {Logs = logs});
         }
         
