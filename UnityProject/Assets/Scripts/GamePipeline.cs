@@ -33,6 +33,9 @@ namespace Victorina
             _injector.Bind(viewsData);
             _injector.Bind(FindObjectOfType<StartupView>());
             _injector.Bind(FindObjectOfType<JoinGameView>());
+            _injector.Bind(FindObjectOfType<CreatePackageGameView>());
+            _injector.Bind(new CreatePackageGameSystem());
+            _injector.Bind(new CreatePackageGameData());
             _injector.Bind(FindObjectOfType<LobbyView>());
             _injector.Bind(FindObjectOfType<TextStoryDotView>());
             _injector.Bind(FindObjectOfType<ImageStoryDotView>());
@@ -134,8 +137,6 @@ namespace Victorina
             _injector.Bind(new PlayerFilesRequestSystem());
             _injector.Bind(FindObjectOfType<PlayerFilesRequestData>());
             
-            _injector.Bind(new SiqLoadedPackageSystem());
-            _injector.Bind(new SiqLoadedPackageData());
             _injector.Bind(new SiqConverter());
             
             _injector.Bind(new PackageFilesSystem());
@@ -143,6 +144,7 @@ namespace Victorina
             
             _injector.Bind(FindObjectOfType<InputDialogueView>());
             _injector.Bind(FindObjectOfType<MessageDialogueView>());
+            _injector.Bind(FindObjectOfType<ConfirmationDialogueView>());
 
             //DevTools
             _injector.Bind(new DevToolsSystem());
@@ -201,6 +203,7 @@ namespace Victorina
             _injector.Get<ViewsSystem>().Initialize();
             _injector.Get<DataSerializationService>().Initialize();
             
+            _injector.Get<CreatePackageGameView>().Initialize();
             _injector.Get<PlayersBoardView>().Initialize();
             _injector.Get<RoundView>().Initialize();
             _injector.Get<ImageStoryDotView>().Initialize();
@@ -232,7 +235,7 @@ namespace Victorina
             _injector.Get<FinalRoundView>().Initialize();
 
             _injector.Get<CommandsSystem>().Initialize(_injector);
-            
+
             //DevTools
             //Analytics
             _injector.Get<AnalyticsSystem>().Initialize();

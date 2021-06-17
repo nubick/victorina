@@ -15,7 +15,9 @@ namespace Victorina
             MetagameEvents.ConnectedAsClient.Subscribe(() => SendEvent("ConnectedAsClient"));
             MetagameEvents.DisconnectedAsClient.Subscribe(() => SendEvent("DisconnectedAsClient"));
 
-            AnalyticsEvents.LoadPackageToPlay.Subscribe(packageName => SendEvent("LoadPackageToPlay", "PackageName", packageName));
+            AnalyticsEvents.LoadPackage.Subscribe(packageName => SendEvent("LoadPackage", "PackageName", packageName));
+            AnalyticsEvents.StartPackageGame.Subscribe(packageName => SendEvent("StartPackageGame", "PackageName", packageName));
+            AnalyticsEvents.ResumePackageGame.Subscribe(packageName => SendEvent("ResumePackageGame", "PackageName", packageName));
 
             AnalyticsEvents.FirstRoundQuestionStart.Subscribe(roundNumber => SendEvent("FirstRoundQuestionStart", "RoundNumber", roundNumber));
             AnalyticsEvents.LastRoundQuestionStart.Subscribe(roundNumber => SendEvent("LastRoundQuestionStart", "RoundNumber", roundNumber));

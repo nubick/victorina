@@ -26,11 +26,7 @@ namespace Victorina
         
         public string GetPackageArchivePathUsingOpenDialogue()
         {
-            ExtensionFilter[] extensions =
-            {
-                new ExtensionFilter(VumFilterName, VumFilterExtension),
-                new ExtensionFilter(SiqFilterName, SiqFilterExtension)
-            };
+            ExtensionFilter[] extensions = {new ExtensionFilter(VumFilterName, VumFilterExtension, SiqFilterExtension)};
             string[] paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
             return paths[0];
         }

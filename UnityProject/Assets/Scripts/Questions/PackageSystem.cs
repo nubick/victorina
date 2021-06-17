@@ -9,11 +9,10 @@ namespace Victorina
     {
         [Inject] private PackageData Data { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
-        [Inject] private PackageFilesSystem PackageFilesSystem { get; set; }
 
-        public void Initialize(string packagePath)
+        public void StartPackageGame(Package package)
         {
-            Data.Package = PackageFilesSystem.LoadPackage(packagePath);
+            Data.Package = package;
             WritePackageStatistics(Data.Package);
             Data.PackageProgress = new PackageProgress();
             MasterFilesRepository.AddPackageFiles(Data.Package);

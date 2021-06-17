@@ -13,8 +13,6 @@ namespace Victorina
         [Inject] private ServerService ServerService { get; set; }
         [Inject] private RoundView RoundView { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
-        [Inject] private SiqLoadedPackageSystem SiqLoadedPackageSystem { get; set; }
-        [Inject] private SiqLoadedPackageData SiqLoadedPackageData { get; set; }
         [Inject] private ExternalIpData ExternalIpData { get; set; }
         [Inject] private IpCodeSystem IpCodeSystem { get; set; }
         [Inject] private PackageFilesSystem PackageFilesSystem { get; set; }
@@ -67,55 +65,18 @@ namespace Victorina
         {
             ServerService.StopServer();
         }
-
-        public void OnLoadPackButtonClicked()
-        {
-            string packageArchivePath = PackageFilesSystem.GetPackageArchivePathUsingOpenDialogue();
-            
-            if (string.IsNullOrWhiteSpace(packageArchivePath))
-            {
-                Debug.Log("Package archive is not selected in file browser.");
-                return;
-            }
-            
-            string packagePath = PackageFilesSystem.UnZipArchiveToPlayFolder(packageArchivePath);
-            StartPackage(packagePath);
-
-            string packageName = Path.GetFileName(packageArchivePath);
-            AnalyticsEvents.LoadPackageToPlay.Publish(packageName);
-        }
-
+        
         private void RefreshButtons()
         {
-            SiqLoadedPackageSystem.Refresh();
-            for (int i = 0; i < OpenPackButtons.Length; i++)
-            {
-                OpenPackButtons[i].SetActive(i < SiqLoadedPackageData.PackagesNames.Count);
-                DeletePackButtons[i].SetActive(i < SiqLoadedPackageData.PackagesNames.Count);
-                OpenPackButtonTexts[i].text = i < SiqLoadedPackageData.PackagesNames.Count ? SiqLoadedPackageData.PackagesNames[i] : string.Empty;
-            }
+            // SiqLoadedPackageSystem.Refresh();
+            // for (int i = 0; i < OpenPackButtons.Length; i++)
+            // {
+            //     OpenPackButtons[i].SetActive(i < SiqLoadedPackageData.PackagesNames.Count);
+            //     DeletePackButtons[i].SetActive(i < SiqLoadedPackageData.PackagesNames.Count);
+            //     OpenPackButtonTexts[i].text = i < SiqLoadedPackageData.PackagesNames.Count ? SiqLoadedPackageData.PackagesNames[i] : string.Empty;
+            // }
         }
-
-        public void OnOpenPackButtonClicked(int index)
-        {
-            string packagePath = SiqLoadedPackageData.PackagesPaths[index];
-            StartPackage(packagePath);
-        }
-
-        private void StartPackage(string packagePath)
-        {
-            PackageSystem.Initialize(packagePath);
-            MatchSystem.StartMatch();
-            SwitchTo(RoundView);
-        }
-
-        public void OnDeletePackButtonClicked(int index)
-        {
-            string packagePath = SiqLoadedPackageData.PackagesPaths[index];
-            PackageFilesSystem.Delete(packagePath);
-            RefreshUI();
-        }
-
+        
         public void OnCopyCodeToClipboardButtonClicked()
         {
             if (ExternalIpData.IsRequestFinished && !ExternalIpData.HasError)

@@ -6,7 +6,7 @@ namespace Victorina
     public class StartupView : ViewBase
     {
         [Inject] private JoinGameView JoinGameView { get; set; }
-        [Inject] private ServerService ServerService { get; set; }
+        [Inject] private CreatePackageGameView CreatePackageGameView { get; set; }
         [Inject] private PackageCrafterView PackageCrafterView { get; set; }
         
         public Text Version;
@@ -18,7 +18,7 @@ namespace Victorina
 
         public void OnCreateNewGameButtonClicked()
         {
-            ServerService.StartServer();
+            SwitchTo(CreatePackageGameView);
         }
 
         public void OnJoinGameButtonClicked()
