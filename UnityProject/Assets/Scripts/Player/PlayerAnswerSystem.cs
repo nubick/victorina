@@ -33,14 +33,19 @@ namespace Victorina
 
         public void OnAnswerButtonClicked()
         {
-            if (CanSendAnswerIntention())
+            if (CanSendAnswerIntentionNow())
                 SendAnswerIntention();
         }
         
         public void OnKeyPressed(KeyCode keyCode)
         {
-            if(keyCode == KeyCode.Space && CanSendAnswerIntention())
+            if(keyCode == KeyCode.Space && CanSendAnswerIntentionNow())
                 SendAnswerIntention();
+        }
+
+        public bool CanSendAnswerIntentionNow()
+        {
+            return CanSendAnswerIntention() && QuestionAnswerData.TimerState != QuestionTimerState.NotStarted;
         }
         
         public bool CanSendAnswerIntention()
@@ -48,7 +53,6 @@ namespace Victorina
             if (NetworkData.IsMaster ||
                 MatchData.Phase.Value != MatchPhase.Question ||
                 QuestionAnswerData.Phase.Value != QuestionPhase.ShowQuestion ||
-                QuestionAnswerData.TimerState == QuestionTimerState.NotStarted ||
                 WasIntentionSent() ||
                 WasWrongAnswer() ||
                 !IsAdmitted())

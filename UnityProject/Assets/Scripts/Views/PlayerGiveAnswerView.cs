@@ -49,19 +49,21 @@ namespace Victorina
             AnsweringPanel.SetActive(false);
             SayAnswerState.SetActive(false);
             WaitingState.SetActive(false);
-            
+
             if (phase == QuestionPhase.ShowQuestion)
             {
                 if (PlayerAnswerSystem.WasWrongAnswer())
                     WasWrongAnswerState.SetActive(true);
-                else if(PlayerAnswerSystem.WasIntentionSent())
+                else if (PlayerAnswerSystem.WasIntentionSent())
                     WaitingState.SetActive(true);
-                else if(PlayerAnswerSystem.CanSendAnswerIntention())
+                else if (PlayerAnswerSystem.CanSendAnswerIntentionNow())
                     SayAnswerState.SetActive(true);
+                else if (PlayerAnswerSystem.CanSendAnswerIntention())
+                    WaitingState.SetActive(true);
                 else
                 {
                     AnsweringPanel.SetActive(true);
-                    string names = string.Join(",", QuestionAnswerData.AdmittedPlayersIds.Select(PlayersBoardSystem.GetPlayerName));
+                    string names = string.Join(", ", QuestionAnswerData.AdmittedPlayersIds.Select(PlayersBoardSystem.GetPlayerName));
                     AnsweringText.text = $"Отвечает: {names}";
                 }
             }
