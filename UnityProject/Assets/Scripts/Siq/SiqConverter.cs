@@ -20,9 +20,16 @@ namespace Victorina
             Package package = new Package();
             package.Path = siqPackagePath;
             XmlReader xmlReader = XmlReader.Create($"{siqPackagePath}/content.xml");
+            package.Author = ReadAuthor(xmlReader);
             package.Rounds = ReadRounds(xmlReader);
             InitializeStoryDots(package, siqPackagePath);
             return package;
+        }
+
+        private string ReadAuthor(XmlReader xmlReader)
+        {
+            xmlReader.ReadToFollowing("author");
+            return xmlReader.ReadElementContentAsString();
         }
         
         private List<Round> ReadRounds(XmlReader xmlReader)

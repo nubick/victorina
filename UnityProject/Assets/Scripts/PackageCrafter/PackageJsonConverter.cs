@@ -9,6 +9,7 @@ namespace Victorina
     public class PackageJsonConverter
     {
         private const string FileNameKey = "FileName";
+        private const string AuthorKey = "Author";
         private const string StoryDotTypeKey = "StorDotType";
         private const string PriceKey = "Price";
         private const string TextKey = "Text";
@@ -28,9 +29,9 @@ namespace Victorina
         public string ToJson(Package package)
         {
             JSONNode packageNode = new JSONObject();
-            //packageNode.Add("Name", package.Name);
             packageNode.Add("Scheme", "Package");
-            
+            packageNode.Add(AuthorKey, package.Author);
+
             JSONArray roundsArray = new JSONArray();
             packageNode.Add("Rounds", roundsArray);
             
@@ -182,10 +183,11 @@ namespace Victorina
         public Package ReadPackage(string packageJson)
         {
             JSONNode packageNode = JSON.Parse(packageJson);
-
-            //string name = packageNode["Name"];
+            
             Package package = new Package();
 
+            package.Author = packageNode[AuthorKey];
+            
             JSONArray rounds = packageNode["Rounds"].AsArray;
             foreach (JSONNode roundNode in rounds)
             {
