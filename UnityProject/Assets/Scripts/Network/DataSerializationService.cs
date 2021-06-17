@@ -432,6 +432,7 @@ namespace Victorina
             SerializeBooleansArray(writer, data.RemovedThemes);
             SerializeBooleansArray(writer, data.DoneBets);
             SerializeBooleansArray(writer, data.DoneAnswers);
+            writer.WriteString(data.AcceptingInfo);
         }
 
         private FinalRoundData DeserializeFinalRoundData(Stream stream)
@@ -443,6 +444,7 @@ namespace Victorina
             FinalRoundData finalRoundData = new FinalRoundData(phase, themes, removedThemes);
             finalRoundData.SetDoneBets(DeserializeBooleanArray(reader));
             finalRoundData.SetDoneAnswers(DeserializeBooleanArray(reader));
+            finalRoundData.SetAcceptingInfo(reader.ReadString().ToString());
             return finalRoundData;
         }
         

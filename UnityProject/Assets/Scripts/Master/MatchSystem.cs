@@ -161,8 +161,13 @@ namespace Victorina
         {
             int price = GetQuestionPrice(MatchData.QuestionAnswerData.SelectedQuestion.Value, MatchData.SelectedRoundQuestion);
             PlayerData player = PlayersBoardSystem.GetPlayer(playerId);
+            RewardPlayer(player, price);
+        }
+
+        public void RewardPlayer(PlayerData player, int price)
+        {
             player.Score += price;
-            Debug.Log($"Reward player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
+            Debug.Log($"Reward player {player} by {price}, new score: {player.Score}");
             PlayersBoard.MarkAsChanged();
         }
         
@@ -170,11 +175,16 @@ namespace Victorina
         {
             int price = GetQuestionPrice(MatchData.QuestionAnswerData.SelectedQuestion.Value, MatchData.SelectedRoundQuestion);
             PlayerData player = PlayersBoardSystem.GetPlayer(playerId);
+            FinePlayer(player, price);
+        }
+
+        public void FinePlayer(PlayerData player, int price)
+        {
             player.Score -= price;
-            Debug.Log($"Fine player '{playerId}':'{player.Name}' by {MatchData.SelectedRoundQuestion.Price}, new score: {player.Score}");
+            Debug.Log($"Fine player {player} by {price}, new score: {player.Score}");
             PlayersBoard.MarkAsChanged();
         }
-        
+
         private int GetQuestionPrice(NetQuestion netQuestion, NetRoundQuestion netRoundQuestion)
         {
             if (netQuestion.Type == QuestionType.CatInBag)

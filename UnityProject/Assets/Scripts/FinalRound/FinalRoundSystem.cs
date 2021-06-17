@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text;
 using Injection;
 using UnityEngine;
 using Victorina.Commands;
@@ -10,6 +11,7 @@ namespace Victorina
     {
         [Inject] private FinalRoundData Data { get; set; }
         [Inject] private MatchData MatchData { get; set; }
+        [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MessageDialogueView MessageDialogueView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
@@ -81,6 +83,10 @@ namespace Victorina
                 Data.ClearAnswers(PlayersBoard.Players.Count);
                 Data.SetDoneAnswers(PlayersBoard.Players.Select(player => !CanParticipate(player)).ToArray());
             }
+            else if (phase == FinalRoundPhase.AnswersAccepting)
+            {
+                StartAnswersAcceptingPhase();
+            }
         }
         
         #region Phase 2: Betting
@@ -101,6 +107,8 @@ namespace Victorina
         
         #endregion
 
+        #region Phase 4: Answering
+        
         public void SendAnswer(string answerText)
         {
             if (string.IsNullOrWhiteSpace(answerText))
@@ -116,5 +124,112 @@ namespace Victorina
             
             CommandsSystem.AddNewCommand(new ClearFinalRoundAnswerCommand {Player = Data.SelectedPlayerByMaster});
         }
+        
+        #endregion
+        
+        #region Phase 5: Answers Accepting
+
+        private PlayerData AcceptingPlayer => PlayersBoard.Players[Data.AcceptingPlayerIndex];
+        
+        private void StartAnswersAcceptingPhase()
+        {
+            Data.AcceptingPlayerIndex = -1;
+            SwitchToNextAcceptingPlayer();
+            RefreshAcceptingInfo();
+        }
+
+        private int? GetNextAcceptingPlayerIndex(int currentIndex)
+        {
+            for (;;)
+            {
+                currentIndex++;
+
+                if (currentIndex == PlayersBoard.Players.Count)
+                    return null;
+
+                if (CanParticipate(PlayersBoard.Players[currentIndex]))
+                    return currentIndex;
+            }
+        }
+
+        public void SwitchToNextAcceptingPlayer()
+        {
+            int? nextIndex = GetNextAcceptingPlayerIndex(Data.AcceptingPlayerIndex);
+            if (nextIndex.HasValue)
+            {
+                Data.AcceptingPlayerIndex = nextIndex.Value;
+                Data.AcceptingPhase = FinalRoundAcceptingPhase.Name;
+            }
+            else
+            {
+                Data.AcceptingPhase = FinalRoundAcceptingPhase.Finish;
+            }
+            RefreshAcceptingInfo();
+        }
+        
+        public void ShowAcceptingAnswer()
+        {
+            Data.AcceptingPhase = FinalRoundAcceptingPhase.Answer;
+            RefreshAcceptingInfo();
+        }
+        
+        public void AcceptAnswerAsCorrect()
+        {
+            Data.IsAcceptedAsCorrect = true;
+            Data.AcceptingPhase = FinalRoundAcceptingPhase.Result;
+            RefreshAcceptingInfo();
+        }
+
+        public void AcceptAnswerAsWrong()
+        {
+            Data.IsAcceptedAsCorrect = false;
+            Data.AcceptingPhase = FinalRoundAcceptingPhase.Result;
+            RefreshAcceptingInfo();
+        }
+
+        public void ApplyPlayerBet()
+        {
+            Data.AcceptingPhase = FinalRoundAcceptingPhase.Bet;
+            
+            int bet = Data.Bets[Data.AcceptingPlayerIndex];
+            if (Data.IsAcceptedAsCorrect)
+                MatchSystem.RewardPlayer(AcceptingPlayer, bet);
+            else
+                MatchSystem.FinePlayer(AcceptingPlayer, bet);
+
+            int? nextIndex = GetNextAcceptingPlayerIndex(Data.AcceptingPlayerIndex);
+            if (nextIndex == null)
+                Data.AcceptingPhase = FinalRoundAcceptingPhase.Finish;
+            
+            RefreshAcceptingInfo();
+        }
+        
+        private void RefreshAcceptingInfo()
+        {
+            StringBuilder sb = new StringBuilder();
+            
+            sb.AppendLine(PlayersBoard.Players[Data.AcceptingPlayerIndex].Name);
+
+            if (Data.AcceptingPhase >= FinalRoundAcceptingPhase.Answer)
+                sb.AppendLine(Data.Answers[Data.AcceptingPlayerIndex]);
+
+            if (Data.AcceptingPhase >= FinalRoundAcceptingPhase.Result)
+            {
+                string result = Data.IsAcceptedAsCorrect ? "Верно" : "Неверно";
+                sb.AppendLine(result);
+            }
+
+            if (Data.AcceptingPhase >= FinalRoundAcceptingPhase.Bet)
+                sb.AppendLine(Data.Bets[Data.AcceptingPlayerIndex].ToString());
+            
+            Data.SetAcceptingInfo(sb.ToString());
+        }
+        
+        public void FinishRound()
+        {
+            
+        }
+        
+        #endregion
     }
 }

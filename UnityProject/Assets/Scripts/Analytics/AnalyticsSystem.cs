@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Analytics;
+using Victorina.DevTools;
 
 
 namespace Victorina
@@ -26,20 +27,20 @@ namespace Victorina
         
         private void SendEvent(string eventName)
         {
-            Debug.Log($"<color=yellow>{eventName}</color>");
+            Dev.Log(eventName, Color.yellow);
             Analytics.CustomEvent(eventName);
         }
 
         private void SendEvent(string eventName, string parameterName, string parameterValue)
         {
-            Debug.Log($"<color=yellow>{eventName}|{parameterName}|{parameterValue}</color>");
+            Dev.Log($"{eventName}|{parameterName}|{parameterValue}", Color.yellow);
             var eventData = new Dictionary<string, object> {{parameterName, parameterValue}};
             Analytics.CustomEvent(eventName, eventData);
         }
         
         private void SendEvent(string eventName, string parameterName, int parameterValue)
         {
-            Debug.Log($"<color=yellow>{eventName}|{parameterName}|{parameterValue}</color>");
+            Dev.Log($"{eventName}|{parameterName}|{parameterValue}", Color.yellow);
             var eventData = new Dictionary<string, object> {{parameterName, parameterValue}};
             Analytics.CustomEvent(eventName, eventData);
         }

@@ -41,6 +41,17 @@ namespace Victorina
         public GameObject SendYourAnswerLabel;
         public GameObject YouPassedLabelPhase4;
         public GameObject AnswerAcceptedLabel;
+
+        [Header("Phase 5: Answers Accepting")]
+        public GameObject Phase5State;
+        public GameObject MasterPanelPhase5;
+        public Text AnswerText;
+        public Button ShowAnswerButton;
+        public Button ShowBetButton;
+        public Button WrongButton;
+        public Button CorrectButton;
+        public Button NextAcceptingPlayerButton;
+        public Button FinishRoundButton;
         
         public void Initialize()
         {
@@ -54,6 +65,7 @@ namespace Victorina
         
         protected override void OnShown()
         {
+            AnswerInputField.text = string.Empty;
             RefreshUI();
         }
 
@@ -67,6 +79,7 @@ namespace Victorina
             Phase1State.SetActive(FinalRoundData.Phase == FinalRoundPhase.ThemesRemoving);
             Phase2State.SetActive(FinalRoundData.Phase == FinalRoundPhase.Betting);
             Phase4State.SetActive(FinalRoundData.Phase == FinalRoundPhase.Answering);
+            Phase5State.SetActive(FinalRoundData.Phase == FinalRoundPhase.AnswersAccepting);
 
             UpdatePlayersMoreInfoView(FinalRoundData.Phase);
 
@@ -81,10 +94,13 @@ namespace Victorina
                 case FinalRoundPhase.Answering:
                     RefreshAnsweringUI();
                     break;
+                case FinalRoundPhase.AnswersAccepting:
+                    RefreshAnswersAcceptingUI();
+                    break;
             }
         }
 
-        #region Themes Removing
+        #region Phase 1: Themes Removing
         
         private void RefreshThemesRemovingUI()
         {
@@ -285,6 +301,57 @@ namespace Victorina
         public void OnClearAnswerButtonClicked()
         {
             FinalRoundSystem.ClearAnswer();
+        }
+
+        public void OnShowAnswersButtonClicked()
+        {
+            FinalRoundSystem.ChangePhase(FinalRoundPhase.AnswersAccepting);
+        }
+        
+        #endregion
+        
+        #region Phase 5: Answers Accepting
+
+        private void RefreshAnswersAcceptingUI()
+        {
+            MasterPanelPhase5.SetActive(NetworkData.IsMaster);
+            AnswerText.text = FinalRoundData.AcceptingInfo;
+            ShowAnswerButton.interactable = FinalRoundData.AcceptingPhase == FinalRoundAcceptingPhase.Name;
+            CorrectButton.interactable = FinalRoundData.AcceptingPhase == FinalRoundAcceptingPhase.Answer;
+            WrongButton.interactable = FinalRoundData.AcceptingPhase == FinalRoundAcceptingPhase.Answer;
+            ShowBetButton.interactable = FinalRoundData.AcceptingPhase == FinalRoundAcceptingPhase.Result;
+            NextAcceptingPlayerButton.interactable = FinalRoundData.AcceptingPhase == FinalRoundAcceptingPhase.Bet;
+            FinishRoundButton.interactable = FinalRoundData.AcceptingPhase == FinalRoundAcceptingPhase.Finish;
+        }
+
+        public void OnShowAcceptingAnswerButtonClicked()
+        {
+            FinalRoundSystem.ShowAcceptingAnswer();
+        }
+        
+        public void OnCorrectButtonClicked()
+        {
+            FinalRoundSystem.AcceptAnswerAsCorrect();
+        }
+
+        public void OnWrongButtonClicked()
+        {
+            FinalRoundSystem.AcceptAnswerAsWrong();
+        }
+
+        public void OnShowAcceptingBetButtonClicked()
+        {
+            FinalRoundSystem.ApplyPlayerBet();
+        }
+
+        public void OnNextAcceptingPlayerButtonClicked()
+        {
+            FinalRoundSystem.SwitchToNextAcceptingPlayer();
+        }
+
+        public void OnFinishRoundButtonClicked()
+        {
+            FinalRoundSystem.FinishRound();
         }
         
         #endregion

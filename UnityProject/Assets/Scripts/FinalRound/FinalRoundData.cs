@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace Victorina
 {
@@ -17,12 +16,18 @@ namespace Victorina
         
         public bool[] DoneAnswers { get; private set; }
         
+        //Accepting
+        public string AcceptingInfo { get; private set; }           //Sync with players
+        public int AcceptingPlayerIndex { get; set; }               //Don't sync
+        public FinalRoundAcceptingPhase AcceptingPhase { get; set; }//Don't sync
+        public bool IsAcceptedAsCorrect { get; set; }               //Don't sync
+        
         //Master Only, Don't Sync
         public Round Round { get; set; }
         public PlayerData SelectedPlayerByMaster { get; private set; }
         public int[] Bets { get; set; }
         public string[] Answers { get; set; }
-        
+
         public FinalRoundData()
         {
             Themes = new string[0];
@@ -31,6 +36,7 @@ namespace Victorina
             Bets = new int[0];
             Answers = new string[0];
             DoneAnswers = new bool[0];
+            AcceptingInfo = string.Empty;
         }
 
         public FinalRoundData(FinalRoundPhase phase, string[] themes, bool[] removedThemes)
@@ -42,6 +48,7 @@ namespace Victorina
             DoneBets = new bool[0];
             Answers = new string[0];
             DoneAnswers = new bool[0];
+            AcceptingInfo = string.Empty;
         }
 
         public void Reset(string[] themes)
@@ -64,6 +71,7 @@ namespace Victorina
             RemovedThemes = finalRoundData.RemovedThemes;
             DoneBets = finalRoundData.DoneBets;
             DoneAnswers = finalRoundData.DoneAnswers;
+            AcceptingInfo = finalRoundData.AcceptingInfo;
             MarkAsChanged();
         }
 
@@ -121,6 +129,12 @@ namespace Victorina
         {
             Answers[index] = null;
             DoneAnswers[index] = false;
+            MarkAsChanged();
+        }
+
+        public void SetAcceptingInfo(string acceptingInfo)
+        {
+            AcceptingInfo = acceptingInfo;
             MarkAsChanged();
         }
         
