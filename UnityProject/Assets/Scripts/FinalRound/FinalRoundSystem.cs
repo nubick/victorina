@@ -29,7 +29,7 @@ namespace Victorina
             Data.SetPhase(FinalRoundPhase.ThemesRemoving);
             if (CanAnyParticipate())
             {
-                SelectFirstPlayerForCrossOut();
+                SelectFirstPlayerForRemoving();
             }
             else
             {
@@ -43,20 +43,9 @@ namespace Victorina
             return PlayersBoard.Players.Any(CanParticipate);
         }
         
-        private void SelectFirstPlayerForCrossOut()
-        {
-            if (PlayersBoard.Current == null || !CanParticipate(PlayersBoard.Current))
-                PlayersBoard.SetCurrent(PlayersBoard.Players.First(CanParticipate));
-        }
-        
         public bool CanParticipate(PlayerData player)
         {
             return player.Score > 0;
-        }
-
-        public void TryRemoveTheme(int index)
-        {
-            CommandsSystem.AddNewCommand(new RemoveFinalRoundThemeCommand {ThemeIndex = index});
         }
         
         public string GetSelectedTheme()
@@ -88,6 +77,21 @@ namespace Victorina
                 StartAnswersAcceptingPhase();
             }
         }
+        
+        #region Phase 1: Themes Removing
+        
+        public void TryRemoveTheme(int index)
+        {
+            CommandsSystem.AddNewCommand(new RemoveFinalRoundThemeCommand {ThemeIndex = index});
+        }
+        
+        private void SelectFirstPlayerForRemoving()
+        {
+            if (PlayersBoard.Current == null || !CanParticipate(PlayersBoard.Current))
+                PlayersBoard.SetCurrent(PlayersBoard.Players.First(CanParticipate));
+        }
+
+        #endregion
         
         #region Phase 2: Betting
 

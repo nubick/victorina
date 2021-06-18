@@ -26,12 +26,11 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeFinalRoundData, DeserializeFinalRoundData);
             
             SerializationManager.RegisterSerializationHandlers(SerializeQuestionAnswerData, DeserializeQuestionAnswerData);
+            SerializationManager.RegisterSerializationHandlers(SerializeQuestionStoryShowData, DeserializeQuestionStoryShowData);
             SerializationManager.RegisterSerializationHandlers(SerializeTextStoryDot, DeserializeTextStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeImageStoryDot, DeserializeImageStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeAudioStoryDot, DeserializeAudioStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeVideoStoryDot, DeserializeVideoStoryDot);
-            SerializationManager.RegisterSerializationHandlers(SerializeNoRiskStoryDot, DeserializeNoRiskStoryDot);
-            SerializationManager.RegisterSerializationHandlers(SerializeCatInBagStoryDot, DeserializeCatInBagStoryDot);
 
             SerializationManager.RegisterSerializationHandlers(SerializeCommandNetworkData, DeserializeCommandNetworkData);
             
@@ -185,6 +184,12 @@ namespace Victorina
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
             writer.WriteInt32((int) netQuestion.Type);
+            if (netQuestion.Type == QuestionType.CatInBag)
+            {
+                writer.WriteString(netQuestion.CatInBagInfo.Theme);
+                writer.WriteInt32(netQuestion.CatInBagInfo.Price);
+                writer.WriteBool(netQuestion.CatInBagInfo.CanGiveYourself);
+            }
             writer.WriteInt32(netQuestion.QuestionStoryDotsAmount);
             writer.WriteInt32(netQuestion.AnswerStoryDotsAmount);
         }
@@ -194,6 +199,13 @@ namespace Victorina
             using PooledBitReader reader = PooledBitReader.Get(stream);
             NetQuestion netQuestion = new NetQuestion();
             netQuestion.Type = (QuestionType) reader.ReadInt32();
+            if (netQuestion.Type == QuestionType.CatInBag)
+            {
+                string theme = reader.ReadString().ToString();
+                int price = reader.ReadInt32();
+                bool canGiveYourself = reader.ReadBool();
+                netQuestion.CatInBagInfo = new CatInBagInfo(theme, price, canGiveYourself);
+            }
             netQuestion.QuestionStoryDotsAmount = reader.ReadInt32();
             netQuestion.AnswerStoryDotsAmount = reader.ReadInt32();
             return netQuestion;
@@ -237,19 +249,6 @@ namespace Victorina
         {
             SerializeFileStoryDot(stream, videoStoryDot);
         }
-
-        private void SerializeNoRiskStoryDot(Stream stream, NoRiskStoryDot noRiskStoryDot)
-        {
-            using PooledBitWriter writer = PooledBitWriter.Get(stream);
-        }
-
-        private void SerializeCatInBagStoryDot(Stream stream, CatInBagStoryDot storyDot)
-        {
-            using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteString(storyDot.Theme);
-            writer.WriteInt32(storyDot.Price);
-            writer.WriteBool(storyDot.CanGiveYourself);
-        }
         
         private void DeserializeFileStoryDot(Stream stream, FileStoryDot fileStoryDot)
         {
@@ -277,23 +276,6 @@ namespace Victorina
             VideoStoryDot videoStoryDot = new VideoStoryDot();
             DeserializeFileStoryDot(stream, videoStoryDot);
             return videoStoryDot;
-        }
-
-        private NoRiskStoryDot DeserializeNoRiskStoryDot(Stream stream)
-        {
-            using PooledBitReader reader = PooledBitReader.Get(stream);
-            NoRiskStoryDot noRiskStoryDot = new NoRiskStoryDot();
-            return noRiskStoryDot;
-        }
-
-        private CatInBagStoryDot DeserializeCatInBagStoryDot(Stream stream)
-        {
-            using PooledBitReader reader = PooledBitReader.Get(stream);
-            CatInBagStoryDot storyDot = new CatInBagStoryDot();
-            storyDot.Theme = reader.ReadString().ToString();
-            storyDot.Price = reader.ReadInt32();
-            storyDot.CanGiveYourself = reader.ReadBool();
-            return storyDot;
         }
         
         #endregion
@@ -329,8 +311,6 @@ namespace Victorina
 
             writer.WriteInt32((int) data.Phase.Value);
             writer.WriteInt32((int)data.MasterIntention);
-
-            writer.WriteInt32(data.CurrentStoryDotIndex);
             
             writer.WriteInt32((int) data.TimerState);
             writer.WriteSingle(data.TimerResetSeconds);
@@ -348,8 +328,7 @@ namespace Victorina
 
             data.Phase.Value = (QuestionPhase) reader.ReadInt32();
             data.MasterIntention = (MasterIntention) reader.ReadInt32();
-            data.CurrentStoryDotIndex = reader.ReadInt32();
-
+            
             data.TimerState = (QuestionTimerState) reader.ReadInt32();
             data.TimerResetSeconds = reader.ReadSingle();
             data.TimerLeftSeconds = reader.ReadSingle();
@@ -361,6 +340,23 @@ namespace Victorina
             return data;
         }
 
+        private void SerializeQuestionStoryShowData(Stream stream, QuestionStoryShowData data)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32((int) data.State);
+            writer.WriteInt32(data.CurrentStoryDotIndex);
+        }
+
+        private QuestionStoryShowData DeserializeQuestionStoryShowData(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            QuestionStoryShowData data = new QuestionStoryShowData();
+            data.State = (QuestionStoryShowDataState) reader.ReadInt32();
+            data.CurrentStoryDotIndex = reader.ReadInt32();
+            return data;
+        }
+        
+        
         private void SerializePlayersButtonClickData(Stream stream, PlayersButtonClickData data)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);

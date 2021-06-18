@@ -116,6 +116,12 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendQuestionAnswerData(questionAnswerData));
         }
 
+        public void Send(QuestionStoryShowData data)
+        {
+            Debug.Log($"Master: Send QuestionStoryShowData to {All}: {data}");
+            GetPlayers().ForEach(player => player.SendQuestionStoryShowData(data));
+        }
+        
         public void SendCatInBagData(CatInBagData data)
         {
             Debug.Log($"Master: Send cat in bag data to {All}: {data}");

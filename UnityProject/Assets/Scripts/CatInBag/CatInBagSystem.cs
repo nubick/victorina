@@ -14,10 +14,8 @@ namespace Victorina
         [Inject] private SendToMasterService SendToMasterService { get; set; }
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
 
-        private bool IsWaitingWhoGiveCatInBag =>
-            MatchData.Phase.Value == MatchPhase.Question &&
-            QuestionAnswerData.CurrentStoryDot is CatInBagStoryDot &&
-            !CatInBagData.IsPlayerSelected.Value;
+        private bool IsWaitingWhoGiveCatInBag => MatchData.Phase.Value == MatchPhase.Question && 
+                                                 !CatInBagData.IsPlayerSelected.Value;
 
         public void Initialize()
         {
@@ -55,8 +53,8 @@ namespace Victorina
 
         private bool CanGiveToPlayer(byte playerId)
         {
-            CatInBagStoryDot catInBagStoryDot = QuestionAnswerData.CurrentStoryDot as CatInBagStoryDot;
-            return catInBagStoryDot.CanGiveYourself || !MatchSystem.IsCurrentPlayer(playerId);
+            return QuestionAnswerData.SelectedQuestion.Value.CatInBagInfo.CanGiveYourself || 
+                   !MatchSystem.IsCurrentPlayer(playerId);
         }
 
         public void OnMasterReceiveWhoWillGetCatInBag(byte senderPlayerId, byte whoGetPlayerId)

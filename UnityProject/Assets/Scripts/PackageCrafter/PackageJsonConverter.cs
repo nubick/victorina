@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SimpleJSON;
 using UnityEngine;
 
@@ -97,8 +96,7 @@ namespace Victorina
 
             if (question.Type == QuestionType.CatInBag)
             {
-                CatInBagStoryDot catInBagStoryDot = question.QuestionStory.First() as CatInBagStoryDot;
-                JSONNode catInBagNode = ToJsonNode(catInBagStoryDot);
+                JSONNode catInBagNode = ToJsonNode(question.CatInBagInfo);
                 jsonNode.Add(CatInBagKey, catInBagNode);
             }
             
@@ -123,12 +121,12 @@ namespace Victorina
             return jsonNode;
         }
 
-        private JSONNode ToJsonNode(CatInBagStoryDot catInBagStoryDot)
+        private JSONNode ToJsonNode(CatInBagInfo catInBagInfo)
         {
             JSONNode node = new JSONObject();
-            node.Add(ThemeKey, catInBagStoryDot.Theme);
-            node.Add(PriceKey, catInBagStoryDot.Price);
-            node.Add(CanGiveYourselfKey, catInBagStoryDot.CanGiveYourself);
+            node.Add(ThemeKey, catInBagInfo.Theme);
+            node.Add(PriceKey, catInBagInfo.Price);
+            node.Add(CanGiveYourselfKey, catInBagInfo.CanGiveYourself);
             return node;
         }
         
@@ -164,11 +162,6 @@ namespace Victorina
                 node.Add(StoryDotTypeKey, VideoKey);
                 node.Add(FileNameKey, videoStoryDot.FileName);
                 return node;
-            }
-
-            if (storyDot is NoRiskStoryDot || storyDot is CatInBagStoryDot)
-            {
-                return null;
             }
             
             Debug.LogWarning($"Not supported story dot json serialization: {storyDot}");
@@ -252,24 +245,18 @@ namespace Victorina
 
             if (question.Type == QuestionType.CatInBag)
             {
-                CatInBagStoryDot catInBagStoryDot = ReadCatInBag(questionNode[CatInBagKey]);
-                question.QuestionStory.Insert(0, catInBagStoryDot);
-            }
-            else if (question.Type == QuestionType.NoRisk)
-            {
-                NoRiskStoryDot noRiskStoryDot = new NoRiskStoryDot();
-                question.QuestionStory.Insert(0, noRiskStoryDot);
+                question.CatInBagInfo = ReadCatInBag(questionNode[CatInBagKey]);
             }
             
             return question;
         }
 
-        private CatInBagStoryDot ReadCatInBag(JSONNode catInBagNode)
+        private CatInBagInfo ReadCatInBag(JSONNode catInBagNode)
         {
             string theme = catInBagNode[ThemeKey];
             int price = catInBagNode[PriceKey].AsInt;
             bool canGiveYourself = catInBagNode[CanGiveYourselfKey].AsBool;
-            return new CatInBagStoryDot(theme, price, canGiveYourself);
+            return new CatInBagInfo(theme, price, canGiveYourself);
         }
         
         private List<StoryDot> ReadStory(JSONArray storyArrayNode)

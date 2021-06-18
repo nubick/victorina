@@ -135,8 +135,6 @@ namespace Victorina
                         if (typeName == "sponsored")
                         {
                             question.Type = QuestionType.NoRisk;
-                            NoRiskStoryDot noRiskStoryDot = new NoRiskStoryDot();
-                            AddStoryDot(question, noRiskStoryDot, isAfterMarker: false);
                         }
                         else if (typeName == "cat" || typeName == "bagcat")
                         {
@@ -231,8 +229,9 @@ namespace Victorina
             
             //Debug.Log($"Cat in bag, theme: {theme}, price: {catPrice}");
             question.Type = QuestionType.CatInBag;
-            CatInBagStoryDot catInBagStoryDot = new CatInBagStoryDot(theme, catPrice, canGiveYourself);
-            AddStoryDot(question, catInBagStoryDot, isAfterMarker: false);
+            if (catPrice == 0)
+                catPrice = question.Price;
+            question.CatInBagInfo = new CatInBagInfo(theme, catPrice, canGiveYourself);
         }
         
         private void ReadScenario(XmlReader xmlReader, Question question)
@@ -350,17 +349,18 @@ namespace Victorina
                     audioStoryDot.Path = $"{GetAudioPath(packagePath)}/{audioStoryDot.FileName}";
                 else if (storyDot is VideoStoryDot videoStoryDot)
                     videoStoryDot.Path = $"{GetVideoPath(packagePath)}/{videoStoryDot.FileName}";
-                else if (storyDot is CatInBagStoryDot catInBagStoryDot)
-                {
-                    if (catInBagStoryDot.Price == 0)
-                        catInBagStoryDot.Price = question.Price;
+            }
 
-                    if (string.IsNullOrEmpty(catInBagStoryDot.Theme))
-                        catInBagStoryDot.Theme = theme.Name;
-                }
+            if (question.Type == QuestionType.CatInBag)
+            {
+                if (question.CatInBagInfo.Price == 0)
+                    question.CatInBagInfo.Price = question.Price;
+
+                if (string.IsNullOrEmpty(question.CatInBagInfo.Theme))
+                    question.CatInBagInfo.Theme = theme.Name;
             }
         }
-        
+
         public string GetImagesPath(string packagePath)
         {
             return $"{packagePath}/Images";

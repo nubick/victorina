@@ -1,5 +1,4 @@
 using System.IO;
-using System.Linq;
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -61,7 +60,7 @@ namespace Victorina
 
         private void RefreshSmallPreview(Question question, int index)
         {
-            StoryDot storyDot = question.GetAllStories().Where(_ => _.IsMain).ToList()[index];
+            StoryDot storyDot = question.GetAllStories()[index];
             
             HideBigPreview();
             
@@ -123,9 +122,6 @@ namespace Victorina
             int index = 0;
             foreach (StoryDot storyDot in question.QuestionStory)
             {
-                if (!storyDot.IsMain)
-                    continue;
-                
                 StoryDotPreviewWidget previewWidget = Instantiate(StoryDotPreviewWidgetPrefab, StoryDotRoot);
                 previewWidget.Bind(storyDot, isQuestion: true, index);
                 index++;
@@ -133,9 +129,6 @@ namespace Victorina
 
             foreach (StoryDot storyDot in question.AnswerStory)
             {
-                if(!storyDot.IsMain)
-                    continue;
-
                 StoryDotPreviewWidget previewWidget = Instantiate(StoryDotPreviewWidgetPrefab, StoryDotRoot);
                 previewWidget.Bind(storyDot, isQuestion: false, index);
                 index++;
@@ -154,7 +147,7 @@ namespace Victorina
             }
             else if (keyCode == KeyCode.RightArrow)
             {
-                int amount = CrafterData.SelectedQuestion.GetAllStories().Count(_ => _.IsMain);
+                int amount = CrafterData.SelectedQuestion.GetAllStories().Count;
                 if (CrafterData.PreviewStoryDotIndex < amount - 1)
                     OnStoryDotIndexChanged(CrafterData.PreviewStoryDotIndex + 1);
             }

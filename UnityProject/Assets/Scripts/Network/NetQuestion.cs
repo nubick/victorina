@@ -1,4 +1,3 @@
-
 using System;
 
 namespace Victorina
@@ -13,6 +12,8 @@ namespace Victorina
         public int AnswerStoryDotsAmount { get; set; }
         public StoryDot[] AnswerStory { get; set; }
 
+        public CatInBagInfo CatInBagInfo { get; set; }
+        
         public T GetFirst<T>() where T : StoryDot
         {
             foreach (StoryDot storyDot in QuestionStory)

@@ -12,6 +12,7 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
+        [Inject] private QuestionStoryShowData QuestionStoryShowData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         [Inject] private PlayerFilesRequestSystem PlayerFilesRequestSystem { get; set; }
@@ -72,11 +73,15 @@ namespace Victorina
             QuestionAnswerData.TimerResetSeconds = data.TimerResetSeconds;
             QuestionAnswerData.TimerLeftSeconds = data.TimerLeftSeconds;
             
-            QuestionAnswerData.CurrentStoryDotIndex = data.CurrentStoryDotIndex;
-            
             DataChangeHandler.HandleMasterIntention(QuestionAnswerData);
         }
 
+        public void OnReceiveQuestionStoryShowData(QuestionStoryShowData data)
+        {
+            QuestionStoryShowData.Update(data);
+            MetagameEvents.QuestionStoryShowDataChange.Publish();
+        }
+        
         public void OnReceiveCatInBagData(bool isPlayerSelected)
         {
             CatInBagData.IsPlayerSelected.Value = isPlayerSelected;

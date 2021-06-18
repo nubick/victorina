@@ -88,6 +88,18 @@ namespace Victorina
             PlayerDataReceiver.OnReceive(questionAnswerData);
         }
 
+        public void SendQuestionStoryShowData(QuestionStoryShowData data)
+        {
+            InvokeClientRpcOnOwner(ReceiveQuestionStoryShowDataClientRpc, data);
+        }
+
+        [ClientRPC]
+        private void ReceiveQuestionStoryShowDataClientRpc(QuestionStoryShowData data)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive QuestionStoryShowData: {data}");
+            PlayerDataReceiver.OnReceiveQuestionStoryShowData(data);
+        }
+        
         public void SendCatInBagData(CatInBagData data)
         {
             InvokeClientRpcOnOwner(ReceiveCatInBagData, data.IsPlayerSelected.Value);
@@ -138,10 +150,6 @@ namespace Victorina
                 InvokeClientRpcOnOwner(ReceiveAudioStoryDot, audioStoryDot, isQuestion, index);
             else if (storyDot is VideoStoryDot videoStoryDot)
                 InvokeClientRpcOnOwner(ReceiveVideoStoryDot, videoStoryDot, isQuestion, index);
-            else if (storyDot is NoRiskStoryDot noRiskStoryDot)
-                InvokeClientRpcOnOwner(ReceiveNoRiskStoryDot, noRiskStoryDot, index);
-            else if (storyDot is CatInBagStoryDot catInBagStoryDot)
-                InvokeClientRpcOnOwner(ReceiveCatInBagStoryDot, catInBagStoryDot, index);
             else
                 throw new Exception($"Not supported story dot: {storyDot}");
         }
@@ -183,20 +191,6 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}[{index}]: Receive video story dot: {videoStoryDot}");
             SetStoryDot(videoStoryDot, isQuestion, index);
             PlayerDataReceiver.OnFileStoryDotReceived(videoStoryDot);
-        }
-
-        [ClientRPC]
-        private void ReceiveNoRiskStoryDot(NoRiskStoryDot noRiskStoryDot, int index)
-        {
-            Debug.Log($"Player {OwnerClientId}: [{index}]: Receive no risk story dot");
-            SetStoryDot(noRiskStoryDot, isQuestion: true, index);
-        }
-
-        [ClientRPC]
-        private void ReceiveCatInBagStoryDot(CatInBagStoryDot catInBagStoryDot, int index)
-        {
-            Debug.Log($"Player {OwnerClientId}: [{index}]: Receive cat in bag story dot: {catInBagStoryDot}");
-            SetStoryDot(catInBagStoryDot, isQuestion: true, index);
         }
         
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)

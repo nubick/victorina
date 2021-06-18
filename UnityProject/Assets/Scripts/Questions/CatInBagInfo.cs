@@ -1,23 +1,21 @@
 namespace Victorina
 {
-    public class CatInBagStoryDot : StoryDot
+    public class CatInBagInfo
     {
         public string Theme { get; set; }
         public int Price { get; set; }
         public bool CanGiveYourself { get; set; }
 
-        public CatInBagStoryDot() { }
-        
-        public CatInBagStoryDot(string theme, int price, bool canGiveYourself = false)
+        public CatInBagInfo(string theme, int price, bool canGiveYourself)
         {
             Theme = theme;
             Price = price;
             CanGiveYourself = canGiveYourself;
         }
-
+        
         public override string ToString()
         {
-            return $"[cibsd|{Theme}|{Price}|{CanGiveYourself}]";
+            return $"[CatInBag|{Theme}|{Price}|{CanGiveYourself}]";
         }
     }
 }

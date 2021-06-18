@@ -17,6 +17,7 @@ namespace Victorina
         
         public static GameEvent<PlayerData> PlayerBoardWidgetClicked { get; } = new GameEvent<PlayerData>();
         public static GameEvent PlayersBoardChanged { get; } = new GameEvent();
+        public static GameEvent QuestionStoryShowDataChange { get; } = new GameEvent();
 
         public static GameEvent<PlayerButtonClickData> PlayerButtonClickWidgetClicked { get; } = new GameEvent<PlayerButtonClickData>();
         public static GameEvent<PlayerData> PlayerMoreInfoClicked { get; } = new GameEvent<PlayerData>();

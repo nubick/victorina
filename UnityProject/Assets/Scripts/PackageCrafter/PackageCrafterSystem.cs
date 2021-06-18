@@ -214,26 +214,8 @@ namespace Victorina
 
         public void UpdateSelectedQuestion(QuestionType questionType, int price)
         {
-            //todo: Remove this block when question types will not be as story dots.
-            if (Data.SelectedQuestion.Type != questionType)
-            {
-                if (!Data.SelectedQuestion.QuestionStory.First().IsMain)
-                    Data.SelectedQuestion.QuestionStory.RemoveAt(0);
-
-                if (questionType == QuestionType.CatInBag)
-                {
-                    Theme theme = PackageTools.GetQuestionTheme(Data.SelectedPackage, Data.SelectedQuestion);
-                    Debug.Log($"Theme: {theme.Name}");
-                    Data.SelectedQuestion.QuestionStory.Insert(0, new CatInBagStoryDot(theme.Name, price, true));
-                }
-
-                if (questionType == QuestionType.NoRisk)
-                    Data.SelectedQuestion.QuestionStory.Insert(0, new NoRiskStoryDot());
-            }
-            
             Data.SelectedQuestion.Type = questionType;
             Data.SelectedQuestion.Price = price;
-            
             PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
         }
 

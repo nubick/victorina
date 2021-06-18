@@ -228,7 +228,7 @@ namespace Victorina
 
         public void OnShowQuestionButtonClicked()
         {
-            FinalRoundSystem.ChangePhase(FinalRoundPhase.Answering);
+            FinalRoundSystem.ChangePhase(FinalRoundPhase.QuestionShowing);
         }
 
         public void OnBackButtonClicked()

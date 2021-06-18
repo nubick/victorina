@@ -9,7 +9,7 @@ namespace Victorina
     {
         private int? _pendingFileId;
 
-        [Inject] private MatchData MatchData { get; set; }
+        [Inject] private QuestionStoryShowData Data { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private AppState AppState { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
@@ -34,7 +34,7 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            if (MatchData.QuestionAnswerData.CurrentStoryDot is AudioStoryDot audioStoryDot)
+            if (Data.CurrentStoryDot is AudioStoryDot audioStoryDot)
             {
                 StartCoroutine(LoadAndPlay(audioStoryDot.FileId));
             }

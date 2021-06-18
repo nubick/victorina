@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
+    //todo: rename
     public class CatInBagStoryDotView : ViewBase
     {
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
@@ -46,17 +47,17 @@ namespace Victorina
         {
             string currentPlayerName = PlayersBoardSystem.GetCurrentPlayerName();
 
-            CatInBagStoryDot storyDot = QuestionAnswerData.CurrentStoryDot as CatInBagStoryDot;
+            CatInBagInfo catInBagInfo = QuestionAnswerData.SelectedQuestion.Value.CatInBagInfo;
             
             SelectOwnerState.SetActive(!CatInBagData.IsPlayerSelected.Value);
             WhoSelectPlayerName.text = currentPlayerName;
-            CanGiveYourselfState.SetActive(storyDot.CanGiveYourself);
-            CantGiveYourselfState.SetActive(!storyDot.CanGiveYourself);
+            CanGiveYourselfState.SetActive(catInBagInfo.CanGiveYourself);
+            CantGiveYourselfState.SetActive(!catInBagInfo.CanGiveYourself);
             
             AnsweringState.SetActive(CatInBagData.IsPlayerSelected.Value);
             WhoAnswerPlayerName.text = currentPlayerName;
-            Theme.text = storyDot.Theme;
-            Price.text = storyDot.Price.ToString();
+            Theme.text = catInBagInfo.Theme;
+            Price.text = catInBagInfo.Price.ToString();
         }
     }
 }

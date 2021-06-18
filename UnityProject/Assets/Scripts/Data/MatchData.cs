@@ -38,10 +38,10 @@ namespace Victorina
         public string GetTheme()
         {
             return QuestionAnswerData.QuestionType == QuestionType.CatInBag ? 
-                QuestionAnswerData.SelectedQuestion.Value.GetFirst<CatInBagStoryDot>().Theme : 
+                QuestionAnswerData.SelectedQuestion.Value.CatInBagInfo.Theme : 
                 SelectedRoundQuestion.Theme;
         }
-        
+
         public override string ToString()
         {
             return $"{nameof(Phase)}: {Phase.Value}, {nameof(RoundData)}: {RoundData.Value}";

@@ -1,4 +1,3 @@
-using System.Linq;
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -55,15 +54,9 @@ namespace Victorina
             RestartMediaButton.SetActive(false);
             StartTimerButton.SetActive(CanStartTimer(phase, Data.TimerState, Data.IsLastDot)); 
             StopTimerButton.SetActive(Data.TimerState == QuestionTimerState.Running);
-            
-            //only for No Risk and Cat in Bag questions
-            if(questionType == QuestionType.Simple || Data.CurrentStoryDot is NoRiskStoryDot || Data.CurrentStoryDot is CatInBagStoryDot)
-                AcceptAnswer.SetActive(false);
-            else
-                AcceptAnswer.SetActive(phase == QuestionPhase.ShowQuestion);
-            
+
+            AcceptAnswer.SetActive(phase == QuestionPhase.ShowQuestion);
             ShowAnswerButton.SetActive(QuestionAnswerSystem.CanShowAnswer());
-            
             ShowRoundButton.SetActive(QuestionAnswerSystem.CanBackToRound());
 
             AnswerTip.text = Data.AnswerTip;

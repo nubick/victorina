@@ -10,6 +10,7 @@ namespace Victorina
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private QuestionStoryShowData QuestionStoryShowData { get; set; }
 
         public void Initialize()
         {
@@ -35,14 +36,14 @@ namespace Victorina
             {
                 if (QuestionAnswerData.PlayersButtonClickData.HasChanges)
                 {
-                    Debug.Log("DataSync: PlayersButtonClickData");
+                    Debug.Log($"DataSync: {QuestionAnswerData.PlayersButtonClickData}");
                     QuestionAnswerData.PlayersButtonClickData.ApplyChanges();
                     SendToPlayersService.SendPlayersButtonClickData(QuestionAnswerData.PlayersButtonClickData);
                 }
 
                 if (FinalRoundData.HasChanges)
                 {
-                    Debug.Log("DataSync: FinalRoundData");
+                    Debug.Log($"DataSync: {FinalRoundData}");
                     FinalRoundData.ApplyChanges();
                     SendToPlayersService.SendFinalRoundData(FinalRoundData);
                     MetagameEvents.FinalRoundDataChanged.Publish();
@@ -54,6 +55,14 @@ namespace Victorina
                     PlayersBoard.ApplyChanges();
                     SendToPlayersService.Send(PlayersBoard);
                     MetagameEvents.PlayersBoardChanged.Publish();
+                }
+
+                if (QuestionStoryShowData.HasChanges)
+                {
+                    Debug.Log($"DataSync: {QuestionStoryShowData}");
+                    QuestionStoryShowData.ApplyChanges();
+                    SendToPlayersService.Send(QuestionStoryShowData);
+                    MetagameEvents.QuestionStoryShowDataChange.Publish();
                 }
                 
                 yield return delay;

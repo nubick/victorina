@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Injection;
 using UnityEngine;
@@ -94,6 +93,7 @@ namespace Victorina
             netQuestion.QuestionStoryDotsAmount = netQuestion.QuestionStory.Length;
             netQuestion.AnswerStory = question.AnswerStory.ToArray();
             netQuestion.AnswerStoryDotsAmount = netQuestion.AnswerStory.Length;
+            netQuestion.CatInBagInfo = question.CatInBagInfo;
             return netQuestion;
         }
         
@@ -187,23 +187,12 @@ namespace Victorina
 
         private int GetQuestionPrice(NetQuestion netQuestion, NetRoundQuestion netRoundQuestion)
         {
-            if (netQuestion.Type == QuestionType.CatInBag)
+            return netQuestion.Type switch
             {
-                CatInBagStoryDot catInBagStoryDot = netQuestion.GetFirst<CatInBagStoryDot>();
-
-                if (catInBagStoryDot == null)
-                    throw new Exception("Cat in bag netQuestion doesn't have CatInBagStoryDot at first place.");
-
-                return catInBagStoryDot.Price;
-            }
-            else if (netQuestion.Type == QuestionType.Auction)
-            {
-                return MatchData.QuestionAnswerData.AuctionData.Value.Bet;
-            }
-            else
-            {
-                return netRoundQuestion.Price;
-            }
+                QuestionType.CatInBag => netQuestion.CatInBagInfo.Price,
+                QuestionType.Auction => MatchData.QuestionAnswerData.AuctionData.Value.Bet,
+                _ => netRoundQuestion.Price
+            };
         }
     }
 }

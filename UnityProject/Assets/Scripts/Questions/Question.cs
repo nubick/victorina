@@ -13,6 +13,8 @@ namespace Victorina
         public List<StoryDot> QuestionStory { get; } = new List<StoryDot>();
         public List<StoryDot> AnswerStory { get; } = new List<StoryDot>();
 
+        public CatInBagInfo CatInBagInfo { get; set; }
+        
         public Question() : this(Guid.NewGuid().ToString())
         {
         }
