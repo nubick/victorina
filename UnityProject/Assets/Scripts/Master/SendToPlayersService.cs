@@ -18,6 +18,7 @@ namespace Victorina
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
         
         private string All => $"All: ({GetPlayersInfo()})";
         
@@ -42,19 +43,12 @@ namespace Victorina
             Debug.Log($"Master: Send PlayersBoard: {PlayersBoard} to {networkPlayer.GetPlayerInfo()}");
             networkPlayer.SendPlayersBoard(PlayersBoard);
 
-            if (MatchData.Phase.Value == MatchPhase.WaitingInLobby)
-            {
-
-            }
-            else if (MatchData.Phase.Value == MatchPhase.Round)
-            {
-                Debug.Log($"Master: Send RoundData: {MatchData.RoundData.Value} to {networkPlayer.GetPlayerInfo()}");
-                networkPlayer.SendNetRound(MatchData.RoundData.Value);
-                
-                Debug.Log($"Master: Send RoundsInfo: {MatchData.RoundsInfo.Value} to {networkPlayer.GetPlayerInfo()}");
-                networkPlayer.SendNetRoundsInfo(MatchData.RoundsInfo.Value);
-            }
-            else if (MatchData.Phase.Value == MatchPhase.Question)
+            Debug.Log($"Master: Send PlayStateData: {PlayStateData} to {networkPlayer.GetPlayerInfo()}");
+            networkPlayer.SendPackagePlayStateData(PlayStateData);
+            
+            if(PlayStateData.Type == PlayStateType.ShowQuestion ||
+               PlayStateData.Type == PlayStateType.ShowAnswer ||
+               PlayStateData.Type == PlayStateType.AcceptingAnswer)
             {
                 networkPlayer.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
                 networkPlayer.SendSelectedQuestion(QuestionAnswerData.SelectedQuestion.Value);
@@ -64,9 +58,6 @@ namespace Victorina
             
             (int[] fileIds, int[] chunksAmounts, int[] priorities) info = PackageSystem.GetPackageFilesInfo(PackageData.Package);
             networkPlayer.SendRoundFileIds(info.fileIds, info.chunksAmounts, info.priorities);
-            
-            Debug.Log($"Master: Send match phase: {MatchData.Phase.Value} to {networkPlayer.GetPlayerInfo()}");
-            networkPlayer.SendMatchPhase(MatchData.Phase.Value);
         }
 
         private string GetPlayersInfo()
@@ -78,18 +69,6 @@ namespace Victorina
         {
             //Debug.Log($"Master: Send PlayersBoard to {All}: {playersBoard}");
             GetPlayers().ForEach(player => player.SendPlayersBoard(playersBoard));
-        }
-
-        public void SendMatchPhase(MatchPhase matchPhase)
-        {
-            Debug.Log($"Master: Send match phase to {All}: {matchPhase}");
-            GetPlayers().ForEach(player => player.SendMatchPhase(matchPhase));
-        }
-        
-        public void SendNetRound(NetRound netRound)
-        {
-            //Debug.Log($"Master: Send NetRound '{netRound}' to {All}");
-            GetPlayers().ForEach(player => player.SendNetRound(netRound));
         }
 
         public void SendSelectedQuestion(NetQuestion netQuestion)
@@ -104,12 +83,6 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendSelectedRoundQuestion(netRoundQuestion));
         }
         
-        public void SendNetRoundsInfo(NetRoundsInfo netRoundsInfo)
-        {
-            Debug.Log($"Master: Send rounds info to {All}, {netRoundsInfo}");
-            GetPlayers().ForEach(player => player.SendNetRoundsInfo(netRoundsInfo));
-        }
-        
         public void Send(QuestionAnswerData questionAnswerData)
         {
             Debug.Log($"Master: Send QuestionAnswerData to {All}: {questionAnswerData}");
@@ -122,12 +95,6 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendQuestionStoryShowData(data));
         }
         
-        public void SendCatInBagData(CatInBagData data)
-        {
-            Debug.Log($"Master: Send cat in bag data to {All}: {data}");
-            GetPlayers().ForEach(player => player.SendCatInBagData(data));
-        }
-
         public void SendPlayersButtonClickData(PlayersButtonClickData playersButtonClickData)
         {
             Debug.Log($"Master: Send players button click data to {All}, {playersButtonClickData})");
@@ -158,6 +125,12 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendFinalRoundData(finalRoundData));
         }
 
+        public void SendPackagePlayStateData(PackagePlayStateData data)
+        {
+            Debug.Log($"Master: Send PackagePlayStateData to {All}: {data}");
+            GetPlayers().ForEach(player => player.SendPackagePlayStateData(data));
+        }
+        
         public void SendCommand(IndividualPlayerCommand command)
         {
             Debug.Log($"Master: Send individual player command to {command.Receiver}");

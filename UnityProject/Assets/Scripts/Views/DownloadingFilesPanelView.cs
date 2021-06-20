@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
+    //todo: Do I need this? Remove?
     public class DownloadingFilesPanelView : ViewBase
     {
         [Inject] private MatchData MatchData { get; set; }
@@ -19,8 +20,8 @@ namespace Victorina
 
         private void OnClientFileRequested()
         {
-            if (!IsActive && MatchData.Phase.Value == MatchPhase.Round)
-                Show();
+            //if (!IsActive && MatchData.Phase.Value == MatchPhase.Round)
+            //    Show();
         }
         
         public void Update()

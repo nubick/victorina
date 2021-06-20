@@ -4,7 +4,6 @@ using Assets.Scripts.Utils;
 using Injection;
 using MLAPI.Serialization;
 using MLAPI.Serialization.Pooled;
-using UnityEngine.Assertions;
 using Victorina.Commands;
 
 namespace Victorina
@@ -13,14 +12,13 @@ namespace Victorina
     {
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
-
+        [Inject] private PackagePlayStateSystem PackagePlayStateSystem { get; set; }
+        
         public void Initialize()
         {
             SerializationManager.RegisterSerializationHandlers(SerializePlayersBoard, DeserializePlayersBoard);
-            SerializationManager.RegisterSerializationHandlers(SerializeRoundData, DeserializeRoundData);
             SerializationManager.RegisterSerializationHandlers(SerializeNetRoundQuestion, DeserializeNetRoundQuestion);
             SerializationManager.RegisterSerializationHandlers(SerializeNetQuestion, DeserializeNetQuestion);
-            SerializationManager.RegisterSerializationHandlers(SerializeNetRoundsInfo, DeserializeNetRoundsInfo);
             SerializationManager.RegisterSerializationHandlers(SerializePlayersButtonClickData, DeserializePlayersButtonClickData);
             SerializationManager.RegisterSerializationHandlers(SerializeAuctionData, DeserializeAuctionData);
             SerializationManager.RegisterSerializationHandlers(SerializeFinalRoundData, DeserializeFinalRoundData);
@@ -32,6 +30,8 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeAudioStoryDot, DeserializeAudioStoryDot);
             SerializationManager.RegisterSerializationHandlers(SerializeVideoStoryDot, DeserializeVideoStoryDot);
 
+            SerializationManager.RegisterSerializationHandlers(SerializePackagePlayStateData, DeserializePackagePlayStateData);
+            
             SerializationManager.RegisterSerializationHandlers(SerializeCommandNetworkData, DeserializeCommandNetworkData);
             
             SerializationManager.RegisterSerializationHandlers(SerializeBytesArray, DeserializeBytesArray);
@@ -89,32 +89,26 @@ namespace Victorina
         
         #region RoundData
 
-        private void SerializeRoundData(Stream stream, NetRound netRound)
+        public static void SerializeNetRound(PooledBitWriter writer, NetRound netRound)
         {
-            using (PooledBitWriter writer = PooledBitWriter.Get(stream))
-            {
-                writer.WriteInt32(netRound.Themes.Count);
-                foreach (NetRoundTheme roundThemeData in netRound.Themes)
-                    SerializeNetRoundTheme(writer, roundThemeData);
-            }
+            writer.WriteInt32(netRound.Themes.Count);
+            foreach (NetRoundTheme roundThemeData in netRound.Themes)
+                SerializeNetRoundTheme(writer, roundThemeData);
         }
 
-        private NetRound DeserializeRoundData(Stream stream)
+        public static NetRound DeserializeNetRound(PooledBitReader reader)
         {
             NetRound netRound = new NetRound();
-            using (PooledBitReader reader = PooledBitReader.Get(stream))
+            int amount = reader.ReadInt32();
+            for (int i = 0; i < amount; i++)
             {
-                int amount = reader.ReadInt32();
-                for (int i = 0; i < amount; i++)
-                {
-                    NetRoundTheme netRoundTheme = DeserializeRoundThemeData(reader);
-                    netRound.Themes.Add(netRoundTheme);
-                }
+                NetRoundTheme netRoundTheme = DeserializeRoundThemeData(reader);
+                netRound.Themes.Add(netRoundTheme);
             }
             return netRound;
         }
 
-        private void SerializeNetRoundTheme(PooledBitWriter writer, NetRoundTheme netRoundTheme)
+        private static void SerializeNetRoundTheme(PooledBitWriter writer, NetRoundTheme netRoundTheme)
         {
             writer.WriteString(netRoundTheme.Name);
             writer.WriteInt32(netRoundTheme.Questions.Count);
@@ -122,7 +116,7 @@ namespace Victorina
                 SerializeNetRoundQuestion(writer, netRoundQuestion);
         }
 
-        private NetRoundTheme DeserializeRoundThemeData(PooledBitReader reader)
+        private static NetRoundTheme DeserializeRoundThemeData(PooledBitReader reader)
         {
             NetRoundTheme netRoundTheme = new NetRoundTheme();
             netRoundTheme.Name = reader.ReadString().ToString();
@@ -152,7 +146,7 @@ namespace Victorina
             return netRoundQuestion;
         }
 
-        private void SerializeNetRoundQuestion(PooledBitWriter writer, NetRoundQuestion netRoundQuestion)
+        private static void SerializeNetRoundQuestion(PooledBitWriter writer, NetRoundQuestion netRoundQuestion)
         {
             writer.WriteString(netRoundQuestion.QuestionId);
             writer.WriteInt32(netRoundQuestion.Price);
@@ -163,7 +157,7 @@ namespace Victorina
             writer.WriteIntArray(netRoundQuestion.FileIds);
         }
         
-        private NetRoundQuestion DeserializeNetRoundQuestion(PooledBitReader reader)
+        private static NetRoundQuestion DeserializeNetRoundQuestion(PooledBitReader reader)
         {
             string questionId = reader.ReadString().ToString();
             NetRoundQuestion netRoundQuestion = new NetRoundQuestion(questionId);
@@ -279,32 +273,7 @@ namespace Victorina
         }
         
         #endregion
-
-        private void SerializeNetRoundsInfo(Stream stream, NetRoundsInfo netRoundsInfo)
-        {
-            using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteInt32(netRoundsInfo.RoundsAmount);
-            writer.WriteInt32(netRoundsInfo.CurrentRoundNumber);
-            
-            Assert.AreEqual(netRoundsInfo.RoundsAmount, netRoundsInfo.RoundTypes.Length);
-            foreach (RoundType roundType in netRoundsInfo.RoundTypes)
-                writer.WriteInt32((int) roundType);
-        }
-
-        private NetRoundsInfo DeserializeNetRoundsInfo(Stream stream)
-        {
-            using PooledBitReader reader = PooledBitReader.Get(stream);
-            NetRoundsInfo netRoundsInfo = new NetRoundsInfo();
-            netRoundsInfo.RoundsAmount = reader.ReadInt32();
-            netRoundsInfo.CurrentRoundNumber = reader.ReadInt32();
-
-            netRoundsInfo.RoundTypes = new RoundType[netRoundsInfo.RoundsAmount];
-            for (int i = 0; i < netRoundsInfo.RoundsAmount; i++)
-                netRoundsInfo.RoundTypes[i] = (RoundType) reader.ReadInt32();
-
-            return netRoundsInfo;
-        }
-
+        
         private void SerializeQuestionAnswerData(Stream stream, QuestionAnswerData data)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
@@ -424,10 +393,10 @@ namespace Victorina
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
             writer.WriteInt32((int) data.Phase);
-            SerializeStringsArray(writer, data.Themes);
-            SerializeBooleansArray(writer, data.RemovedThemes);
-            SerializeBooleansArray(writer, data.DoneBets);
-            SerializeBooleansArray(writer, data.DoneAnswers);
+            SerializationTools.SerializeStringsArray(writer, data.Themes);
+            SerializationTools.SerializeBooleansArray(writer, data.RemovedThemes);
+            SerializationTools.SerializeBooleansArray(writer, data.DoneBets);
+            SerializationTools.SerializeBooleansArray(writer, data.DoneAnswers);
             writer.WriteString(data.AcceptingInfo);
         }
 
@@ -435,16 +404,14 @@ namespace Victorina
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             FinalRoundPhase phase = (FinalRoundPhase) reader.ReadInt32();
-            string[] themes = DeserializeStringsArray(reader);
-            bool[] removedThemes = DeserializeBooleanArray(reader);
+            string[] themes = SerializationTools.DeserializeStringsArray(reader);
+            bool[] removedThemes = SerializationTools.DeserializeBooleanArray(reader);
             FinalRoundData finalRoundData = new FinalRoundData(phase, themes, removedThemes);
-            finalRoundData.SetDoneBets(DeserializeBooleanArray(reader));
-            finalRoundData.SetDoneAnswers(DeserializeBooleanArray(reader));
+            finalRoundData.SetDoneBets(SerializationTools.DeserializeBooleanArray(reader));
+            finalRoundData.SetDoneAnswers(SerializationTools.DeserializeBooleanArray(reader));
             finalRoundData.SetAcceptingInfo(reader.ReadString().ToString());
             return finalRoundData;
         }
-        
-        #region Tools
         
         private void SerializeBytesArray(Stream stream, byte[] bytes)
         {
@@ -461,57 +428,7 @@ namespace Victorina
             stream.Read(bytes, 0, length);
             return bytes;
         }
-
-        private void SerializeIntsArray(PooledBitWriter writer, int[] ints)
-        {
-            writer.WriteInt32(ints.Length);
-            foreach(int intVal in ints)
-                writer.WriteInt32(intVal);
-        }
-
-        private int[] DeserializeIntsArray(PooledBitReader reader)
-        {
-            int size = reader.ReadInt32();
-            int[] array = new int[size];
-            for (int i = 0; i < size; i++)
-                array[i] = reader.ReadInt32();
-            return array;
-        }
-
-        private void SerializeBooleansArray(PooledBitWriter writer, bool[] booleans)
-        {
-            writer.WriteInt32(booleans.Length);
-            foreach (bool boolean in booleans)
-                writer.WriteBool(boolean);
-        }
-
-        private bool[] DeserializeBooleanArray(PooledBitReader reader)
-        {
-            int size = reader.ReadInt32();
-            bool[] array = new bool[size];
-            for (int i = 0; i < size; i++)
-                array[i] = reader.ReadBool();
-            return array;
-        }
-
-        private void SerializeStringsArray(PooledBitWriter writer, string[] strings)
-        {
-            writer.WriteInt32(strings.Length);
-            foreach (string str in strings)
-                writer.WriteString(str);
-        }
-
-        private string[] DeserializeStringsArray(PooledBitReader reader)
-        {
-            int size = reader.ReadInt32();
-            string[] array = new string[size];
-            for (int i = 0; i < size; i++)
-                array[i] = reader.ReadString().ToString();
-            return array;
-        }
-
-        #endregion
-
+        
         #region Commands
         
         private void SerializeCommandNetworkData(Stream stream, CommandNetworkData data)
@@ -531,5 +448,22 @@ namespace Victorina
         }
         
         #endregion
+
+        private void SerializePackagePlayStateData(Stream stream, PackagePlayStateData data)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32((int) data.PlayState.Type);
+            data.PlayState.Serialize(writer);
+        }
+
+        private PackagePlayStateData DeserializePackagePlayStateData(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            PlayStateType playStateType = (PlayStateType) reader.ReadInt32();
+            PackagePlayStateData data = new PackagePlayStateData();
+            data.PlayState = PackagePlayStateSystem.Create(playStateType);
+            data.PlayState.Deserialize(reader);
+            return data;
+        }
     }
 }

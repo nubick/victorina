@@ -11,6 +11,7 @@ namespace Victorina
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private QuestionStoryShowData QuestionStoryShowData { get; set; }
+        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
 
         public void Initialize()
         {
@@ -57,12 +58,20 @@ namespace Victorina
                     MetagameEvents.PlayersBoardChanged.Publish();
                 }
 
-                if (QuestionStoryShowData.HasChanges)
+                // if (QuestionStoryShowData.HasChanges)
+                // {
+                //     Debug.Log($"DataSync: {QuestionStoryShowData}");
+                //     QuestionStoryShowData.ApplyChanges();
+                //     SendToPlayersService.Send(QuestionStoryShowData);
+                //     MetagameEvents.QuestionStoryShowDataChange.Publish();
+                // }
+
+                if (PackagePlayStateData.HasChanges)
                 {
-                    Debug.Log($"DataSync: {QuestionStoryShowData}");
-                    QuestionStoryShowData.ApplyChanges();
-                    SendToPlayersService.Send(QuestionStoryShowData);
-                    MetagameEvents.QuestionStoryShowDataChange.Publish();
+                    Debug.Log($"DataSync: {PackagePlayStateData}");
+                    PackagePlayStateData.ApplyChanges();
+                    SendToPlayersService.SendPackagePlayStateData(PackagePlayStateData);
+                    MetagameEvents.PackagePlayStateChanged.Publish();
                 }
                 
                 yield return delay;

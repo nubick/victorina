@@ -20,8 +20,6 @@ namespace Victorina
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private MessageDialogueView MessageDialogueView { get; set; }
         
-        private NetRoundsInfo RoundsInfo => MatchData.RoundsInfo.Value; 
-        
         public void Initialize()
         {
             MetagameEvents.ServerStarted.Subscribe(OnServerStarted);
@@ -45,118 +43,18 @@ namespace Victorina
                 MessageDialogueView.Show("Текущий игрок?", "Для старта необходим текущий игрок! Выберите игрока в верхней панели и сделайте его текущим!");
                 return;
             }
-            
-            CommandsSystem.AddNewCommand(new SelectRoundQuestionCommand(netRoundQuestion));
-        }
 
-        public bool IsCurrentPlayer(byte playerId)
-        {
-            return PlayersBoard.Current != null && PlayersBoard.Current.PlayerId == playerId;
-        }
-
-        public bool IsCurrentPlayer(PlayerData player)
-        {
-            return IsCurrentPlayer(player.PlayerId);
-        }
-
-        public void SelectQuestion(NetRoundQuestion netRoundQuestion)
-        {
-            SendSelectQuestionEvents();
-            
-            MatchData.SelectedRoundQuestion = netRoundQuestion;
-            SendToPlayersService.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
-            
-            MatchData.Phase.Value = MatchPhase.Question;
-            SendToPlayersService.SendMatchPhase(MatchData.Phase.Value);
-
-            NetQuestion netQuestion = BuildNetQuestion(netRoundQuestion);
-            QuestionAnswerSystem.StartAnswer(netQuestion);
-        }
-
-        private void SendSelectQuestionEvents()
-        {
-            int answered = MatchData.RoundData.Value.Themes.SelectMany(theme => theme.Questions).Count(question => question.IsAnswered);
-            int notAnswered = MatchData.RoundData.Value.Themes.SelectMany(theme => theme.Questions).Count(question => !question.IsAnswered);
-
-            if (answered == 0)
-                AnalyticsEvents.FirstRoundQuestionStart.Publish(RoundsInfo.CurrentRoundNumber);
-            else if (notAnswered == 1)
-                AnalyticsEvents.LastRoundQuestionStart.Publish(RoundsInfo.CurrentRoundNumber);
-        }
-
-        private NetQuestion BuildNetQuestion(NetRoundQuestion netRoundQuestion)
-        {
-            Question question = PackageSystem.GetQuestion(netRoundQuestion.QuestionId);
-            NetQuestion netQuestion = new NetQuestion();
-            netQuestion.Type = netRoundQuestion.Type;
-            netQuestion.QuestionStory = question.QuestionStory.ToArray();
-            netQuestion.QuestionStoryDotsAmount = netQuestion.QuestionStory.Length;
-            netQuestion.AnswerStory = question.AnswerStory.ToArray();
-            netQuestion.AnswerStoryDotsAmount = netQuestion.AnswerStory.Length;
-            netQuestion.CatInBagInfo = question.CatInBagInfo;
-            return netQuestion;
+            CommandsSystem.AddNewCommand(new SelectRoundQuestionCommand {QuestionId = netRoundQuestion.QuestionId});
         }
         
-        public void BackToRound()
-        {
-            PackageData.PackageProgress.SetQuestionAsAnswered(MatchData.SelectedRoundQuestion.QuestionId);
-            SelectRound(RoundsInfo.CurrentRoundNumber );
-        }
-
         public void SelectRound(int number)
         {
             if (NetworkData.IsClient)
                 return;
 
-            RoundsInfo.RoundsAmount = PackageData.Package.Rounds.Count;
-            RoundsInfo.CurrentRoundNumber = number;
-            RoundsInfo.RoundTypes = PackageData.Package.Rounds.Select(_ => _.Type).ToArray();
-            SendToPlayersService.SendNetRoundsInfo(RoundsInfo);
-
-            Round round = PackageData.Package.Rounds[RoundsInfo.CurrentRoundNumber - 1];
-            if (round.Type == RoundType.Simple)
-                SyncSimpleRound();
-            else if (round.Type == RoundType.Final)
-                FinalRoundSystem.Select(round);
-
-            MatchData.Phase.Value = MatchPhase.Round;
-            SendToPlayersService.SendMatchPhase(MatchData.Phase.Value);
+            CommandsSystem.AddNewCommand(new SelectRoundCommand {RoundNumber = number});
         }
         
-        public void SyncSimpleRound()
-        {
-            Round round = PackageData.Package.Rounds[RoundsInfo.CurrentRoundNumber - 1];
-            if (round.Type == RoundType.Simple)
-            {
-                MatchData.RoundData.Value = BuildNetRound(round, PackageData.PackageProgress);
-                SendToPlayersService.SendNetRound(MatchData.RoundData.Value);
-            }
-        }
-
-        private NetRound BuildNetRound(Round round, PackageProgress packageProgress)
-        {
-            NetRound netRound = new NetRound();
-            foreach (Theme theme in round.Themes)
-            {
-                NetRoundTheme netRoundTheme = new NetRoundTheme();
-                netRoundTheme.Name = theme.Name;
-                foreach (Question question in theme.Questions)
-                {
-                    NetRoundQuestion netRoundQuestion = new NetRoundQuestion(question.Id);
-                    netRoundQuestion.Price = question.Price;
-                    netRoundQuestion.IsAnswered = packageProgress.IsAnswered(question.Id);
-                    netRoundQuestion.Type = question.Type;
-                    netRoundQuestion.Theme = theme.Name;
-                    netRoundQuestion.IsDownloadedByMe = true;//Master has file from pack
-                    netRoundQuestion.FileIds = FilesDeliveryStatusManager.GetQuestionFileIds(question);
-                    netRoundQuestion.IsDownloadedByAll = FilesDeliveryStatusManager.IsDownloadedByAll(netRoundQuestion.FileIds);
-                    netRoundTheme.Questions.Add(netRoundQuestion);
-                }
-                netRound.Themes.Add(netRoundTheme);
-            }
-            return netRound;
-        }
-
         public void RewardPlayer(byte playerId)
         {
             int price = GetQuestionPrice(MatchData.QuestionAnswerData.SelectedQuestion.Value, MatchData.SelectedRoundQuestion);

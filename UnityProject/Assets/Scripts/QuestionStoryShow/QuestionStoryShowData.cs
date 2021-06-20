@@ -11,7 +11,8 @@ namespace Victorina
         public StoryDot PreviousStoryDot => CurrentStory[CurrentStoryDotIndex - 1];
         public bool IsLastDot => CurrentStoryDot == CurrentStory.Last();
 
-        public StoryDot[] CurrentStory => Phase.Value == QuestionPhase.ShowAnswer ? SelectedQuestion.Value.AnswerStory : SelectedQuestion.Value.QuestionStory;
+        //todo: finish refactoring
+        public StoryDot[] CurrentStory => null; //Phase.Value == QuestionPhase.ShowAnswer ? SelectedQuestion.Value.AnswerStory : SelectedQuestion.Value.QuestionStory;
 
 
         public void Update(QuestionStoryShowData data)

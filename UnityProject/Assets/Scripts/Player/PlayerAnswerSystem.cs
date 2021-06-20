@@ -12,6 +12,7 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
         
         public void StartTimer(float resetSeconds, float leftSeconds)
         {
@@ -51,7 +52,7 @@ namespace Victorina
         public bool CanSendAnswerIntention()
         {
             if (NetworkData.IsMaster ||
-                MatchData.Phase.Value != MatchPhase.Question ||
+                PlayStateData.Type == PlayStateType.ShowQuestion ||
                 QuestionAnswerData.Phase.Value != QuestionPhase.ShowQuestion ||
                 WasIntentionSent() ||
                 WasWrongAnswer() ||

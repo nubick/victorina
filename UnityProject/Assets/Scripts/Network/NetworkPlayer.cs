@@ -49,32 +49,6 @@ namespace Victorina
             PlayerDataReceiver.OnReceive(playersBoard);
         }
 
-        public void SendMatchPhase(MatchPhase matchPhase)
-        {
-            //Debug.Log($"Master: Send match phase: {matchPhase} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveMatchPhase, matchPhase);
-        }
-
-        [ClientRPC]
-        private void ReceiveMatchPhase(MatchPhase matchPhase)
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive match phase: {matchPhase}");
-            PlayerDataReceiver.OnReceive(matchPhase);
-        }
-        
-        public void SendNetRound(NetRound netRound)
-        {
-            //Debug.Log($"Master: Send RoundData: {netRound} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveRoundData, netRound, "RFS");
-        }
-
-        [ClientRPC]
-        private void ReceiveRoundData(NetRound netRound)
-        {
-            //Debug.Log($"Player {OwnerClientId}: Receive RoundData: {netRound}");
-            PlayerDataReceiver.OnReceiveNetRound(netRound);
-        }
-
         public void SendQuestionAnswerData(QuestionAnswerData questionAnswerData)
         {
             //Debug.Log($"Master: Send question answer data: {questionAnswerData} to {OwnerClientId}");
@@ -98,18 +72,6 @@ namespace Victorina
         {
             Debug.Log($"Player {OwnerClientId}: Receive QuestionStoryShowData: {data}");
             PlayerDataReceiver.OnReceiveQuestionStoryShowData(data);
-        }
-        
-        public void SendCatInBagData(CatInBagData data)
-        {
-            InvokeClientRpcOnOwner(ReceiveCatInBagData, data.IsPlayerSelected.Value);
-        }
-
-        [ClientRPC]
-        private void ReceiveCatInBagData(bool isPlayerSelected)
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive cat in bag data, isPlayerSelected: {isPlayerSelected}");
-            PlayerDataReceiver.OnReceiveCatInBagData(isPlayerSelected);
         }
         
         public void SendSelectedQuestion(NetQuestion netQuestion)
@@ -206,19 +168,6 @@ namespace Victorina
             MatchData.SelectedRoundQuestion = netRoundQuestion;
         }
 
-        public void SendNetRoundsInfo(NetRoundsInfo netRoundsInfo)
-        {
-            //Debug.Log($"Master: Send rounds info: {netRoundsInfo} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveNetRoundsInfo, netRoundsInfo);
-        }
-
-        [ClientRPC]
-        private void ReceiveNetRoundsInfo(NetRoundsInfo netRoundsInfo)
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive rounds info: {netRoundsInfo}");
-            MatchData.RoundsInfo.Value = netRoundsInfo;
-        }
-
         #region Files
 
         private void SendFileChunk(int fileId, int chunkIndex)
@@ -313,23 +262,6 @@ namespace Victorina
         {
             //Debug.Log($"Master: Receive files loading progress, percentage: {percentage}, amount: '{downloadedFilesIds.Length}' from Player {GetPlayerInfo()}");
             MasterDataReceiver.OnFilesLoadingPercentageReceived(OwnerClientId, percentage, downloadedFilesIds);
-        }
-        
-        #endregion
-        
-        #region Send Who Will Get Cat In Bag to MASTER
-
-        public void SendWhoWillGetCatInBag(byte playerId)
-        {
-            Debug.Log($"Player {OwnerClientId}: send who will get cat in bag to Master: {playerId}");
-            InvokeServerRpc(MasterReceiveWhoWillGetCatInBag, playerId);
-        }
-
-        [ServerRPC]
-        private void MasterReceiveWhoWillGetCatInBag(byte playerId)
-        {
-            Debug.Log($"Master: Receive who will get cat in bag: {playerId} from Player {GetPlayerInfo()}");
-            MasterDataReceiver.OnReceiveWhoWillGetCatInBag(senderClientId: OwnerClientId, whoGetPlayerId: playerId);
         }
         
         #endregion
@@ -432,6 +364,18 @@ namespace Victorina
         }
         
         #endregion
+
+        public void SendPackagePlayStateData(PackagePlayStateData data)
+        {
+            InvokeClientRpcOnOwner(ReceivePackagePlayStateDataClientRpc, data, "RFS");
+        }
+
+        [ClientRPC]
+        private void ReceivePackagePlayStateDataClientRpc(PackagePlayStateData data)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive PackagePlayStateData: {data}");
+            PlayerDataReceiver.OnReceivePackagePlayStateData(data);
+        }
 
         #region Command
         

@@ -43,14 +43,6 @@ namespace Victorina
             else
                 Debug.Log($"Client is not connected: {nameof(SendFilesLoadingPercentage)}");
         }
-
-        public void SendWhoWillGetCatInBag(byte playerId)
-        {
-            if (NetworkingManager.IsConnectedClient)
-                Player.SendWhoWillGetCatInBag(playerId);
-            else
-                Debug.Log($"Client is not connected: {nameof(SendWhoWillGetCatInBag)}");
-        }
         
         #region Auction
 

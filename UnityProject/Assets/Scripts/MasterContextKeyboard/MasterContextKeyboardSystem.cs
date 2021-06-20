@@ -21,6 +21,7 @@ namespace Victorina
         
         private void RegisterCommands()
         {
+            /*
             //Accepting Answer
             ContextCommand acceptAnswerAsCorrectCommand = new ContextCommand("Accept Answer As Correct");
             acceptAnswerAsCorrectCommand.Condition = () => MatchData.Phase.Value == MatchPhase.Question && 
@@ -93,6 +94,7 @@ namespace Victorina
             selectFastestPlayerCommand.Action = () => QuestionAnswerSystem.SelectFastestPlayerForAnswer();
             selectFastestPlayerCommand.Tip = "Пробел:\tСамый быстрый";
             Commands.Add(selectFastestPlayerCommand);
+            */
         }
         
         public void OnKeyPressed(KeyCode keyCode)

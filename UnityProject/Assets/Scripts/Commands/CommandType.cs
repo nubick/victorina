@@ -2,16 +2,20 @@ namespace Victorina.Commands
 {
     public enum CommandType
     {
-       SelectRoundQuestion,
-       
-       //Final Round
-       RemoveFinalRoundTheme,
-       MakeFinalRoundBet,
-       SendFinalRoundAnswer,
-       ClearFinalRoundAnswer,
-       
-       //DevTools
-       SendPlayerLogs,
-       SavePlayerLogs
+        SelectRound,
+        SelectRoundQuestion,
+        StopRoundBlinking,
+        GiveCatInBagCommand,
+        FinishQuestionCommand,
+
+        //Final Round
+        RemoveFinalRoundTheme,
+        MakeFinalRoundBet,
+        SendFinalRoundAnswer,
+        ClearFinalRoundAnswer,
+
+        //DevTools
+        SendPlayerLogs,
+        SavePlayerLogs
     }
 }

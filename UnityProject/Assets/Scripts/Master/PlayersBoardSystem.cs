@@ -113,6 +113,16 @@ namespace Victorina
             return player;
         }
         
+        public bool IsCurrentPlayer(byte playerId)
+        {
+            return PlayersBoard.Current != null && PlayersBoard.Current.PlayerId == playerId;
+        }
+
+        public bool IsCurrentPlayer(PlayerData player)
+        {
+            return IsCurrentPlayer(player.PlayerId);
+        }
+        
         public string GetCurrentPlayerName()
         {
             return PlayersBoard.Current == null ? Static.EmptyPlayerName : PlayersBoard.Current.Name;

@@ -5,8 +5,6 @@ namespace Victorina
 {
     public class MatchData
     {
-        public ReactiveProperty<MatchPhase> Phase { get; set; } = new ReactiveProperty<MatchPhase>();
-        public ReactiveProperty<NetRoundsInfo> RoundsInfo { get; } = new ReactiveProperty<NetRoundsInfo>();
         public ReactiveProperty<NetRound> RoundData { get; } = new ReactiveProperty<NetRound>();
         public NetRoundQuestion SelectedRoundQuestion { get; set; }
         
@@ -22,15 +20,12 @@ namespace Victorina
         
         public MatchData()
         {
-            RoundsInfo.Value = new NetRoundsInfo();
             RoundData.Value = new NetRound();
         }
 
         public void Clear()
         {
             Debug.Log("Master. Clear MatchData");
-            Phase.Value = MatchPhase.WaitingInLobby;
-            RoundsInfo.Value = new NetRoundsInfo();
             RoundData.Value = new NetRound();
             SelectedRoundQuestion = null;
         }
@@ -44,7 +39,7 @@ namespace Victorina
 
         public override string ToString()
         {
-            return $"{nameof(Phase)}: {Phase.Value}, {nameof(RoundData)}: {RoundData.Value}";
+            return $"{nameof(RoundData)}: {RoundData.Value}";
         }
     }
 }

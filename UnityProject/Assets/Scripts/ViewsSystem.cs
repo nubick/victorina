@@ -32,6 +32,7 @@ namespace Victorina
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
+        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
 
         public void Initialize()
         {
@@ -39,11 +40,16 @@ namespace Victorina
                 view.Content.SetActive(false);
             StartupView.Show();
 
-            MatchData.Phase.SubscribeChanged(OnMatchPhaseChanged);
+            //todo: Finish refactoring
+            //MatchData.Phase.SubscribeChanged(OnMatchPhaseChanged);
+            
             MatchData.RoundData.SubscribeChanged(OnRoundDataChanged);
             QuestionAnswerData.Phase.SubscribeChanged(OnQuestionAnswerPhaseChanged);
-            CatInBagData.IsPlayerSelected.SubscribeChanged(OnCatInBagIsPlayerSelectedChanged);
             
+            //todo: Finish refactoring
+            //CatInBagData.IsPlayerSelected.SubscribeChanged(OnCatInBagIsPlayerSelectedChanged);
+
+            MetagameEvents.PackagePlayStateChanged.Subscribe(OnPackagePlayStateChanged);
             MetagameEvents.DisconnectedAsClient.Subscribe(ShowStartUpView);
             MetagameEvents.ServerStopped.Subscribe(ShowStartUpView);
         }
@@ -60,22 +66,29 @@ namespace Victorina
                 }
         }
 
-        private void OnMatchPhaseChanged()
+        private void OnPackagePlayStateChanged()
         {
-            MatchPhase phase = MatchData.Phase.Value;
-            Debug.Log($"OnPhaseChanged: {phase}");
-            switch (phase)
+            Debug.Log($"Views. OnPackagePlayState changed: {PackagePlayStateData}");
+            
+            if (PackagePlayStateData.Type == PlayStateType.Lobby)
             {
-                case MatchPhase.WaitingInLobby:
-                    ShowLobbyViews();
-                    break;
-                case MatchPhase.Round:
-                    ShowRoundViews();
-                    break;
-                case MatchPhase.Question:
-                    break;
-                default:
-                    throw new Exception($"Not supported phase: {MatchData.Phase}");
+                ShowLobbyViews();
+            }
+            else if (PackagePlayStateData.Type == PlayStateType.FinalRound)
+            {
+                
+            }
+            else if (PackagePlayStateData.Type == PlayStateType.Round)
+            {
+                ShowSimpleRoundViews();   
+            }
+            else if (PackagePlayStateData.Type == PlayStateType.RoundBlinking)
+            {
+                ShowFinalRoundViews();
+            }
+            else
+            {
+                throw new Exception($"Not supported PackagePlayState: {PackagePlayStateData.PlayState}");
             }
         }
         
@@ -106,47 +119,41 @@ namespace Victorina
             //    MasterEffectsView.Show();
         }
 
-        private void ShowRoundViews()
+        private void ShowSimpleRoundViews()
         {
             HideAll();
+            Debug.Log("Show: RoundView");
+            RoundView.Show();
+            PlayersBoardView.Show();
+        }
 
-            int number = MatchData.RoundsInfo.Value.CurrentRoundNumber;
-            RoundType roundType = MatchData.RoundsInfo.Value.RoundTypes[number - 1];
-
-            switch (roundType)
-            {
-                case RoundType.Simple:
-                    Debug.Log("Show: RoundView");
-                    RoundView.Show();
-                    PlayersBoardView.Show();
-                    break;
-                case RoundType.Final:
-                    Debug.Log("Show: FinalRoundView");
-                    FinalRoundView.Show();
-                    PlayersBoardView.Show();
-                    break;
-                default:
-                    throw new Exception($"Not supported round type: {roundType}");
-            }
-            
-            
-            //if (NetworkData.IsMaster)
-            //    MasterEffectsView.Show();
+        private void ShowFinalRoundViews()
+        {
+            HideAll();
+            Debug.Log("Show: FinalRoundView");
+            FinalRoundView.Show();
+            PlayersBoardView.Show();
         }
 
         private void OnRoundDataChanged()
         {
+            //todo: Finish refactoring
+            /*
             if (MatchData.Phase.Value == MatchPhase.Round)
             {
                 RoundView.RefreshUI(MatchData.RoundData.Value);
             }
+            */
         }
 
         public void UpdateStoryDot(QuestionAnswerData data)
         {
             HideAll();
 
-            if (data.CurrentStoryDot is ImageStoryDot)
+            //todo: finish refactoring
+            StoryDot currentStoryDot = null;
+            
+            if (currentStoryDot is ImageStoryDot)
             {
                 Debug.Log("Show: ImageStoryDotView");
                 ImageStoryDotView.Show();
@@ -157,7 +164,7 @@ namespace Victorina
                 if (NetworkData.IsClient)
                     PlayerGiveAnswerView.Show();
             }
-            else if (data.CurrentStoryDot is AudioStoryDot)
+            else if (currentStoryDot is AudioStoryDot)
             {
                 Debug.Log("Show: AudioStoryDotView");
                 AudioStoryDotView.Show();
@@ -168,7 +175,7 @@ namespace Victorina
                 if (NetworkData.IsClient)
                     PlayerGiveAnswerView.Show();
             }
-            else if (data.CurrentStoryDot is VideoStoryDot)
+            else if (currentStoryDot is VideoStoryDot)
             {
                 Debug.Log("Show: VideoStoryDotView");
                 VideoStoryDotView.Show();
@@ -179,25 +186,25 @@ namespace Victorina
                 if (NetworkData.IsClient)
                     PlayerGiveAnswerView.Show();
             }
-            else if (data.CurrentStoryDot is NoRiskStoryDot)
-            {
-                Debug.Log("Show: NoRiskStoryDotView");
-                NoRiskStoryDotView.Show();
-
-                if (NetworkData.IsMaster)
-                    MasterQuestionPanelView.Show();
-            }
-            else if (data.CurrentStoryDot is CatInBagStoryDot)
-            {
-                Debug.Log("Show: CatInBagStoryDotView");
-                CatInBagStoryDotView.Show();
-                if (!CatInBagData.IsPlayerSelected.Value)
-                    PlayersBoardView.Show();
-
-                if (NetworkData.IsMaster)
-                    MasterQuestionPanelView.Show();
-            }
-            else if (data.CurrentStoryDot is TextStoryDot)
+            // else if (currentStoryDot is NoRiskStoryDot)
+            // {
+            //     Debug.Log("Show: NoRiskStoryDotView");
+            //     NoRiskStoryDotView.Show();
+            //
+            //     if (NetworkData.IsMaster)
+            //         MasterQuestionPanelView.Show();
+            // }
+            // else if (currentStoryDot is CatInBagStoryDot)
+            // {
+            //     Debug.Log("Show: CatInBagStoryDotView");
+            //     CatInBagStoryDotView.Show();
+            //     if (!CatInBagData.IsPlayerSelected.Value)
+            //         PlayersBoardView.Show();
+            //
+            //     if (NetworkData.IsMaster)
+            //         MasterQuestionPanelView.Show();
+            // }
+            else if (currentStoryDot is TextStoryDot)
             {
                 Debug.Log("Show: TextStoryDotView");
                 TextStoryDotView.Show();
@@ -210,7 +217,7 @@ namespace Victorina
             }
             else
             {
-                throw new Exception($"Not supported story dot: {data.CurrentStoryDot}");
+                throw new Exception($"Not supported story dot: {currentStoryDot}");
             }
 
             //MasterEffectsView.Show();
@@ -238,11 +245,14 @@ namespace Victorina
             }
         }
         
+        //todo: Finish refactoring
+        /*
         private void OnCatInBagIsPlayerSelectedChanged()
         {
             if(CatInBagData.IsPlayerSelected.Value)
                 PlayersBoardView.Hide();
         }
+        */
 
         private void ShowStartUpView()
         {

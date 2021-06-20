@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Injection;
 using UnityEngine;
+using Victorina.Commands;
 
 namespace Victorina
 {
@@ -19,10 +20,12 @@ namespace Victorina
         [Inject] private CatInBagData CatInBagData { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
-        
+        [Inject] private CommandsSystem CommandsSystem { get; set; }
+
         private bool IsLastQuestionStoryDot() => Data.TimerState == QuestionTimerState.NotStarted &&
-                                                 Data.Phase.Value == QuestionPhase.ShowQuestion &&
-                                                 Data.CurrentStoryDot == Data.SelectedQuestion.Value.QuestionStory.Last();
+                                                 Data.Phase.Value == QuestionPhase.ShowQuestion; //&&
+                                                 //todo: finish refactoring
+                                                 //Data.CurrentStoryDot == Data.SelectedQuestion.Value.QuestionStory.Last();
         
         public void StartAnswer(NetQuestion netQuestion)
         {
@@ -35,7 +38,8 @@ namespace Victorina
             Data.WrongAnsweredIds.Clear();
             ResetAdmittedPlayersIds(netQuestion.Type);
             Data.Phase.Value = netQuestion.Type == QuestionType.Auction ? QuestionPhase.Auction : QuestionPhase.ShowQuestion;
-            Data.CurrentStoryDotIndex = 0;
+            //todo: finish refactoring
+            //Data.CurrentStoryDotIndex = 0;
             Data.AnsweringPlayerId = 0;
             
             Data.AnswerTip = GetAnswerTip(Data.SelectedQuestion.Value);
@@ -44,16 +48,27 @@ namespace Victorina
             if (IsLastQuestionStoryDot())
                 StartTimer();
 
-            if (Data.CurrentStoryDot is CatInBagStoryDot)
+            if (netQuestion.Type == QuestionType.Auction)
             {
-                CatInBagData.IsPlayerSelected.Value = false;
-                SendToPlayersService.SendCatInBagData(CatInBagData);
-            }
-
-            if (Data.Phase.Value == QuestionPhase.Auction)
-            {
+                Data.Phase.Value = QuestionPhase.Auction;
                 AuctionSystem.StartNew(PlayersBoard.Current, MatchData.SelectedRoundQuestion.Price);
             }
+            else if (netQuestion.Type == QuestionType.CatInBag)
+            {
+                Data.Phase.Value = QuestionPhase.ShowQuestion;
+                //todo: Finish refactoring
+                //CatInBagData.IsPlayerSelected.Value = false;
+                //SendToPlayersService.SendCatInBagData(CatInBagData);
+            }
+            else if (netQuestion.Type == QuestionType.NoRisk)
+            {
+                Data.Phase.Value = QuestionPhase.ShowQuestion;
+            }
+            else if (netQuestion.Type == QuestionType.Simple)
+            {
+                Data.Phase.Value = QuestionPhase.ShowQuestion;
+            }
+            
             
             SendData(MasterIntention.StartAnswering);
         }
@@ -90,14 +105,17 @@ namespace Victorina
         
         public bool CanShowNext()
         {
-            bool isWaitingWhoGetCatInBag = Data.CurrentStoryDot is CatInBagStoryDot && !CatInBagData.IsPlayerSelected.Value;
-            return !Data.IsLastDot && !isWaitingWhoGetCatInBag;
+            //todo: finish refactoring
+            return true;
+            //bool isWaitingWhoGetCatInBag = Data.CurrentStoryDot is CatInBagStoryDot && !CatInBagData.IsPlayerSelected.Value;
+            //return !Data.IsLastDot && !isWaitingWhoGetCatInBag;
         }
 
         public void StartQuestionStory()
         {
             Data.Phase.Value = QuestionPhase.ShowQuestion;
-            Data.CurrentStoryDotIndex = 0;
+            //todo: finish refactoring
+            //Data.CurrentStoryDotIndex = 0;
             
             if(IsLastQuestionStoryDot())
                 StartTimer();
@@ -107,7 +125,8 @@ namespace Victorina
         
         public void ShowNext()
         {
-            Data.CurrentStoryDotIndex++;
+            //todo: finish refactoring
+            //Data.CurrentStoryDotIndex++;
             
             if(IsLastQuestionStoryDot())
                 StartTimer();
@@ -117,14 +136,18 @@ namespace Victorina
 
         public bool CanShowPrevious()
         {
-            return Data.CurrentStoryDotIndex > 0 &&
-                   !(Data.PreviousStoryDot is CatInBagStoryDot) &&
-                   !(Data.PreviousStoryDot is NoRiskStoryDot);
+            //todo: finish refactoring
+            return true;
+            
+            //return Data.CurrentStoryDotIndex > 0 &&
+            //       !(Data.PreviousStoryDot is CatInBagStoryDot) &&
+            //       !(Data.PreviousStoryDot is NoRiskStoryDot);
         }
         
         public void ShowPrevious()
         {
-            Data.CurrentStoryDotIndex--;
+            //todo: finish refactoring
+            //Data.CurrentStoryDotIndex--;
             SendData(MasterIntention.ShowStoryDot);
         }
         
@@ -164,7 +187,8 @@ namespace Victorina
         {
             Data.TimerState = QuestionTimerState.Paused;
             Data.Phase.Value = QuestionPhase.ShowAnswer;
-            Data.CurrentStoryDotIndex = 0;
+            //todo: finish refactoring
+            //Data.CurrentStoryDotIndex = 0;
             SendData(MasterIntention.ShowAnswer);
             Data.PlayersButtonClickData.Clear();
         }
@@ -197,12 +221,14 @@ namespace Victorina
 
         public bool CanBackToRound()
         {
-            return Data.Phase.Value == QuestionPhase.ShowAnswer && Data.IsLastDot;
+            //todo: finish refactoring
+            return false;
+            //return Data.Phase.Value == QuestionPhase.ShowAnswer && Data.IsLastDot;
         }
         
         public void BackToRound()
         {
-            MatchSystem.BackToRound();
+            CommandsSystem.AddNewCommand(new FinishQuestionCommand());
         }
         
         #region Accepting answer

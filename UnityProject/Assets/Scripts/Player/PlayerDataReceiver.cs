@@ -8,7 +8,6 @@ namespace Victorina
     public class PlayerDataReceiver
     {
         [Inject] private MatchData MatchData { get; set; }
-        [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
@@ -17,10 +16,10 @@ namespace Victorina
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         [Inject] private PlayerFilesRequestSystem PlayerFilesRequestSystem { get; set; }
         [Inject] private PlayEffectsSystem PlayEffectsSystem { get; set; }
-        [Inject] private CatInBagData CatInBagData { get; set; }
         [Inject] private AnsweringTimerData AnsweringTimerData { get; set; }
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         
         public void OnReceiveRegisteredPlayerId(byte playerId)
@@ -29,16 +28,11 @@ namespace Victorina
             InitializePlayerData();
         }
         
-        public void OnReceive(MatchPhase matchPhase)
-        {
-            MatchData.Phase.Value = matchPhase;
-        }
-
         private void InitializePlayerData()
         {
             if (PlayersBoard.Players.Any(_ => _.PlayerId == NetworkData.RegisteredPlayerId))
             {
-                MatchData.IsMeCurrentPlayer = MatchSystem.IsCurrentPlayer(NetworkData.RegisteredPlayerId);
+                MatchData.IsMeCurrentPlayer = PlayersBoardSystem.IsCurrentPlayer(NetworkData.RegisteredPlayerId);
                 MatchData.ThisPlayer = PlayersBoardSystem.GetPlayer(NetworkData.RegisteredPlayerId);
             }
         }
@@ -82,11 +76,6 @@ namespace Victorina
             MetagameEvents.QuestionStoryShowDataChange.Publish();
         }
         
-        public void OnReceiveCatInBagData(bool isPlayerSelected)
-        {
-            CatInBagData.IsPlayerSelected.Value = isPlayerSelected;
-        }
-        
         public void OnRoundFileIdsReceived(int[] fileIds, int[] chunksAmounts, int[] priorities)
         {
             PlayerFilesRepository.Register(fileIds, chunksAmounts, priorities);
@@ -117,6 +106,7 @@ namespace Victorina
 
         public void OnReceiveNetRound(NetRound netRound)
         {
+            //todo: Finish refactoring
             foreach (NetRoundQuestion roundQuestion in netRound.Themes.SelectMany(theme => theme.Questions))
                 roundQuestion.IsDownloadedByMe = roundQuestion.FileIds.All(PlayerFilesRepository.IsDownloaded);
 
@@ -134,6 +124,12 @@ namespace Victorina
             MetagameEvents.FinalRoundDataChanged.Publish();
         }
 
+        public void OnReceivePackagePlayStateData(PackagePlayStateData data)
+        {
+            PackagePlayStateData.Update(data);
+            MetagameEvents.PackagePlayStateChanged.Publish();
+        }
+        
         public void OnReceiveCommand(INetworkCommand command)
         {
             Debug.Log($"Receive command from Master, {command}");

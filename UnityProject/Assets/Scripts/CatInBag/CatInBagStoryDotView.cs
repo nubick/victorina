@@ -10,6 +10,9 @@ namespace Victorina
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        
+        private CatInBagPlayState CatInBagPlayState => PlayStateData.PlayState as CatInBagPlayState;
         
         [Header("Select owner")]
         public GameObject SelectOwnerState;
@@ -25,16 +28,18 @@ namespace Victorina
 
         public void Initialize()
         {
-            CatInBagData.IsPlayerSelected.SubscribeChanged(OnIsPlayerSelectedChanged);
+            //todo: Finish refactoring
+            //CatInBagData.IsPlayerSelected.SubscribeChanged(OnIsPlayerSelectedChanged);
         }
 
         private void OnIsPlayerSelectedChanged()
         {
-            if (CatInBagData.IsPlayerSelected.Value)
-            {
-                RefreshUI();
-                CatInBagData.MeowAngry.Play();
-            }
+            //todo: Finish refactoring
+            // if (CatInBagData.IsPlayerSelected.Value)
+            // {
+            //     RefreshUI();
+            //     CatInBagData.MeowAngry.Play();
+            // }
         }
         
         protected override void OnShown()
@@ -49,12 +54,12 @@ namespace Victorina
 
             CatInBagInfo catInBagInfo = QuestionAnswerData.SelectedQuestion.Value.CatInBagInfo;
             
-            SelectOwnerState.SetActive(!CatInBagData.IsPlayerSelected.Value);
+            SelectOwnerState.SetActive(!CatInBagPlayState.WasGiven);
             WhoSelectPlayerName.text = currentPlayerName;
             CanGiveYourselfState.SetActive(catInBagInfo.CanGiveYourself);
             CantGiveYourselfState.SetActive(!catInBagInfo.CanGiveYourself);
             
-            AnsweringState.SetActive(CatInBagData.IsPlayerSelected.Value);
+            AnsweringState.SetActive(CatInBagPlayState.WasGiven);
             WhoAnswerPlayerName.text = currentPlayerName;
             Theme.text = catInBagInfo.Theme;
             Price.text = catInBagInfo.Price.ToString();

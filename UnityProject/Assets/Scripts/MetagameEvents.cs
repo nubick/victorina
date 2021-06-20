@@ -34,6 +34,7 @@ namespace Victorina
         //Data changed
         public static GameEvent PlayersButtonClickDataChanged { get; } = new GameEvent();
         public static GameEvent PlayersMoreInfoDataChanged { get; } = new GameEvent();
+        public static GameEvent PackagePlayStateChanged { get; } = new GameEvent();
         
         //Master events
         public static GameEvent ServerStarted { get; } = new GameEvent();

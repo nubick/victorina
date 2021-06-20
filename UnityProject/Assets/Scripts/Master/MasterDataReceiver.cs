@@ -8,7 +8,6 @@ namespace Victorina
     {
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private CatInBagSystem CatInBagSystem { get; set; }
         [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
@@ -20,12 +19,6 @@ namespace Victorina
             QuestionAnswerSystem.OnPlayerButtonClickReceived(playerId, spentSeconds);
         }
         
-        public void OnReceiveWhoWillGetCatInBag(ulong senderClientId, byte whoGetPlayerId)
-        {
-            byte senderPlayerId = ConnectedPlayersData.GetPlayerId(senderClientId);
-            CatInBagSystem.OnMasterReceiveWhoWillGetCatInBag(senderPlayerId: senderPlayerId, whoGetPlayerId: whoGetPlayerId);
-        }
-
         public void OnFilesLoadingPercentageReceived(ulong clientId, byte percentage, int[] downloadedFilesIds)
         {
             byte playerId = ConnectedPlayersData.GetPlayerId(clientId);

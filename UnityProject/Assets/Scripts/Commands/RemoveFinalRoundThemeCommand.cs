@@ -8,13 +8,13 @@ namespace Victorina.Commands
     {
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
         [Inject] private FinalRoundData FinalRoundData { get; set; }
-        [Inject] private MatchSystem MatchSystem { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         
         public int ThemeIndex { get; set; }
         
         public override CommandType Type => CommandType.RemoveFinalRoundTheme;
-        private bool IsOwnerCurrentPlayerOrMaster => Owner == CommandOwner.Master || MatchSystem.IsCurrentPlayer(OwnerPlayer);
+        private bool IsOwnerCurrentPlayerOrMaster => Owner == CommandOwner.Master || PlayersBoardSystem.IsCurrentPlayer(OwnerPlayer);
         
         public bool CanSend()
         {

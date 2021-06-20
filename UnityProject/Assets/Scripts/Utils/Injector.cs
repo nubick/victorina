@@ -48,12 +48,20 @@ namespace Injection
 			foreach (FieldInfo fieldInfo in GetFields(objType))
 			{
 				object value = Get(fieldInfo.FieldType);
+				
+				if (value == null)
+					Debug.Log($"Injecting:[WARNING]: Can't find type {fieldInfo.FieldType.FullName} for object: {obj}.");
+
 				fieldInfo.SetValue(obj, value);
 			}
 
 			foreach (PropertyInfo propertyInfo in GetProperties(objType))
 			{
 				object value = Get(propertyInfo.PropertyType);
+
+				if (value == null)
+					Debug.Log($"Injecting:[WARNING]: Can't find type {propertyInfo.PropertyType.FullName} for object: {obj}.");
+				
 				propertyInfo.SetValue(obj, value);
 			}
 		}
@@ -62,14 +70,17 @@ namespace Injection
 		{
 			if (_objects.ContainsKey(type))
 				return _objects[type];
-
-			Debug.Log($"Injecting:[WARNING]: Can't find type {type.FullName}.");
 			return null;
 		}
 
 		public T Get<T>()
 		{
-			return (T) Get(typeof(T));
+			object obj = Get(typeof(T));
+			
+			if (obj == null)
+				Debug.Log($"Injecting:[WARNING]: Can't find type {typeof(T)}.");
+			
+			return (T) obj;
 		}
 
 		public object[] GetAll()

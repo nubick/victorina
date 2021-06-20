@@ -12,6 +12,7 @@ namespace Victorina
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private ServerService ServerService { get; set; }
+        [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
 
         public void RefreshPackages()
         {
@@ -48,6 +49,7 @@ namespace Victorina
             PackageSystem.StartPackageGame(package);
             MatchSystem.StartMatch();
             ServerService.StartServer();
+            PlayStateSystem.StartPackageOnLobby();
             AnalyticsEvents.StartPackageGame.Publish(package.FolderName);
         }
 

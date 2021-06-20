@@ -11,8 +11,7 @@ namespace Victorina
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private QuestionAnswerData Data { get; set; }
         [Inject] private MatchData MatchData { get; set; }
-        [Inject] private CatInBagData CatInBagData { get; set; }
-        
+
         public GameObject PreviousQuestionDotButton;
         public GameObject NextQuestionDotButton;
         public GameObject StartTimerButton;
@@ -32,7 +31,6 @@ namespace Victorina
         public void Initialize()
         {
             MetagameEvents.TimerRunOut.Subscribe(OnTimerRunOut);
-            CatInBagData.IsPlayerSelected.SubscribeChanged(RefreshUI);
         }
         
         protected override void OnShown()
@@ -52,7 +50,8 @@ namespace Victorina
             NextQuestionDotButton.SetActive(QuestionAnswerSystem.CanShowNext());
             TimerStrip.gameObject.SetActive(Data.TimerState != QuestionTimerState.NotStarted);
             RestartMediaButton.SetActive(false);
-            StartTimerButton.SetActive(CanStartTimer(phase, Data.TimerState, Data.IsLastDot)); 
+            //todo: finish refactoring
+            //StartTimerButton.SetActive(CanStartTimer(phase, Data.TimerState, Data.IsLastDot)); 
             StopTimerButton.SetActive(Data.TimerState == QuestionTimerState.Running);
 
             AcceptAnswer.SetActive(phase == QuestionPhase.ShowQuestion);

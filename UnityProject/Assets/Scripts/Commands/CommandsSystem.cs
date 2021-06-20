@@ -107,6 +107,10 @@ namespace Victorina.Commands
                     Dev.Log($"EXECUTE: {command}", new Color(0.67f, 0.67f, 1f));
                     serverCommand.ExecuteOnServer();
                 }
+                else
+                {
+                    Dev.Log($"Can't execute command: {command}", new Color(0.67f, 0.67f, 1f));
+                }
             }
         }
 
@@ -116,6 +120,8 @@ namespace Victorina.Commands
             {
                 case CommandType.SelectRoundQuestion:
                     return new SelectRoundQuestionCommand();
+                case CommandType.GiveCatInBagCommand:
+                    return new GiveCatInBagCommand();
                 case CommandType.RemoveFinalRoundTheme:
                     return new RemoveFinalRoundThemeCommand();
                 case CommandType.MakeFinalRoundBet:

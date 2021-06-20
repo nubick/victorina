@@ -8,19 +8,16 @@ namespace Victorina.Commands
 {
     public class SelectRoundQuestionCommand : Command, INetworkCommand, IServerCommand
     {
-        [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
-
-        public string QuestionId { get; private set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
+        [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private CommandsSystem CommandsSystem { get; set; }
+        [Inject] private TimerSystem TimerSystem { get; set; }
+        
+        public string QuestionId { get; set; }
         public override CommandType Type => CommandType.SelectRoundQuestion;
-        private bool IsOwnerCurrentPlayerOrMaster => Owner == CommandOwner.Master || MatchSystem.IsCurrentPlayer(OwnerPlayer);
-        
-        public SelectRoundQuestionCommand() { }
-        
-        public SelectRoundQuestionCommand(NetRoundQuestion question)
-        {
-            QuestionId = question.QuestionId;
-        }
+        private bool IsOwnerCurrentPlayerOrMaster => Owner == CommandOwner.Master || PlayersBoardSystem.IsCurrentPlayer(OwnerPlayer);
 
         private NetRoundQuestion GetQuestion(string questionId)
         {
@@ -47,12 +44,6 @@ namespace Victorina.Commands
             return true;
         }
         
-        public void ExecuteOnServer()
-        {
-            NetRoundQuestion netRoundQuestion = GetQuestion(QuestionId);
-            MatchSystem.SelectQuestion(netRoundQuestion);
-        }
-        
         public bool CanExecuteOnServer()
         {
             if (!IsOwnerCurrentPlayerOrMaster)
@@ -61,9 +52,9 @@ namespace Victorina.Commands
                 return false;
             }
 
-            if (MatchData.Phase.Value != MatchPhase.Round)
+            if (PlayStateData.Type != PlayStateType.Round)
             {
-                Debug.Log($"Master. Validation Error. Player: {OwnerPlayer} can't select round question in phase: {MatchData.Phase.Value}");
+                Debug.Log($"Player: {OwnerPlayer} can't select round question in play state: {PlayStateData}");
                 return false;
             }
             
@@ -84,6 +75,37 @@ namespace Victorina.Commands
             return true;
         }
         
+        public void ExecuteOnServer()
+        {
+            RoundPlayState roundPlayState = PlayStateData.PlayState as RoundPlayState;
+            
+            RoundBlinkingPlayState playState = new RoundBlinkingPlayState();
+            playState.NetRoundQuestion = GetQuestion(QuestionId);
+            playState.RoundNumber = roundPlayState.RoundNumber;
+            
+            PlayStateSystem.ChangePlayState(playState);
+            
+            SendSelectQuestionEvents(playState.RoundNumber);
+
+            TimerSystem.RunAfter(3f, CreateStopRoundBlinkingCommand);
+        }
+
+        private void CreateStopRoundBlinkingCommand()
+        {
+            CommandsSystem.AddNewCommand(new StopRoundBlinkingCommand());
+        }
+        
+        private void SendSelectQuestionEvents(int roundNumber)
+        {
+            int answered = MatchData.RoundData.Value.Themes.SelectMany(theme => theme.Questions).Count(question => question.IsAnswered);
+            int notAnswered = MatchData.RoundData.Value.Themes.SelectMany(theme => theme.Questions).Count(question => !question.IsAnswered);
+
+            if (answered == 0)
+                AnalyticsEvents.FirstRoundQuestionStart.Publish(roundNumber);
+            else if (notAnswered == 1)
+                AnalyticsEvents.LastRoundQuestionStart.Publish(roundNumber);
+        }
+
         public void Serialize(PooledBitWriter writer)
         {
             writer.WriteString(QuestionId);

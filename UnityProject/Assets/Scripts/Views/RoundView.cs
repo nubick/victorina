@@ -14,7 +14,8 @@ namespace Victorina
         [Inject] private ClientService ClientService { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private MatchSettingsView MatchSettingsView { get; set; }
-
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        
         private readonly Dictionary<string, RoundQuestionWidget> _questionWidgetsCache = new Dictionary<string, RoundQuestionWidget>();
         
         public RectTransform ThemeWidgetsRoot;
@@ -29,6 +30,8 @@ namespace Victorina
         [Header("Rounds Info")] 
         public RectTransform RoundsInfoRoot;
         public RoundInfoWidget RoundInfoWidgetPrefab;
+
+        private RoundPlayState RoundPlayState => PlayStateData.PlayState as RoundPlayState;
         
         public void Initialize()
         {
@@ -38,10 +41,10 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            RefreshUI(MatchData.RoundData.Value);
+            RefreshUI(RoundPlayState.NetRound);
         }
         
-        public void RefreshUI(NetRound netRound)
+        private void RefreshUI(NetRound netRound)
         {
             if (IsTheSameRound(netRound))
             {
@@ -53,12 +56,15 @@ namespace Victorina
                 InstantiateLayout(netRound);
             }
             
-            RefreshRoundsInfo(MatchData.RoundsInfo.Value);
+            RefreshRoundsInfo(RoundPlayState);
             MatchSettingsButton.SetActive(NetworkData.IsMaster);
         }
         
         private bool IsTheSameRound(NetRound netRound)
         {
+            if(netRound == null)
+                Debug.Log($"NetRound is null");
+            
             NetRoundQuestion netRoundQuestion = netRound.Themes.First().Questions.First();
             return _questionWidgetsCache.ContainsKey(netRoundQuestion.QuestionId);
         }
@@ -104,17 +110,17 @@ namespace Victorina
             }
         }
         
-        private void RefreshRoundsInfo(NetRoundsInfo roundsInfo)
+        private void RefreshRoundsInfo(RoundPlayState roundPlayState)
         {
             ClearChild(RoundsInfoRoot);
-            for (int number = 1; number <= roundsInfo.RoundsAmount; number++)
+            for (int number = 1; number <= roundPlayState.RoundTypes.Length; number++)
             {
                 RoundInfoWidget widget = Instantiate(RoundInfoWidgetPrefab, RoundsInfoRoot);
                 RoundProgress roundProgress =
-                    number < roundsInfo.CurrentRoundNumber ? RoundProgress.Passed :
-                    number > roundsInfo.CurrentRoundNumber ? RoundProgress.Next : RoundProgress.Current;
+                    number < roundPlayState.RoundNumber ? RoundProgress.Passed :
+                    number > roundPlayState.RoundNumber ? RoundProgress.Next : RoundProgress.Current;
 
-                string title = roundsInfo.RoundTypes[number - 1] == RoundType.Final ? "Финал" : $"Раунд {number}";
+                string title = roundPlayState.RoundTypes[number - 1] == RoundType.Final ? "Финал" : $"Раунд {number}";
                 widget.Bind(title, number, roundProgress); //passed, current, next
             }
         }

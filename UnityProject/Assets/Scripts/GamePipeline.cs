@@ -47,6 +47,9 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<PlayersBoardView>());
             _injector.Bind(FindObjectOfType<MatchSettingsView>());
             
+            _injector.Bind(new PackagePlayStateSystem());
+            _injector.Bind(new PackagePlayStateData());
+            
             _injector.Bind(new QuestionTimer());
             
             _injector.Bind(new NetworkData());
@@ -94,6 +97,10 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<PlayEffectsData>());
             
             _injector.Bind(new CommandsSystem());
+            _injector.Bind(new TimerSystem());
+            _injector.Bind(FindObjectOfType<TimerCoroutinesContainer>());
+            
+            _injector.Bind(new QuestionStoryShowData());
             
             //Final Round
             _injector.Bind(FindObjectOfType<FinalRoundView>());
