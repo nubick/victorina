@@ -7,14 +7,14 @@ namespace Victorina
 {
     public class GiveCatInBagCommand : Command, IServerCommand, INetworkCommand
     {
-        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
 
         public byte ReceiverPlayerId { get; set; }
         
         public override CommandType Type => CommandType.GiveCatInBagCommand;
-        private CatInBagPlayState CatInBagPlayState => PackagePlayStateData.PlayState as CatInBagPlayState;
+        private CatInBagPlayState CatInBagPlayState => PlayStateData.As<CatInBagPlayState>();
         
         public bool CanSend()
         {
@@ -23,7 +23,7 @@ namespace Victorina
 
         public bool CanExecuteOnServer()
         {
-            if (PackagePlayStateData.Type != PlayStateType.CatInBag)
+            if (PlayStateData.Type != PlayStateType.CatInBag)
             {
                 Debug.Log("It is not CatInBagPlayState now!");
                 return false;
@@ -53,9 +53,12 @@ namespace Victorina
 
         public void ExecuteOnServer()
         {
-            Debug.Log($"Master. Give cat in bag to {ReceiverPlayerId} from {OwnerString} request");
+            Debug.Log($"Give cat in bag to {ReceiverPlayerId} from {OwnerString} request");
             PlayersBoardSystem.MakePlayerCurrent(ReceiverPlayerId);
+            
             CatInBagPlayState.WasGiven = true;
+            PlayStateData.MarkAsChanged();
+            
             QuestionAnswerData.AdmittedPlayersIds.Add(ReceiverPlayerId);//todo: should be synced after that?
         }
 

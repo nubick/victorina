@@ -16,7 +16,8 @@ namespace Victorina
         
         public void Initialize()
         {
-            QuestionAnswerData.Phase.SubscribeChanged(OnQuestionAnswerPhaseChanged);
+            //todo: finish refactoring
+            //QuestionAnswerData.Phase.SubscribeChanged(OnQuestionAnswerPhaseChanged);
         }
 
         private void OnQuestionAnswerPhaseChanged()
@@ -25,14 +26,15 @@ namespace Victorina
                 MatchSettingsData.IsLimitAnsweringSeconds &&
                 QuestionAnswerData.QuestionType == QuestionType.Simple)
             {
-                if(QuestionAnswerData.Phase.Value == QuestionPhase.AcceptingAnswer)
+                //todo: finish refactoring
+                //if(QuestionAnswerData.Phase.Value == QuestionPhase.AcceptingAnswer)
                 {
                     Data.IsRunning = true;
                     Data.MaxSeconds = MatchSettingsData.MaxAnsweringSeconds;
                     Data.LeftSeconds = Data.MaxSeconds;
                     SendToPlayersService.SendAnsweringTimerData(Data);
                 }
-                else
+                //else
                 {
                     if (Data.IsRunning)
                     {

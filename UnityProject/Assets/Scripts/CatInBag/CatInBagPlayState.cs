@@ -12,13 +12,18 @@ namespace Victorina
         public override void Serialize(PooledBitWriter writer)
         {
             writer.WriteBool(WasGiven);
-            //todo: serialize netquestion
+            DataSerializationService.SerializeNetQuestion(writer, NetQuestion);
         }
 
         public override void Deserialize(PooledBitReader reader)
         {
             WasGiven = reader.ReadBool();
-            //todo: deserialize netquestion
+            NetQuestion = DataSerializationService.DeserializeNetQuestion(reader);
+        }
+
+        public override string ToString()
+        {
+            return $"[CatInBagPlayState, {nameof(WasGiven)}: {WasGiven}, {nameof(NetQuestion)}: {NetQuestion}";
         }
     }
 }

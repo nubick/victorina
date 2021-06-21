@@ -5,9 +5,14 @@ namespace Victorina.Commands
         SelectRound,
         SelectRoundQuestion,
         StopRoundBlinking,
-        GiveCatInBagCommand,
         FinishQuestionCommand,
 
+        //Cat In Bag
+        GiveCatInBagCommand,
+        FinishCatInBagCommand,
+        
+        FinishAuctionCommand,
+        
         //Final Round
         RemoveFinalRoundTheme,
         MakeFinalRoundBet,

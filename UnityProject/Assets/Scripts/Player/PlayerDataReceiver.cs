@@ -58,11 +58,7 @@ namespace Victorina
             QuestionAnswerData.AnsweringPlayerId = data.AnsweringPlayerId;
             QuestionAnswerData.WrongAnsweredIds = data.WrongAnsweredIds;
             QuestionAnswerData.AdmittedPlayersIds = data.AdmittedPlayersIds;
-
-            bool wasPhaseChanged = QuestionAnswerData.Phase.Value != data.Phase.Value;
-            if (wasPhaseChanged)
-                QuestionAnswerData.Phase.Value = data.Phase.Value;
-
+            
             QuestionAnswerData.TimerState = data.TimerState;
             QuestionAnswerData.TimerResetSeconds = data.TimerResetSeconds;
             QuestionAnswerData.TimerLeftSeconds = data.TimerLeftSeconds;

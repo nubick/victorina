@@ -1,3 +1,4 @@
+using System;
 using Injection;
 using UnityEngine;
 
@@ -26,9 +27,29 @@ namespace Victorina.Commands
         {
             RoundBlinkingPlayState blinkingPlayState = PlayStateData.As<RoundBlinkingPlayState>();
             NetQuestion netQuestion = BuildNetQuestion(blinkingPlayState.QuestionId);
-
-            ShowQuestionPlayState newPlayState = new ShowQuestionPlayState();
-            PlayStateSystem.ChangePlayState(newPlayState);
+            
+            switch (netQuestion.Type)
+            {
+                case QuestionType.Auction:
+                    AuctionPlayState auctionPlayState = new AuctionPlayState();
+                    PlayStateSystem.ChangePlayState(auctionPlayState);
+                    break;
+                case QuestionType.CatInBag:
+                    CatInBagPlayState catInBagPlayState = new CatInBagPlayState();
+                    catInBagPlayState.NetQuestion = netQuestion;
+                    PlayStateSystem.ChangePlayState(catInBagPlayState);
+                    break;
+                case QuestionType.NoRisk:
+                    NoRiskPlayState noRiskPlayState = new NoRiskPlayState();
+                    PlayStateSystem.ChangePlayState(noRiskPlayState);
+                    break;
+                case QuestionType.Simple:
+                    ShowQuestionPlayState showQuestionPlayState = new ShowQuestionPlayState();
+                    PlayStateSystem.ChangePlayState(showQuestionPlayState);
+                    break;
+                default:
+                    throw new Exception($"Not supported QuestionType: {netQuestion.Type}");
+            }
             
             QuestionAnswerSystem.StartAnswer(netQuestion);
         }

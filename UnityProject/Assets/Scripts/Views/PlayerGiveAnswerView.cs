@@ -28,7 +28,8 @@ namespace Victorina
         
         public void Initialize()
         {
-            QuestionAnswerData.Phase.SubscribeChanged(RefreshUI);
+            //todo: finish refactoring
+            //QuestionAnswerData.Phase.SubscribeChanged(RefreshUI);
             MetagameEvents.PlayersButtonClickDataChanged.Subscribe(RefreshUI);
         }
 
@@ -42,15 +43,14 @@ namespace Victorina
             if (!IsActive)
                 return;
             
-            QuestionPhase phase = QuestionAnswerData.Phase.Value;
-
             AnswerDemonstrationPanel.SetActive(false);
             WasWrongAnswerState.SetActive(false);
             AnsweringPanel.SetActive(false);
             SayAnswerState.SetActive(false);
             WaitingState.SetActive(false);
 
-            if (phase == QuestionPhase.ShowQuestion)
+            //todo: Finish refactoring
+            //if (phase == QuestionPhase.ShowQuestion)
             {
                 if (PlayerAnswerSystem.WasWrongAnswer())
                     WasWrongAnswerState.SetActive(true);
@@ -67,19 +67,19 @@ namespace Victorina
                     AnsweringText.text = $"Отвечает: {names}";
                 }
             }
-            else if (phase == QuestionPhase.AcceptingAnswer)
+            //else if (phase == QuestionPhase.AcceptingAnswer)
             {
                 AnsweringPanel.SetActive(true);
                 AnsweringText.text = $"Отвечает: {PlayersBoardSystem.GetPlayerName(QuestionAnswerData.AnsweringPlayerId)}";
             }
-            else if (phase == QuestionPhase.ShowAnswer)
+            //else if (phase == QuestionPhase.ShowAnswer)
             {
                 AnswerDemonstrationPanel.SetActive(true);
             }
-            else
-            {
-                Debug.LogError($"Not supported phase: {phase}");
-            }
+            //else
+            //{
+            //    Debug.LogError($"Not supported phase: {phase}");
+            //}
             
             TimerStrip.gameObject.SetActive(QuestionAnswerData.TimerState != QuestionTimerState.NotStarted);
             ThemeText.text = $"Тема: {MatchData.GetTheme()}";

@@ -53,7 +53,7 @@ namespace Victorina
         {
             if (NetworkData.IsMaster ||
                 PackagePlayStateData.Type == PlayStateType.ShowQuestion ||
-                QuestionAnswerData.Phase.Value != QuestionPhase.ShowQuestion ||
+                //QuestionAnswerData.Phase.Value != QuestionPhase.ShowQuestion ||
                 WasIntentionSent() ||
                 WasWrongAnswer() ||
                 !IsAdmitted())

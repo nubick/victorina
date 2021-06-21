@@ -5,7 +5,6 @@ namespace Victorina
     public class QuestionAnswerData
     {
         public MasterIntention MasterIntention { get; set; }
-        public ReactiveProperty<QuestionPhase> Phase { get; } = new ReactiveProperty<QuestionPhase>();
         public ReactiveProperty<NetQuestion> SelectedQuestion { get; } = new ReactiveProperty<NetQuestion>();
         
         public QuestionTimerState TimerState { get; set; }
@@ -32,7 +31,7 @@ namespace Victorina
 
         public override string ToString()
         {
-            return $"Intention:{MasterIntention}, {Phase.Value}, timer:{TimerState}";
+            return $"Intention:{MasterIntention}, timer:{TimerState}";
         }
     }
 }

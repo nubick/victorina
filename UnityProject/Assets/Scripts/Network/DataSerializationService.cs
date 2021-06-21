@@ -177,6 +177,11 @@ namespace Victorina
         private void SerializeNetQuestion(Stream stream, NetQuestion netQuestion)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            SerializeNetQuestion(writer, netQuestion);
+        }
+
+        public static void SerializeNetQuestion(PooledBitWriter writer, NetQuestion netQuestion)
+        {
             writer.WriteInt32((int) netQuestion.Type);
             if (netQuestion.Type == QuestionType.CatInBag)
             {
@@ -191,6 +196,11 @@ namespace Victorina
         private NetQuestion DeserializeNetQuestion(Stream stream)
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
+            return DeserializeNetQuestion(reader);
+        }
+
+        public static NetQuestion DeserializeNetQuestion(PooledBitReader reader)
+        {
             NetQuestion netQuestion = new NetQuestion();
             netQuestion.Type = (QuestionType) reader.ReadInt32();
             if (netQuestion.Type == QuestionType.CatInBag)
@@ -277,8 +287,7 @@ namespace Victorina
         private void SerializeQuestionAnswerData(Stream stream, QuestionAnswerData data)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
-
-            writer.WriteInt32((int) data.Phase.Value);
+            
             writer.WriteInt32((int)data.MasterIntention);
             
             writer.WriteInt32((int) data.TimerState);
@@ -294,8 +303,7 @@ namespace Victorina
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             QuestionAnswerData data = new QuestionAnswerData();
-
-            data.Phase.Value = (QuestionPhase) reader.ReadInt32();
+            
             data.MasterIntention = (MasterIntention) reader.ReadInt32();
             
             data.TimerState = (QuestionTimerState) reader.ReadInt32();

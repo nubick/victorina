@@ -17,13 +17,14 @@ namespace Victorina
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
-        [Inject] private CatInBagData CatInBagData { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
 
-        private bool IsLastQuestionStoryDot() => Data.TimerState == QuestionTimerState.NotStarted &&
-                                                 Data.Phase.Value == QuestionPhase.ShowQuestion; //&&
+        private bool IsLastQuestionStoryDot() => false; 
+            //todo: finish refactoring
+            //Data.TimerState == QuestionTimerState.NotStarted //&&
+                                                 //Data.Phase.Value == QuestionPhase.ShowQuestion; //&&
                                                  //todo: finish refactoring
                                                  //Data.CurrentStoryDot == Data.SelectedQuestion.Value.QuestionStory.Last();
         
@@ -37,7 +38,6 @@ namespace Victorina
             Data.TimerState = QuestionTimerState.NotStarted;
             Data.WrongAnsweredIds.Clear();
             ResetAdmittedPlayersIds(netQuestion.Type);
-            Data.Phase.Value = netQuestion.Type == QuestionType.Auction ? QuestionPhase.Auction : QuestionPhase.ShowQuestion;
             //todo: finish refactoring
             //Data.CurrentStoryDotIndex = 0;
             Data.AnsweringPlayerId = 0;
@@ -50,26 +50,15 @@ namespace Victorina
 
             if (netQuestion.Type == QuestionType.Auction)
             {
-                Data.Phase.Value = QuestionPhase.Auction;
                 AuctionSystem.StartNew(PlayersBoard.Current, MatchData.SelectedRoundQuestion.Price);
             }
             else if (netQuestion.Type == QuestionType.CatInBag)
             {
-                Data.Phase.Value = QuestionPhase.ShowQuestion;
                 //todo: Finish refactoring
                 //CatInBagData.IsPlayerSelected.Value = false;
                 //SendToPlayersService.SendCatInBagData(CatInBagData);
             }
-            else if (netQuestion.Type == QuestionType.NoRisk)
-            {
-                Data.Phase.Value = QuestionPhase.ShowQuestion;
-            }
-            else if (netQuestion.Type == QuestionType.Simple)
-            {
-                Data.Phase.Value = QuestionPhase.ShowQuestion;
-            }
-            
-            
+
             SendData(MasterIntention.StartAnswering);
         }
 
@@ -113,7 +102,7 @@ namespace Victorina
 
         public void StartQuestionStory()
         {
-            Data.Phase.Value = QuestionPhase.ShowQuestion;
+            //Data.Phase.Value = QuestionPhase.ShowQuestion;
             //todo: finish refactoring
             //Data.CurrentStoryDotIndex = 0;
             
@@ -180,13 +169,16 @@ namespace Victorina
 
         public bool CanShowAnswer()
         {
-            return Data.SelectedQuestion.Value.Type == QuestionType.Simple && Data.Phase.Value == QuestionPhase.ShowQuestion && Data.TimerState != QuestionTimerState.NotStarted;
+            return false;
+            //todo: finish refactoring
+            //return Data.SelectedQuestion.Value.Type == QuestionType.Simple && Data.Phase.Value == QuestionPhase.ShowQuestion && Data.TimerState != QuestionTimerState.NotStarted;
         }
         
         public void ShowAnswer()
         {
             Data.TimerState = QuestionTimerState.Paused;
-            Data.Phase.Value = QuestionPhase.ShowAnswer;
+            //todo: finish refactoring
+            //Data.Phase.Value = QuestionPhase.ShowAnswer;
             //todo: finish refactoring
             //Data.CurrentStoryDotIndex = 0;
             SendData(MasterIntention.ShowAnswer);
@@ -249,7 +241,8 @@ namespace Victorina
                 return;
             
             Data.AnsweringPlayerId = playerId;
-            Data.Phase.Value = QuestionPhase.AcceptingAnswer;
+            //todo: finish refactoring
+            //Data.Phase.Value = QuestionPhase.AcceptingAnswer;
             SendToPlayersService.Send(Data);
             Data.PlayersButtonClickData.Clear();
         }
@@ -279,7 +272,8 @@ namespace Victorina
 
         public void CancelAcceptingAnswer()
         {
-            Data.Phase.Value = QuestionPhase.ShowQuestion;
+            //todo: finish refactoring
+            //Data.Phase.Value = QuestionPhase.ShowQuestion;
             StartTimer();
             SendData(MasterIntention.ContinueTimer);
         }
@@ -296,7 +290,8 @@ namespace Victorina
             if (Data.SelectedQuestion.Value.Type == QuestionType.Simple)
             {
                 Data.WrongAnsweredIds.Add(Data.AnsweringPlayerId);
-                Data.Phase.Value = QuestionPhase.ShowQuestion;
+                //todo: finish refactoring
+                //Data.Phase.Value = QuestionPhase.ShowQuestion;
                 StartTimer();
                 SendData(MasterIntention.ContinueTimer);
                 MatchSystem.FinePlayer(Data.AnsweringPlayerId);

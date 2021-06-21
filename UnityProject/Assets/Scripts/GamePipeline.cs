@@ -71,8 +71,7 @@ namespace Victorina
             _injector.Bind(new PlayersBoard());
 
             _injector.Bind(new CatInBagSystem());
-            _injector.Bind(FindObjectOfType<CatInBagStoryDotView>());
-            _injector.Bind(FindObjectOfType<CatInBagData>());
+            _injector.Bind(FindObjectOfType<CatInBagView>());
 
             _injector.Bind(new AuctionSystem());
             _injector.Bind(FindObjectOfType<AuctionView>());
@@ -233,8 +232,7 @@ namespace Victorina
             _injector.Get<DataSyncService>().Initialize();
             _injector.Get<MasterContextKeyboardTipView>().Initialize();
             
-            _injector.Get<CatInBagSystem>().Initialize();
-            _injector.Get<CatInBagStoryDotView>().Initialize();
+            _injector.Get<CatInBagView>().Initialize();
             
             _injector.Get<AuctionView>().Initialize();
             _injector.Get<PlayersMoreInfoView>().Initialize();

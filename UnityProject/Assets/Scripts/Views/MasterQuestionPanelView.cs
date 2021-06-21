@@ -44,8 +44,7 @@ namespace Victorina
                 return;
             
             QuestionType questionType = Data.SelectedQuestion.Value.Type;
-            QuestionPhase phase = Data.Phase.Value;
-
+            
             PreviousQuestionDotButton.SetActive(QuestionAnswerSystem.CanShowPrevious());
             NextQuestionDotButton.SetActive(QuestionAnswerSystem.CanShowNext());
             TimerStrip.gameObject.SetActive(Data.TimerState != QuestionTimerState.NotStarted);
@@ -54,7 +53,8 @@ namespace Victorina
             //StartTimerButton.SetActive(CanStartTimer(phase, Data.TimerState, Data.IsLastDot)); 
             StopTimerButton.SetActive(Data.TimerState == QuestionTimerState.Running);
 
-            AcceptAnswer.SetActive(phase == QuestionPhase.ShowQuestion);
+            //todo: finish refactoring
+            //AcceptAnswer.SetActive(phase == QuestionPhase.ShowQuestion);
             ShowAnswerButton.SetActive(QuestionAnswerSystem.CanShowAnswer());
             ShowRoundButton.SetActive(QuestionAnswerSystem.CanBackToRound());
 
@@ -64,6 +64,8 @@ namespace Victorina
             ThemeText.text = $"Тема: {MatchData.GetTheme()}";
         }
 
+        //todo: finish refactoring
+        /*
         private bool CanStartTimer(QuestionPhase phase, QuestionTimerState timerState, bool isLastDot)
         {
             if (phase != QuestionPhase.ShowQuestion)
@@ -73,7 +75,7 @@ namespace Victorina
                 return false;
 
             return isLastDot || timerState != QuestionTimerState.NotStarted;
-        }
+        }*/
         
         public void Update()
         {

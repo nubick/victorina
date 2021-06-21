@@ -7,14 +7,14 @@ namespace Victorina
     {
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         
-        public void Initialize()
+        public void Give(PlayerData playerData)
         {
-            MetagameEvents.PlayerBoardWidgetClicked.Subscribe(OnPlayerBoardWidgetClicked);
+            CommandsSystem.AddNewCommand(new GiveCatInBagCommand {ReceiverPlayerId = playerData.PlayerId});    
         }
-
-        private void OnPlayerBoardWidgetClicked(PlayerData playerData)
+        
+        public void Finish()
         {
-            CommandsSystem.AddNewCommand(new GiveCatInBagCommand {ReceiverPlayerId = playerData.PlayerId});
+            CommandsSystem.AddNewCommand(new FinishCatInBagCommand());
         }
     }
 }

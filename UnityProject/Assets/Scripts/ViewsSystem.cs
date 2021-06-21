@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using Injection;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -18,7 +17,7 @@ namespace Victorina
         [Inject] private AudioStoryDotView AudioStoryDotView { get; set; }
         [Inject] private VideoStoryDotView VideoStoryDotView { get; set; }
         [Inject] private NoRiskStoryDotView NoRiskStoryDotView { get; set; }
-        [Inject] private CatInBagStoryDotView CatInBagStoryDotView { get; set; }
+        [Inject] private CatInBagView CatInBagView { get; set; }
         [Inject] private AuctionView AuctionView { get; set; }
         [Inject] private PlayersMoreInfoView PlayersMoreInfoView { get; set; }
 
@@ -29,7 +28,6 @@ namespace Victorina
         
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
-        [Inject] private CatInBagData CatInBagData { get; set; }
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
 
         public void Initialize()
@@ -38,11 +36,6 @@ namespace Victorina
                 view.Content.SetActive(false);
             StartupView.Show();
             
-            QuestionAnswerData.Phase.SubscribeChanged(OnQuestionAnswerPhaseChanged);
-            
-            //todo: Finish refactoring
-            //CatInBagData.IsPlayerSelected.SubscribeChanged(OnCatInBagIsPlayerSelectedChanged);
-
             MetagameEvents.PackagePlayStateChanged.Subscribe(OnPackagePlayStateChanged);
             MetagameEvents.DisconnectedAsClient.Subscribe(ShowStartUpView);
             MetagameEvents.ServerStopped.Subscribe(ShowStartUpView);
@@ -78,6 +71,9 @@ namespace Victorina
                     break;
                 case PlayStateType.Auction:
                     ShowAuction();
+                    break;
+                case PlayStateType.CatInBag:
+                    ShowCatInBagViews();
                     break;
                 case PlayStateType.ShowQuestion:
                 case PlayStateType.ShowAnswer:
@@ -123,6 +119,16 @@ namespace Victorina
             Debug.Log("Show: FinalRoundView");
             FinalRoundView.Show();
             PlayersBoardView.Show();
+        }
+
+        private void ShowCatInBagViews()
+        {
+            HideAll();
+            Debug.Log("Show: CatInBag");
+            CatInBagView.Show();
+
+            if (!PlayStateData.As<CatInBagPlayState>().WasGiven)
+                PlayersBoardView.Show();
         }
 
         private void ShowStoryDotView()
@@ -178,16 +184,6 @@ namespace Victorina
             //     if (NetworkData.IsMaster)
             //         MasterQuestionPanelView.Show();
             // }
-            // else if (currentStoryDot is CatInBagStoryDot)
-            // {
-            //     Debug.Log("Show: CatInBagStoryDotView");
-            //     CatInBagStoryDotView.Show();
-            //     if (!CatInBagData.IsPlayerSelected.Value)
-            //         PlayersBoardView.Show();
-            //
-            //     if (NetworkData.IsMaster)
-            //         MasterQuestionPanelView.Show();
-            // }
             else if (currentStoryDot is TextStoryDot)
             {
                 Debug.Log("Show: TextStoryDotView");
@@ -217,6 +213,8 @@ namespace Victorina
         
         private void OnQuestionAnswerPhaseChanged()
         {
+            //todo: finish refactoring
+            /*
             if (QuestionAnswerData.Phase.Value == QuestionPhase.AcceptingAnswer)
             {
                 if (NetworkData.IsMaster)
@@ -227,17 +225,9 @@ namespace Victorina
                 if(MasterAcceptAnswerView.IsActive)
                     MasterAcceptAnswerView.Hide();
             }
+            */
         }
         
-        //todo: Finish refactoring
-        /*
-        private void OnCatInBagIsPlayerSelectedChanged()
-        {
-            if(CatInBagData.IsPlayerSelected.Value)
-                PlayersBoardView.Hide();
-        }
-        */
-
         private void ShowStartUpView()
         {
             HideAll();

@@ -1,18 +1,24 @@
+using Assets.Scripts.Data;
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Victorina
 {
-    //todo: rename
-    public class CatInBagStoryDotView : ViewBase
+    public class CatInBagView : ViewBase
     {
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
-        [Inject] private CatInBagData CatInBagData { get; set; }
         [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private CatInBagSystem CatInBagSystem { get; set; }
         
         private CatInBagPlayState CatInBagPlayState => PackagePlayStateData.PlayState as CatInBagPlayState;
+        
+        public SoundEffect MeowIntro;
+        public SoundEffect MeowAngry;
+
+        public Button FinishButton;
         
         [Header("Select owner")]
         public GameObject SelectOwnerState;
@@ -25,31 +31,24 @@ namespace Victorina
         public Text WhoAnswerPlayerName;
         public Text Theme;
         public Text Price;
-
+        
         public void Initialize()
         {
-            //todo: Finish refactoring
-            //CatInBagData.IsPlayerSelected.SubscribeChanged(OnIsPlayerSelectedChanged);
-        }
-
-        private void OnIsPlayerSelectedChanged()
-        {
-            //todo: Finish refactoring
-            // if (CatInBagData.IsPlayerSelected.Value)
-            // {
-            //     RefreshUI();
+            MetagameEvents.PlayerBoardWidgetClicked.Subscribe(OnPlayerBoardWidgetClicked);
             //     CatInBagData.MeowAngry.Play();
-            // }
         }
         
         protected override void OnShown()
         {
             RefreshUI();
-            CatInBagData.MeowIntro.Play();
+            MeowIntro.Play();
         }
 
         private void RefreshUI()
         {
+            FinishButton.gameObject.SetActive(NetworkData.IsMaster);
+            FinishButton.interactable = CatInBagPlayState.WasGiven;
+            
             string currentPlayerName = PlayersBoardSystem.GetCurrentPlayerName();
 
             CatInBagInfo catInBagInfo = QuestionAnswerData.SelectedQuestion.Value.CatInBagInfo;
@@ -63,6 +62,17 @@ namespace Victorina
             WhoAnswerPlayerName.text = currentPlayerName;
             Theme.text = catInBagInfo.Theme;
             Price.text = catInBagInfo.Price.ToString();
+        }
+
+        private void OnPlayerBoardWidgetClicked(PlayerData playerData)
+        {
+            if (IsActive)
+                CatInBagSystem.Give(playerData);
+        }
+
+        public void OnFinishButtonClicked()
+        {
+            CatInBagSystem.Finish();
         }
     }
 }
