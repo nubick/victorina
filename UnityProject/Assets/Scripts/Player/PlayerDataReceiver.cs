@@ -108,12 +108,7 @@ namespace Victorina
 
             MatchData.RoundData.Value = netRound;
         }
-
-        public void OnReceiveAuctionData(AuctionData auctionData)
-        {
-            QuestionAnswerData.AuctionData.Value = auctionData;
-        }
-
+        
         public void OnReceiveFinalRoundData(FinalRoundData finalRoundData)
         {
             FinalRoundData.Update(finalRoundData);

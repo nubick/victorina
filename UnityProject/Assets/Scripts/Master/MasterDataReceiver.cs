@@ -10,7 +10,6 @@ namespace Victorina
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
-        [Inject] private AuctionSystem AuctionSystem { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         
         public void OnPlayerButtonClickReceived(ulong clientId, float spentSeconds)
@@ -31,25 +30,6 @@ namespace Victorina
             byte playerId = ConnectedPlayersData.GetPlayerId(clientId);
             return PlayersBoardSystem.GetPlayer(playerId);
         }
-        
-        #region Auction
-
-        public void OnReceivePassAuction(ulong clientId)
-        {
-            AuctionSystem.MasterOnReceivePlayerPass(GetPlayer(clientId));
-        }
-
-        public void OnReceiveAllInAuction(ulong clientId)
-        {
-            AuctionSystem.MasterOnReceivePlayerAllIn(GetPlayer(clientId));
-        }
-
-        public void OnReceiveBetAuction(ulong clientId, int bet)
-        {
-            AuctionSystem.MasterOnReceivePlayerBet(GetPlayer(clientId), bet);
-        }
-        
-        #endregion
         
         public void OnReceiveCommand(ulong clientId, INetworkCommand command)
         {

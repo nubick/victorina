@@ -78,10 +78,11 @@ namespace Victorina
 
         private int GetQuestionPrice(NetQuestion netQuestion, NetRoundQuestion netRoundQuestion)
         {
+            //todo: Finish refactoring
             return netQuestion.Type switch
             {
                 QuestionType.CatInBag => netQuestion.CatInBagInfo.Price,
-                QuestionType.Auction => MatchData.QuestionAnswerData.AuctionData.Value.Bet,
+                QuestionType.Auction => 0,//MatchData.QuestionAnswerData.AuctionData.Value.Bet,
                 _ => netRoundQuestion.Price
             };
         }

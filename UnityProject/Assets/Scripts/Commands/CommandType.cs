@@ -15,6 +15,10 @@ namespace Victorina.Commands
         FinishNoRisk,
         
         //Auction
+        PassAuction,
+        MakeBetAuction,
+        MakeAllInAuction,
+        MakeBetForPlayerAuction,
         FinishAuction,
         
         //Final Round

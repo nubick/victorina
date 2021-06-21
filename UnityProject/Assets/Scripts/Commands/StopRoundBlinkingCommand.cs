@@ -10,6 +10,7 @@ namespace Victorina.Commands
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
+        [Inject] private AuctionSystem AuctionSystem { get; set; }
 
         public override CommandType Type => CommandType.StopRoundBlinking;
         
@@ -33,6 +34,8 @@ namespace Victorina.Commands
                 case QuestionType.Auction:
                     AuctionPlayState auctionPlayState = new AuctionPlayState();
                     PlayStateSystem.ChangePlayState(auctionPlayState);
+                    NetRoundQuestion question = PackageSystem.GetNetRoundQuestion(blinkingPlayState.QuestionId);
+                    AuctionSystem.StartNew(question.Price, question.Theme);
                     break;
                 case QuestionType.CatInBag:
                     CatInBagPlayState catInBagPlayState = new CatInBagPlayState();

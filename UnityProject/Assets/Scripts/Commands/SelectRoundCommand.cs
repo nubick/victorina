@@ -10,7 +10,7 @@ namespace Victorina.Commands
         [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
-        [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
+        [Inject] private PackageSystem PackageSystem { get; set; }
         
         public int RoundNumber { get; set; }
         
@@ -35,7 +35,7 @@ namespace Victorina.Commands
                 RoundPlayState playState = new RoundPlayState();
                 playState.RoundNumber = RoundNumber;
                 playState.RoundTypes = PackageData.Package.Rounds.Select(_ => _.Type).ToArray();
-                playState.NetRound = BuildNetRound(round, PackageData.PackageProgress);
+                playState.NetRound = PackageSystem.GetNetRound(round, PackageData.PackageProgress);
                 PlayStateSystem.ChangePlayState(playState);
             }
             else if (round.Type == RoundType.Final)
@@ -45,30 +45,6 @@ namespace Victorina.Commands
             }
         }
         
-        private NetRound BuildNetRound(Round round, PackageProgress packageProgress)
-        {
-            NetRound netRound = new NetRound();
-            foreach (Theme theme in round.Themes)
-            {
-                NetRoundTheme netRoundTheme = new NetRoundTheme();
-                netRoundTheme.Name = theme.Name;
-                foreach (Question question in theme.Questions)
-                {
-                    NetRoundQuestion netRoundQuestion = new NetRoundQuestion(question.Id);
-                    netRoundQuestion.Price = question.Price;
-                    netRoundQuestion.IsAnswered = packageProgress.IsAnswered(question.Id);
-                    netRoundQuestion.Type = question.Type;
-                    netRoundQuestion.Theme = theme.Name;
-                    netRoundQuestion.IsDownloadedByMe = true;//Master has file from pack
-                    netRoundQuestion.FileIds = FilesDeliveryStatusManager.GetQuestionFileIds(question);
-                    netRoundQuestion.IsDownloadedByAll = FilesDeliveryStatusManager.IsDownloadedByAll(netRoundQuestion.FileIds);
-                    netRoundTheme.Questions.Add(netRoundQuestion);
-                }
-                netRound.Themes.Add(netRoundTheme);
-            }
-            return netRound;
-        }
-
         public override string ToString()
         {
             return $"[SelectRoundCommand, {nameof(RoundNumber)}:{RoundNumber}]";

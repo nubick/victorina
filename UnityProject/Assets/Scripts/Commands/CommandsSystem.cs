@@ -116,25 +116,23 @@ namespace Victorina.Commands
 
         public INetworkCommand CreateNetworkCommand(CommandType commandType)
         {
-            switch (commandType)
+            return commandType switch
             {
-                case CommandType.SelectRoundQuestion:
-                    return new SelectRoundQuestionCommand();
-                case CommandType.GiveCatInBag:
-                    return new GiveCatInBagCommand();
-                case CommandType.RemoveFinalRoundTheme:
-                    return new RemoveFinalRoundThemeCommand();
-                case CommandType.MakeFinalRoundBet:
-                    return new MakeFinalRoundBetCommand();
-                case CommandType.SendFinalRoundAnswer:
-                    return new SendFinalRoundAnswerCommand();
-                case CommandType.SendPlayerLogs:
-                    return new SendPlayerLogsCommand();
-                case CommandType.SavePlayerLogs:
-                    return new SavePlayerLogsCommand();
-                default:
-                    throw new NotSupportedException($"Command type '{commandType}' is not supported.");
-            }
+                CommandType.SelectRoundQuestion => new SelectRoundQuestionCommand(),
+                CommandType.GiveCatInBag => new GiveCatInBagCommand(),
+                //Auction
+                CommandType.PassAuction => new PassAuctionCommand(),
+                CommandType.MakeBetAuction => new MakeBetAuctionCommand(),
+                CommandType.MakeAllInAuction => new MakeAllInAuctionCommand(),
+                //Final Round
+                CommandType.RemoveFinalRoundTheme => new RemoveFinalRoundThemeCommand(),
+                CommandType.MakeFinalRoundBet => new MakeFinalRoundBetCommand(),
+                CommandType.SendFinalRoundAnswer => new SendFinalRoundAnswerCommand(),
+                //Logs
+                CommandType.SendPlayerLogs => new SendPlayerLogsCommand(),
+                CommandType.SavePlayerLogs => new SavePlayerLogsCommand(),
+                _ => throw new NotSupportedException($"Command type '{commandType}' is not supported.")
+            };
         }
     }
 }

@@ -44,34 +44,6 @@ namespace Victorina
                 Debug.Log($"Client is not connected: {nameof(SendFilesLoadingPercentage)}");
         }
         
-        #region Auction
-
-        public void SendPassAuction()
-        {
-            if (NetworkingManager.IsConnectedClient)
-                Player.SendPassAuction();
-            else
-                Debug.Log($"Client is not connected: {nameof(SendPassAuction)}");
-        }
-
-        public void SendAllInAuction()
-        {
-            if (NetworkingManager.IsConnectedClient)
-                Player.SendAllInAuction();
-            else
-                Debug.Log($"Client is not connected: {nameof(SendAllInAuction)}");
-        }
-
-        public void SendBetAuction(int bet)
-        {
-            if (NetworkingManager.IsConnectedClient)
-                Player.SendBetAuction(bet);
-            else
-                Debug.Log($"Client is not connected: {nameof(SendBetAuction)}");
-        }
-
-        #endregion
-        
         public void SendCommand(INetworkCommand networkCommand)
         {
             if (NetworkingManager.IsConnectedClient)

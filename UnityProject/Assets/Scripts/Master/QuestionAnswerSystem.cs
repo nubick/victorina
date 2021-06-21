@@ -11,13 +11,11 @@ namespace Victorina
         [Inject] private QuestionAnswerData Data { get; set; }
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private QuestionTimer QuestionTimer { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
-        [Inject] private AuctionSystem AuctionSystem { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
 
@@ -47,18 +45,7 @@ namespace Victorina
             
             if (IsLastQuestionStoryDot())
                 StartTimer();
-
-            if (netQuestion.Type == QuestionType.Auction)
-            {
-                AuctionSystem.StartNew(PlayersBoard.Current, MatchData.SelectedRoundQuestion.Price);
-            }
-            else if (netQuestion.Type == QuestionType.CatInBag)
-            {
-                //todo: Finish refactoring
-                //CatInBagData.IsPlayerSelected.Value = false;
-                //SendToPlayersService.SendCatInBagData(CatInBagData);
-            }
-
+            
             SendData(MasterIntention.StartAnswering);
         }
 

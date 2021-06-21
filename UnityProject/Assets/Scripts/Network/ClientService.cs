@@ -50,6 +50,8 @@ namespace Victorina
             
             while (NetworkData.ClientConnectingState == ClientConnectingState.Connecting)
                 yield return null;
+
+            Debug.Log($"Join Finished");
         }
 
         public void LeaveGame()
@@ -64,6 +66,8 @@ namespace Victorina
         
         private void OnClientConnected(ulong clientId)
         {
+            Debug.Log($"OnClientConnected: {clientId}");
+            
             if (NetworkingManager.IsServer)
                 return;
             
@@ -82,6 +86,8 @@ namespace Victorina
 
         private void OnClientDisconnect(ulong clientId)
         {
+            Debug.Log($"OnClientDisconnect: {clientId}");
+            
             if (NetworkingManager.IsServer)
                 return;
             

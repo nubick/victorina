@@ -12,8 +12,7 @@ namespace Victorina
         public float TimerLeftSeconds { get; set; }
 
         public PlayersButtonClickData PlayersButtonClickData { get; set; } = new PlayersButtonClickData();
-        public ReactiveProperty<AuctionData> AuctionData { get; } = new ReactiveProperty<AuctionData>();
-        
+
         public byte AnsweringPlayerId { get; set; }
         public HashSet<byte> WrongAnsweredIds { get; set; } = new HashSet<byte>();
         public HashSet<byte> AdmittedPlayersIds { get; set; } = new HashSet<byte>();
@@ -24,11 +23,6 @@ namespace Victorina
         public bool IsAnswerTipEnabled { get; set; }
         public string AnswerTip { get; set; }
         
-        public QuestionAnswerData()
-        {
-            AuctionData.Value = new AuctionData();
-        }
-
         public override string ToString()
         {
             return $"Intention:{MasterIntention}, timer:{TimerState}";

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Injection;
@@ -9,12 +10,14 @@ namespace Victorina
     {
         [Inject] private PackageData Data { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
-
+        [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
+        
         public void StartPackageGame(Package package)
         {
             Data.Package = package;
             WritePackageStatistics(Data.Package);
             Data.PackageProgress = new PackageProgress();
+            Data.NetRounds = BuildNetRounds(package);
             MasterFilesRepository.AddPackageFiles(Data.Package);
         }
 
@@ -32,6 +35,17 @@ namespace Victorina
         public Question GetQuestion(string questionId)
         {
             return PackageTools.GetAllQuestions(Data.Package).Single(question => question.Id == questionId);
+        }
+
+        public NetRoundQuestion GetNetRoundQuestion(string questionId)
+        {
+            NetRoundQuestion netRoundQuestion = Data.NetRounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions))
+                .SingleOrDefault(question => question.QuestionId == questionId);
+
+            if (netRoundQuestion == null)
+                throw new Exception($"Can't find NetRoundQuestion by id:{questionId}");
+
+            return netRoundQuestion;
         }
 
         public (int[], int[], int[]) GetPackageFilesInfo(Package package)
@@ -67,6 +81,52 @@ namespace Victorina
             storyDots.AddRange(question.AnswerStory.Where(_ => _ is FileStoryDot).Cast<FileStoryDot>());
             return storyDots;
         }
+
+        private List<NetRound> BuildNetRounds(Package package)
+        {
+            Data.RoundsMap = new Dictionary<Round, NetRound>();
+            List<NetRound> netRounds = new List<NetRound>();
+            foreach (Round round in package.Rounds)
+            {
+                NetRound netRound = BuildNetRound(round);
+                netRounds.Add(netRound);
+                Data.RoundsMap.Add(round, netRound);
+            }
+            return netRounds;
+        }
         
+        private NetRound BuildNetRound(Round round)
+        {
+            NetRound netRound = new NetRound();
+            foreach (Theme theme in round.Themes)
+            {
+                NetRoundTheme netRoundTheme = new NetRoundTheme();
+                netRoundTheme.Name = theme.Name;
+                foreach (Question question in theme.Questions)
+                {
+                    NetRoundQuestion netRoundQuestion = new NetRoundQuestion(question.Id);
+                    netRoundQuestion.Price = question.Price;
+                    netRoundQuestion.Type = question.Type;
+                    netRoundQuestion.Theme = theme.Name;
+                    netRoundQuestion.FileIds = FilesDeliveryStatusManager.GetQuestionFileIds(question);
+                    netRoundQuestion.IsDownloadedByMe = true;//Master has file from pack
+                    netRoundTheme.Questions.Add(netRoundQuestion);
+                }
+                netRound.Themes.Add(netRoundTheme);
+            }
+            return netRound;
+        }
+
+        public NetRound GetNetRound(Round round, PackageProgress packageProgress)
+        {
+            NetRound netRound = Data.RoundsMap[round];
+            var questions = netRound.Themes.SelectMany(theme => theme.Questions);
+            foreach (NetRoundQuestion netRoundQuestion in questions)
+            {
+                netRoundQuestion.IsAnswered = packageProgress.IsAnswered(netRoundQuestion.QuestionId);
+                netRoundQuestion.IsDownloadedByAll = FilesDeliveryStatusManager.IsDownloadedByAll(netRoundQuestion.FileIds);
+            }
+            return netRound;
+        }
     }
 }

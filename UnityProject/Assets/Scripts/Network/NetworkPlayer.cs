@@ -294,61 +294,6 @@ namespace Victorina
             PlayerDataReceiver.OnReceiveAnsweringTimerData(isRunning, maxSeconds, leftSeconds);
         }
         
-        #region Auction
-
-        public void SendPassAuction()
-        {
-            Debug.Log($"Player {OwnerClientId}: send pass auction to Master");
-            InvokeServerRpc(MasterReceivePassAuction);
-        }
-        
-        [ServerRPC]
-        private void MasterReceivePassAuction()
-        {
-            Debug.Log($"Master: Receive pass auction from Player {GetPlayerInfo()}");
-            MasterDataReceiver.OnReceivePassAuction(OwnerClientId);
-        }
-
-        public void SendAllInAuction()
-        {
-            Debug.Log($"Player {OwnerClientId}: send all-in auction to Master");
-            InvokeServerRpc(MasterReceiveAllInAuction);
-        }
-
-        [ServerRPC]
-        private void MasterReceiveAllInAuction()
-        {
-            Debug.Log($"Master: Receive all in auction from Player {GetPlayerInfo()}");
-            MasterDataReceiver.OnReceiveAllInAuction(OwnerClientId);
-        }
-
-        public void SendBetAuction(int bet)
-        {
-            Debug.Log($"Player {OwnerClientId}: send bet '{bet}' auction to Master");
-            InvokeServerRpc(MasterReceiveBetAuction, bet);
-        }
-        
-        [ServerRPC]
-        private void MasterReceiveBetAuction(int bet)
-        {
-            Debug.Log($"Master: Receive bet '{bet}' auction from Player {GetPlayerInfo()}");
-            MasterDataReceiver.OnReceiveBetAuction(OwnerClientId, bet);
-        }
-        
-        public void SendAuctionData(AuctionData auctionData)
-        {
-            InvokeClientRpcOnOwner(ReceiveAuctionData, auctionData);
-        }
-
-        [ClientRPC]
-        private void ReceiveAuctionData(AuctionData auctionData)
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive AuctionData: {auctionData}");
-            PlayerDataReceiver.OnReceiveAuctionData(auctionData);
-        }
-        
-        #endregion
-        
         #region Final Round
         
         public void SendFinalRoundData(FinalRoundData finalRoundData)

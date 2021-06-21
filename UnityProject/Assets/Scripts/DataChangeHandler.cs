@@ -16,7 +16,7 @@ namespace Victorina
             switch (data.MasterIntention)
             {
                 case MasterIntention.StartAnswering:
-                    ViewsSystem.StartAnswering();
+                    //ViewsSystem.StartAnswering();
                     break;
                 case MasterIntention.ShowStoryDot:
                     ViewsSystem.UpdateStoryDot(data);

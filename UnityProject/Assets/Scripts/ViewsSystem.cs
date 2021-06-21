@@ -70,7 +70,11 @@ namespace Victorina
                     ShowSimpleRoundViews();
                     break;
                 case PlayStateType.Auction:
-                    ShowAuction();
+                    HideAll();
+                    Debug.Log("Show: AuctionView");
+                    AuctionView.Show();
+                    PlayersBoardView.Show();
+                    PlayersMoreInfoView.Show();
                     break;
                 case PlayStateType.CatInBag:
                     ShowCatInBagViews();
@@ -88,19 +92,6 @@ namespace Victorina
                     throw new Exception($"Not supported PackagePlayState: {PlayStateData.PlayState}");
             }
         }
-
-        public void StartAnswering()
-        {
-            //RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedRoundQuestion, QuestionAnswerData));
-        }
-        
-        // private IEnumerator SwitchToQuestionView(NetRoundQuestion netRoundQuestion, QuestionAnswerData data)
-        // {
-        //     if (data.QuestionType == QuestionType.Auction)
-        //         ShowAuction();
-        //     else
-        //         UpdateStoryDot(data);
-        // }
 
         private void ShowLobbyViews()
         {
@@ -198,14 +189,6 @@ namespace Victorina
             }
 
             //MasterEffectsView.Show();
-        }
-
-        private void ShowAuction()
-        {
-            Debug.Log("Show: AuctionView");
-            AuctionView.Show();
-            PlayersBoardView.Show();
-            PlayersMoreInfoView.Show();
         }
         
         private void OnQuestionAnswerPhaseChanged()

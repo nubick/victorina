@@ -240,6 +240,7 @@ namespace Victorina
             _injector.Get<FinalRoundView>().Initialize();
 
             _injector.Get<CommandsSystem>().Initialize(_injector);
+            _injector.Get<PackagePlayStateSystem>().Initialize(_injector);
 
             //DevTools
             //Analytics

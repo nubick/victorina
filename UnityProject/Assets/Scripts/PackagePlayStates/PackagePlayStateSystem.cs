@@ -6,7 +6,14 @@ namespace Victorina
 {
     public class PackagePlayStateSystem
     {
+        private Injector _injector;
+        
         [Inject] private PackagePlayStateData Data { get; set; }
+        
+        public void Initialize(Injector injector)
+        {
+            _injector = injector;
+        }
         
         public void StartPackageOnLobby()
         {
@@ -22,23 +29,26 @@ namespace Victorina
 
         public PackagePlayState Create(PlayStateType playStateType)
         {
-            return playStateType switch
+            PackagePlayState playState = playStateType switch
             {
                 PlayStateType.Lobby => new LobbyPlayState(),
-                
+
                 PlayStateType.Round => new RoundPlayState(),
                 PlayStateType.RoundBlinking => new RoundBlinkingPlayState(),
                 PlayStateType.FinalRound => new FinalRoundPlayState(),
-                
+
                 PlayStateType.Auction => new AuctionPlayState(),
                 PlayStateType.CatInBag => new CatInBagPlayState(),
                 PlayStateType.NoRisk => new NoRiskPlayState(),
-                
+
                 PlayStateType.ShowQuestion => new ShowQuestionPlayState(),
                 PlayStateType.ShowAnswer => new ShowAnswerPlayState(),
-                
+
                 _ => throw new Exception($"Not supported PlayStateType: {playStateType}")
             };
+            
+            _injector.InjectTo(playState);
+            return playState;
         }
 
         private void RegisterIfNew(PackagePlayState playState)
