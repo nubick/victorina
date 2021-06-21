@@ -18,7 +18,7 @@ namespace Victorina
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
         
         private string All => $"All: ({GetPlayersInfo()})";
         
@@ -43,12 +43,12 @@ namespace Victorina
             Debug.Log($"Master: Send PlayersBoard: {PlayersBoard} to {networkPlayer.GetPlayerInfo()}");
             networkPlayer.SendPlayersBoard(PlayersBoard);
 
-            Debug.Log($"Master: Send PlayStateData: {PlayStateData} to {networkPlayer.GetPlayerInfo()}");
-            networkPlayer.SendPackagePlayStateData(PlayStateData);
+            Debug.Log($"Master: Send PlayStateData: {PackagePlayStateData} to {networkPlayer.GetPlayerInfo()}");
+            networkPlayer.SendPackagePlayStateData(PackagePlayStateData);
             
-            if(PlayStateData.Type == PlayStateType.ShowQuestion ||
-               PlayStateData.Type == PlayStateType.ShowAnswer ||
-               PlayStateData.Type == PlayStateType.AcceptingAnswer)
+            if(PackagePlayStateData.Type == PlayStateType.ShowQuestion ||
+               PackagePlayStateData.Type == PlayStateType.ShowAnswer ||
+               PackagePlayStateData.Type == PlayStateType.AcceptingAnswer)
             {
                 networkPlayer.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
                 networkPlayer.SendSelectedQuestion(QuestionAnswerData.SelectedQuestion.Value);

@@ -146,7 +146,7 @@ namespace Victorina
             return netRoundQuestion;
         }
 
-        private static void SerializeNetRoundQuestion(PooledBitWriter writer, NetRoundQuestion netRoundQuestion)
+        public static void SerializeNetRoundQuestion(PooledBitWriter writer, NetRoundQuestion netRoundQuestion)
         {
             writer.WriteString(netRoundQuestion.QuestionId);
             writer.WriteInt32(netRoundQuestion.Price);
@@ -157,7 +157,7 @@ namespace Victorina
             writer.WriteIntArray(netRoundQuestion.FileIds);
         }
         
-        private static NetRoundQuestion DeserializeNetRoundQuestion(PooledBitReader reader)
+        public static NetRoundQuestion DeserializeNetRoundQuestion(PooledBitReader reader)
         {
             string questionId = reader.ReadString().ToString();
             NetRoundQuestion netRoundQuestion = new NetRoundQuestion(questionId);

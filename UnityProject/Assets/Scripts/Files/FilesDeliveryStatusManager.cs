@@ -11,7 +11,7 @@ namespace Victorina
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
         
         private readonly Dictionary<byte, HashSet<int>> _playerIdToFilesMap = new Dictionary<byte, HashSet<int>>();
         private bool _isSyncRequired;
@@ -49,7 +49,7 @@ namespace Victorina
             {
                 yield return new WaitForSeconds(0.5f);
 
-                if (_isSyncRequired && PlayStateData.Type == PlayStateType.Round)
+                if (_isSyncRequired && PackagePlayStateData.Type == PlayStateType.Round)
                 {
                     //todo: Finish refactoring
                     //MatchSystem.SyncSimpleRound();

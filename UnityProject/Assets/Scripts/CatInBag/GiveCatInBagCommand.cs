@@ -7,14 +7,14 @@ namespace Victorina
 {
     public class GiveCatInBagCommand : Command, IServerCommand, INetworkCommand
     {
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
 
         public byte ReceiverPlayerId { get; set; }
         
         public override CommandType Type => CommandType.GiveCatInBagCommand;
-        private CatInBagPlayState CatInBagPlayState => PlayStateData.PlayState as CatInBagPlayState;
+        private CatInBagPlayState CatInBagPlayState => PackagePlayStateData.PlayState as CatInBagPlayState;
         
         public bool CanSend()
         {
@@ -23,7 +23,7 @@ namespace Victorina
 
         public bool CanExecuteOnServer()
         {
-            if (PlayStateData.Type != PlayStateType.CatInBag)
+            if (PackagePlayStateData.Type != PlayStateType.CatInBag)
             {
                 Debug.Log("It is not CatInBagPlayState now!");
                 return false;

@@ -10,9 +10,9 @@ namespace Victorina
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
         
-        private CatInBagPlayState CatInBagPlayState => PlayStateData.PlayState as CatInBagPlayState;
+        private CatInBagPlayState CatInBagPlayState => PackagePlayStateData.PlayState as CatInBagPlayState;
         
         [Header("Select owner")]
         public GameObject SelectOwnerState;

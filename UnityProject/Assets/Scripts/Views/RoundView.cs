@@ -8,7 +8,6 @@ namespace Victorina
 {
     public class RoundView : ViewBase
     {
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private ServerService ServerService { get; set; }
         [Inject] private ClientService ClientService { get; set; }
@@ -42,8 +41,14 @@ namespace Victorina
         protected override void OnShown()
         {
             RefreshUI(RoundPlayState.NetRound);
+            StartCoroutine(ShowQuestionBlinkEffect());
         }
-        
+
+        protected override void OnHide()
+        {
+            StopAllCoroutines();
+        }
+
         private void RefreshUI(NetRound netRound)
         {
             if (IsTheSameRound(netRound))
@@ -137,19 +142,27 @@ namespace Victorina
         {
             MatchSystem.TrySelectQuestion(netRoundQuestion);
         }
-
-        public IEnumerator ShowQuestionBlinkEffect(NetRoundQuestion netRoundQuestion)
+        
+        private IEnumerator ShowQuestionBlinkEffect()
         {
-            RoundQuestionWidget widget = QuestionsRoot.GetComponentsInChildren<RoundQuestionWidget>().Single(_ => _.NetRoundQuestion != null && _.NetRoundQuestion.QuestionId == netRoundQuestion.QuestionId);
-            for (int i = 0; i < 5; i++)
+            WaitForSeconds delay = new WaitForSeconds(0.1f);
+            RoundQuestionWidget cachedWidget = null;
+            for (;;)
             {
-                widget.ShowHighlighted();
-                yield return new WaitForSeconds(0.1f);
-                widget.ShowDefault();
-                yield return new WaitForSeconds(0.1f);
+                if (PlayStateData.Type == PlayStateType.RoundBlinking)
+                {
+                    string questionId = PlayStateData.As<RoundBlinkingPlayState>().QuestionId;
+                    if (cachedWidget == null || cachedWidget.NetRoundQuestion.QuestionId != questionId)
+                        cachedWidget = QuestionsRoot.GetComponentsInChildren<RoundQuestionWidget>().Single(_ => _.NetRoundQuestion != null && _.NetRoundQuestion.QuestionId == questionId);
+                    
+                    cachedWidget.ShowHighlighted();
+                    yield return delay;
+                    cachedWidget.ShowDefault();
+                }
+                yield return delay;
             }
         }
-
+        
         private void OnRoundInfoClicked(int number)
         {
             MatchSystem.SelectRound(number);

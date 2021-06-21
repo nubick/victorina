@@ -25,7 +25,18 @@ namespace Victorina
             return playStateType switch
             {
                 PlayStateType.Lobby => new LobbyPlayState(),
+                
                 PlayStateType.Round => new RoundPlayState(),
+                PlayStateType.RoundBlinking => new RoundBlinkingPlayState(),
+                PlayStateType.FinalRound => new FinalRoundPlayState(),
+                
+                PlayStateType.Auction => new AuctionPlayState(),
+                PlayStateType.CatInBag => new CatInBagPlayState(),
+                PlayStateType.NoRisk => new NoRiskPlayState(),
+                
+                PlayStateType.ShowQuestion => new ShowQuestionPlayState(),
+                PlayStateType.ShowAnswer => new ShowAnswerPlayState(),
+                
                 _ => throw new Exception($"Not supported PlayStateType: {playStateType}")
             };
         }

@@ -1,4 +1,3 @@
-using System.Linq;
 using Injection;
 using UnityEngine;
 using Victorina.Commands;
@@ -7,19 +6,13 @@ namespace Victorina
 {
     public class MatchSystem
     {
-        [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private MatchData MatchData { get; set; }
-        [Inject] private PackageSystem PackageSystem { get; set; }
-        [Inject] private PackageData PackageData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
-        [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
-        [Inject] private FilesDeliveryStatusManager FilesDeliveryStatusManager { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private MessageDialogueView MessageDialogueView { get; set; }
-        
+
         public void Initialize()
         {
             MetagameEvents.ServerStarted.Subscribe(OnServerStarted);

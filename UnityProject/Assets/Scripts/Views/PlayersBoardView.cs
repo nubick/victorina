@@ -11,7 +11,7 @@ namespace Victorina
         [Inject] private MasterPlayerSettingsView MasterPlayerSettingsView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
         
         public PlayerBoardWidget WidgetPrefab;
         public RectTransform WidgetsRoot;
@@ -57,7 +57,7 @@ namespace Victorina
         private void OnPlayerBoardWidgetClicked(PlayerData playerData)
         {
             if (NetworkData.IsMaster &&
-                (PlayStateData.Type == PlayStateType.Lobby || PlayStateData.Type == PlayStateType.Round))
+                (PackagePlayStateData.Type == PlayStateType.Lobby || PackagePlayStateData.Type == PlayStateType.Round))
             {
                 MasterPlayerSettingsView.Show(playerData);
             }

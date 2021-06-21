@@ -24,26 +24,20 @@ namespace Victorina
 
         [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
         [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
-        [Inject] private MasterEffectsView MasterEffectsView { get; set; }
-        
-        [Inject] private PlayerGiveAnswerView PlayerGiveAnswerView { get; set; }
 
-        [Inject] private MatchData MatchData { get; set; }
+        [Inject] private PlayerGiveAnswerView PlayerGiveAnswerView { get; set; }
+        
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private CatInBagData CatInBagData { get; set; }
-        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
 
         public void Initialize()
         {
             foreach(ViewBase view in Object.FindObjectsOfType<ViewBase>())
                 view.Content.SetActive(false);
             StartupView.Show();
-
-            //todo: Finish refactoring
-            //MatchData.Phase.SubscribeChanged(OnMatchPhaseChanged);
             
-            MatchData.RoundData.SubscribeChanged(OnRoundDataChanged);
             QuestionAnswerData.Phase.SubscribeChanged(OnQuestionAnswerPhaseChanged);
             
             //todo: Finish refactoring
@@ -68,55 +62,51 @@ namespace Victorina
 
         private void OnPackagePlayStateChanged()
         {
-            Debug.Log($"Views. OnPackagePlayState changed: {PackagePlayStateData}");
-            
-            if (PackagePlayStateData.Type == PlayStateType.Lobby)
+            Debug.Log($"Views. OnPackagePlayState changed: {PlayStateData}");
+
+            switch (PlayStateData.Type)
             {
-                ShowLobbyViews();
-            }
-            else if (PackagePlayStateData.Type == PlayStateType.FinalRound)
-            {
-                
-            }
-            else if (PackagePlayStateData.Type == PlayStateType.Round)
-            {
-                ShowSimpleRoundViews();   
-            }
-            else if (PackagePlayStateData.Type == PlayStateType.RoundBlinking)
-            {
-                ShowFinalRoundViews();
-            }
-            else
-            {
-                throw new Exception($"Not supported PackagePlayState: {PackagePlayStateData.PlayState}");
+                case PlayStateType.Lobby:
+                    ShowLobbyViews();
+                    break;
+                case PlayStateType.FinalRound:
+                    ShowFinalRoundViews();
+                    break;
+                case PlayStateType.Round:
+                case PlayStateType.RoundBlinking:
+                    ShowSimpleRoundViews();
+                    break;
+                case PlayStateType.Auction:
+                    ShowAuction();
+                    break;
+                case PlayStateType.ShowQuestion:
+                case PlayStateType.ShowAnswer:
+                    ShowStoryDotView();
+                    break;
+                default:
+                    throw new Exception($"Not supported PackagePlayState: {PlayStateData.PlayState}");
             }
         }
-        
+
         public void StartAnswering()
         {
-            RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedRoundQuestion, QuestionAnswerData));
+            //RoundView.StartCoroutine(SwitchToQuestionView(MatchData.SelectedRoundQuestion, QuestionAnswerData));
         }
         
-        private IEnumerator SwitchToQuestionView(NetRoundQuestion netRoundQuestion, QuestionAnswerData data)
-        {
-            yield return RoundView.ShowQuestionBlinkEffect(netRoundQuestion);
-
-            if (data.QuestionType == QuestionType.Auction)
-                ShowAuction();
-            else
-                UpdateStoryDot(data);
-        }
+        // private IEnumerator SwitchToQuestionView(NetRoundQuestion netRoundQuestion, QuestionAnswerData data)
+        // {
+        //     if (data.QuestionType == QuestionType.Auction)
+        //         ShowAuction();
+        //     else
+        //         UpdateStoryDot(data);
+        // }
 
         private void ShowLobbyViews()
         {
             HideAll();
-
             Debug.Log("Show: LobbyView");
             LobbyView.Show();
             PlayersBoardView.Show();
-            
-            //if (NetworkData.IsMaster)
-            //    MasterEffectsView.Show();
         }
 
         private void ShowSimpleRoundViews()
@@ -135,17 +125,11 @@ namespace Victorina
             PlayersBoardView.Show();
         }
 
-        private void OnRoundDataChanged()
+        private void ShowStoryDotView()
         {
-            //todo: Finish refactoring
-            /*
-            if (MatchData.Phase.Value == MatchPhase.Round)
-            {
-                RoundView.RefreshUI(MatchData.RoundData.Value);
-            }
-            */
+            HideAll();
         }
-
+        
         public void UpdateStoryDot(QuestionAnswerData data)
         {
             HideAll();

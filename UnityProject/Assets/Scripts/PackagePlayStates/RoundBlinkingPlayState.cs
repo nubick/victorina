@@ -2,21 +2,21 @@ using MLAPI.Serialization.Pooled;
 
 namespace Victorina
 {
-    public class RoundBlinkingPlayState : PackagePlayState
+    public class RoundBlinkingPlayState : RoundPlayState
     {
+        public string QuestionId { get; set; }
         public override PlayStateType Type => PlayStateType.RoundBlinking;
-        
-        public int RoundNumber { get; set; }
-        public NetRoundQuestion NetRoundQuestion { get; set; }
         
         public override void Serialize(PooledBitWriter writer)
         {
-            throw new System.NotImplementedException();
+            base.Serialize(writer);
+            writer.WriteString(QuestionId);
         }
 
         public override void Deserialize(PooledBitReader reader)
         {
-            throw new System.NotImplementedException();
+            base.Deserialize(reader);
+            QuestionId = reader.ReadString().ToString();
         }
     }
 }

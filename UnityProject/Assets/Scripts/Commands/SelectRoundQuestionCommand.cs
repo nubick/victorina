@@ -8,7 +8,6 @@ namespace Victorina.Commands
 {
     public class SelectRoundQuestionCommand : Command, INetworkCommand, IServerCommand
     {
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
@@ -19,74 +18,66 @@ namespace Victorina.Commands
         public override CommandType Type => CommandType.SelectRoundQuestion;
         private bool IsOwnerCurrentPlayerOrMaster => Owner == CommandOwner.Master || PlayersBoardSystem.IsCurrentPlayer(OwnerPlayer);
 
-        private NetRoundQuestion GetQuestion(string questionId)
+        public NetRoundQuestion GetNetQuestion(string questionId)
         {
-            List<NetRoundQuestion> roundQuestions = MatchData.RoundData.Value.Themes.SelectMany(theme => theme.Questions).ToList();
+            List<NetRoundQuestion> roundQuestions = PlayStateData.As<RoundPlayState>().NetRound.Themes.SelectMany(theme => theme.Questions).ToList();
             return roundQuestions.SingleOrDefault(_ => _.QuestionId == questionId);
         }
 
-        public bool CanSend()
+        private bool IsValid(string questionId)
         {
-            NetRoundQuestion question = GetQuestion(QuestionId);
-            
-            if (question.IsAnswered)
-            {
-                Debug.Log($"Selected question is answered: {question}");
-                return false;
-            }
-
-            if (!IsOwnerCurrentPlayerOrMaster)
-            {
-                Debug.Log($"Only Master or Current player can select question: {question}");
-                return false;
-            }
-
-            return true;
-        }
-        
-        public bool CanExecuteOnServer()
-        {
-            if (!IsOwnerCurrentPlayerOrMaster)
-            {
-                Debug.Log($"Master. Validation Error. Player: {OwnerPlayer} is not current. Can't select round question: {QuestionId}");
-                return false;
-            }
-
             if (PlayStateData.Type != PlayStateType.Round)
             {
                 Debug.Log($"Player: {OwnerPlayer} can't select round question in play state: {PlayStateData}");
                 return false;
             }
-            
-            NetRoundQuestion question = GetQuestion(QuestionId);
+
+            if (!IsOwnerCurrentPlayerOrMaster)
+            {
+                Debug.Log($"Player: {OwnerPlayer} is not current. Can't select round question: {questionId}");
+                return false;
+            }
+
+            NetRoundQuestion question = GetNetQuestion(questionId);
             
             if (question == null)
             {
-                Debug.Log($"Master. Validation Error. Can't find round question with id: {QuestionId}");
+                Debug.Log($"Can't find round question with id: {questionId}");
                 return false;
             }
 
             if (question.IsAnswered)
             {
-                Debug.Log($"Master. Validation Error. Can't select answered question: {question}");
+                Debug.Log($"Can't select answered question: {question}");
                 return false;
             }
-
+            
             return true;
         }
         
+        public bool CanSend()
+        {
+            return IsValid(QuestionId);
+        }
+        
+        public bool CanExecuteOnServer()
+        {
+            return IsValid(QuestionId);
+       }
+        
         public void ExecuteOnServer()
         {
-            RoundPlayState roundPlayState = PlayStateData.PlayState as RoundPlayState;
+            RoundPlayState roundPlayState = PlayStateData.As<RoundPlayState>();
             
-            RoundBlinkingPlayState playState = new RoundBlinkingPlayState();
-            playState.NetRoundQuestion = GetQuestion(QuestionId);
-            playState.RoundNumber = roundPlayState.RoundNumber;
+            SendSelectQuestionEvents(roundPlayState.NetRound, roundPlayState.RoundNumber);
             
-            PlayStateSystem.ChangePlayState(playState);
+            RoundBlinkingPlayState blinkingPlayState = new RoundBlinkingPlayState();
+            blinkingPlayState.QuestionId = QuestionId;
+            blinkingPlayState.RoundNumber = roundPlayState.RoundNumber;
+            blinkingPlayState.RoundTypes = roundPlayState.RoundTypes;
+            blinkingPlayState.NetRound = roundPlayState.NetRound;
+            PlayStateSystem.ChangePlayState(blinkingPlayState);
             
-            SendSelectQuestionEvents(playState.RoundNumber);
-
             TimerSystem.RunAfter(3f, CreateStopRoundBlinkingCommand);
         }
 
@@ -95,10 +86,10 @@ namespace Victorina.Commands
             CommandsSystem.AddNewCommand(new StopRoundBlinkingCommand());
         }
         
-        private void SendSelectQuestionEvents(int roundNumber)
+        private void SendSelectQuestionEvents(NetRound netRound, int roundNumber)
         {
-            int answered = MatchData.RoundData.Value.Themes.SelectMany(theme => theme.Questions).Count(question => question.IsAnswered);
-            int notAnswered = MatchData.RoundData.Value.Themes.SelectMany(theme => theme.Questions).Count(question => !question.IsAnswered);
+            int answered = netRound.Themes.SelectMany(theme => theme.Questions).Count(question => question.IsAnswered);
+            int notAnswered = netRound.Themes.SelectMany(theme => theme.Questions).Count(question => !question.IsAnswered);
 
             if (answered == 0)
                 AnalyticsEvents.FirstRoundQuestionStart.Publish(roundNumber);
