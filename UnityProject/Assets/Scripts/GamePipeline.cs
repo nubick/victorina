@@ -41,7 +41,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<ImageStoryDotView>());
             _injector.Bind(FindObjectOfType<AudioStoryDotView>());
             _injector.Bind(FindObjectOfType<VideoStoryDotView>());
-            _injector.Bind(FindObjectOfType<NoRiskStoryDotView>());
+            _injector.Bind(FindObjectOfType<NoRiskView>());
             _injector.Bind(FindObjectOfType<RoundView>());
             _injector.Bind(FindObjectOfType<PlayersButtonClickPanelView>());
             _injector.Bind(FindObjectOfType<PlayersBoardView>());

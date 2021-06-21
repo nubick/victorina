@@ -4,7 +4,7 @@ namespace Victorina
 {
     public class FinishAuctionCommand : Command, IServerCommand
     {
-        public override CommandType Type => CommandType.FinishAuctionCommand;
+        public override CommandType Type => CommandType.FinishAuction;
 
         public bool CanExecuteOnServer()
         {

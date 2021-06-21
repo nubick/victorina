@@ -4,28 +4,21 @@ using Victorina.Commands;
 
 namespace Victorina
 {
-    public class FinishCatInBagCommand : Command, IServerCommand
+    public class FinishNoRiskCommand : Command, IServerCommand
     {
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
         
-        public override CommandType Type => CommandType.FinishCatInBag;
+        public override CommandType Type => CommandType.FinishNoRisk;
         
         public bool CanExecuteOnServer()
         {
-            if (PlayStateData.Type != PlayStateType.CatInBag)
+            if (PlayStateData.Type != PlayStateType.NoRisk)
             {
-                Debug.Log($"Can't finish CatInBag in PlayState: {PlayStateData}");
+                Debug.Log($"Can't finish NoRisk in PlayState: {PlayStateData}");
                 return false;
             }
 
-            CatInBagPlayState playState = PlayStateData.As<CatInBagPlayState>();
-            if (!playState.WasGiven)
-            {
-                Debug.Log("Can't finish CatInBag. It was not given.");
-                return false;
-            }
-            
             return true;
         }
 

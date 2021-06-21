@@ -120,7 +120,7 @@ namespace Victorina.Commands
             {
                 case CommandType.SelectRoundQuestion:
                     return new SelectRoundQuestionCommand();
-                case CommandType.GiveCatInBagCommand:
+                case CommandType.GiveCatInBag:
                     return new GiveCatInBagCommand();
                 case CommandType.RemoveFinalRoundTheme:
                     return new RemoveFinalRoundThemeCommand();

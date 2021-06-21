@@ -10,7 +10,7 @@ namespace Victorina.Commands
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         
-        public override CommandType Type => CommandType.FinishQuestionCommand;
+        public override CommandType Type => CommandType.FinishQuestion;
         private ShowAnswerPlayState ShowAnswerPlayState => PackagePlayStateData.PlayState as ShowAnswerPlayState;
         
         public bool CanExecuteOnServer()

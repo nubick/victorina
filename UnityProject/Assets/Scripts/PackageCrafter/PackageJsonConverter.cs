@@ -29,7 +29,7 @@ namespace Victorina
         {
             JSONNode packageNode = new JSONObject();
             packageNode.Add("Scheme", "Package");
-            packageNode.Add(AuthorKey, package.Author);
+            packageNode.Add(AuthorKey, package.Author ?? string.Empty);
 
             JSONArray roundsArray = new JSONArray();
             packageNode.Add("Rounds", roundsArray);

@@ -13,7 +13,7 @@ namespace Victorina
 
         public byte ReceiverPlayerId { get; set; }
         
-        public override CommandType Type => CommandType.GiveCatInBagCommand;
+        public override CommandType Type => CommandType.GiveCatInBag;
         private CatInBagPlayState CatInBagPlayState => PlayStateData.As<CatInBagPlayState>();
         
         public bool CanSend()

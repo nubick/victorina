@@ -16,7 +16,7 @@ namespace Victorina
         [Inject] private ImageStoryDotView ImageStoryDotView { get; set; }
         [Inject] private AudioStoryDotView AudioStoryDotView { get; set; }
         [Inject] private VideoStoryDotView VideoStoryDotView { get; set; }
-        [Inject] private NoRiskStoryDotView NoRiskStoryDotView { get; set; }
+        [Inject] private NoRiskView NoRiskView { get; set; }
         [Inject] private CatInBagView CatInBagView { get; set; }
         [Inject] private AuctionView AuctionView { get; set; }
         [Inject] private PlayersMoreInfoView PlayersMoreInfoView { get; set; }
@@ -74,6 +74,11 @@ namespace Victorina
                     break;
                 case PlayStateType.CatInBag:
                     ShowCatInBagViews();
+                    break;
+                case PlayStateType.NoRisk:
+                    HideAll();
+                    Debug.Log("Show: NoRiskView");
+                    NoRiskView.Show();
                     break;
                 case PlayStateType.ShowQuestion:
                 case PlayStateType.ShowAnswer:
@@ -176,14 +181,6 @@ namespace Victorina
                 if (NetworkData.IsClient)
                     PlayerGiveAnswerView.Show();
             }
-            // else if (currentStoryDot is NoRiskStoryDot)
-            // {
-            //     Debug.Log("Show: NoRiskStoryDotView");
-            //     NoRiskStoryDotView.Show();
-            //
-            //     if (NetworkData.IsMaster)
-            //         MasterQuestionPanelView.Show();
-            // }
             else if (currentStoryDot is TextStoryDot)
             {
                 Debug.Log("Show: TextStoryDotView");
