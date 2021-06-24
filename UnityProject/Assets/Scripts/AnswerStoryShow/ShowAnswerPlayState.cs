@@ -4,7 +4,10 @@ namespace Victorina
 {
     public class ShowAnswerPlayState : PackagePlayState
     {
-        public NetRoundQuestion NetRoundQuestion { get; set; }
+        public int StoryDotIndex { get; set; }
+        public NetQuestion NetQuestion { get; set; }
+
+        public StoryDot CurrentStoryDot => NetQuestion.AnswerStory[StoryDotIndex];
         
         public override PlayStateType Type => PlayStateType.ShowAnswer;
         

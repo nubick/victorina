@@ -1,10 +1,11 @@
-using System;
-
 namespace Victorina
 {
     public class NetQuestion
     {
+        public string QuestionId { get; set; }
         public QuestionType Type { get; set; }
+        public string Theme { get; set; }
+        public int Price { get; set; }
         
         public int QuestionStoryDotsAmount { get; set; }
         public StoryDot[] QuestionStory { get; set; }
@@ -13,23 +14,15 @@ namespace Victorina
         public StoryDot[] AnswerStory { get; set; }
 
         public CatInBagInfo CatInBagInfo { get; set; }
-        
-        public T GetFirst<T>() where T : StoryDot
+
+        public string GetTheme()
         {
-            foreach (StoryDot storyDot in QuestionStory)
-                if (storyDot is T firstStoryDot)
-                    return firstStoryDot;
-
-            foreach (StoryDot storyDot in AnswerStory)
-                if (storyDot is T firstStoryDot)
-                    return firstStoryDot;
-
-            throw new Exception($"Can't find story dot of type '{typeof(T)}'. QuestionType: {Type}");
+            return Type == QuestionType.CatInBag ? CatInBagInfo.Theme : Theme;
         }
 
         public override string ToString()
         {
-            return $"[NQ, Type:{Type}, Q:{QuestionStoryDotsAmount}, A:{AnswerStoryDotsAmount}]";
+            return $"[NetQuestion, Type:{Type}, Q:{QuestionStoryDotsAmount}, A:{AnswerStoryDotsAmount}]";
         }
     }
 }

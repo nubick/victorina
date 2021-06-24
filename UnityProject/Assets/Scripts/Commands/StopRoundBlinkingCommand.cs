@@ -34,8 +34,7 @@ namespace Victorina.Commands
                 case QuestionType.Auction:
                     AuctionPlayState auctionPlayState = new AuctionPlayState();
                     PlayStateSystem.ChangePlayState(auctionPlayState);
-                    NetRoundQuestion question = PackageSystem.GetNetRoundQuestion(blinkingPlayState.QuestionId);
-                    AuctionSystem.StartNew(question.Price, question.Theme);
+                    AuctionSystem.StartNew(netQuestion.Price, netQuestion.GetTheme());
                     break;
                 case QuestionType.CatInBag:
                     CatInBagPlayState catInBagPlayState = new CatInBagPlayState();
@@ -48,6 +47,7 @@ namespace Victorina.Commands
                     break;
                 case QuestionType.Simple:
                     ShowQuestionPlayState showQuestionPlayState = new ShowQuestionPlayState();
+                    showQuestionPlayState.NetQuestion = netQuestion;
                     PlayStateSystem.ChangePlayState(showQuestionPlayState);
                     break;
                 default:
@@ -61,7 +61,10 @@ namespace Victorina.Commands
         {
             Question question = PackageSystem.GetQuestion(questionId);
             NetQuestion netQuestion = new NetQuestion();
+            netQuestion.QuestionId = questionId;
             netQuestion.Type = question.Type;
+            netQuestion.Theme = PackageSystem.GetTheme(questionId);
+            netQuestion.Price = question.Price;
             netQuestion.QuestionStory = question.QuestionStory.ToArray();
             netQuestion.QuestionStoryDotsAmount = netQuestion.QuestionStory.Length;
             netQuestion.AnswerStory = question.AnswerStory.ToArray();
@@ -69,7 +72,7 @@ namespace Victorina.Commands
             netQuestion.CatInBagInfo = question.CatInBagInfo;
             return netQuestion;
         }
-
+        
         public override string ToString()
         {
             return "[StopRoundBlinkingCommand]";

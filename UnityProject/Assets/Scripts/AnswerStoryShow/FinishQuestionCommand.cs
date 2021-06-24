@@ -26,7 +26,7 @@ namespace Victorina.Commands
 
         public void ExecuteOnServer()
         {
-            PackageData.PackageProgress.SetQuestionAsAnswered(ShowAnswerPlayState.NetRoundQuestion.QuestionId);
+            PackageData.PackageProgress.SetQuestionAsAnswered(ShowAnswerPlayState.NetQuestion.QuestionId);
             RoundPlayState roundPlayState = PlayStateSystem.Get<RoundPlayState>();
             CommandsSystem.AddNewCommand(new SelectRoundCommand {RoundNumber = roundPlayState.RoundNumber});
         }

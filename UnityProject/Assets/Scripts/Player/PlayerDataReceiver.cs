@@ -11,7 +11,6 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
-        [Inject] private QuestionStoryShowData QuestionStoryShowData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         [Inject] private PlayerFilesRequestSystem PlayerFilesRequestSystem { get; set; }
@@ -20,6 +19,7 @@ namespace Victorina
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         
         public void OnReceiveRegisteredPlayerId(byte playerId)
@@ -47,7 +47,7 @@ namespace Victorina
         
         public void OnReceive(PlayersButtonClickData data)
         {
-            MatchData.QuestionAnswerData.PlayersButtonClickData = data;
+            PlayersButtonClickData.Update(data);
             MetagameEvents.PlayersButtonClickDataChanged.Publish();
         }
 
@@ -55,7 +55,6 @@ namespace Victorina
         {
             QuestionAnswerData.MasterIntention = data.MasterIntention;
             
-            QuestionAnswerData.AnsweringPlayerId = data.AnsweringPlayerId;
             QuestionAnswerData.WrongAnsweredIds = data.WrongAnsweredIds;
             QuestionAnswerData.AdmittedPlayersIds = data.AdmittedPlayersIds;
             
@@ -65,22 +64,11 @@ namespace Victorina
             
             DataChangeHandler.HandleMasterIntention(QuestionAnswerData);
         }
-
-        public void OnReceiveQuestionStoryShowData(QuestionStoryShowData data)
-        {
-            QuestionStoryShowData.Update(data);
-            MetagameEvents.QuestionStoryShowDataChange.Publish();
-        }
         
         public void OnRoundFileIdsReceived(int[] fileIds, int[] chunksAmounts, int[] priorities)
         {
             PlayerFilesRepository.Register(fileIds, chunksAmounts, priorities);
             PlayerFilesRequestSystem.SendLoadingProgress();
-        }
-        
-        public void OnFileStoryDotReceived(FileStoryDot fileStoryDot)
-        {
-            PlayerFilesRepository.Register(fileStoryDot.FileId, fileStoryDot.ChunksAmount);
         }
         
         public void OnFileChunkReceived(int fileId, int chunkIndex, byte[] bytes)

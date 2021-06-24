@@ -13,7 +13,6 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private IpCodeSystem IpCodeSystem { get; set; }
         [Inject] private AppState AppState { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
 
         public void Initialize()
         {
@@ -50,8 +49,6 @@ namespace Victorina
             
             while (NetworkData.ClientConnectingState == ClientConnectingState.Connecting)
                 yield return null;
-
-            Debug.Log($"Join Finished");
         }
 
         public void LeaveGame()
@@ -66,8 +63,6 @@ namespace Victorina
         
         private void OnClientConnected(ulong clientId)
         {
-            Debug.Log($"OnClientConnected: {clientId}");
-            
             if (NetworkingManager.IsServer)
                 return;
             
@@ -86,14 +81,11 @@ namespace Victorina
 
         private void OnClientDisconnect(ulong clientId)
         {
-            Debug.Log($"OnClientDisconnect: {clientId}");
-            
             if (NetworkingManager.IsServer)
                 return;
             
             Debug.Log($"Player {NetworkingManager.LocalClientId}. OnClientDisconnect: {clientId}");
             NetworkData.ClientConnectingState = ClientConnectingState.Fail;
-            MatchData.QuestionAnswerData.PlayersButtonClickData.Clear();
             MetagameEvents.DisconnectedAsClient.Publish();
         }
     }

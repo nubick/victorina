@@ -13,10 +13,11 @@ namespace Victorina
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
+        [Inject] private MasterShowQuestionView MasterShowQuestionView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private DataChangeHandler DataChangeHandler { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
 
         private bool IsLastQuestionStoryDot() => false; 
@@ -28,19 +29,17 @@ namespace Victorina
         
         public void StartAnswer(NetQuestion netQuestion)
         {
-            Data.SelectedQuestion.Value = netQuestion;
-            SendToPlayersService.SendSelectedQuestion(Data.SelectedQuestion.Value);
+            //todo: finish refactoring
+            //Data.SelectedQuestion.Value = netQuestion;
+            //SendToPlayersService.SendSelectedQuestion(Data.SelectedQuestion.Value);
 
             QuestionTimer.Reset(Static.TimeForAnswer);
 
             Data.TimerState = QuestionTimerState.NotStarted;
             Data.WrongAnsweredIds.Clear();
             ResetAdmittedPlayersIds(netQuestion.Type);
-            //todo: finish refactoring
-            //Data.CurrentStoryDotIndex = 0;
-            Data.AnsweringPlayerId = 0;
             
-            Data.AnswerTip = GetAnswerTip(Data.SelectedQuestion.Value);
+            //Data.AnswerTip = GetAnswerTip(Data.SelectedQuestion.Value);
             Data.IsAnswerTipEnabled = false;
             
             if (IsLastQuestionStoryDot())
@@ -76,17 +75,9 @@ namespace Victorina
             Data.MasterIntention = intention;
             SendToPlayersService.Send(Data);
             DataChangeHandler.HandleMasterIntention(Data);
-            MasterQuestionPanelView.RefreshUI();
+            MasterShowQuestionView.RefreshUI();
         }
         
-        public bool CanShowNext()
-        {
-            //todo: finish refactoring
-            return true;
-            //bool isWaitingWhoGetCatInBag = Data.CurrentStoryDot is CatInBagStoryDot && !CatInBagData.IsPlayerSelected.Value;
-            //return !Data.IsLastDot && !isWaitingWhoGetCatInBag;
-        }
-
         public void StartQuestionStory()
         {
             //Data.Phase.Value = QuestionPhase.ShowQuestion;
@@ -109,16 +100,6 @@ namespace Victorina
             
             SendData(MasterIntention.ShowStoryDot);
         }
-
-        public bool CanShowPrevious()
-        {
-            //todo: finish refactoring
-            return true;
-            
-            //return Data.CurrentStoryDotIndex > 0 &&
-            //       !(Data.PreviousStoryDot is CatInBagStoryDot) &&
-            //       !(Data.PreviousStoryDot is NoRiskStoryDot);
-        }
         
         public void ShowPrevious()
         {
@@ -132,7 +113,7 @@ namespace Victorina
             Data.TimerResetSeconds = Static.TimeForAnswer;
             Data.TimerLeftSeconds = QuestionTimer.LeftSeconds;
             Data.TimerState = QuestionTimerState.Running;
-            Data.PlayersButtonClickData.Clear();
+            PlayersButtonClickData.Clear();
         }
         
         public void PauseTimer()
@@ -163,41 +144,9 @@ namespace Victorina
         
         public void ShowAnswer()
         {
-            Data.TimerState = QuestionTimerState.Paused;
-            //todo: finish refactoring
-            //Data.Phase.Value = QuestionPhase.ShowAnswer;
-            //todo: finish refactoring
-            //Data.CurrentStoryDotIndex = 0;
-            SendData(MasterIntention.ShowAnswer);
-            Data.PlayersButtonClickData.Clear();
+            CommandsSystem.AddNewCommand(new ShowAnswerCommand());
         }
-
-        public void OnPlayerButtonClickReceived(byte playerId, float spentSeconds)
-        {
-            if (Data.TimerState == QuestionTimerState.NotStarted)
-                return;
-            
-            bool wasReceivedBefore = Data.PlayersButtonClickData.Players.Any(_ => _.PlayerId == playerId);
-            if (wasReceivedBefore)
-                return;
-
-            bool isNotCurrentForNoRiskQuestion = Data.QuestionType == QuestionType.NoRisk &&
-                                                 PlayersBoard.Current != null &&
-                                                 PlayersBoard.Current.PlayerId != playerId;
-            if (isNotCurrentForNoRiskQuestion)
-                return;
-
-            bool didWrongAnswerBefore = Data.WrongAnsweredIds.Contains(playerId);
-            if (didWrongAnswerBefore)
-                return;
-            
-            Data.PlayersButtonClickData.Add(playerId, PlayersBoardSystem.GetPlayer(playerId).Name, spentSeconds);
-            
-            PauseTimer();
-
-            MasterQuestionPanelView.RefreshUI();
-        }
-
+        
         public bool CanBackToRound()
         {
             //todo: finish refactoring
@@ -214,24 +163,14 @@ namespace Victorina
 
         public void SelectFastestPlayerForAnswer()
         {
-            PlayerButtonClickData fastest = Data.PlayersButtonClickData.Players.OrderBy(_ => _.Time).FirstOrDefault();
-            
-            if (fastest == null)
-                throw new Exception("Can't select fastest when list of players is empty.");
-
-            SelectPlayerForAnswer(fastest.PlayerId);
+            if (NetworkData.IsMaster)
+                CommandsSystem.AddNewCommand(new SelectFastestPlayerForAnswerCommand());
         }
         
         public void SelectPlayerForAnswer(byte playerId)
         {
-            if (NetworkData.IsClient)
-                return;
-            
-            Data.AnsweringPlayerId = playerId;
-            //todo: finish refactoring
-            //Data.Phase.Value = QuestionPhase.AcceptingAnswer;
-            SendToPlayersService.Send(Data);
-            Data.PlayersButtonClickData.Clear();
+            if (NetworkData.IsMaster)
+                CommandsSystem.AddNewCommand(new SelectPlayerForAnswerCommand {PlayerId = playerId});
         }
 
         public void AcceptNoRiskAnswer()
@@ -259,44 +198,17 @@ namespace Victorina
 
         public void CancelAcceptingAnswer()
         {
-            //todo: finish refactoring
-            //Data.Phase.Value = QuestionPhase.ShowQuestion;
-            StartTimer();
-            SendData(MasterIntention.ContinueTimer);
+            CommandsSystem.AddNewCommand(new CancelAcceptingAnswerCommand());
         }
 
         public void AcceptAnswerAsCorrect()
         {
-            ShowAnswer();
-            PlayersBoardSystem.MakePlayerCurrent(Data.AnsweringPlayerId);
-            MatchSystem.RewardPlayer(Data.AnsweringPlayerId);
+            CommandsSystem.AddNewCommand(new AcceptAnswerAsCorrectCommand());
         }
 
         public void AcceptAnswerAsWrong()
         {
-            if (Data.SelectedQuestion.Value.Type == QuestionType.Simple)
-            {
-                Data.WrongAnsweredIds.Add(Data.AnsweringPlayerId);
-                //todo: finish refactoring
-                //Data.Phase.Value = QuestionPhase.ShowQuestion;
-                StartTimer();
-                SendData(MasterIntention.ContinueTimer);
-                MatchSystem.FinePlayer(Data.AnsweringPlayerId);
-            }
-            else if (Data.SelectedQuestion.Value.Type == QuestionType.NoRisk)
-            {
-                ShowAnswer();
-            }
-            else if (Data.SelectedQuestion.Value.Type == QuestionType.CatInBag)
-            {
-                MatchSystem.FinePlayer(Data.AnsweringPlayerId);
-                ShowAnswer();
-            }
-            else if (Data.SelectedQuestion.Value.Type == QuestionType.Auction)
-            {
-                MatchSystem.FinePlayer(Data.AnsweringPlayerId);
-                ShowAnswer();
-            }
+           CommandsSystem.AddNewCommand(new AcceptAnswerAsWrongCommand());
         }
         
         #endregion

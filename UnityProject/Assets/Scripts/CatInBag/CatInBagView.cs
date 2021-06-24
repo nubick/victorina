@@ -8,12 +8,11 @@ namespace Victorina
     public class CatInBagView : ViewBase
     {
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private CatInBagSystem CatInBagSystem { get; set; }
         
-        private CatInBagPlayState CatInBagPlayState => PackagePlayStateData.PlayState as CatInBagPlayState;
+        private CatInBagPlayState PlayState => PackagePlayStateData.PlayState as CatInBagPlayState;
         
         public SoundEffect MeowIntro;
         public SoundEffect MeowAngry;
@@ -47,18 +46,18 @@ namespace Victorina
         private void RefreshUI()
         {
             FinishButton.gameObject.SetActive(NetworkData.IsMaster);
-            FinishButton.interactable = CatInBagPlayState.WasGiven;
+            FinishButton.interactable = PlayState.WasGiven;
             
             string currentPlayerName = PlayersBoardSystem.GetCurrentPlayerName();
 
-            CatInBagInfo catInBagInfo = QuestionAnswerData.SelectedQuestion.Value.CatInBagInfo;
+            CatInBagInfo catInBagInfo = PlayState.NetQuestion.CatInBagInfo;
             
-            SelectOwnerState.SetActive(!CatInBagPlayState.WasGiven);
+            SelectOwnerState.SetActive(!PlayState.WasGiven);
             WhoSelectPlayerName.text = currentPlayerName;
             CanGiveYourselfState.SetActive(catInBagInfo.CanGiveYourself);
             CantGiveYourselfState.SetActive(!catInBagInfo.CanGiveYourself);
             
-            AnsweringState.SetActive(CatInBagPlayState.WasGiven);
+            AnsweringState.SetActive(PlayState.WasGiven);
             WhoAnswerPlayerName.text = currentPlayerName;
             Theme.text = catInBagInfo.Theme;
             Price.text = catInBagInfo.Price.ToString();

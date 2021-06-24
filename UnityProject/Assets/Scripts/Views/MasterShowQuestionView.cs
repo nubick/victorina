@@ -5,12 +5,15 @@ using Image = UnityEngine.UI.Image;
 
 namespace Victorina
 {
-    public class MasterQuestionPanelView : ViewBase
+    public class MasterShowQuestionView : ViewBase
     {
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private QuestionAnswerData Data { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
+
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+
+        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
 
         public GameObject PreviousQuestionDotButton;
         public GameObject NextQuestionDotButton;
@@ -40,42 +43,31 @@ namespace Victorina
         
         public void RefreshUI()
         {
-            if (!IsActive)
-                return;
+            PreviousQuestionDotButton.SetActive(PlayState.StoryDotIndex > 0);
+            NextQuestionDotButton.SetActive(!PlayState.IsLastDot);
             
-            QuestionType questionType = Data.SelectedQuestion.Value.Type;
-            
-            PreviousQuestionDotButton.SetActive(QuestionAnswerSystem.CanShowPrevious());
-            NextQuestionDotButton.SetActive(QuestionAnswerSystem.CanShowNext());
             TimerStrip.gameObject.SetActive(Data.TimerState != QuestionTimerState.NotStarted);
             RestartMediaButton.SetActive(false);
-            //todo: finish refactoring
-            //StartTimerButton.SetActive(CanStartTimer(phase, Data.TimerState, Data.IsLastDot)); 
+            StartTimerButton.SetActive(CanStartTimer(Data.TimerState, PlayState.IsLastDot)); 
             StopTimerButton.SetActive(Data.TimerState == QuestionTimerState.Running);
-
-            //todo: finish refactoring
-            //AcceptAnswer.SetActive(phase == QuestionPhase.ShowQuestion);
+            
+            AcceptAnswer.SetActive(true);
             ShowAnswerButton.SetActive(QuestionAnswerSystem.CanShowAnswer());
             ShowRoundButton.SetActive(QuestionAnswerSystem.CanBackToRound());
 
             AnswerTip.text = Data.AnswerTip;
             AnswerTipPanel.SetActive(Data.IsAnswerTipEnabled);
 
-            ThemeText.text = $"Тема: {MatchData.GetTheme()}";
+            ThemeText.text = $"Тема: {PlayState.NetQuestion.GetTheme()}";
         }
-
-        //todo: finish refactoring
-        /*
-        private bool CanStartTimer(QuestionPhase phase, QuestionTimerState timerState, bool isLastDot)
+        
+        private bool CanStartTimer(QuestionTimerState timerState, bool isLastDot)
         {
-            if (phase != QuestionPhase.ShowQuestion)
-                return false;
-
             if (timerState == QuestionTimerState.Running)
                 return false;
 
             return isLastDot || timerState != QuestionTimerState.NotStarted;
-        }*/
+        }
         
         public void Update()
         {

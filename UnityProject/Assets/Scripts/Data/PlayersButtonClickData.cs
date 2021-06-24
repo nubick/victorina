@@ -27,6 +27,12 @@ namespace Victorina
                 MetagameEvents.PlayersButtonClickDataChanged.Publish();
             }
         }
+
+        public void Update(PlayersButtonClickData data)
+        {
+            Players.Clear();
+            Players.AddRange(data.Players);
+        }
         
         public override string ToString()
         {

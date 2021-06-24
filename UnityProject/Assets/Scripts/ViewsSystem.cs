@@ -21,10 +21,11 @@ namespace Victorina
         [Inject] private AuctionView AuctionView { get; set; }
         [Inject] private PlayersMoreInfoView PlayersMoreInfoView { get; set; }
 
-        [Inject] private MasterQuestionPanelView MasterQuestionPanelView { get; set; }
+        [Inject] private MasterShowQuestionView MasterShowQuestionView { get; set; }
         [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
 
         [Inject] private PlayerGiveAnswerView PlayerGiveAnswerView { get; set; }
+        [Inject] private PlayerLookAnswerView PlayerLookAnswerView { get; set; }
         
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
@@ -85,8 +86,10 @@ namespace Victorina
                     NoRiskView.Show();
                     break;
                 case PlayStateType.ShowQuestion:
+                    ShowAnswerStoryDotView(PlayStateData.As<ShowAnswerPlayState>());
+                    break;
                 case PlayStateType.ShowAnswer:
-                    ShowStoryDotView();
+                    ShowQuestionStoryDotView(PlayStateData.As<ShowQuestionPlayState>());
                     break;
                 default:
                     throw new Exception($"Not supported PackagePlayState: {PlayStateData.PlayState}");
@@ -127,67 +130,54 @@ namespace Victorina
                 PlayersBoardView.Show();
         }
 
-        private void ShowStoryDotView()
+        private void ShowQuestionStoryDotView(ShowQuestionPlayState showQuestionPlayState)
         {
             HideAll();
+            StoryDot currentStoryDot = showQuestionPlayState.CurrentStoryDot;
+            ViewBase storyDotView = GetStoryDotView(currentStoryDot);
+            Debug.Log($"Show: {storyDotView.name}");
+            storyDotView.Show();
+
+            if (NetworkData.IsMaster)
+                MasterShowQuestionView.Show();
+
+            if (NetworkData.IsClient)
+                PlayerGiveAnswerView.Show();
+        }
+
+        private void ShowAnswerStoryDotView(ShowAnswerPlayState showAnswerPlayState)
+        {
+            HideAll();
+            StoryDot currentStoryDot = showAnswerPlayState.CurrentStoryDot;
+            ViewBase storyDotView = GetStoryDotView(currentStoryDot);
+            Debug.Log($"Show: {storyDotView.name}");
+            storyDotView.Show();
+
+            if (NetworkData.IsMaster)
+                MasterShowQuestionView.Show();
+
+            if (NetworkData.IsClient)
+                PlayerLookAnswerView.Show();
         }
         
+        private ViewBase GetStoryDotView(StoryDot storyDot)
+        {
+            return storyDot switch
+            {
+                ImageStoryDot _ => ImageStoryDotView,
+                AudioStoryDot _ => AudioStoryDotView,
+                VideoStoryDot _ => VideoStoryDotView,
+                TextStoryDot _ => TextStoryDotView,
+                _ => throw new Exception($"Not supported story dot: {storyDot}")
+            };
+        }
+
         public void UpdateStoryDot(QuestionAnswerData data)
         {
             HideAll();
 
             //todo: finish refactoring
-            StoryDot currentStoryDot = null;
             
-            if (currentStoryDot is ImageStoryDot)
-            {
-                Debug.Log("Show: ImageStoryDotView");
-                ImageStoryDotView.Show();
-
-                if (NetworkData.IsMaster)
-                    MasterQuestionPanelView.Show();
-
-                if (NetworkData.IsClient)
-                    PlayerGiveAnswerView.Show();
-            }
-            else if (currentStoryDot is AudioStoryDot)
-            {
-                Debug.Log("Show: AudioStoryDotView");
-                AudioStoryDotView.Show();
-
-                if (NetworkData.IsMaster)
-                    MasterQuestionPanelView.Show();
-
-                if (NetworkData.IsClient)
-                    PlayerGiveAnswerView.Show();
-            }
-            else if (currentStoryDot is VideoStoryDot)
-            {
-                Debug.Log("Show: VideoStoryDotView");
-                VideoStoryDotView.Show();
-
-                if (NetworkData.IsMaster)
-                    MasterQuestionPanelView.Show();
-
-                if (NetworkData.IsClient)
-                    PlayerGiveAnswerView.Show();
-            }
-            else if (currentStoryDot is TextStoryDot)
-            {
-                Debug.Log("Show: TextStoryDotView");
-                TextStoryDotView.Show();
-
-                if (NetworkData.IsMaster)
-                    MasterQuestionPanelView.Show();
-
-                if (NetworkData.IsClient)
-                    PlayerGiveAnswerView.Show();
-            }
-            else
-            {
-                throw new Exception($"Not supported story dot: {currentStoryDot}");
-            }
-
             //MasterEffectsView.Show();
         }
         

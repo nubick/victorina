@@ -132,5 +132,31 @@ namespace Victorina
         {
             return GetPlayer(playerId).Name;
         }
+        
+        public void RewardPlayer(byte playerId, int price)
+        {
+            PlayerData player = GetPlayer(playerId);
+            RewardPlayer(player, price);
+        }
+
+        public void RewardPlayer(PlayerData player, int price)
+        {
+            player.Score += price;
+            Debug.Log($"Reward player {player} by {price}, new score: {player.Score}");
+            PlayersBoard.MarkAsChanged();
+        }
+        
+        public void FinePlayer(byte playerId, int price)
+        {
+            PlayerData player = GetPlayer(playerId);
+            FinePlayer(player, price);
+        }
+
+        public void FinePlayer(PlayerData player, int price)
+        {
+            player.Score -= price;
+            Debug.Log($"Fine player {player} by {price}, new score: {player.Score}");
+            PlayersBoard.MarkAsChanged();
+        }
     }
 }

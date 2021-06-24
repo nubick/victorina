@@ -10,8 +10,8 @@ namespace Victorina
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private PlayerAnswerSystem PlayerAnswerSystem { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
 
         public Image TimerStrip;
 
@@ -21,10 +21,10 @@ namespace Victorina
         
         public GameObject AnsweringPanel;
         public Text AnsweringText;
-        public GameObject AnswerDemonstrationPanel;
-        
 
         public Text ThemeText;
+
+        private ShowQuestionPlayState ShowQuestionPlayState => PlayStateData.As<ShowQuestionPlayState>();
         
         public void Initialize()
         {
@@ -40,51 +40,34 @@ namespace Victorina
 
         private void RefreshUI()
         {
-            if (!IsActive)
-                return;
-            
-            AnswerDemonstrationPanel.SetActive(false);
             WasWrongAnswerState.SetActive(false);
             AnsweringPanel.SetActive(false);
             SayAnswerState.SetActive(false);
             WaitingState.SetActive(false);
 
             //todo: Finish refactoring
-            //if (phase == QuestionPhase.ShowQuestion)
-            {
-                if (PlayerAnswerSystem.WasWrongAnswer())
-                    WasWrongAnswerState.SetActive(true);
-                else if (PlayerAnswerSystem.WasIntentionSent())
-                    WaitingState.SetActive(true);
-                else if (PlayerAnswerSystem.CanSendAnswerIntentionNow())
-                    SayAnswerState.SetActive(true);
-                else if (PlayerAnswerSystem.CanSendAnswerIntention())
-                    WaitingState.SetActive(true);
-                else
-                {
-                    AnsweringPanel.SetActive(true);
-                    string names = string.Join(", ", QuestionAnswerData.AdmittedPlayersIds.Select(PlayersBoardSystem.GetPlayerName));
-                    AnsweringText.text = $"Отвечает: {names}";
-                }
-            }
-            //else if (phase == QuestionPhase.AcceptingAnswer)
+            
+            if (PlayerAnswerSystem.WasWrongAnswer())
+                WasWrongAnswerState.SetActive(true);
+            else if (PlayerAnswerSystem.WasIntentionSent())
+                WaitingState.SetActive(true);
+            else if (PlayerAnswerSystem.CanSendAnswerIntentionNow())
+                SayAnswerState.SetActive(true);
+            else if (PlayerAnswerSystem.CanSendAnswerIntention())
+                WaitingState.SetActive(true);
+            else
             {
                 AnsweringPanel.SetActive(true);
-                AnsweringText.text = $"Отвечает: {PlayersBoardSystem.GetPlayerName(QuestionAnswerData.AnsweringPlayerId)}";
+                string names = string.Join(", ", QuestionAnswerData.AdmittedPlayersIds.Select(PlayersBoardSystem.GetPlayerName));
+                AnsweringText.text = $"Отвечает: {names}";
             }
-            //else if (phase == QuestionPhase.ShowAnswer)
-            {
-                AnswerDemonstrationPanel.SetActive(true);
-            }
-            //else
-            //{
-            //    Debug.LogError($"Not supported phase: {phase}");
-            //}
             
             TimerStrip.gameObject.SetActive(QuestionAnswerData.TimerState != QuestionTimerState.NotStarted);
-            ThemeText.text = $"Тема: {MatchData.GetTheme()}";
+
+            //todo: finish refactoring
+            //ThemeText.text = $"Тема: {MatchData.GetTheme()}";
         }
-        
+
         public void OnAnswerButtonClicked()
         {
             PlayerAnswerSystem.OnAnswerButtonClicked();

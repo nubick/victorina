@@ -9,6 +9,7 @@ namespace Victorina
         private Injector _injector;
         
         [Inject] private PackagePlayStateData Data { get; set; }
+        [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         
         public void Initialize(Injector injector)
         {
@@ -72,6 +73,38 @@ namespace Victorina
             return Data.PlayStatesMap.ContainsKey(type) ? 
                 Data.PlayStatesMap[type] as T : 
                 throw new Exception($"Can't find PlayState of type: {type}");
+        }
+
+        public void ChangeBackToShowQuestionPlayState(ShowQuestionPlayState showQuestionPlayState)
+        {
+            ChangePlayState(showQuestionPlayState);
+            
+            //todo: finish refactoring
+            //StartTimer();
+            //SendData(MasterIntention.ContinueTimer);
+        }
+        
+        public void ChangeToShowAnswerPlayState(ShowQuestionPlayState showQuestionPlayState)
+        {
+            ShowAnswerPlayState playState = new ShowAnswerPlayState();
+            playState.NetQuestion = showQuestionPlayState.NetQuestion;
+            
+            ChangePlayState(playState);
+            PlayersButtonClickData.Clear();
+            
+            //todo: finish refactoring
+            //Data.TimerState = QuestionTimerState.Paused;
+        }
+
+        public void ChangeToAcceptingAnswerPlayState(ShowQuestionPlayState showQuestionPlayState, byte playerId)
+        {
+            AcceptingAnswerPlayState playState = new AcceptingAnswerPlayState();
+            playState.ShowQuestionPlayState = showQuestionPlayState;
+            playState.Price = showQuestionPlayState.NetQuestion.Price;
+            playState.AnsweringPlayerId = playerId;
+            
+            ChangePlayState(playState);
+            PlayersButtonClickData.Clear();
         }
     }
 }

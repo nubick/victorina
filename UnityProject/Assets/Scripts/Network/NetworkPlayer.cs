@@ -1,4 +1,3 @@
-using System;
 using Injection;
 using MLAPI;
 using MLAPI.Messaging;
@@ -60,99 +59,6 @@ namespace Victorina
         {
             Debug.Log($"Player {OwnerClientId}: Receive question answer data: {questionAnswerData}");
             PlayerDataReceiver.OnReceive(questionAnswerData);
-        }
-
-        public void SendQuestionStoryShowData(QuestionStoryShowData data)
-        {
-            InvokeClientRpcOnOwner(ReceiveQuestionStoryShowDataClientRpc, data);
-        }
-
-        [ClientRPC]
-        private void ReceiveQuestionStoryShowDataClientRpc(QuestionStoryShowData data)
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive QuestionStoryShowData: {data}");
-            PlayerDataReceiver.OnReceiveQuestionStoryShowData(data);
-        }
-        
-        public void SendSelectedQuestion(NetQuestion netQuestion)
-        {
-            //Debug.Log($"Master: Send selected question: {netQuestion} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveSelectedQuestion, netQuestion);
-
-            for (int index = 0; index < netQuestion.QuestionStory.Length; index++)
-            {
-                //Debug.Log($"Master: Send question story dot to All: {storyDot}");
-                SendStoryDot(netQuestion.QuestionStory[index], isQuestion: true, index);
-            }
-
-            for (int index = 0; index < netQuestion.AnswerStory.Length; index++)
-            {
-                //Debug.Log($"Master: Send answer story dot to All: {storyDot}");
-                SendStoryDot(netQuestion.AnswerStory[index], isQuestion: false, index);
-            }
-        }
-
-        [ClientRPC]
-        private void ReceiveSelectedQuestion(NetQuestion netQuestion)
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive selected question: {netQuestion}");
-            netQuestion.QuestionStory = new StoryDot[netQuestion.QuestionStoryDotsAmount];
-            netQuestion.AnswerStory = new StoryDot[netQuestion.AnswerStoryDotsAmount];
-            MatchData.QuestionAnswerData.SelectedQuestion.Value = netQuestion;
-        }
-
-        public void SendStoryDot(StoryDot storyDot, bool isQuestion, int index)
-        {
-            //Debug.Log($"Master: Send story dot: {storyDot} to {OwnerClientId}");
-            if (storyDot is TextStoryDot textStoryDot)
-                InvokeClientRpcOnOwner(ReceiveTextStoryDot, textStoryDot, isQuestion, index, "RFS");
-            else if (storyDot is ImageStoryDot imageStoryDot)
-                InvokeClientRpcOnOwner(ReceiveImageStoryDot, imageStoryDot, isQuestion, index);
-            else if (storyDot is AudioStoryDot audioStoryDot)
-                InvokeClientRpcOnOwner(ReceiveAudioStoryDot, audioStoryDot, isQuestion, index);
-            else if (storyDot is VideoStoryDot videoStoryDot)
-                InvokeClientRpcOnOwner(ReceiveVideoStoryDot, videoStoryDot, isQuestion, index);
-            else
-                throw new Exception($"Not supported story dot: {storyDot}");
-        }
-
-        private void SetStoryDot(StoryDot storyDot, bool isQuestion, int index)
-        {
-            if (isQuestion)
-                MatchData.QuestionAnswerData.SelectedQuestion.Value.QuestionStory[index] = storyDot;
-            else
-                MatchData.QuestionAnswerData.SelectedQuestion.Value.AnswerStory[index] = storyDot;
-        }
-        
-        [ClientRPC]
-        private void ReceiveTextStoryDot(TextStoryDot textStoryDot, bool isQuestion, int index)
-        {
-            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}[{index}]: Receive text story dot: {textStoryDot}");
-            SetStoryDot(textStoryDot, isQuestion, index);
-        }
-
-        [ClientRPC]
-        private void ReceiveImageStoryDot(ImageStoryDot imageStoryDot, bool isQuestion, int index)
-        {
-            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}[{index}]: Receive image story dot: {imageStoryDot}");
-            SetStoryDot(imageStoryDot, isQuestion, index);
-            PlayerDataReceiver.OnFileStoryDotReceived(imageStoryDot);
-        }
-
-        [ClientRPC]
-        private void ReceiveAudioStoryDot(AudioStoryDot audioStoryDot, bool isQuestion, int index)
-        {
-            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}[{index}]: Receive audio story dot: {audioStoryDot}");
-            SetStoryDot(audioStoryDot, isQuestion, index);
-            PlayerDataReceiver.OnFileStoryDotReceived(audioStoryDot);
-        }
-
-        [ClientRPC]
-        private void ReceiveVideoStoryDot(VideoStoryDot videoStoryDot, bool isQuestion, int index)
-        {
-            Debug.Log($"Player {OwnerClientId}: {(isQuestion ? "Q" : "A")}[{index}]: Receive video story dot: {videoStoryDot}");
-            SetStoryDot(videoStoryDot, isQuestion, index);
-            PlayerDataReceiver.OnFileStoryDotReceived(videoStoryDot);
         }
         
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
@@ -219,21 +125,8 @@ namespace Victorina
 
         #endregion
 
-        #region Timer and button
-
-        public void SendPlayerButtonClickToMaster(float spentSeconds)
-        {
-            Debug.Log($"Player {OwnerClientId}: send button click to Master, thoughtSeconds: {spentSeconds}");
-            InvokeServerRpc(MasterReceivePlayerButtonClick, spentSeconds);
-        }
-
-        [ServerRPC]
-        private void MasterReceivePlayerButtonClick(float spentSeconds)
-        {
-            Debug.Log($"Master: Receive Player {GetPlayerInfo()} button click, spentSeconds: {spentSeconds}");
-            MasterDataReceiver.OnPlayerButtonClickReceived(OwnerClientId, spentSeconds);
-        }
-
+        #region Timer
+        
         public void SendPlayersButtonClickData(PlayersButtonClickData playerButtonClickData)
         {
             //Debug.Log($"Master: Send players button click data to {OwnerClientId}");

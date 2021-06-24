@@ -8,13 +8,15 @@ namespace Victorina
     public class AudioStoryDotView : ViewBase
     {
         private int? _pendingFileId;
-
-        [Inject] private QuestionStoryShowData Data { get; set; }
+        
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private AppState AppState { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private PathSystem PathSystem { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
 
+        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
+        
         public AudioSource AudioSource;
         
         public void Initialize()
@@ -34,7 +36,7 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            if (Data.CurrentStoryDot is AudioStoryDot audioStoryDot)
+            if (PlayState.CurrentStoryDot is AudioStoryDot audioStoryDot)
             {
                 StartCoroutine(LoadAndPlay(audioStoryDot.FileId));
             }

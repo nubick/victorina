@@ -11,10 +11,10 @@ namespace Victorina
     {
         [Inject] private FinalRoundData Data { get; set; }
         [Inject] private MatchData MatchData { get; set; }
-        [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private MessageDialogueView MessageDialogueView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         
         public void Select(Round round)
@@ -197,9 +197,9 @@ namespace Victorina
             
             int bet = Data.Bets[Data.AcceptingPlayerIndex];
             if (Data.IsAcceptedAsCorrect)
-                MatchSystem.RewardPlayer(AcceptingPlayer, bet);
+                PlayersBoardSystem.RewardPlayer(AcceptingPlayer, bet);
             else
-                MatchSystem.FinePlayer(AcceptingPlayer, bet);
+                PlayersBoardSystem.FinePlayer(AcceptingPlayer, bet);
 
             int? nextIndex = GetNextAcceptingPlayerIndex(Data.AcceptingPlayerIndex);
             if (nextIndex == null)

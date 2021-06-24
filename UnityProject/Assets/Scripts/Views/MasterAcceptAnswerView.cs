@@ -5,16 +5,19 @@ namespace Victorina
 {
     public class MasterAcceptAnswerView : ViewBase
     {
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         
         public Text Header;
         public Text AnswerTip;
+        
+        private AcceptingAnswerPlayState PlayState => PlayStateData.As<AcceptingAnswerPlayState>();
 
         protected override void OnShown()
         {
-            Header.text = $"Отвечает: {PlayersBoardSystem.GetPlayerName(QuestionAnswerData.AnsweringPlayerId)}";
+            Header.text = $"Отвечает: {PlayersBoardSystem.GetPlayerName(PlayState.AnsweringPlayerId)}";
             AnswerTip.text = $"Ответ: \n{QuestionAnswerData.AnswerTip}";
         }
         

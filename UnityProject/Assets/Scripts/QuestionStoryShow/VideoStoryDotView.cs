@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using Assets.Scripts.Utils;
 using Injection;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -11,11 +9,13 @@ namespace Victorina
     public class VideoStoryDotView : ViewBase
     {
         private int? _pendingFileId;
-
-        [Inject] private QuestionStoryShowData Data { get; set; }
+        
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private AppState AppState { get; set; }
         [Inject] private PathData PathData { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+
+        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
         
         public GameObject NoVideoImage;
         public VideoPlayer VideoPlayer;
@@ -41,7 +41,7 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            if (Data.CurrentStoryDot is VideoStoryDot videoStoryDot)
+            if (PlayState.CurrentStoryDot is VideoStoryDot videoStoryDot)
             {
                 StopAllCoroutines();
                 PlayVideo(videoStoryDot.FileId);

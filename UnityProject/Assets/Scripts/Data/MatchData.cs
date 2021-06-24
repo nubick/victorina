@@ -29,14 +29,7 @@ namespace Victorina
             RoundData.Value = new NetRound();
             SelectedRoundQuestion = null;
         }
-
-        public string GetTheme()
-        {
-            return QuestionAnswerData.QuestionType == QuestionType.CatInBag ? 
-                QuestionAnswerData.SelectedQuestion.Value.CatInBagInfo.Theme : 
-                SelectedRoundQuestion.Theme;
-        }
-
+        
         public override string ToString()
         {
             return $"{nameof(RoundData)}: {RoundData.Value}";

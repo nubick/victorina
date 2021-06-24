@@ -22,9 +22,10 @@ namespace Victorina
 
         private void OnQuestionAnswerPhaseChanged()
         {
+            //todo: finish refactoring
             if (NetworkData.IsMaster &&
-                MatchSettingsData.IsLimitAnsweringSeconds &&
-                QuestionAnswerData.QuestionType == QuestionType.Simple)
+                MatchSettingsData.IsLimitAnsweringSeconds)// &&
+                //QuestionAnswerData.QuestionType == QuestionType.Simple)
             {
                 //todo: finish refactoring
                 //if(QuestionAnswerData.Phase.Value == QuestionPhase.AcceptingAnswer)

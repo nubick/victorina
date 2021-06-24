@@ -37,6 +37,13 @@ namespace Victorina
             return PackageTools.GetAllQuestions(Data.Package).Single(question => question.Id == questionId);
         }
 
+        public string GetTheme(string questionId)
+        {
+            Question question = GetQuestion(questionId);
+            Theme theme = PackageTools.GetQuestionTheme(Data.Package, question);
+            return theme.Name;
+        }
+        
         public NetRoundQuestion GetNetRoundQuestion(string questionId)
         {
             NetRoundQuestion netRoundQuestion = Data.NetRounds.SelectMany(round => round.Themes.SelectMany(theme => theme.Questions))
@@ -107,7 +114,6 @@ namespace Victorina
                     NetRoundQuestion netRoundQuestion = new NetRoundQuestion(question.Id);
                     netRoundQuestion.Price = question.Price;
                     netRoundQuestion.Type = question.Type;
-                    netRoundQuestion.Theme = theme.Name;
                     netRoundQuestion.FileIds = FilesDeliveryStatusManager.GetQuestionFileIds(question);
                     netRoundQuestion.IsDownloadedByMe = true;//Master has file from pack
                     netRoundTheme.Questions.Add(netRoundQuestion);

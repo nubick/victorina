@@ -27,14 +27,6 @@ namespace Victorina
             else
                 Debug.Log($"Client is not connected: {nameof(SendFileChunkRequest)}");
         }
-
-        public void SendPlayerButton(float spentSeconds)
-        {
-            if (NetworkingManager.IsConnectedClient)
-                Player.SendPlayerButtonClickToMaster(spentSeconds);
-            else
-                Debug.Log($"Client is not connected: {nameof(SendPlayerButton)}");
-        }
         
         public void SendFilesLoadingPercentage(byte percentage, int[] downloadedFileIds)
         {

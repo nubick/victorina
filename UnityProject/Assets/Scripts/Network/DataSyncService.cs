@@ -10,8 +10,8 @@ namespace Victorina
         [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
-        [Inject] private QuestionStoryShowData QuestionStoryShowData { get; set; }
         [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
 
         public void Initialize()
         {
@@ -35,11 +35,11 @@ namespace Victorina
             WaitForSeconds delay = new WaitForSeconds(0.1f);
             for (;;)
             {
-                if (QuestionAnswerData.PlayersButtonClickData.HasChanges)
+                if (PlayersButtonClickData.HasChanges)
                 {
-                    Debug.Log($"DataSync: {QuestionAnswerData.PlayersButtonClickData}");
-                    QuestionAnswerData.PlayersButtonClickData.ApplyChanges();
-                    SendToPlayersService.SendPlayersButtonClickData(QuestionAnswerData.PlayersButtonClickData);
+                    Debug.Log($"DataSync: {PlayersButtonClickData}");
+                    PlayersButtonClickData.ApplyChanges();
+                    SendToPlayersService.SendPlayersButtonClickData(PlayersButtonClickData);
                 }
 
                 if (FinalRoundData.HasChanges)
@@ -57,15 +57,7 @@ namespace Victorina
                     SendToPlayersService.Send(PlayersBoard);
                     MetagameEvents.PlayersBoardChanged.Publish();
                 }
-
-                // if (QuestionStoryShowData.HasChanges)
-                // {
-                //     Debug.Log($"DataSync: {QuestionStoryShowData}");
-                //     QuestionStoryShowData.ApplyChanges();
-                //     SendToPlayersService.Send(QuestionStoryShowData);
-                //     MetagameEvents.QuestionStoryShowDataChange.Publish();
-                // }
-
+                
                 if (PackagePlayStateData.HasChanges)
                 {
                     Debug.Log($"DataSync: {PackagePlayStateData}");

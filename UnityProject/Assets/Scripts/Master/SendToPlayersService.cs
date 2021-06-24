@@ -19,6 +19,7 @@ namespace Victorina
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         
         private string All => $"All: ({GetPlayersInfo()})";
         
@@ -51,8 +52,7 @@ namespace Victorina
                PackagePlayStateData.Type == PlayStateType.AcceptingAnswer)
             {
                 networkPlayer.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
-                networkPlayer.SendSelectedQuestion(QuestionAnswerData.SelectedQuestion.Value);
-                networkPlayer.SendPlayersButtonClickData(QuestionAnswerData.PlayersButtonClickData);
+                networkPlayer.SendPlayersButtonClickData(PlayersButtonClickData);
                 networkPlayer.SendQuestionAnswerData(QuestionAnswerData);
             }
             
@@ -70,12 +70,6 @@ namespace Victorina
             //Debug.Log($"Master: Send PlayersBoard to {All}: {playersBoard}");
             GetPlayers().ForEach(player => player.SendPlayersBoard(playersBoard));
         }
-
-        public void SendSelectedQuestion(NetQuestion netQuestion)
-        {
-            Debug.Log($"Master: Send selected question to {All}: {netQuestion}");
-            GetPlayers().ForEach(player => player.SendSelectedQuestion(netQuestion));
-        }
         
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
         {
@@ -87,12 +81,6 @@ namespace Victorina
         {
             Debug.Log($"Master: Send QuestionAnswerData to {All}: {questionAnswerData}");
             GetPlayers().ForEach(player => player.SendQuestionAnswerData(questionAnswerData));
-        }
-
-        public void Send(QuestionStoryShowData data)
-        {
-            Debug.Log($"Master: Send QuestionStoryShowData to {All}: {data}");
-            GetPlayers().ForEach(player => player.SendQuestionStoryShowData(data));
         }
         
         public void SendPlayersButtonClickData(PlayersButtonClickData playersButtonClickData)

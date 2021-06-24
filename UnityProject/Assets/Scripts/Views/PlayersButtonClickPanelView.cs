@@ -7,8 +7,8 @@ namespace Victorina
     public class PlayersButtonClickPanelView : ViewBase, IDataDependOnlyView
     {
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         
         public RectTransform WidgetsRoot;
         public PlayerButtonClickWidget WidgetPrefab;
@@ -27,13 +27,13 @@ namespace Victorina
             ClearChild(WidgetsRoot);
             Show();
 
-            foreach (PlayerButtonClickData player in QuestionAnswerData.PlayersButtonClickData.Players)
+            foreach (PlayerButtonClickData player in PlayersButtonClickData.Players)
             {
                 PlayerButtonClickWidget widget = Instantiate(WidgetPrefab, WidgetsRoot);
                 widget.Bind(player);
             }
 
-            SelectFastestButton.SetActive(NetworkData.IsMaster && QuestionAnswerData.PlayersButtonClickData.Players.Count > 1);
+            SelectFastestButton.SetActive(NetworkData.IsMaster && PlayersButtonClickData.Players.Count > 1);
             LayoutRebuilder.ForceRebuildLayoutImmediate(VerticalLayoutGroup);
         }
 

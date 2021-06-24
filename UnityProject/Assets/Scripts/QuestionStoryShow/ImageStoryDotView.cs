@@ -9,9 +9,11 @@ namespace Victorina
     {
         private int? _pendingFileId;
         
-        [Inject] private QuestionStoryShowData Data { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
 
+        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
+        
         public Sprite NoImageSprite;
         public Image ImageBorder;
         public Image Image;
@@ -23,13 +25,13 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            if (Data.CurrentStoryDot is ImageStoryDot imageDot)
+            if (PlayState.CurrentStoryDot is ImageStoryDot imageDot)
             {
                 ShowImage(imageDot.FileId);
             }
             else
             {
-                throw new Exception($"ImageQuestionView: Current story dot is not image, {Data.CurrentStoryDot}");
+                throw new Exception($"ImageQuestionView: Current story dot is not image, {PlayState.CurrentStoryDot}");
             }
         }
 

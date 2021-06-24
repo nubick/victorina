@@ -27,6 +27,17 @@ namespace Victorina.Commands
         SendFinalRoundAnswer,
         ClearFinalRoundAnswer,
 
+        //Question Show
+        SendAnswerIntention,
+        SelectPlayerForAnswer,
+        SelectFastestPlayerForAnswer,
+        ShowAnswer,
+        
+        //Accepting Answer
+        AcceptAnswerAsCorrect,
+        AcceptAnswerAsWrong,
+        CancelAcceptingAnswer,
+        
         //DevTools
         SendPlayerLogs,
         SavePlayerLogs

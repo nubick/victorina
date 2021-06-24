@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using Injection;
@@ -9,7 +10,6 @@ namespace Victorina
 {
     public class DataSerializationService
     {
-        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private PackagePlayStateSystem PackagePlayStateSystem { get; set; }
         
@@ -20,18 +20,9 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeNetQuestion, DeserializeNetQuestion);
             SerializationManager.RegisterSerializationHandlers(SerializePlayersButtonClickData, DeserializePlayersButtonClickData);
             SerializationManager.RegisterSerializationHandlers(SerializeFinalRoundData, DeserializeFinalRoundData);
-            
             SerializationManager.RegisterSerializationHandlers(SerializeQuestionAnswerData, DeserializeQuestionAnswerData);
-            SerializationManager.RegisterSerializationHandlers(SerializeQuestionStoryShowData, DeserializeQuestionStoryShowData);
-            SerializationManager.RegisterSerializationHandlers(SerializeTextStoryDot, DeserializeTextStoryDot);
-            SerializationManager.RegisterSerializationHandlers(SerializeImageStoryDot, DeserializeImageStoryDot);
-            SerializationManager.RegisterSerializationHandlers(SerializeAudioStoryDot, DeserializeAudioStoryDot);
-            SerializationManager.RegisterSerializationHandlers(SerializeVideoStoryDot, DeserializeVideoStoryDot);
-
             SerializationManager.RegisterSerializationHandlers(SerializePackagePlayStateData, DeserializePackagePlayStateData);
-            
             SerializationManager.RegisterSerializationHandlers(SerializeCommandNetworkData, DeserializeCommandNetworkData);
-            
             SerializationManager.RegisterSerializationHandlers(SerializeBytesArray, DeserializeBytesArray);
         }
         
@@ -150,7 +141,6 @@ namespace Victorina
             writer.WriteInt32(netRoundQuestion.Price);
             writer.WriteBool(netRoundQuestion.IsAnswered);
             writer.WriteInt32((int) netRoundQuestion.Type);
-            writer.WriteString(netRoundQuestion.Theme);
             writer.WriteBool(netRoundQuestion.IsDownloadedByAll);
             writer.WriteIntArray(netRoundQuestion.FileIds);
         }
@@ -162,7 +152,6 @@ namespace Victorina
             netRoundQuestion.Price = reader.ReadInt32();
             netRoundQuestion.IsAnswered = reader.ReadBool();
             netRoundQuestion.Type = (QuestionType) reader.ReadInt32();
-            netRoundQuestion.Theme = reader.ReadString().ToString();
             netRoundQuestion.IsDownloadedByAll = reader.ReadBool();
             netRoundQuestion.FileIds = reader.ReadIntArray();
             return netRoundQuestion;
@@ -180,7 +169,9 @@ namespace Victorina
 
         public static void SerializeNetQuestion(PooledBitWriter writer, NetQuestion netQuestion)
         {
+            writer.WriteString(netQuestion.QuestionId);
             writer.WriteInt32((int) netQuestion.Type);
+            writer.WriteString(netQuestion.Theme);
             if (netQuestion.Type == QuestionType.CatInBag)
             {
                 writer.WriteString(netQuestion.CatInBagInfo.Theme);
@@ -189,8 +180,30 @@ namespace Victorina
             }
             writer.WriteInt32(netQuestion.QuestionStoryDotsAmount);
             writer.WriteInt32(netQuestion.AnswerStoryDotsAmount);
+            
+            SerializeStory(writer, netQuestion.QuestionStory);
+            SerializeStory(writer, netQuestion.AnswerStory);
         }
-        
+
+        private static void SerializeStory(PooledBitWriter writer, StoryDot[] story)
+        {
+            writer.WriteInt32(story.Length);
+            foreach (StoryDot storyDot in story)
+            {
+                writer.WriteInt32((int) storyDot.Type);
+                if (storyDot is TextStoryDot textStoryDot)
+                    SerializeTextStoryDot(writer, textStoryDot);
+                else if (storyDot is ImageStoryDot imageStoryDot)
+                    SerializeImageStoryDot(writer, imageStoryDot);
+                else if (storyDot is AudioStoryDot audioStoryDot)
+                    SerializeAudioStoryDot(writer, audioStoryDot);
+                else if (storyDot is VideoStoryDot videoStoryDot)
+                    SerializeVideoStoryDot(writer, videoStoryDot);
+                else
+                    throw new Exception($"Not supported story dot: {storyDot}");
+            }
+        }
+
         private NetQuestion DeserializeNetQuestion(Stream stream)
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
@@ -200,7 +213,9 @@ namespace Victorina
         public static NetQuestion DeserializeNetQuestion(PooledBitReader reader)
         {
             NetQuestion netQuestion = new NetQuestion();
+            netQuestion.QuestionId = reader.ReadString().ToString();
             netQuestion.Type = (QuestionType) reader.ReadInt32();
+            netQuestion.Theme = reader.ReadString().ToString();
             if (netQuestion.Type == QuestionType.CatInBag)
             {
                 string theme = reader.ReadString().ToString();
@@ -210,73 +225,92 @@ namespace Victorina
             }
             netQuestion.QuestionStoryDotsAmount = reader.ReadInt32();
             netQuestion.AnswerStoryDotsAmount = reader.ReadInt32();
+
+            netQuestion.QuestionStory = DeserializeStory(reader);
+            netQuestion.AnswerStory = DeserializeStory(reader);
+            
             return netQuestion;
+        }
+
+        private static StoryDot[] DeserializeStory(PooledBitReader reader)
+        {
+            int length = reader.ReadInt32();
+            StoryDot[] story = new StoryDot[length];
+            for (int i = 0; i < length; i++)
+            {
+                StoryDotType type = (StoryDotType) reader.ReadInt32();
+                story[i] = type switch
+                {
+                    StoryDotType.Text => DeserializeTextStoryDot(reader),
+                    StoryDotType.Image => DeserializeImageStoryDot(reader),
+                    StoryDotType.Audio => DeserializeAudioStoryDot(reader),
+                    StoryDotType.Video => DeserializeVideoStoryDot(reader),
+                    _ => throw new Exception($"Not supported StoryDotType: {type}")
+                };
+            }
+            return story;
         }
 
         #endregion
         
         #region Story Dots
 
-        private void SerializeTextStoryDot(Stream stream, TextStoryDot textStoryDot)
+        private static void SerializeTextStoryDot(PooledBitWriter writer, TextStoryDot textStoryDot)
         {
-            using PooledBitWriter writer = PooledBitWriter.Get(stream);
             writer.WriteString(textStoryDot.Text);
         }
 
-        private TextStoryDot DeserializeTextStoryDot(Stream stream)
+        private static TextStoryDot DeserializeTextStoryDot(PooledBitReader reader)
         {
-            using PooledBitReader reader = PooledBitReader.Get(stream);
             string text = reader.ReadString().ToString();
             return new TextStoryDot(text);
         }
         
-        private void SerializeFileStoryDot(Stream stream, FileStoryDot fileStoryDot)
+        private static void SerializeFileStoryDot(PooledBitWriter writer, FileStoryDot fileStoryDot)
         {
-            using PooledBitWriter writer = PooledBitWriter.Get(stream);
             writer.WriteInt32(fileStoryDot.FileId);
             writer.WriteInt32(fileStoryDot.ChunksAmount);
         }
         
-        private void SerializeImageStoryDot(Stream stream, ImageStoryDot imageStoryDot)
+        private static void SerializeImageStoryDot(PooledBitWriter writer, ImageStoryDot imageStoryDot)
         {
-            SerializeFileStoryDot(stream, imageStoryDot);
+            SerializeFileStoryDot(writer, imageStoryDot);
         }
 
-        private void SerializeAudioStoryDot(Stream stream, AudioStoryDot audioStoryDot)
+        private static void SerializeAudioStoryDot(PooledBitWriter writer, AudioStoryDot audioStoryDot)
         {
-            SerializeFileStoryDot(stream, audioStoryDot);
+            SerializeFileStoryDot(writer, audioStoryDot);
         }
 
-        private void SerializeVideoStoryDot(Stream stream, VideoStoryDot videoStoryDot)
+        private static void SerializeVideoStoryDot(PooledBitWriter writer, VideoStoryDot videoStoryDot)
         {
-            SerializeFileStoryDot(stream, videoStoryDot);
+            SerializeFileStoryDot(writer, videoStoryDot);
         }
         
-        private void DeserializeFileStoryDot(Stream stream, FileStoryDot fileStoryDot)
+        private static void DeserializeFileStoryDot(PooledBitReader reader, FileStoryDot fileStoryDot)
         {
-            using PooledBitReader reader = PooledBitReader.Get(stream);
             fileStoryDot.FileId = reader.ReadInt32();
             fileStoryDot.ChunksAmount = reader.ReadInt32();
         }
 
-        private ImageStoryDot DeserializeImageStoryDot(Stream stream)
+        private static ImageStoryDot DeserializeImageStoryDot(PooledBitReader reader)
         {
             ImageStoryDot imageStoryDot = new ImageStoryDot();
-            DeserializeFileStoryDot(stream, imageStoryDot);
+            DeserializeFileStoryDot(reader, imageStoryDot);
             return imageStoryDot;
         }
 
-        private AudioStoryDot DeserializeAudioStoryDot(Stream stream)
+        private static AudioStoryDot DeserializeAudioStoryDot(PooledBitReader reader)
         {
             AudioStoryDot audioStoryDot = new AudioStoryDot();
-            DeserializeFileStoryDot(stream, audioStoryDot);
+            DeserializeFileStoryDot(reader, audioStoryDot);
             return audioStoryDot;
         }
 
-        private VideoStoryDot DeserializeVideoStoryDot(Stream stream)
+        private static VideoStoryDot DeserializeVideoStoryDot(PooledBitReader reader)
         {
             VideoStoryDot videoStoryDot = new VideoStoryDot();
-            DeserializeFileStoryDot(stream, videoStoryDot);
+            DeserializeFileStoryDot(reader, videoStoryDot);
             return videoStoryDot;
         }
         
@@ -291,8 +325,7 @@ namespace Victorina
             writer.WriteInt32((int) data.TimerState);
             writer.WriteSingle(data.TimerResetSeconds);
             writer.WriteSingle(data.TimerLeftSeconds);
-
-            writer.WriteByte(data.AnsweringPlayerId);
+            
             SerializeBytesArray(stream, data.WrongAnsweredIds.ToArray());
             SerializeBytesArray(stream, data.AdmittedPlayersIds.ToArray());
         }
@@ -307,30 +340,12 @@ namespace Victorina
             data.TimerState = (QuestionTimerState) reader.ReadInt32();
             data.TimerResetSeconds = reader.ReadSingle();
             data.TimerLeftSeconds = reader.ReadSingle();
-
-            data.AnsweringPlayerId = (byte) reader.ReadByte();
+            
             data.WrongAnsweredIds.AddRange(DeserializeBytesArray(stream));
             data.AdmittedPlayersIds.AddRange(DeserializeBytesArray(stream));
 
             return data;
         }
-
-        private void SerializeQuestionStoryShowData(Stream stream, QuestionStoryShowData data)
-        {
-            using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteInt32((int) data.State);
-            writer.WriteInt32(data.CurrentStoryDotIndex);
-        }
-
-        private QuestionStoryShowData DeserializeQuestionStoryShowData(Stream stream)
-        {
-            using PooledBitReader reader = PooledBitReader.Get(stream);
-            QuestionStoryShowData data = new QuestionStoryShowData();
-            data.State = (QuestionStoryShowDataState) reader.ReadInt32();
-            data.CurrentStoryDotIndex = reader.ReadInt32();
-            return data;
-        }
-        
         
         private void SerializePlayersButtonClickData(Stream stream, PlayersButtonClickData data)
         {

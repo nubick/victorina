@@ -78,7 +78,7 @@ namespace Victorina.Commands
             blinkingPlayState.NetRound = roundPlayState.NetRound;
             PlayStateSystem.ChangePlayState(blinkingPlayState);
             
-            TimerSystem.RunAfter(3f, CreateStopRoundBlinkingCommand);
+            TimerSystem.RunAfter(1.5f, CreateStopRoundBlinkingCommand);
         }
 
         private void CreateStopRoundBlinkingCommand()
