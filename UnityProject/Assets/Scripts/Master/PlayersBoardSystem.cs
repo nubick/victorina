@@ -8,8 +8,6 @@ namespace Victorina
     public class PlayersBoardSystem
     {
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
-        [Inject] private SendToPlayersService SendToPlayersService { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private ServerService ServerService { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }

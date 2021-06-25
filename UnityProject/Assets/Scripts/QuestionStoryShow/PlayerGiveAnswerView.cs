@@ -9,9 +9,9 @@ namespace Victorina
     {
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private PlayerAnswerSystem PlayerAnswerSystem { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private AnswerTimerData AnswerTimerData { get; set; }
 
         public Image TimerStrip;
 
@@ -24,13 +24,14 @@ namespace Victorina
 
         public Text ThemeText;
 
-        private ShowQuestionPlayState ShowQuestionPlayState => PlayStateData.As<ShowQuestionPlayState>();
+        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
         
         public void Initialize()
         {
             //todo: finish refactoring
             //QuestionAnswerData.Phase.SubscribeChanged(RefreshUI);
             MetagameEvents.PlayersButtonClickDataChanged.Subscribe(RefreshUI);
+            MetagameEvents.AnswerTimerDataChanged.Subscribe(RefreshUI);
         }
 
         protected override void OnShown()
@@ -58,11 +59,11 @@ namespace Victorina
             else
             {
                 AnsweringPanel.SetActive(true);
-                string names = string.Join(", ", QuestionAnswerData.AdmittedPlayersIds.Select(PlayersBoardSystem.GetPlayerName));
+                string names = string.Join(", ", PlayState.AdmittedPlayersIds.Select(PlayersBoardSystem.GetPlayerName));
                 AnsweringText.text = $"Отвечает: {names}";
             }
             
-            TimerStrip.gameObject.SetActive(QuestionAnswerData.TimerState != QuestionTimerState.NotStarted);
+            TimerStrip.gameObject.SetActive(AnswerTimerData.TimerState != QuestionTimerState.NotStarted);
 
             //todo: finish refactoring
             //ThemeText.text = $"Тема: {MatchData.GetTheme()}";

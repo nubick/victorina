@@ -9,10 +9,11 @@ namespace Victorina
     {
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
-        [Inject] private QuestionAnswerData Data { get; set; }
-
+        [Inject] private AnswerTimerData AnswerTimerData { get; set; }
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
-
+        [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
+        [Inject] private MasterAnswerTipData TipData { get; set; }
+        
         private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
 
         public GameObject PreviousQuestionDotButton;
@@ -46,17 +47,17 @@ namespace Victorina
             PreviousQuestionDotButton.SetActive(PlayState.StoryDotIndex > 0);
             NextQuestionDotButton.SetActive(!PlayState.IsLastDot);
             
-            TimerStrip.gameObject.SetActive(Data.TimerState != QuestionTimerState.NotStarted);
+            TimerStrip.gameObject.SetActive(AnswerTimerData.TimerState != QuestionTimerState.NotStarted);
             RestartMediaButton.SetActive(false);
-            StartTimerButton.SetActive(CanStartTimer(Data.TimerState, PlayState.IsLastDot)); 
-            StopTimerButton.SetActive(Data.TimerState == QuestionTimerState.Running);
+            StartTimerButton.SetActive(CanStartTimer(AnswerTimerData.TimerState, PlayState.IsLastDot)); 
+            StopTimerButton.SetActive(AnswerTimerData.TimerState == QuestionTimerState.Running);
             
             AcceptAnswer.SetActive(true);
-            ShowAnswerButton.SetActive(QuestionAnswerSystem.CanShowAnswer());
+            ShowAnswerButton.SetActive(ShowQuestionSystem.CanShowAnswer());
             ShowRoundButton.SetActive(QuestionAnswerSystem.CanBackToRound());
 
-            AnswerTip.text = Data.AnswerTip;
-            AnswerTipPanel.SetActive(Data.IsAnswerTipEnabled);
+            AnswerTip.text = TipData.AnswerTip;
+            AnswerTipPanel.SetActive(TipData.IsAnswerTipEnabled);
 
             ThemeText.text = $"Тема: {PlayState.NetQuestion.GetTheme()}";
         }
@@ -71,7 +72,7 @@ namespace Victorina
         
         public void Update()
         {
-            if (IsActive && Data.TimerState == QuestionTimerState.Running)
+            if (IsActive && AnswerTimerData.TimerState == QuestionTimerState.Running)
             {
                 TimerStrip.fillAmount = QuestionTimer.GetLeftSecondsPercentage();
             }
@@ -86,35 +87,35 @@ namespace Victorina
 
         public void OnPreviousQuestionDotButtonClicked()
         {
-            QuestionAnswerSystem.ShowPrevious();
+            ShowQuestionSystem.ShowPrevious();
         }
         
         public void OnNextQuestionDotButtonClicked()
         {
-            QuestionAnswerSystem.ShowNext();
+            ShowQuestionSystem.ShowNext();
         }
 
         public void OnRestartMediaButtonClicked()
         {
-            QuestionAnswerSystem.RestartMedia();
+            ShowQuestionSystem.RestartMedia();
             RefreshUI();
         }
         
         public void OnStartTimerButtonClicked()
         {
-            QuestionAnswerSystem.ContinueTimer();
+            ShowQuestionSystem.ContinueTimer();
             RefreshUI();
         }
 
         public void OnStopTimerButtonClicked()
         {
-            QuestionAnswerSystem.PauseTimer();
+            ShowQuestionSystem.PauseTimer();
             RefreshUI();
         }
         
         public void OnShowAnswerButtonClicked()
         {
-            QuestionAnswerSystem.ShowAnswer();
+            ShowQuestionSystem.ShowAnswer();
         }
 
         public void OnShowRoundButtonClicked()
@@ -124,12 +125,12 @@ namespace Victorina
 
         public void OnAcceptAnswerButtonClicked()
         {
-            QuestionAnswerSystem.AcceptNoRiskAnswer();
+            ShowQuestionSystem.AcceptNoRiskAnswer();
         }
 
         public void OnToggleTipTriggerClicked()
         {
-            Data.IsAnswerTipEnabled = !Data.IsAnswerTipEnabled;
+            TipData.IsAnswerTipEnabled = !TipData.IsAnswerTipEnabled;
             RefreshUI();
         }
     }

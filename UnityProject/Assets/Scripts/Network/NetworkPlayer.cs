@@ -47,19 +47,6 @@ namespace Victorina
             //Debug.Log($"Player {OwnerClientId}: Receive PlayersBoard: {playersBoard}");
             PlayerDataReceiver.OnReceive(playersBoard);
         }
-
-        public void SendQuestionAnswerData(QuestionAnswerData questionAnswerData)
-        {
-            //Debug.Log($"Master: Send question answer data: {questionAnswerData} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveQuestionAnswerData, questionAnswerData);
-        }
-
-        [ClientRPC]
-        private void ReceiveQuestionAnswerData(QuestionAnswerData questionAnswerData)
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive question answer data: {questionAnswerData}");
-            PlayerDataReceiver.OnReceive(questionAnswerData);
-        }
         
         public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
         {
@@ -140,6 +127,18 @@ namespace Victorina
             PlayerDataReceiver.OnReceive(playersButtonClickData);
         }
 
+        public void SendAnswerTimerData(AnswerTimerData data)
+        {
+            InvokeClientRpcOnOwner(ReceiveAnswerTimerDataRpc, data);
+        }
+
+        [ClientRPC]
+        private void ReceiveAnswerTimerDataRpc(AnswerTimerData data)
+        {
+            Debug.Log($"Player {OwnerClientId}: Receive AnswerTimerData: {data}");
+            PlayerDataReceiver.OnReceiveAnswerTimerData(data);
+        }
+        
         #endregion
         
         #region Files Loading Percentage to MASTER
@@ -175,16 +174,16 @@ namespace Victorina
         
         #endregion
 
-        public void SendAnsweringTimerData(AnsweringTimerData data)
+        public void SendAcceptingAnswerTimerData(AcceptingAnswerTimerData data)
         {
-            InvokeClientRpcOnOwner(ReceiveAnsweringTimerData, data.IsRunning, data.MaxSeconds, data.LeftSeconds);
+            InvokeClientRpcOnOwner(ReceiveAcceptingAnswerTimerData, data.IsRunning, data.MaxSeconds, data.LeftSeconds);
         }
 
         [ClientRPC]
-        private void ReceiveAnsweringTimerData(bool isRunning, float maxSeconds, float leftSeconds)
+        private void ReceiveAcceptingAnswerTimerData(bool isRunning, float maxSeconds, float leftSeconds)
         {
             //Debug.Log($"Player {OwnerClientId}: Receive answering timer data, isRunning: {isRunning}, startSeconds: {maxSeconds}, leftSeconds: {leftSeconds}");
-            PlayerDataReceiver.OnReceiveAnsweringTimerData(isRunning, maxSeconds, leftSeconds);
+            PlayerDataReceiver.OnReceiveAcceptingAnswerTimerData(isRunning, maxSeconds, leftSeconds);
         }
         
         #region Final Round

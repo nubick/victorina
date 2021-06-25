@@ -5,13 +5,12 @@ using UnityEngine.Networking;
 
 namespace Victorina
 {
-    public class AudioStoryDotView : ViewBase
+    public class AudioStoryDotView : StoryDotView
     {
         private int? _pendingFileId;
         
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private AppState AppState { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private PathSystem PathSystem { get; set; }
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
 
@@ -36,7 +35,8 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            if (PlayState.CurrentStoryDot is AudioStoryDot audioStoryDot)
+            StoryDot currentStoryDot = GetCurrentStoryDot();
+            if (currentStoryDot is AudioStoryDot audioStoryDot)
             {
                 StartCoroutine(LoadAndPlay(audioStoryDot.FileId));
             }
@@ -93,10 +93,11 @@ namespace Victorina
             if (IsActive)
             {
                 Debug.Log($"AudioView: TimerStarted, isPlaying: {AudioSource.isPlaying}, playback pos: {AudioSource.time}, {Time.time}");
-                if (QuestionAnswerData.MasterIntention == MasterIntention.RestartMedia)
-                    AudioSource.Play();
-                else
-                    AudioSource.UnPause();
+                //todo: finish refactoring
+                // if (QuestionAnswerData.MasterIntention == MasterIntention.RestartMedia)
+                //     AudioSource.Play();
+                // else
+                //     AudioSource.UnPause();
             }
         }
 

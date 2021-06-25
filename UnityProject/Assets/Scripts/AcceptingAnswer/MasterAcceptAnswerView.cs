@@ -6,7 +6,7 @@ namespace Victorina
     public class MasterAcceptAnswerView : ViewBase
     {
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
+        [Inject] private MasterAnswerTipData MasterAnswerTipData { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         
@@ -18,7 +18,7 @@ namespace Victorina
         protected override void OnShown()
         {
             Header.text = $"Отвечает: {PlayersBoardSystem.GetPlayerName(PlayState.AnsweringPlayerId)}";
-            AnswerTip.text = $"Ответ: \n{QuestionAnswerData.AnswerTip}";
+            AnswerTip.text = $"Ответ: \n{MasterAnswerTipData.AnswerTip}";
         }
         
         public void OnCorrectButtonClicked()

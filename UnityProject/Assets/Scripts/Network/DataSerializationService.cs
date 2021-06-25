@@ -20,10 +20,10 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeNetQuestion, DeserializeNetQuestion);
             SerializationManager.RegisterSerializationHandlers(SerializePlayersButtonClickData, DeserializePlayersButtonClickData);
             SerializationManager.RegisterSerializationHandlers(SerializeFinalRoundData, DeserializeFinalRoundData);
-            SerializationManager.RegisterSerializationHandlers(SerializeQuestionAnswerData, DeserializeQuestionAnswerData);
+            SerializationManager.RegisterSerializationHandlers(SerializeAnswerTimerData, DeserializeAnswerTimerData);
             SerializationManager.RegisterSerializationHandlers(SerializePackagePlayStateData, DeserializePackagePlayStateData);
             SerializationManager.RegisterSerializationHandlers(SerializeCommandNetworkData, DeserializeCommandNetworkData);
-            SerializationManager.RegisterSerializationHandlers(SerializeBytesArray, DeserializeBytesArray);
+            SerializationManager.RegisterSerializationHandlers(SerializationTools.SerializeBytesArray, SerializationTools.DeserializeBytesArray);
         }
         
         #region PlayersBoard
@@ -316,37 +316,24 @@ namespace Victorina
         
         #endregion
         
-        private void SerializeQuestionAnswerData(Stream stream, QuestionAnswerData data)
+        private void SerializeAnswerTimerData(Stream stream, AnswerTimerData data)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            
-            writer.WriteInt32((int)data.MasterIntention);
-            
             writer.WriteInt32((int) data.TimerState);
             writer.WriteSingle(data.TimerResetSeconds);
             writer.WriteSingle(data.TimerLeftSeconds);
-            
-            SerializeBytesArray(stream, data.WrongAnsweredIds.ToArray());
-            SerializeBytesArray(stream, data.AdmittedPlayersIds.ToArray());
         }
 
-        private QuestionAnswerData DeserializeQuestionAnswerData(Stream stream)
+        private AnswerTimerData DeserializeAnswerTimerData(Stream stream)
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
-            QuestionAnswerData data = new QuestionAnswerData();
-            
-            data.MasterIntention = (MasterIntention) reader.ReadInt32();
-            
+            AnswerTimerData data = new AnswerTimerData();
             data.TimerState = (QuestionTimerState) reader.ReadInt32();
             data.TimerResetSeconds = reader.ReadSingle();
             data.TimerLeftSeconds = reader.ReadSingle();
-            
-            data.WrongAnsweredIds.AddRange(DeserializeBytesArray(stream));
-            data.AdmittedPlayersIds.AddRange(DeserializeBytesArray(stream));
-
             return data;
         }
-        
+
         private void SerializePlayersButtonClickData(Stream stream, PlayersButtonClickData data)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
@@ -399,24 +386,6 @@ namespace Victorina
             return finalRoundData;
         }
         
-        private void SerializeBytesArray(Stream stream, byte[] bytes)
-        {
-            using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteInt32(bytes.Length);
-            stream.Write(bytes, 0, bytes.Length);
-        }
-        
-        private byte[] DeserializeBytesArray(Stream stream)
-        {
-            using PooledBitReader reader = PooledBitReader.Get(stream);
-            int length = reader.ReadInt32();
-            byte[] bytes = new byte[length];
-            stream.Read(bytes, 0, length);
-            return bytes;
-        }
-        
-        #region Commands
-        
         private void SerializeCommandNetworkData(Stream stream, CommandNetworkData data)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
@@ -432,8 +401,6 @@ namespace Victorina
             command.Deserialize(reader);
             return new CommandNetworkData(command);
         }
-        
-        #endregion
 
         private void SerializePackagePlayStateData(Stream stream, PackagePlayStateData data)
         {

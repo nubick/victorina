@@ -7,8 +7,6 @@ namespace Victorina
     public class MasterContextKeyboardTipView : ViewBase
     {
         [Inject] private MasterContextKeyboardSystem MasterContextKeyboardSystem { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
 
         public Text TipText;
 

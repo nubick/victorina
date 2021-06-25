@@ -8,17 +8,25 @@ namespace Victorina
 {
     public class SendAnswerIntentionCommand : Command, INetworkCommand, IServerCommand
     {
-        [Inject] private QuestionAnswerData Data { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
-        [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
+        [Inject] private AnswerTimerData AnswerTimerData { get; set; }
+        [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
         
         public float SpentSeconds { get; set; }
         
         public override CommandType Type => CommandType.SendAnswerIntention;
+        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
         
         public bool CanSend()
         {
-            if (Data.TimerState == QuestionTimerState.NotStarted)
+            if (PlayStateData.Type != PlayStateType.ShowQuestion)
+            {
+                Debug.Log($"Wrong intention: Can't send intention in PlayState: {PlayStateData}");
+                return false;
+            }
+            
+            if (AnswerTimerData.TimerState == QuestionTimerState.NotStarted)
             {
                 Debug.Log("Wrong intention: Timer is not started.");
                 return false;
@@ -31,13 +39,13 @@ namespace Victorina
                 return false;
             }
 
-            if (!Data.AdmittedPlayersIds.Contains(OwnerPlayer.PlayerId))
+            if (!PlayState.AdmittedPlayersIds.Contains(OwnerPlayer.PlayerId))
             {
-                Debug.Log($"Wrong intention: Player '{OwnerString}' is not admitted to answer. Admitted players: {string.Join(", ", Data.AdmittedPlayersIds)}");
+                Debug.Log($"Wrong intention: Player '{OwnerString}' is not admitted to answer. Admitted players: {string.Join(", ", PlayState.AdmittedPlayersIds)}");
                 return false;
             }
 
-            if (Data.WrongAnsweredIds.Contains(OwnerPlayer.PlayerId))
+            if (PlayState.WrongAnsweredIds.Contains(OwnerPlayer.PlayerId))
             {
                 Debug.Log($"Wrong intention: Player '{OwnerString}' answered wrongly before.");
                 return false;
@@ -54,7 +62,7 @@ namespace Victorina
         public void ExecuteOnServer()
         {
             PlayersButtonClickData.Add(OwnerPlayer.PlayerId, OwnerPlayer.Name, SpentSeconds);
-            QuestionAnswerSystem.PauseTimer();
+            ShowQuestionSystem.PauseTimer();
         }
 
         public void Serialize(PooledBitWriter writer) => writer.WriteSingle(SpentSeconds);

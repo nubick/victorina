@@ -3,14 +3,13 @@ using UnityEngine;
 
 namespace Victorina
 {
-    public class AnsweringTimerSystem
+    public class AcceptingAnswerTimerSystem
     {
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
-        [Inject] private AnsweringTimerData Data { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
+        [Inject] private AcceptingAnswerTimerData Data { get; set; }
         [Inject] private MatchSettingsData MatchSettingsData { get; set; }
-        [Inject] private AnsweringTimerView AnsweringTimerView { get; set; }
+        [Inject] private AcceptingAnswerTimerView AcceptingAnswerTimerView { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
         
@@ -33,14 +32,14 @@ namespace Victorina
                     Data.IsRunning = true;
                     Data.MaxSeconds = MatchSettingsData.MaxAnsweringSeconds;
                     Data.LeftSeconds = Data.MaxSeconds;
-                    SendToPlayersService.SendAnsweringTimerData(Data);
+                    SendToPlayersService.SendAcceptingAnswerTimerData(Data);
                 }
                 //else
                 {
                     if (Data.IsRunning)
                     {
                         Data.IsRunning = false;
-                        SendToPlayersService.SendAnsweringTimerData(Data);
+                        SendToPlayersService.SendAcceptingAnswerTimerData(Data);
                     }
                 }
             }
@@ -62,7 +61,7 @@ namespace Victorina
                 bool isTimeToSend = isTimeUp || Time.time - Data.LastTimeSend > 0.1f;
                 if (isTimeToSend)
                 {
-                    SendToPlayersService.SendAnsweringTimerData(Data);
+                    SendToPlayersService.SendAcceptingAnswerTimerData(Data);
                     Data.LastTimeSend = Time.time;
                 }
             }
@@ -72,14 +71,14 @@ namespace Victorina
 
         private void RefreshView()
         {
-            if(Data.IsRunning && !AnsweringTimerView.IsActive)
-                AnsweringTimerView.Show();
+            if(Data.IsRunning && !AcceptingAnswerTimerView.IsActive)
+                AcceptingAnswerTimerView.Show();
             
-            if(!Data.IsRunning && AnsweringTimerView.IsActive)
-                AnsweringTimerView.Hide();
+            if(!Data.IsRunning && AcceptingAnswerTimerView.IsActive)
+                AcceptingAnswerTimerView.Hide();
             
             if(Data.IsRunning)
-                AnsweringTimerView.RefreshUI(Data);
+                AcceptingAnswerTimerView.RefreshUI(Data);
         }
 
         private void AcceptAnswerAsWrong()

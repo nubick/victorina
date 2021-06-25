@@ -6,9 +6,9 @@ namespace Victorina
 {
     public class PlayersButtonClickPanelView : ViewBase, IDataDependOnlyView
     {
-        [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
+        [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
         
         public RectTransform WidgetsRoot;
         public PlayerButtonClickWidget WidgetPrefab;
@@ -39,12 +39,12 @@ namespace Victorina
 
         private void OnWidgetClicked(PlayerButtonClickData playerData)
         {
-            QuestionAnswerSystem.SelectPlayerForAnswer(playerData.PlayerId);
+            ShowQuestionSystem.SelectPlayerForAnswer(playerData.PlayerId);
         }
 
         public void OnSelectFastestButtonClicked()
         {
-            QuestionAnswerSystem.SelectFastestPlayerForAnswer();   
+            ShowQuestionSystem.SelectFastestPlayerForAnswer();   
         }
     }
 }

@@ -8,9 +8,8 @@ namespace Victorina
     {
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
+        [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
 
         public override CommandType Type => CommandType.FinishAuction;
         private AuctionPlayState AuctionPlayState => PlayStateData.As<AuctionPlayState>();
@@ -28,12 +27,14 @@ namespace Victorina
 
         public void ExecuteOnServer()
         {
-            QuestionAnswerData.AdmittedPlayersIds.Add(AuctionPlayState.Player.PlayerId);
-            PlayersBoardSystem.MakePlayerCurrent(AuctionPlayState.Player);
-            QuestionAnswerSystem.StartQuestionStory();
-
+            //todo: pass parameters
             ShowQuestionPlayState showQuestionPlayState = new ShowQuestionPlayState();
+            showQuestionPlayState.AdmittedPlayersIds.Add(AuctionPlayState.Player.PlayerId);
             PlayStateSystem.ChangePlayState(showQuestionPlayState);
+
+            
+            PlayersBoardSystem.MakePlayerCurrent(AuctionPlayState.Player);
+            ShowQuestionSystem.Start();
         }
 
         public override string ToString()

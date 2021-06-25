@@ -27,7 +27,6 @@ namespace Victorina
         [Inject] private PlayerGiveAnswerView PlayerGiveAnswerView { get; set; }
         [Inject] private PlayerLookAnswerView PlayerLookAnswerView { get; set; }
         
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
 
@@ -86,10 +85,13 @@ namespace Victorina
                     NoRiskView.Show();
                     break;
                 case PlayStateType.ShowQuestion:
-                    ShowAnswerStoryDotView(PlayStateData.As<ShowAnswerPlayState>());
+                    ShowQuestionStoryDotView(PlayStateData.As<ShowQuestionPlayState>());
+                    break;
+                case PlayStateType.AcceptingAnswer:
+                    ShowAcceptingAnswerViews(PlayStateData.As<AcceptingAnswerPlayState>());
                     break;
                 case PlayStateType.ShowAnswer:
-                    ShowQuestionStoryDotView(PlayStateData.As<ShowQuestionPlayState>());
+                    ShowAnswerStoryDotView(PlayStateData.As<ShowAnswerPlayState>());
                     break;
                 default:
                     throw new Exception($"Not supported PackagePlayState: {PlayStateData.PlayState}");
@@ -172,30 +174,14 @@ namespace Victorina
             };
         }
 
-        public void UpdateStoryDot(QuestionAnswerData data)
+        private void ShowAcceptingAnswerViews(AcceptingAnswerPlayState playState)
         {
-            HideAll();
-
-            //todo: finish refactoring
+            Debug.Log("Show: Accepting answer views");
             
-            //MasterEffectsView.Show();
-        }
-        
-        private void OnQuestionAnswerPhaseChanged()
-        {
-            //todo: finish refactoring
-            /*
-            if (QuestionAnswerData.Phase.Value == QuestionPhase.AcceptingAnswer)
-            {
-                if (NetworkData.IsMaster)
-                    MasterAcceptAnswerView.Show();
-            }
-            else
-            {
-                if(MasterAcceptAnswerView.IsActive)
-                    MasterAcceptAnswerView.Hide();
-            }
-            */
+            ShowQuestionStoryDotView(playState.ShowQuestionPlayState);
+            
+            if (NetworkData.IsMaster)
+                MasterAcceptAnswerView.Show();
         }
         
         private void ShowStartUpView()

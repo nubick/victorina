@@ -6,16 +6,13 @@ using UnityEngine.Video;
 
 namespace Victorina
 {
-    public class VideoStoryDotView : ViewBase
+    public class VideoStoryDotView : StoryDotView
     {
         private int? _pendingFileId;
         
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private AppState AppState { get; set; }
         [Inject] private PathData PathData { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
-
-        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
         
         public GameObject NoVideoImage;
         public VideoPlayer VideoPlayer;
@@ -41,7 +38,8 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            if (PlayState.CurrentStoryDot is VideoStoryDot videoStoryDot)
+            StoryDot currentStoryDot = GetCurrentStoryDot();
+            if (currentStoryDot is VideoStoryDot videoStoryDot)
             {
                 StopAllCoroutines();
                 PlayVideo(videoStoryDot.FileId);

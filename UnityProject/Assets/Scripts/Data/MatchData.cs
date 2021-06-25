@@ -8,11 +8,6 @@ namespace Victorina
         public ReactiveProperty<NetRound> RoundData { get; } = new ReactiveProperty<NetRound>();
         public NetRoundQuestion SelectedRoundQuestion { get; set; }
         
-        //Question Answering State
-        public QuestionAnswerData QuestionAnswerData { get; } = new QuestionAnswerData();
-        
-        //Master only data
-        
         //Player only data
         public DateTime EnableAnswerTime { get; set; }
         public bool IsMeCurrentPlayer { get; set; }

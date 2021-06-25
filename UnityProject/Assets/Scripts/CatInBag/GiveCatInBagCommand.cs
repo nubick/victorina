@@ -9,7 +9,6 @@ namespace Victorina
     {
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
 
         public byte ReceiverPlayerId { get; set; }
         
@@ -59,7 +58,8 @@ namespace Victorina
             CatInBagPlayState.WasGiven = true;
             PlayStateData.MarkAsChanged();
             
-            QuestionAnswerData.AdmittedPlayersIds.Add(ReceiverPlayerId);//todo: should be synced after that?
+            //todo: finish refactoring
+            //QuestionAnswerData.AdmittedPlayersIds.Add(ReceiverPlayerId);//todo: should be synced after that?
         }
 
         public void Serialize(PooledBitWriter writer)

@@ -12,8 +12,7 @@ namespace Victorina
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
-        
+
         private AcceptingAnswerPlayState PlayState => PlayStateData.As<AcceptingAnswerPlayState>();
         
         public bool CanExecuteOnServer()
@@ -31,7 +30,7 @@ namespace Victorina
             switch (PlayState.ShowQuestionPlayState.NetQuestion.Type)
             {
                 case QuestionType.Simple:
-                    QuestionAnswerData.WrongAnsweredIds.Add(PlayState.AnsweringPlayerId);
+                    PlayState.ShowQuestionPlayState.WrongAnsweredIds.Add(PlayState.AnsweringPlayerId);
                     PlayersBoardSystem.FinePlayer(PlayState.AnsweringPlayerId, PlayState.Price);
                     PlayStateSystem.ChangeBackToShowQuestionPlayState(PlayState.ShowQuestionPlayState);
                     break;

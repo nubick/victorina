@@ -1,23 +1,19 @@
 using System;
-using Injection;
 using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class TextStoryDotView : ViewBase
+    public class TextStoryDotView : StoryDotView
     {
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
-
-        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
-        
         public Text QuestionText;
 
         protected override void OnShown()
         {
-            if (PlayState.CurrentStoryDot is TextStoryDot textDot)
+            StoryDot currentStoryDot = GetCurrentStoryDot();
+            if (currentStoryDot is TextStoryDot textDot)
                 QuestionText.text = textDot.Text;
             else
-                throw new Exception($"TextQuestionView: Current story dot is not text, {PlayState.CurrentStoryDot}");
+                throw new Exception($"TextQuestionView: Current story dot is not text, {currentStoryDot}");
         }
     }
 }

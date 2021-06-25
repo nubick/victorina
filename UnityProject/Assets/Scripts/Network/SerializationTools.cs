@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using MLAPI.Serialization.Pooled;
 
@@ -6,6 +7,22 @@ namespace Victorina
 {
     public static class SerializationTools
     {
+        public static void SerializeBytesArray(Stream stream, byte[] bytes)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32(bytes.Length);
+            stream.Write(bytes, 0, bytes.Length);
+        }
+        
+        public static byte[] DeserializeBytesArray(Stream stream)
+        {
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            int length = reader.ReadInt32();
+            byte[] bytes = new byte[length];
+            stream.Read(bytes, 0, length);
+            return bytes;
+        }
+        
         public static void SerializeIntsArray(PooledBitWriter writer, int[] ints)
         {
             writer.WriteInt32(ints.Length);

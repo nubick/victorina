@@ -7,11 +7,11 @@ namespace Victorina
     public class DataSyncService : MonoBehaviour
     {
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
+        [Inject] private AnswerTimerData AnswerTimerData { get; set; }
 
         public void Initialize()
         {
@@ -64,6 +64,14 @@ namespace Victorina
                     PackagePlayStateData.ApplyChanges();
                     SendToPlayersService.SendPackagePlayStateData(PackagePlayStateData);
                     MetagameEvents.PackagePlayStateChanged.Publish();
+                }
+
+                if (AnswerTimerData.HasChanges)
+                {
+                    Debug.Log($"DataSync: {AnswerTimerData}");
+                    AnswerTimerData.ApplyChanges();
+                    SendToPlayersService.SendAnswerTimerData(AnswerTimerData);
+                    MetagameEvents.AnswerTimerDataChanged.Publish();
                 }
                 
                 yield return delay;

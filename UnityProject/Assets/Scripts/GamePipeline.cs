@@ -50,8 +50,6 @@ namespace Victorina
             _injector.Bind(new PackagePlayStateSystem());
             _injector.Bind(new PackagePlayStateData());
             
-            _injector.Bind(new QuestionTimer());
-            
             _injector.Bind(new NetworkData());
             
             _injector.Bind(new AppState());
@@ -67,7 +65,6 @@ namespace Victorina
             _injector.Bind(new MatchSystem());
             MatchData matchData = new MatchData();
             _injector.Bind(matchData);
-            _injector.Bind(matchData.QuestionAnswerData);
             _injector.Bind(new PlayersBoard());
 
             _injector.Bind(new CatInBagSystem());
@@ -78,12 +75,10 @@ namespace Victorina
             
             _injector.Bind(FindObjectOfType<PlayersMoreInfoView>());
             _injector.Bind(new PlayersMoreInfoData());
-
-            _injector.Bind(new PlayersButtonClickData());
-        
-            _injector.Bind(new AnsweringTimerSystem());
-            _injector.Bind(new AnsweringTimerData());
-            _injector.Bind(FindObjectOfType<AnsweringTimerView>());
+            
+            _injector.Bind(new AcceptingAnswerTimerSystem());
+            _injector.Bind(new AcceptingAnswerTimerData());
+            _injector.Bind(FindObjectOfType<AcceptingAnswerTimerView>());
             
             _injector.Bind(new PackageSystem());
             _injector.Bind(new PackageData());
@@ -98,8 +93,21 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<PlayEffectsData>());
             
             _injector.Bind(new CommandsSystem());
+            
+            //Show Question
+            _injector.Bind(new ShowQuestionSystem());
             _injector.Bind(new TimerSystem());
+            _injector.Bind(new QuestionTimer());
             _injector.Bind(FindObjectOfType<TimerCoroutinesContainer>());
+            _injector.Bind(new PlayersButtonClickData());
+            _injector.Bind(new QuestionAnswerSystem());
+            _injector.Bind(new AnswerTimerSystem());
+            _injector.Bind(new AnswerTimerData());
+            _injector.Bind(new TimerRunOutDetectSystem());
+            _injector.Bind(FindObjectOfType<MasterShowQuestionView>());
+            _injector.Bind(FindObjectOfType<PlayerGiveAnswerView>());
+            _injector.Bind(new MasterAnswerTipData());
+            _injector.Bind(new MasterAnswerTipSystem());
             
             //Final Round
             _injector.Bind(FindObjectOfType<FinalRoundView>());
@@ -111,13 +119,10 @@ namespace Victorina
             _injector.Bind(new ConnectedPlayersData());
             _injector.Bind(new FilesDeliveryStatusManager());
             _injector.Bind(new PlayersBoardSystem());
-            _injector.Bind(new QuestionAnswerSystem());
-            _injector.Bind(new TimerRunOutDetectSystem());
             _injector.Bind(new MasterDataReceiver());
             _injector.Bind(new MasterContextKeyboardSystem());
             _injector.Bind(FindObjectOfType<MasterContextKeyboardTipView>());
             _injector.Bind(new MasterEffectsSystem());
-            _injector.Bind(FindObjectOfType<MasterShowQuestionView>());
             _injector.Bind(FindObjectOfType<MasterAcceptAnswerView>());
             _injector.Bind(FindObjectOfType<MasterPlayerSettingsView>());
             _injector.Bind(FindObjectOfType<MasterEffectsView>());
@@ -128,7 +133,6 @@ namespace Victorina
             
             //Client only
             _injector.Bind(FindObjectOfType<DownloadingFilesPanelView>());
-            _injector.Bind(FindObjectOfType<PlayerGiveAnswerView>());
             _injector.Bind(new PlayerDataReceiver());
             _injector.Bind(new PlayerAnswerSystem());
 
@@ -216,6 +220,8 @@ namespace Victorina
             _injector.Get<AudioStoryDotView>().Initialize();
             _injector.Get<VideoStoryDotView>().Initialize();
             
+            _injector.Get<AnswerTimerSystem>().Initialize();
+            
             _injector.Get<PlayEffectsSystem>().Initialize();
 
             StartCoroutine(_injector.Get<FilesDeliveryStatusManager>().Initialize());
@@ -223,11 +229,12 @@ namespace Victorina
             _injector.Get<PlayersButtonClickPanelView>().Initialize();
             
             _injector.Get<DownloadingFilesPanelView>().Initialize();
-            _injector.Get<PlayerGiveAnswerView>().Initialize();
-
             _injector.Get<MatchSystem>().Initialize();
             
             _injector.Get<MasterShowQuestionView>().Initialize();
+            _injector.Get<PlayerGiveAnswerView>().Initialize();
+            _injector.Get<MasterAnswerTipSystem>().Initialize();
+
             _injector.Get<MasterEffectsView>().Initialize();
             _injector.Get<DataSyncService>().Initialize();
             _injector.Get<MasterContextKeyboardTipView>().Initialize();
@@ -236,7 +243,7 @@ namespace Victorina
             
             _injector.Get<AuctionView>().Initialize();
             _injector.Get<PlayersMoreInfoView>().Initialize();
-            _injector.Get<AnsweringTimerSystem>().Initialize();
+            _injector.Get<AcceptingAnswerTimerSystem>().Initialize();
             _injector.Get<FinalRoundView>().Initialize();
 
             _injector.Get<CommandsSystem>().Initialize(_injector);
@@ -266,7 +273,7 @@ namespace Victorina
         public void Update()
         {
             _injector.Get<TimerRunOutDetectSystem>().OnUpdate();
-            _injector.Get<AnsweringTimerSystem>().OnUpdate();
+            _injector.Get<AcceptingAnswerTimerSystem>().OnUpdate();
         }
 
         private void GeneratePlayerGuid()

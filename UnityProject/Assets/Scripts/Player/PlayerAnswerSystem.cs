@@ -11,11 +11,13 @@ namespace Victorina
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
-        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
+        [Inject] private AnswerTimerData AnswerTimerData { get; set; }
         
+        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
+
         public void StartTimer(float resetSeconds, float leftSeconds)
         {
             MatchData.EnableAnswerTime = DateTime.UtcNow;
@@ -48,13 +50,13 @@ namespace Victorina
 
         public bool CanSendAnswerIntentionNow()
         {
-            return CanSendAnswerIntention() && QuestionAnswerData.TimerState != QuestionTimerState.NotStarted;
+            return CanSendAnswerIntention() && AnswerTimerData.TimerState != QuestionTimerState.NotStarted;
         }
         
         public bool CanSendAnswerIntention()
         {
             if (NetworkData.IsMaster ||
-                PackagePlayStateData.Type != PlayStateType.ShowQuestion ||
+                PlayStateData.Type != PlayStateType.ShowQuestion ||
                 WasIntentionSent() ||
                 WasWrongAnswer() ||
                 !IsAdmitted())
@@ -65,7 +67,7 @@ namespace Victorina
 
         public bool WasWrongAnswer()
         {
-            return QuestionAnswerData.WrongAnsweredIds.Contains(NetworkData.RegisteredPlayerId);
+            return PlayState.WrongAnsweredIds.Contains(NetworkData.RegisteredPlayerId);
         }
 
         public bool WasIntentionSent()
@@ -75,7 +77,7 @@ namespace Victorina
 
         public bool IsAdmitted()
         {
-            return QuestionAnswerData.AdmittedPlayersIds.Contains(NetworkData.RegisteredPlayerId);
+            return PlayState.AdmittedPlayersIds.Contains(NetworkData.RegisteredPlayerId);
         }
     }
 }

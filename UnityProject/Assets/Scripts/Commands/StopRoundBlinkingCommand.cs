@@ -9,6 +9,7 @@ namespace Victorina.Commands
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
         [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
+        [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
 
@@ -54,7 +55,7 @@ namespace Victorina.Commands
                     throw new Exception($"Not supported QuestionType: {netQuestion.Type}");
             }
             
-            QuestionAnswerSystem.StartAnswer(netQuestion);
+            ShowQuestionSystem.Start();
         }
         
         private NetQuestion BuildNetQuestion(string questionId)

@@ -1137,6 +1137,7 @@ RectTransform:
   - {fileID: 1134666124}
   - {fileID: 49460888}
   - {fileID: 180518809}
+  - {fileID: 1781021260}
   m_Father: {fileID: 1143375783}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3643,7 +3644,7 @@ RectTransform:
   - {fileID: 1603044675}
   - {fileID: 95724814}
   m_Father: {fileID: 1143375783}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -9436,7 +9437,7 @@ RectTransform:
   m_Children:
   - {fileID: 1345955679}
   m_Father: {fileID: 1143375783}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -24686,7 +24687,7 @@ RectTransform:
   m_Children:
   - {fileID: 96704394}
   m_Father: {fileID: 1143375783}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -33126,7 +33127,6 @@ RectTransform:
   - {fileID: 749395944}
   - {fileID: 955234340}
   - {fileID: 5434588516497010032}
-  - {fileID: 1781021260}
   - {fileID: 320077691}
   - {fileID: 2080475333}
   - {fileID: 119418357}
@@ -51716,7 +51716,7 @@ GameObject:
   - component: {fileID: 1781021260}
   - component: {fileID: 1781021261}
   m_Layer: 5
-  m_Name: AnsweringTimerView
+  m_Name: AcceptingAnswerTimerView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51729,13 +51729,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1781021259}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 851980855}
-  m_Father: {fileID: 1143375783}
-  m_RootOrder: 6
+  m_Father: {fileID: 50356339}
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -61199,7 +61199,7 @@ RectTransform:
   - {fileID: 1292809829}
   - {fileID: 760966677}
   m_Father: {fileID: 1143375783}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}

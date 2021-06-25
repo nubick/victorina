@@ -23,9 +23,9 @@ namespace Victorina
 
         public void ChangePlayState(PackagePlayState playState)
         {
-            RegisterIfNew(playState);
             Data.PlayState = playState;
             Data.MarkAsChanged();
+            Debug.Log($"CHANGE playState: {playState}");
         }
 
         public PackagePlayState Create(PlayStateType playStateType)
@@ -43,6 +43,7 @@ namespace Victorina
                 PlayStateType.NoRisk => new NoRiskPlayState(),
 
                 PlayStateType.ShowQuestion => new ShowQuestionPlayState(),
+                PlayStateType.AcceptingAnswer => new AcceptingAnswerPlayState(),
                 PlayStateType.ShowAnswer => new ShowAnswerPlayState(),
 
                 _ => throw new Exception($"Not supported PlayStateType: {playStateType}")
@@ -51,30 +52,7 @@ namespace Victorina
             _injector.InjectTo(playState);
             return playState;
         }
-
-        private void RegisterIfNew(PackagePlayState playState)
-        {
-            Type type = playState.GetType();
-            if (Data.PlayStatesMap.ContainsKey(type))
-            {
-//                if (playState != Data.PlayStatesMap[type])
-//                    throw new Exception($"PlayState duplicate was detected: {playState}");
-            }
-            else
-            {
-                Data.PlayStatesMap.Add(type, playState);
-                Debug.Log($"REGISTER PlayState: {playState}");
-            }
-        }
         
-        public T Get<T>() where T : PackagePlayState
-        {
-            Type type = typeof(T);
-            return Data.PlayStatesMap.ContainsKey(type) ? 
-                Data.PlayStatesMap[type] as T : 
-                throw new Exception($"Can't find PlayState of type: {type}");
-        }
-
         public void ChangeBackToShowQuestionPlayState(ShowQuestionPlayState showQuestionPlayState)
         {
             ChangePlayState(showQuestionPlayState);

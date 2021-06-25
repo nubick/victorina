@@ -5,14 +5,11 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class ImageStoryDotView : ViewBase
+    public class ImageStoryDotView : StoryDotView
     {
         private int? _pendingFileId;
         
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
-
-        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
         
         public Sprite NoImageSprite;
         public Image ImageBorder;
@@ -25,13 +22,14 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            if (PlayState.CurrentStoryDot is ImageStoryDot imageDot)
+            StoryDot currentStoryDot = GetCurrentStoryDot();
+            if (currentStoryDot is ImageStoryDot imageDot)
             {
                 ShowImage(imageDot.FileId);
             }
             else
             {
-                throw new Exception($"ImageQuestionView: Current story dot is not image, {PlayState.CurrentStoryDot}");
+                throw new Exception($"ImageQuestionView: Current story dot is not image, {currentStoryDot}");
             }
         }
 

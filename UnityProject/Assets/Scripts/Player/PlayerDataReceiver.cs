@@ -10,16 +10,15 @@ namespace Victorina
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
-        [Inject] private DataChangeHandler DataChangeHandler { get; set; }
         [Inject] private PlayerFilesRepository PlayerFilesRepository { get; set; }
         [Inject] private PlayerFilesRequestSystem PlayerFilesRequestSystem { get; set; }
         [Inject] private PlayEffectsSystem PlayEffectsSystem { get; set; }
-        [Inject] private AnsweringTimerData AnsweringTimerData { get; set; }
+        [Inject] private AcceptingAnswerTimerData AcceptingAnswerTimerData { get; set; }
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
+        [Inject] private AnswerTimerData AnswerTimerData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         
         public void OnReceiveRegisteredPlayerId(byte playerId)
@@ -50,19 +49,11 @@ namespace Victorina
             PlayersButtonClickData.Update(data);
             MetagameEvents.PlayersButtonClickDataChanged.Publish();
         }
-
-        public void OnReceive(QuestionAnswerData data)
+        
+        public void OnReceiveAnswerTimerData(AnswerTimerData data)
         {
-            QuestionAnswerData.MasterIntention = data.MasterIntention;
-            
-            QuestionAnswerData.WrongAnsweredIds = data.WrongAnsweredIds;
-            QuestionAnswerData.AdmittedPlayersIds = data.AdmittedPlayersIds;
-            
-            QuestionAnswerData.TimerState = data.TimerState;
-            QuestionAnswerData.TimerResetSeconds = data.TimerResetSeconds;
-            QuestionAnswerData.TimerLeftSeconds = data.TimerLeftSeconds;
-            
-            DataChangeHandler.HandleMasterIntention(QuestionAnswerData);
+            AnswerTimerData.Update(data);
+            MetagameEvents.AnswerTimerDataChanged.Publish();
         }
         
         public void OnRoundFileIdsReceived(int[] fileIds, int[] chunksAmounts, int[] priorities)
@@ -81,11 +72,11 @@ namespace Victorina
             PlayEffectsSystem.PlaySound(number);
         }
 
-        public void OnReceiveAnsweringTimerData(bool isRunning, float maxSeconds, float leftSeconds)
+        public void OnReceiveAcceptingAnswerTimerData(bool isRunning, float maxSeconds, float leftSeconds)
         {
-            AnsweringTimerData.IsRunning = isRunning;
-            AnsweringTimerData.MaxSeconds = maxSeconds;
-            AnsweringTimerData.LeftSeconds = leftSeconds;
+            AcceptingAnswerTimerData.IsRunning = isRunning;
+            AcceptingAnswerTimerData.MaxSeconds = maxSeconds;
+            AcceptingAnswerTimerData.LeftSeconds = leftSeconds;
         }
 
         public void OnReceiveNetRound(NetRound netRound)

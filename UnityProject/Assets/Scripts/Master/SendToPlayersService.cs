@@ -13,7 +13,6 @@ namespace Victorina
     {
         [Inject] private NetworkingManager NetworkingManager { get; set; }
         [Inject] private MatchData MatchData { get; set; }
-        [Inject] private QuestionAnswerData QuestionAnswerData { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
@@ -53,7 +52,6 @@ namespace Victorina
             {
                 networkPlayer.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
                 networkPlayer.SendPlayersButtonClickData(PlayersButtonClickData);
-                networkPlayer.SendQuestionAnswerData(QuestionAnswerData);
             }
             
             (int[] fileIds, int[] chunksAmounts, int[] priorities) info = PackageSystem.GetPackageFilesInfo(PackageData.Package);
@@ -77,16 +75,16 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendSelectedRoundQuestion(netRoundQuestion));
         }
         
-        public void Send(QuestionAnswerData questionAnswerData)
-        {
-            Debug.Log($"Master: Send QuestionAnswerData to {All}: {questionAnswerData}");
-            GetPlayers().ForEach(player => player.SendQuestionAnswerData(questionAnswerData));
-        }
-        
         public void SendPlayersButtonClickData(PlayersButtonClickData playersButtonClickData)
         {
             Debug.Log($"Master: Send players button click data to {All}, {playersButtonClickData})");
             GetPlayers().ForEach(player => player.SendPlayersButtonClickData(playersButtonClickData));
+        }
+
+        public void SendAnswerTimerData(AnswerTimerData data)
+        {
+            Debug.Log($"Master: Send AnswerTimerData to {All}, {data})");
+            GetPlayers().ForEach(player => player.SendAnswerTimerData(data));
         }
         
         public void SendPlaySoundEffectCommand(int number)
@@ -95,10 +93,10 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendPlaySoundEffectCommand(number));
         }
 
-        public void SendAnsweringTimerData(AnsweringTimerData data)
+        public void SendAcceptingAnswerTimerData(AcceptingAnswerTimerData data)
         {
             //Debug.Log($"Master: Send answering timer data to {All}, {data}");
-            GetPlayers().ForEach(player => player.SendAnsweringTimerData(data));
+            GetPlayers().ForEach(player => player.SendAcceptingAnswerTimerData(data));
         }
         
         public void SendFinalRoundData(FinalRoundData finalRoundData)
