@@ -9,7 +9,7 @@ namespace Victorina
     {
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private MatchData MatchData { get; set; }
-        [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
+        [Inject] private AcceptAnswerSystem AcceptAnswerSystem { get; set; }
 
         public List<ContextCommand> Commands { get; } = new List<ContextCommand>();
         

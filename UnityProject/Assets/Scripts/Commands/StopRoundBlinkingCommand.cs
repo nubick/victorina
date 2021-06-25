@@ -8,8 +8,6 @@ namespace Victorina.Commands
     {
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
-        [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
-        [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
 
@@ -28,12 +26,13 @@ namespace Victorina.Commands
         public void ExecuteOnServer()
         {
             RoundBlinkingPlayState blinkingPlayState = PlayStateData.As<RoundBlinkingPlayState>();
-            NetQuestion netQuestion = BuildNetQuestion(blinkingPlayState.QuestionId);
+            NetQuestion netQuestion = PackageSystem.BuildNetQuestion(blinkingPlayState.QuestionId);
             
             switch (netQuestion.Type)
             {
                 case QuestionType.Auction:
                     AuctionPlayState auctionPlayState = new AuctionPlayState();
+                    auctionPlayState.QuestionId = netQuestion.QuestionId;
                     PlayStateSystem.ChangePlayState(auctionPlayState);
                     AuctionSystem.StartNew(netQuestion.Price, netQuestion.GetTheme());
                     break;
@@ -44,34 +43,15 @@ namespace Victorina.Commands
                     break;
                 case QuestionType.NoRisk:
                     NoRiskPlayState noRiskPlayState = new NoRiskPlayState();
+                    noRiskPlayState.QuestionId = netQuestion.QuestionId;
                     PlayStateSystem.ChangePlayState(noRiskPlayState);
                     break;
                 case QuestionType.Simple:
-                    ShowQuestionPlayState showQuestionPlayState = new ShowQuestionPlayState();
-                    showQuestionPlayState.NetQuestion = netQuestion;
-                    PlayStateSystem.ChangePlayState(showQuestionPlayState);
+                    PlayStateSystem.ChangeToShowQuestionPlayState(blinkingPlayState.QuestionId);
                     break;
                 default:
                     throw new Exception($"Not supported QuestionType: {netQuestion.Type}");
             }
-            
-            ShowQuestionSystem.Start();
-        }
-        
-        private NetQuestion BuildNetQuestion(string questionId)
-        {
-            Question question = PackageSystem.GetQuestion(questionId);
-            NetQuestion netQuestion = new NetQuestion();
-            netQuestion.QuestionId = questionId;
-            netQuestion.Type = question.Type;
-            netQuestion.Theme = PackageSystem.GetTheme(questionId);
-            netQuestion.Price = question.Price;
-            netQuestion.QuestionStory = question.QuestionStory.ToArray();
-            netQuestion.QuestionStoryDotsAmount = netQuestion.QuestionStory.Length;
-            netQuestion.AnswerStory = question.AnswerStory.ToArray();
-            netQuestion.AnswerStoryDotsAmount = netQuestion.AnswerStory.Length;
-            netQuestion.CatInBagInfo = question.CatInBagInfo;
-            return netQuestion;
         }
         
         public override string ToString()

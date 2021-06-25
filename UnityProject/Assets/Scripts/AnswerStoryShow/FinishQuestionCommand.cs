@@ -5,10 +5,10 @@ namespace Victorina.Commands
 {
     public class FinishQuestionCommand : Command, IServerCommand
     {
-        [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
         
         public override CommandType Type => CommandType.FinishQuestion;
         private ShowAnswerPlayState ShowAnswerPlayState => PackagePlayStateData.PlayState as ShowAnswerPlayState;
@@ -17,7 +17,7 @@ namespace Victorina.Commands
         {
             if (PackagePlayStateData.Type != PlayStateType.ShowAnswer)
             {
-                Debug.Log($"Can finish question only when ShowAnswerPlayState: {PackagePlayStateData.PlayState}");
+                Debug.Log($"Can't finish question when: {PackagePlayStateData.PlayState}");
                 return false;
             }
 
@@ -27,8 +27,9 @@ namespace Victorina.Commands
         public void ExecuteOnServer()
         {
             PackageData.PackageProgress.SetQuestionAsAnswered(ShowAnswerPlayState.NetQuestion.QuestionId);
-            RoundPlayState roundPlayState = new RoundPlayState();//todo: bind round play state
-            CommandsSystem.AddNewCommand(new SelectRoundCommand {RoundNumber = roundPlayState.RoundNumber});
+            CommandsSystem.AddNewCommand(new SelectRoundCommand {RoundNumber = MatchData.RoundNumber});
         }
+
+        public override string ToString() => "[FinishQuestionCommand]";
     }
 }

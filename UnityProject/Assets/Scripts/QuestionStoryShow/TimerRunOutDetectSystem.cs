@@ -14,13 +14,13 @@ namespace Victorina
             if (!NetworkData.IsMaster)
                 return;
             
-            if (AnswerTimerData.TimerState == QuestionTimerState.Running)
+            if (AnswerTimerData.State == QuestionTimerState.Running)
             {
                 float leftSecondsPercentage = QuestionTimer.GetLeftSecondsPercentage();
                 bool isRunOutOfTime = Mathf.Approximately(leftSecondsPercentage, 0f);
                 if (isRunOutOfTime)
                 {
-                    AnswerTimerData.TimerState = QuestionTimerState.RunOut;
+                    AnswerTimerData.State = QuestionTimerState.RunOut;
                     MetagameEvents.TimerRunOut.Publish();
                 }
             }

@@ -23,8 +23,10 @@ namespace Victorina
 
         [Inject] private MasterShowQuestionView MasterShowQuestionView { get; set; }
         [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
-
+        [Inject] private MasterShowAnswerView MasterShowAnswerView { get; set; }
+        
         [Inject] private PlayerGiveAnswerView PlayerGiveAnswerView { get; set; }
+        [Inject] private PlayerAcceptingAnswerView PlayerAcceptingAnswerView { get; set; }
         [Inject] private PlayerLookAnswerView PlayerLookAnswerView { get; set; }
         
         [Inject] private NetworkData NetworkData { get; set; }
@@ -156,7 +158,7 @@ namespace Victorina
             storyDotView.Show();
 
             if (NetworkData.IsMaster)
-                MasterShowQuestionView.Show();
+                MasterShowAnswerView.Show();
 
             if (NetworkData.IsClient)
                 PlayerLookAnswerView.Show();
@@ -178,10 +180,17 @@ namespace Victorina
         {
             Debug.Log("Show: Accepting answer views");
             
-            ShowQuestionStoryDotView(playState.ShowQuestionPlayState);
+            HideAll();
+            StoryDot currentStoryDot = playState.ShowQuestionPlayState.CurrentStoryDot;
+            ViewBase storyDotView = GetStoryDotView(currentStoryDot);
+            Debug.Log($"Show: {storyDotView.name}");
+            storyDotView.Show();
             
             if (NetworkData.IsMaster)
                 MasterAcceptAnswerView.Show();
+            
+            if (NetworkData.IsClient)
+                PlayerAcceptingAnswerView.Show();
         }
         
         private void ShowStartUpView()

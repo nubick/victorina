@@ -10,41 +10,39 @@ namespace Victorina
         [Inject] private AcceptingAnswerTimerData Data { get; set; }
         [Inject] private MatchSettingsData MatchSettingsData { get; set; }
         [Inject] private AcceptingAnswerTimerView AcceptingAnswerTimerView { get; set; }
-        [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
-        [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
+        [Inject] private AcceptAnswerSystem AcceptAnswerSystem { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+
+        private AcceptingAnswerPlayState PlayState => PlayStateData.As<AcceptingAnswerPlayState>();
         
         public void Initialize()
         {
-            //todo: finish refactoring
-            //QuestionAnswerData.Phase.SubscribeChanged(OnQuestionAnswerPhaseChanged);
+            MetagameEvents.PackagePlayStateChanged.Subscribe(OnPlayStateChanged);
         }
 
-        private void OnQuestionAnswerPhaseChanged()
+        private void OnPlayStateChanged()
         {
-            //todo: finish refactoring
-            if (NetworkData.IsMaster &&
-                MatchSettingsData.IsLimitAnsweringSeconds)// &&
-                //QuestionAnswerData.QuestionType == QuestionType.Simple)
+            if (PlayStateData.Type == PlayStateType.AcceptingAnswer)
             {
-                //todo: finish refactoring
-                //if(QuestionAnswerData.Phase.Value == QuestionPhase.AcceptingAnswer)
+                if (NetworkData.IsMaster && MatchSettingsData.IsLimitAnsweringSeconds &&
+                    PlayState.ShowQuestionPlayState.NetQuestion.Type == QuestionType.Simple)
                 {
                     Data.IsRunning = true;
                     Data.MaxSeconds = MatchSettingsData.MaxAnsweringSeconds;
                     Data.LeftSeconds = Data.MaxSeconds;
                     SendToPlayersService.SendAcceptingAnswerTimerData(Data);
                 }
-                //else
+            }
+            else
+            {
+                if (Data.IsRunning)
                 {
-                    if (Data.IsRunning)
-                    {
-                        Data.IsRunning = false;
-                        SendToPlayersService.SendAcceptingAnswerTimerData(Data);
-                    }
+                    Data.IsRunning = false;
+                    SendToPlayersService.SendAcceptingAnswerTimerData(Data);
                 }
             }
         }
-        
+
         public void OnUpdate()
         {
             if (NetworkData.IsMaster && Data.IsRunning)
@@ -83,7 +81,7 @@ namespace Victorina
 
         private void AcceptAnswerAsWrong()
         {
-            QuestionAnswerSystem.AcceptAnswerAsWrong();
+            AcceptAnswerSystem.AcceptAnswerAsWrong();
         }
     }
 }

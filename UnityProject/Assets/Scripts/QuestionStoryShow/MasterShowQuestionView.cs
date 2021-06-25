@@ -8,7 +8,6 @@ namespace Victorina
     public class MasterShowQuestionView : ViewBase
     {
         [Inject] private QuestionTimer QuestionTimer { get; set; }
-        [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
         [Inject] private AnswerTimerData AnswerTimerData { get; set; }
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
         [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
@@ -23,7 +22,6 @@ namespace Victorina
         public GameObject RestartMediaButton;
         public GameObject AcceptAnswer;
         public GameObject ShowAnswerButton;
-        public GameObject ShowRoundButton;
 
         public Image TimerStrip;
 
@@ -47,14 +45,13 @@ namespace Victorina
             PreviousQuestionDotButton.SetActive(PlayState.StoryDotIndex > 0);
             NextQuestionDotButton.SetActive(!PlayState.IsLastDot);
             
-            TimerStrip.gameObject.SetActive(AnswerTimerData.TimerState != QuestionTimerState.NotStarted);
+            TimerStrip.gameObject.SetActive(AnswerTimerData.State != QuestionTimerState.NotStarted);
             RestartMediaButton.SetActive(false);
-            StartTimerButton.SetActive(CanStartTimer(AnswerTimerData.TimerState, PlayState.IsLastDot)); 
-            StopTimerButton.SetActive(AnswerTimerData.TimerState == QuestionTimerState.Running);
+            StartTimerButton.SetActive(CanStartTimer(AnswerTimerData.State, PlayState.IsLastDot)); 
+            StopTimerButton.SetActive(AnswerTimerData.State == QuestionTimerState.Running);
             
-            AcceptAnswer.SetActive(true);
+            AcceptAnswer.SetActive(PlayState.NetQuestion.Type != QuestionType.Simple);
             ShowAnswerButton.SetActive(ShowQuestionSystem.CanShowAnswer());
-            ShowRoundButton.SetActive(QuestionAnswerSystem.CanBackToRound());
 
             AnswerTip.text = TipData.AnswerTip;
             AnswerTipPanel.SetActive(TipData.IsAnswerTipEnabled);
@@ -72,7 +69,7 @@ namespace Victorina
         
         public void Update()
         {
-            if (IsActive && AnswerTimerData.TimerState == QuestionTimerState.Running)
+            if (IsActive && AnswerTimerData.State == QuestionTimerState.Running)
             {
                 TimerStrip.fillAmount = QuestionTimer.GetLeftSecondsPercentage();
             }
@@ -117,15 +114,10 @@ namespace Victorina
         {
             ShowQuestionSystem.ShowAnswer();
         }
-
-        public void OnShowRoundButtonClicked()
-        {
-            QuestionAnswerSystem.BackToRound();
-        }
-
+        
         public void OnAcceptAnswerButtonClicked()
         {
-            ShowQuestionSystem.AcceptNoRiskAnswer();
+            ShowQuestionSystem.AcceptSinglePlayerQuestion();
         }
 
         public void OnToggleTipTriggerClicked()

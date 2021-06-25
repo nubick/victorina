@@ -50,7 +50,7 @@ namespace Victorina
 
         public bool CanSendAnswerIntentionNow()
         {
-            return CanSendAnswerIntention() && AnswerTimerData.TimerState != QuestionTimerState.NotStarted;
+            return CanSendAnswerIntention() && AnswerTimerData.State != QuestionTimerState.NotStarted;
         }
         
         public bool CanSendAnswerIntention()

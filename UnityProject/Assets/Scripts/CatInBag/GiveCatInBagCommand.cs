@@ -54,12 +54,8 @@ namespace Victorina
         {
             Debug.Log($"Give cat in bag to {ReceiverPlayerId} from {OwnerString} request");
             PlayersBoardSystem.MakePlayerCurrent(ReceiverPlayerId);
-            
             CatInBagPlayState.WasGiven = true;
             PlayStateData.MarkAsChanged();
-            
-            //todo: finish refactoring
-            //QuestionAnswerData.AdmittedPlayersIds.Add(ReceiverPlayerId);//todo: should be synced after that?
         }
 
         public void Serialize(PooledBitWriter writer)
@@ -71,5 +67,7 @@ namespace Victorina
         {
             ReceiverPlayerId = (byte) reader.ReadByte();
         }
+
+        public override string ToString() => $"[GiveCatInBagCommand, {nameof(ReceiverPlayerId)}: {ReceiverPlayerId}]";
     }
 }

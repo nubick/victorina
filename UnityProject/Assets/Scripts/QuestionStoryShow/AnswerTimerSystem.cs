@@ -17,9 +17,9 @@ namespace Victorina
 
         private void Refresh()
         {
-            if (QuestionTimer.IsRunning && Data.TimerState != QuestionTimerState.Running)
+            if (QuestionTimer.IsRunning && Data.State != QuestionTimerState.Running)
             {
-                Debug.Log($"StopTimer, {Data.TimerState}, {Data.TimerResetSeconds}, {Data.TimerLeftSeconds}");
+                Debug.Log($"StopTimer, {Data.State}, {Data.ResetSeconds}, {Data.LeftSeconds}");
                 if (NetworkData.IsClient)
                     PlayerAnswerSystem.StopTimer();
                 else
@@ -27,11 +27,11 @@ namespace Victorina
                 MetagameEvents.QuestionTimerPaused.Publish();
             }
 
-            if (!QuestionTimer.IsRunning && Data.TimerState == QuestionTimerState.Running)
+            if (!QuestionTimer.IsRunning && Data.State == QuestionTimerState.Running)
             {
-                Debug.Log($"StartTimer, {Data.TimerState}, {Data.TimerResetSeconds}, {Data.TimerLeftSeconds}");
+                Debug.Log($"StartTimer, {Data.State}, {Data.ResetSeconds}, {Data.LeftSeconds}");
                 if (NetworkData.IsClient)
-                    PlayerAnswerSystem.StartTimer(Data.TimerResetSeconds, Data.TimerLeftSeconds);
+                    PlayerAnswerSystem.StartTimer(Data.ResetSeconds, Data.LeftSeconds);
                 else
                     QuestionTimer.Start();
                 MetagameEvents.QuestionTimerStarted.Publish();

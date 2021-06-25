@@ -26,7 +26,7 @@ namespace Victorina
                 return false;
             }
             
-            if (AnswerTimerData.TimerState == QuestionTimerState.NotStarted)
+            if (AnswerTimerData.State == QuestionTimerState.NotStarted)
             {
                 Debug.Log("Wrong intention: Timer is not started.");
                 return false;

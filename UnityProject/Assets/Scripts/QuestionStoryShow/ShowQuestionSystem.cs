@@ -17,13 +17,13 @@ namespace Victorina
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         
         private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
-        private bool IsTimeToStartTimer => AnswerTimerData.TimerState == QuestionTimerState.NotStarted && PlayState.IsLastDot;
+        private bool IsTimeToStartTimer => AnswerTimerData.State == QuestionTimerState.NotStarted && PlayState.IsLastDot;
 
         public void Start()
         {
             QuestionTimer.Reset(Static.TimeForAnswer);
 
-            AnswerTimerData.TimerState = QuestionTimerState.NotStarted;
+            AnswerTimerData.State = QuestionTimerState.NotStarted;
             PlayState.WrongAnsweredIds.Clear();
             ResetAdmittedPlayersIds(PlayState.NetQuestion.Type);
             
@@ -64,15 +64,15 @@ namespace Victorina
 
         private void StartTimer()
         {
-            AnswerTimerData.TimerResetSeconds = Static.TimeForAnswer;
-            AnswerTimerData.TimerLeftSeconds = QuestionTimer.LeftSeconds;
-            AnswerTimerData.TimerState = QuestionTimerState.Running;
+            AnswerTimerData.ResetSeconds = Static.TimeForAnswer;
+            AnswerTimerData.LeftSeconds = QuestionTimer.LeftSeconds;
+            AnswerTimerData.State = QuestionTimerState.Running;
             PlayersButtonClickData.Clear();
         }
 
         public void PauseTimer()
         {
-            AnswerTimerData.TimerState = QuestionTimerState.Paused;
+            AnswerTimerData.State = QuestionTimerState.Paused;
         }
 
         public void ContinueTimer()
@@ -88,7 +88,7 @@ namespace Victorina
 
         public bool CanShowAnswer()
         {
-            return PlayState.NetQuestion.Type == QuestionType.Simple && AnswerTimerData.TimerState != QuestionTimerState.NotStarted;
+            return PlayState.NetQuestion.Type == QuestionType.Simple && AnswerTimerData.State != QuestionTimerState.NotStarted;
         }
 
         public void ShowAnswer()
@@ -108,7 +108,7 @@ namespace Victorina
                 CommandsSystem.AddNewCommand(new SelectPlayerForAnswerCommand {PlayerId = playerId});
         }
 
-        public void AcceptNoRiskAnswer()
+        public void AcceptSinglePlayerQuestion()
         {
             if (PlayersBoard.Current == null)
             {

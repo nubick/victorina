@@ -34,9 +34,6 @@ namespace Victorina
             Players.AddRange(data.Players);
         }
         
-        public override string ToString()
-        {
-            return $"[{string.Join("|", Players.Select(_ => $"{_.Name}:{_.Time:0.00}"))}]";
-        }
+        public override string ToString() => $"[PlayersButtonClickData: {string.Join("|", Players.Select(_ => $"{_.Name}:{_.Time:0.00}"))}]";
     }
 }

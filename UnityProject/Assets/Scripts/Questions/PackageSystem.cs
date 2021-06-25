@@ -134,5 +134,21 @@ namespace Victorina
             }
             return netRound;
         }
+        
+        public NetQuestion BuildNetQuestion(string questionId)
+        {
+            Question question = GetQuestion(questionId);
+            NetQuestion netQuestion = new NetQuestion();
+            netQuestion.QuestionId = questionId;
+            netQuestion.Type = question.Type;
+            netQuestion.Theme = GetTheme(questionId);
+            netQuestion.Price = question.Price;
+            netQuestion.QuestionStory = question.QuestionStory.ToArray();
+            netQuestion.QuestionStoryDotsAmount = netQuestion.QuestionStory.Length;
+            netQuestion.AnswerStory = question.AnswerStory.ToArray();
+            netQuestion.AnswerStoryDotsAmount = netQuestion.AnswerStory.Length;
+            netQuestion.CatInBagInfo = question.CatInBagInfo;
+            return netQuestion;
+        }
     }
 }

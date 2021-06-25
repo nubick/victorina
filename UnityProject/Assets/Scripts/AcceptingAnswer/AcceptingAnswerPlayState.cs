@@ -10,7 +10,22 @@ namespace Victorina
         public int Price { get; set; }
         public ShowQuestionPlayState ShowQuestionPlayState { get; set; }
         
-        public override void Serialize(PooledBitWriter writer) => writer.WriteByte(AnsweringPlayerId);
-        public override void Deserialize(PooledBitReader reader) => AnsweringPlayerId = (byte) reader.ReadByte();
+        public override void Serialize(PooledBitWriter writer)
+        {
+            writer.WriteByte(AnsweringPlayerId);
+            ShowQuestionPlayState.Serialize(writer);
+        }
+
+        public override void Deserialize(PooledBitReader reader)
+        {
+            AnsweringPlayerId = (byte) reader.ReadByte();
+            ShowQuestionPlayState = new ShowQuestionPlayState();
+            ShowQuestionPlayState.Deserialize(reader);
+        }
+
+        public override string ToString()
+        {
+            return $"[AcceptingAnswerPlayState, AnsweringPlayerId: {AnsweringPlayerId}, Price: {Price}]";
+        }
     }
 }

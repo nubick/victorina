@@ -28,8 +28,6 @@ namespace Victorina
         
         public void Initialize()
         {
-            //todo: finish refactoring
-            //QuestionAnswerData.Phase.SubscribeChanged(RefreshUI);
             MetagameEvents.PlayersButtonClickDataChanged.Subscribe(RefreshUI);
             MetagameEvents.AnswerTimerDataChanged.Subscribe(RefreshUI);
         }
@@ -41,12 +39,13 @@ namespace Victorina
 
         private void RefreshUI()
         {
+            if (!IsActive)
+                return;
+            
             WasWrongAnswerState.SetActive(false);
             AnsweringPanel.SetActive(false);
             SayAnswerState.SetActive(false);
             WaitingState.SetActive(false);
-
-            //todo: Finish refactoring
             
             if (PlayerAnswerSystem.WasWrongAnswer())
                 WasWrongAnswerState.SetActive(true);
@@ -63,10 +62,8 @@ namespace Victorina
                 AnsweringText.text = $"Отвечает: {names}";
             }
             
-            TimerStrip.gameObject.SetActive(AnswerTimerData.TimerState != QuestionTimerState.NotStarted);
-
-            //todo: finish refactoring
-            //ThemeText.text = $"Тема: {MatchData.GetTheme()}";
+            TimerStrip.gameObject.SetActive(AnswerTimerData.State != QuestionTimerState.NotStarted);
+            ThemeText.text = $"Тема: {PlayState.NetQuestion.Theme}";
         }
 
         public void OnAnswerButtonClicked()

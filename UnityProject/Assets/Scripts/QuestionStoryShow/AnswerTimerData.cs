@@ -2,44 +2,49 @@ namespace Victorina
 {
     public class AnswerTimerData : SyncData
     {
-        private QuestionTimerState _timerState;
-        public QuestionTimerState TimerState
+        private QuestionTimerState _state;
+        public QuestionTimerState State
         {
-            get => _timerState;
+            get => _state;
             set
             {
-                _timerState = value; 
+                _state = value; 
                 MarkAsChanged();
             }
         }
 
-        private float _timerResetSeconds;
-        public float TimerResetSeconds
+        private float _resetSeconds;
+        public float ResetSeconds
         {
-            get => _timerResetSeconds;
+            get => _resetSeconds;
             set
             {
-                _timerResetSeconds = value;
+                _resetSeconds = value;
                 MarkAsChanged();
             }
         }
 
-        private float _timerLeftSeconds;
-        public float TimerLeftSeconds
+        private float _leftSeconds;
+        public float LeftSeconds
         {
-            get => _timerLeftSeconds;
+            get => _leftSeconds;
             set
             {
-                _timerLeftSeconds = value;
+                _leftSeconds = value;
                 MarkAsChanged();
             }
         }
 
         public void Update(AnswerTimerData data)
         {
-            TimerState = data.TimerState;
-            TimerResetSeconds = data.TimerResetSeconds;
-            TimerLeftSeconds = data.TimerLeftSeconds;
+            State = data.State;
+            ResetSeconds = data.ResetSeconds;
+            LeftSeconds = data.LeftSeconds;
+        }
+
+        public override string ToString()
+        {
+            return $"[AnswerTimerData, state: {State}, reset sec: {ResetSeconds}, left sec: {LeftSeconds}]";
         }
     }
 }

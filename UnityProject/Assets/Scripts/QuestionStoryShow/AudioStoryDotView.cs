@@ -12,9 +12,6 @@ namespace Victorina
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private AppState AppState { get; set; }
         [Inject] private PathSystem PathSystem { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
-
-        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
         
         public AudioSource AudioSource;
         

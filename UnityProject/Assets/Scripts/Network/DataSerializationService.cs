@@ -319,18 +319,18 @@ namespace Victorina
         private void SerializeAnswerTimerData(Stream stream, AnswerTimerData data)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteInt32((int) data.TimerState);
-            writer.WriteSingle(data.TimerResetSeconds);
-            writer.WriteSingle(data.TimerLeftSeconds);
+            writer.WriteInt32((int) data.State);
+            writer.WriteSingle(data.ResetSeconds);
+            writer.WriteSingle(data.LeftSeconds);
         }
 
         private AnswerTimerData DeserializeAnswerTimerData(Stream stream)
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             AnswerTimerData data = new AnswerTimerData();
-            data.TimerState = (QuestionTimerState) reader.ReadInt32();
-            data.TimerResetSeconds = reader.ReadSingle();
-            data.TimerLeftSeconds = reader.ReadSingle();
+            data.State = (QuestionTimerState) reader.ReadInt32();
+            data.ResetSeconds = reader.ReadSingle();
+            data.LeftSeconds = reader.ReadSingle();
             return data;
         }
 

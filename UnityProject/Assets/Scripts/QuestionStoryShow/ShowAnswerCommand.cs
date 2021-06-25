@@ -26,5 +26,7 @@ namespace Victorina
         {
             PlayStateSystem.ChangeToShowAnswerPlayState(PlayState);
         }
+
+        public override string ToString() => "[ShowAnswerCommand]";
     }
 }

@@ -95,19 +95,28 @@ namespace Victorina
             _injector.Bind(new CommandsSystem());
             
             //Show Question
+            _injector.Bind(FindObjectOfType<MasterShowQuestionView>());
+            _injector.Bind(FindObjectOfType<PlayerGiveAnswerView>());
+            _injector.Bind(new AcceptAnswerSystem());
             _injector.Bind(new ShowQuestionSystem());
-            _injector.Bind(new TimerSystem());
+            _injector.Bind(new PlayersButtonClickData());
+            _injector.Bind(new TimerSystem());  //--- Timer
             _injector.Bind(new QuestionTimer());
             _injector.Bind(FindObjectOfType<TimerCoroutinesContainer>());
-            _injector.Bind(new PlayersButtonClickData());
-            _injector.Bind(new QuestionAnswerSystem());
             _injector.Bind(new AnswerTimerSystem());
             _injector.Bind(new AnswerTimerData());
             _injector.Bind(new TimerRunOutDetectSystem());
-            _injector.Bind(FindObjectOfType<MasterShowQuestionView>());
-            _injector.Bind(FindObjectOfType<PlayerGiveAnswerView>());
-            _injector.Bind(new MasterAnswerTipData());
+            _injector.Bind(new MasterAnswerTipData());  //--- Tip
             _injector.Bind(new MasterAnswerTipSystem());
+            
+            //Accepting Answer
+            _injector.Bind(FindObjectOfType<MasterAcceptAnswerView>());
+            _injector.Bind(FindObjectOfType<PlayerAcceptingAnswerView>());
+
+            //Show Answer
+            _injector.Bind(FindObjectOfType<MasterShowAnswerView>());
+            _injector.Bind(FindObjectOfType<PlayerLookAnswerView>());
+            _injector.Bind(new ShowAnswerSystem());
             
             //Final Round
             _injector.Bind(FindObjectOfType<FinalRoundView>());
@@ -123,7 +132,6 @@ namespace Victorina
             _injector.Bind(new MasterContextKeyboardSystem());
             _injector.Bind(FindObjectOfType<MasterContextKeyboardTipView>());
             _injector.Bind(new MasterEffectsSystem());
-            _injector.Bind(FindObjectOfType<MasterAcceptAnswerView>());
             _injector.Bind(FindObjectOfType<MasterPlayerSettingsView>());
             _injector.Bind(FindObjectOfType<MasterEffectsView>());
             _injector.Bind(FindObjectOfType<DataSyncService>());

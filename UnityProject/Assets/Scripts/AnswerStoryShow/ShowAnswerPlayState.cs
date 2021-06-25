@@ -7,18 +7,22 @@ namespace Victorina
         public int StoryDotIndex { get; set; }
         public NetQuestion NetQuestion { get; set; }
 
-        public StoryDot CurrentStoryDot => NetQuestion.AnswerStory[StoryDotIndex];
-        
         public override PlayStateType Type => PlayStateType.ShowAnswer;
+        public StoryDot CurrentStoryDot => NetQuestion.AnswerStory[StoryDotIndex];
+        public bool IsLastDot => StoryDotIndex == NetQuestion.AnswerStory.Length - 1;
         
         public override void Serialize(PooledBitWriter writer)
         {
-            throw new System.NotImplementedException();
+            DataSerializationService.SerializeNetQuestion(writer, NetQuestion);
+            writer.WriteInt32(StoryDotIndex);
         }
 
         public override void Deserialize(PooledBitReader reader)
         {
-            throw new System.NotImplementedException();
+            NetQuestion = DataSerializationService.DeserializeNetQuestion(reader);
+            StoryDotIndex = reader.ReadInt32();
         }
+
+        public override string ToString() => $"[ShowAnswerPlayState, index: {StoryDotIndex}, question: {NetQuestion}]";
     }
 }

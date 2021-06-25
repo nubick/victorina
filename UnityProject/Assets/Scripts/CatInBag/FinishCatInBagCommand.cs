@@ -10,6 +10,7 @@ namespace Victorina
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
         
         public override CommandType Type => CommandType.FinishCatInBag;
+        private CatInBagPlayState PlayState => PlayStateData.As<CatInBagPlayState>();
         
         public bool CanExecuteOnServer()
         {
@@ -18,9 +19,8 @@ namespace Victorina
                 Debug.Log($"Can't finish CatInBag in PlayState: {PlayStateData}");
                 return false;
             }
-
-            CatInBagPlayState playState = PlayStateData.As<CatInBagPlayState>();
-            if (!playState.WasGiven)
+            
+            if (!PlayState.WasGiven)
             {
                 Debug.Log("Can't finish CatInBag. It was not given.");
                 return false;
@@ -31,8 +31,9 @@ namespace Victorina
 
         public void ExecuteOnServer()
         {
-            ShowQuestionPlayState showQuestionPlayState = new ShowQuestionPlayState();
-            PlayStateSystem.ChangePlayState(showQuestionPlayState);
+            PlayStateSystem.ChangeToShowQuestionPlayState(PlayState.NetQuestion.QuestionId);
         }
+
+        public override string ToString() => "[FinishCatInBagCommand]";
     }
 }

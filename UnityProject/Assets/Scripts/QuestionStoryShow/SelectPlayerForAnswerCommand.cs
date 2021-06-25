@@ -28,5 +28,7 @@ namespace Victorina
         {
             PlayStateSystem.ChangeToAcceptingAnswerPlayState(PlayState, PlayerId);
         }
+
+        public override string ToString() => $"[SelectPlayerForAnswerCommand, playerId: {PlayerId}]";
     }
 }

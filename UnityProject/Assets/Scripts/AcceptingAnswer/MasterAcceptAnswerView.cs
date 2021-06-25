@@ -7,7 +7,7 @@ namespace Victorina
     {
         [Inject] private PackagePlayStateData PlayStateData { get; set; }
         [Inject] private MasterAnswerTipData MasterAnswerTipData { get; set; }
-        [Inject] private QuestionAnswerSystem QuestionAnswerSystem { get; set; }
+        [Inject] private AcceptAnswerSystem AcceptAnswerSystem { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         
         public Text Header;
@@ -23,17 +23,17 @@ namespace Victorina
         
         public void OnCorrectButtonClicked()
         {
-            QuestionAnswerSystem.AcceptAnswerAsCorrect();
+            AcceptAnswerSystem.AcceptAnswerAsCorrect();
         }
 
         public void OnWrongButtonClicked()
         {
-            QuestionAnswerSystem.AcceptAnswerAsWrong();
+            AcceptAnswerSystem.AcceptAnswerAsWrong();
         }
 
         public void OnCancelButtonClicked()
         {
-            QuestionAnswerSystem.CancelAcceptingAnswer();
+            AcceptAnswerSystem.CancelAcceptingAnswer();
         }
     }
 }

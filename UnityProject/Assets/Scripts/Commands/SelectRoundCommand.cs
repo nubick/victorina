@@ -11,6 +11,7 @@ namespace Victorina.Commands
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
         
         public int RoundNumber { get; set; }
         
@@ -18,9 +19,11 @@ namespace Victorina.Commands
         
         public bool CanExecuteOnServer()
         {
-            if (PackagePlayStateData.Type != PlayStateType.Round && PackagePlayStateData.Type != PlayStateType.Lobby)
+            if (PackagePlayStateData.Type != PlayStateType.Round && 
+                PackagePlayStateData.Type != PlayStateType.Lobby &&
+                PackagePlayStateData.Type != PlayStateType.ShowAnswer)
             {
-                Debug.Log($"Try to select round in PlayState: {PackagePlayStateData.PlayState}");
+                Debug.Log($"Can't select round in PlayState: {PackagePlayStateData.PlayState}");
                 return false;
             }
 
@@ -29,6 +32,7 @@ namespace Victorina.Commands
 
         public void ExecuteOnServer()
         {
+            MatchData.RoundNumber = RoundNumber;
             Round round = PackageData.Package.Rounds[RoundNumber - 1];
             if (round.Type == RoundType.Simple)
             {

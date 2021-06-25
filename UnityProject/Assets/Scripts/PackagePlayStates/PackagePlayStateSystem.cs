@@ -10,6 +10,8 @@ namespace Victorina
         
         [Inject] private PackagePlayStateData Data { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
+        [Inject] private PackageSystem PackageSystem { get; set; }
+        [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
         
         public void Initialize(Injector injector)
         {
@@ -25,7 +27,7 @@ namespace Victorina
         {
             Data.PlayState = playState;
             Data.MarkAsChanged();
-            Debug.Log($"CHANGE playState: {playState}");
+            Debug.Log($"CHANGE PlayState: {playState}");
         }
 
         public PackagePlayState Create(PlayStateType playStateType)
@@ -52,7 +54,15 @@ namespace Victorina
             _injector.InjectTo(playState);
             return playState;
         }
-        
+
+        public void ChangeToShowQuestionPlayState(string questionId)
+        {
+            ShowQuestionPlayState showQuestionPlayState = new ShowQuestionPlayState();
+            showQuestionPlayState.NetQuestion = PackageSystem.BuildNetQuestion(questionId);
+            ChangePlayState(showQuestionPlayState);
+            ShowQuestionSystem.Start();
+        }
+
         public void ChangeBackToShowQuestionPlayState(ShowQuestionPlayState showQuestionPlayState)
         {
             ChangePlayState(showQuestionPlayState);
