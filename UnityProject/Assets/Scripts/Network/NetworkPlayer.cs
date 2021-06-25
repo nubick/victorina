@@ -8,7 +8,6 @@ namespace Victorina
 {
     public class NetworkPlayer : NetworkedBehaviour
     {
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private PlayerDataReceiver PlayerDataReceiver { get; set; }
         [Inject] private MasterDataReceiver MasterDataReceiver { get; set; }
@@ -46,19 +45,6 @@ namespace Victorina
         {
             //Debug.Log($"Player {OwnerClientId}: Receive PlayersBoard: {playersBoard}");
             PlayerDataReceiver.OnReceive(playersBoard);
-        }
-        
-        public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
-        {
-            //Debug.Log($"Master: Send selected round question: {netRoundQuestion} to {OwnerClientId}");
-            InvokeClientRpcOnOwner(ReceiveSelectedRoundQuestion, netRoundQuestion);
-        }
-
-        [ClientRPC]
-        private void ReceiveSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive selected round question: {netRoundQuestion}");
-            MatchData.SelectedRoundQuestion = netRoundQuestion;
         }
 
         #region Files

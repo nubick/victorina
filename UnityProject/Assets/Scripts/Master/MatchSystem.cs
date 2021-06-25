@@ -19,7 +19,6 @@ namespace Victorina
 
         private void OnServerStarted()
         {
-            MatchData.Clear();
             PlayersBoard.Clear();
         }
         

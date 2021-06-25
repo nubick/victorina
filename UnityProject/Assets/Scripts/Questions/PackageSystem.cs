@@ -17,8 +17,8 @@ namespace Victorina
             Data.Package = package;
             WritePackageStatistics(Data.Package);
             Data.PackageProgress = new PackageProgress();
-            Data.NetRounds = BuildNetRounds(package);
             MasterFilesRepository.AddPackageFiles(Data.Package);
+            Data.NetRounds = BuildNetRounds(package);//After AddPackagePiles, ids for files should be generated
         }
 
         private void WritePackageStatistics(Package package)

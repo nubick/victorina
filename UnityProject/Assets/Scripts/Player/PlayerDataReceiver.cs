@@ -78,15 +78,6 @@ namespace Victorina
             AcceptingAnswerTimerData.MaxSeconds = maxSeconds;
             AcceptingAnswerTimerData.LeftSeconds = leftSeconds;
         }
-
-        public void OnReceiveNetRound(NetRound netRound)
-        {
-            //todo: Finish refactoring
-            foreach (NetRoundQuestion roundQuestion in netRound.Themes.SelectMany(theme => theme.Questions))
-                roundQuestion.IsDownloadedByMe = roundQuestion.FileIds.All(PlayerFilesRepository.IsDownloaded);
-
-            MatchData.RoundData.Value = netRound;
-        }
         
         public void OnReceiveFinalRoundData(FinalRoundData finalRoundData)
         {

@@ -62,7 +62,7 @@ namespace Victorina
             PlayState.StoryDotIndex--;
         }
 
-        private void StartTimer()
+        public void StartTimer()
         {
             AnswerTimerData.ResetSeconds = Static.TimeForAnswer;
             AnswerTimerData.LeftSeconds = QuestionTimer.LeftSeconds;

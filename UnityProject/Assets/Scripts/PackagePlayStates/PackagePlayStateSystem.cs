@@ -66,22 +66,15 @@ namespace Victorina
         public void ChangeBackToShowQuestionPlayState(ShowQuestionPlayState showQuestionPlayState)
         {
             ChangePlayState(showQuestionPlayState);
-            
-            //todo: finish refactoring
-            //StartTimer();
-            //SendData(MasterIntention.ContinueTimer);
+            ShowQuestionSystem.StartTimer();
         }
         
         public void ChangeToShowAnswerPlayState(ShowQuestionPlayState showQuestionPlayState)
         {
             ShowAnswerPlayState playState = new ShowAnswerPlayState();
             playState.NetQuestion = showQuestionPlayState.NetQuestion;
-            
             ChangePlayState(playState);
             PlayersButtonClickData.Clear();
-            
-            //todo: finish refactoring
-            //Data.TimerState = QuestionTimerState.Paused;
         }
 
         public void ChangeToAcceptingAnswerPlayState(ShowQuestionPlayState showQuestionPlayState, byte playerId)

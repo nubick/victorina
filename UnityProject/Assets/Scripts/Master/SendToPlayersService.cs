@@ -12,7 +12,6 @@ namespace Victorina
     public class SendToPlayersService
     {
         [Inject] private NetworkingManager NetworkingManager { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
@@ -45,15 +44,9 @@ namespace Victorina
 
             Debug.Log($"Master: Send PlayStateData: {PackagePlayStateData} to {networkPlayer.GetPlayerInfo()}");
             networkPlayer.SendPackagePlayStateData(PackagePlayStateData);
-            
-            if(PackagePlayStateData.Type == PlayStateType.ShowQuestion ||
-               PackagePlayStateData.Type == PlayStateType.ShowAnswer ||
-               PackagePlayStateData.Type == PlayStateType.AcceptingAnswer)
-            {
-                networkPlayer.SendSelectedRoundQuestion(MatchData.SelectedRoundQuestion);
-                networkPlayer.SendPlayersButtonClickData(PlayersButtonClickData);
-            }
-            
+
+            networkPlayer.SendPlayersButtonClickData(PlayersButtonClickData);
+
             (int[] fileIds, int[] chunksAmounts, int[] priorities) info = PackageSystem.GetPackageFilesInfo(PackageData.Package);
             networkPlayer.SendRoundFileIds(info.fileIds, info.chunksAmounts, info.priorities);
         }
@@ -67,12 +60,6 @@ namespace Victorina
         {
             //Debug.Log($"Master: Send PlayersBoard to {All}: {playersBoard}");
             GetPlayers().ForEach(player => player.SendPlayersBoard(playersBoard));
-        }
-        
-        public void SendSelectedRoundQuestion(NetRoundQuestion netRoundQuestion)
-        {
-            Debug.Log($"Master: Send selected round question to {All} {netRoundQuestion}");
-            GetPlayers().ForEach(player => player.SendSelectedRoundQuestion(netRoundQuestion));
         }
         
         public void SendPlayersButtonClickData(PlayersButtonClickData playersButtonClickData)

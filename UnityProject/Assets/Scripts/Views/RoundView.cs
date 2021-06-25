@@ -67,9 +67,6 @@ namespace Victorina
         
         private bool IsTheSameRound(NetRound netRound)
         {
-            if(netRound == null)
-                Debug.Log($"NetRound is null");
-            
             NetRoundQuestion netRoundQuestion = netRound.Themes.First().Questions.First();
             return _questionWidgetsCache.ContainsKey(netRoundQuestion.QuestionId);
         }

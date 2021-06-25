@@ -9,9 +9,7 @@ namespace Victorina
     public class FilesDeliveryStatusManager
     {
         [Inject] private PackageSystem PackageSystem { get; set; }
-        [Inject] private MatchSystem MatchSystem { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
-        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private PackagePlayStateData PlayStateData { get; set; }
         
         private readonly Dictionary<byte, HashSet<int>> _playerIdToFilesMap = new Dictionary<byte, HashSet<int>>();
         private bool _isSyncRequired;
@@ -49,16 +47,23 @@ namespace Victorina
             {
                 yield return new WaitForSeconds(0.5f);
 
-                if (_isSyncRequired && PackagePlayStateData.Type == PlayStateType.Round)
+                if (_isSyncRequired && PlayStateData.Type == PlayStateType.Round)
                 {
-                    //todo: Finish refactoring
-                    //MatchSystem.SyncSimpleRound();
-                    MatchData.RoundData.NotifyChanged();
+                    NetRound netRound = PlayStateData.As<RoundPlayState>().NetRound;
+                    UpdateIsDownloadedByAll(netRound);
+                    PlayStateData.MarkAsChanged();
                     _isSyncRequired = false;
                 }
             }
         }
-        
+
+        private void UpdateIsDownloadedByAll(NetRound netRound)
+        {
+            var questions = netRound.Themes.SelectMany(theme => theme.Questions);
+            foreach (NetRoundQuestion netRoundQuestion in questions)
+                netRoundQuestion.IsDownloadedByAll = IsDownloadedByAll(netRoundQuestion.FileIds);
+        }
+
         public int[] GetQuestionFileIds(Question question)
         {
             return PackageSystem.GetFileStoryDots(question).Select(_ => _.FileId).ToArray();
