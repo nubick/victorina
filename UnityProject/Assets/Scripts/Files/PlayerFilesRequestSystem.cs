@@ -75,7 +75,6 @@ namespace Victorina
                         yield break;
                     
                     SendToMasterService.SendFileChunkRequest(file.FileId, chunkIndex);
-                    MetagameEvents.ClientFileRequested.Publish();
                     float requestTime = Time.time;
                     while (!chunk.IsDownloaded && Time.time - requestTime < 10f && Data.IsRequesting)
                         yield return null;

@@ -1,6 +1,5 @@
 using Assets.Scripts.Data;
 using Assets.Scripts.Utils;
-using UnityEngine;
 
 namespace Victorina
 {
@@ -49,8 +48,7 @@ namespace Victorina
         public static GameEvent DisconnectedAsClient { get; } = new GameEvent();
         
         public static GameEvent<int> ClientFileDownloaded { get; } = new GameEvent<int>();
-        public static GameEvent ClientFileRequested { get; } = new GameEvent();
-        
+
         //Package crafter events
         public static GameEvent<Package> CrafterPackageClicked { get; } = new GameEvent<Package>();
         public static GameEvent<Package> CrafterPackageDeleteButtonClicked { get; } = new GameEvent<Package>();
