@@ -10,6 +10,7 @@ namespace Victorina.Commands
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
+        [Inject] private CommandsSystem CommandsSystem { get; set; }
 
         public override CommandType Type => CommandType.StopRoundBlinking;
         
@@ -40,6 +41,7 @@ namespace Victorina.Commands
                     CatInBagPlayState catInBagPlayState = new CatInBagPlayState();
                     catInBagPlayState.NetQuestion = netQuestion;
                     PlayStateSystem.ChangePlayState(catInBagPlayState);
+                    CommandsSystem.AddNewCommand(new PlaySoundEffectCommand {SoundId = SoundId.MeowIntro});
                     break;
                 case QuestionType.NoRisk:
                     NoRiskPlayState noRiskPlayState = new NoRiskPlayState();

@@ -215,7 +215,7 @@ namespace Victorina
             MasterDataReceiver.OnReceiveCommand(OwnerClientId, commandNetworkData.Command);
         }
 
-        public void SendCommandToPlayer(IndividualPlayerCommand command)
+        public void SendCommandToPlayer(INetworkCommand command)
         {
             CommandNetworkData commandNetworkData = new CommandNetworkData(command);
             InvokeClientRpcOnOwner(ReceiveCommandClientRpc, commandNetworkData, "RFS");

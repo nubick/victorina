@@ -9,6 +9,7 @@ namespace Victorina
     {
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
+        [Inject] private CommandsSystem CommandsSystem { get; set; }
 
         public byte ReceiverPlayerId { get; set; }
         
@@ -56,6 +57,7 @@ namespace Victorina
             PlayersBoardSystem.MakePlayerCurrent(ReceiverPlayerId);
             CatInBagPlayState.WasGiven = true;
             PlayStateData.MarkAsChanged();
+            CommandsSystem.AddNewCommand(new PlaySoundEffectCommand {SoundId = SoundId.MeowAngry});
         }
 
         public void Serialize(PooledBitWriter writer)

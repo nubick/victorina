@@ -89,7 +89,6 @@ namespace Victorina
             
             _injector.Bind(NetworkingManager.Singleton);
             
-            _injector.Bind(new DataChangeHandler());
             _injector.Bind(new PlayEffectsSystem());
             _injector.Bind(FindObjectOfType<PlayEffectsData>());
             

@@ -104,5 +104,11 @@ namespace Victorina
             NetworkPlayer networkPlayer = GetPlayer(command.Receiver);
             networkPlayer.SendCommandToPlayer(command);
         }
+
+        public void SendCommand(IPlayerCommand playerCommand)
+        {
+            Debug.Log($"Master: Send PlayerCommand to {All}: {playerCommand}");
+            GetPlayers().ForEach(player => player.SendCommandToPlayer(playerCommand));
+        }
     }
 }

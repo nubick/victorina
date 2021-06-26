@@ -20,20 +20,26 @@ namespace Victorina
             if (QuestionTimer.IsRunning && Data.State != QuestionTimerState.Running)
             {
                 Debug.Log($"StopTimer, {Data.State}, {Data.ResetSeconds}, {Data.LeftSeconds}");
+
                 if (NetworkData.IsClient)
                     PlayerAnswerSystem.StopTimer();
-                else
+
+                if (NetworkData.IsMaster)
                     QuestionTimer.Stop();
+
                 MetagameEvents.QuestionTimerPaused.Publish();
             }
 
             if (!QuestionTimer.IsRunning && Data.State == QuestionTimerState.Running)
             {
                 Debug.Log($"StartTimer, {Data.State}, {Data.ResetSeconds}, {Data.LeftSeconds}");
+
                 if (NetworkData.IsClient)
                     PlayerAnswerSystem.StartTimer(Data.ResetSeconds, Data.LeftSeconds);
-                else
+
+                if (NetworkData.IsMaster)
                     QuestionTimer.Start();
+
                 MetagameEvents.QuestionTimerStarted.Publish();
             }
         }

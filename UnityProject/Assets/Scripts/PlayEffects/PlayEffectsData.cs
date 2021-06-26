@@ -6,5 +6,6 @@ namespace Victorina
     {
         public AudioSource SoundEffectsAudioSource;
         public AudioClip[] AudioClips;
+        public SoundIdItem[] SoundIdItems;
     }
 }

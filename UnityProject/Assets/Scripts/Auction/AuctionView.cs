@@ -1,4 +1,3 @@
-using Assets.Scripts.Data;
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,9 +18,6 @@ namespace Victorina
         public Text Theme;
 
         public BetBoardWidget BetBoardWidget;
-        
-        public SoundEffect AuctionStartSoundEffect;
-        
         public Button FinishAuctionButton;
         
         private AuctionPlayState AuctionPlayState => PlayStateData.As<AuctionPlayState>();
@@ -37,8 +33,6 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            //todo: finish refactoring
-            //AuctionStartSoundEffect.Play();
             RefreshUI();
         }
 

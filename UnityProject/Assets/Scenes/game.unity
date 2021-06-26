@@ -33666,7 +33666,6 @@ MonoBehaviour:
   BetText: {fileID: 1857281831}
   Theme: {fileID: 1422655694}
   BetBoardWidget: {fileID: 998112978}
-  AuctionStartSoundEffect: {fileID: 11400000, guid: fb1e222738f684279a087db8aea1b592, type: 2}
   FinishAuctionButton: {fileID: 599806413}
 --- !u!1 &1152160268
 GameObject:
@@ -50390,6 +50389,13 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 28cee4bd8acdd4b71aa2a4105bc57f3c, type: 3}
   - {fileID: 8300000, guid: 505e81c520bc3457cbb9bf521e83af9c, type: 3}
   - {fileID: 8300000, guid: bfb3c112c218346d2b770f44ac8b6cfb, type: 3}
+  SoundIdItems:
+  - SoundId: 0
+    SoundEffect: {fileID: 11400000, guid: fb1e222738f684279a087db8aea1b592, type: 2}
+  - SoundId: 1
+    SoundEffect: {fileID: 11400000, guid: 1a1c0b9b1c6154431ab4215545876a84, type: 2}
+  - SoundId: 2
+    SoundEffect: {fileID: 11400000, guid: a6d1dbc252ba74268b416451c583801a, type: 2}
 --- !u!1 &1738424175
 GameObject:
   m_ObjectHideFlags: 0

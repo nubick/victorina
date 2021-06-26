@@ -23,6 +23,8 @@ namespace Victorina
             AuctionPlayState.PassedPlayers.Clear();
             AuctionPlayState.SelectedPlayerByMaster = null;
             AddAutomaticPasses();
+
+            CommandsSystem.AddNewCommand(new PlaySoundEffectCommand {SoundId = SoundId.Auction});
         }
         
         public void SendPlayerPass()

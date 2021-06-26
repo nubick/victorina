@@ -1,3 +1,4 @@
+using System.Linq;
 using Assets.Scripts.Data;
 using Injection;
 using UnityEngine;
@@ -40,6 +41,15 @@ namespace Victorina
         private void OnPlaySoundEffect(SoundEffect soundEffect)
         {
             soundEffect.Play(Data.SoundEffectsAudioSource);
+        }
+
+        public void PlaySound(SoundId soundId)
+        {
+            SoundIdItem soundIdItem = Data.SoundIdItems.SingleOrDefault(item => item.SoundId == soundId);
+            if (soundIdItem == null)
+                Debug.LogWarning($"Can't find SoundIdItem by soundId: {soundId}");
+            else
+                OnPlaySoundEffect(soundIdItem.SoundEffect);
         }
     }
 }

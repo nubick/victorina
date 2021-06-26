@@ -25,21 +25,30 @@ namespace Victorina.Commands
 
             if (NetworkData.IsMaster)
                 AddNewCommandByMaster(command);
-            else if (NetworkData.IsClient)
+            
+            if (NetworkData.IsClient)
                 AddNewCommandByPlayer(command);
         }
 
         private void AddNewCommandByMaster(Command command)
         {
+            command.Owner = CommandOwner.Master;
+            
             if (command is IndividualPlayerCommand individualPlayerCommand)
             {
                 Dev.Log($"SEND: {individualPlayerCommand}", new Color(0.67f, 0.67f, 1f));
                 SendToPlayersService.SendCommand(individualPlayerCommand);
             }
-            else
+            
+            if (command is IPlayerCommand playerCommand)
             {
-                command.Owner = CommandOwner.Master;
-                TryExecute(command);
+                Dev.Log($"SEND: {command}", new Color(0.67f, 0.67f, 1f));
+                SendToPlayersService.SendCommand(playerCommand);
+            }
+
+            if (command is IServerCommand serverCommand)
+            {
+                TryExecuteOnServer(serverCommand);
             }
         }
 
@@ -61,7 +70,7 @@ namespace Victorina.Commands
                 throw new Exception($"Client can't create not PlayerCommand: {command}");
             }
         }
-        
+
         public void AddReceivedPlayerCommand(INetworkCommand networkCommand, PlayerData player)
         {
             Command command = networkCommand as Command;
@@ -70,12 +79,16 @@ namespace Victorina.Commands
                 Debug.Log($"Received player command '{networkCommand}' is null");
                 return;
             }
-            
+
             _injector.InjectTo(command);
 
             command.Owner = CommandOwner.Player;
             command.OwnerPlayer = player;
-            TryExecute(command);
+
+            if (command is IServerCommand serverCommand)
+                TryExecuteOnServer(serverCommand);
+            else
+                throw new Exception($"Not supported command for server execution: {command}");
         }
 
         public void AddReceivedMasterCommand(INetworkCommand networkCommand)
@@ -90,27 +103,37 @@ namespace Victorina.Commands
             _injector.InjectTo(command);
 
             command.Owner = CommandOwner.Master;
-            TryExecute(command);
+            TryExecuteOnClient(command);
         }
 
-        private void TryExecute(Command command)
+        private void TryExecuteOnServer(IServerCommand serverCommand)
+        {
+            if (serverCommand.CanExecuteOnServer())
+            {
+                Dev.Log($"EXECUTE: {serverCommand}", new Color(0.67f, 0.67f, 1f));
+                serverCommand.ExecuteOnServer();
+            }
+            else
+            {
+                Dev.Log($"Can't execute command: {serverCommand}", new Color(0.67f, 0.67f, 1f));
+            }
+        }
+        
+        private void TryExecuteOnClient(Command command)
         {
             if (command is IndividualPlayerCommand individualPlayerCommand)
             {
                 Dev.Log($"EXECUTE: {command}", new Color(0.67f, 0.67f, 1f));
                 individualPlayerCommand.ExecuteOnClient();
             }
-            else if (command is IServerCommand serverCommand)
+            else if (command is IPlayerCommand playerCommand)
             {
-                if (serverCommand.CanExecuteOnServer())
-                {
-                    Dev.Log($"EXECUTE: {command}", new Color(0.67f, 0.67f, 1f));
-                    serverCommand.ExecuteOnServer();
-                }
-                else
-                {
-                    Dev.Log($"Can't execute command: {command}", new Color(0.67f, 0.67f, 1f));
-                }
+                Dev.Log($"EXECUTE: {command}", new Color(0.67f, 0.67f, 1f));
+                playerCommand.ExecuteOnClient();
+            }
+            else
+            {
+                throw new Exception($"Not supported command for on client execution: {command}");
             }
         }
 
@@ -129,6 +152,8 @@ namespace Victorina.Commands
                 CommandType.RemoveFinalRoundTheme => new RemoveFinalRoundThemeCommand(),
                 CommandType.MakeFinalRoundBet => new MakeFinalRoundBetCommand(),
                 CommandType.SendFinalRoundAnswer => new SendFinalRoundAnswerCommand(),
+                //Effects
+                CommandType.PlaySoundEffect => new PlaySoundEffectCommand(),
                 //Logs
                 CommandType.SendPlayerLogs => new SendPlayerLogsCommand(),
                 CommandType.SavePlayerLogs => new SavePlayerLogsCommand(),

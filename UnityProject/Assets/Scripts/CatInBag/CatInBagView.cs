@@ -1,4 +1,3 @@
-using Assets.Scripts.Data;
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,9 +13,6 @@ namespace Victorina
         
         private CatInBagPlayState PlayState => PlayStateData.PlayState as CatInBagPlayState;
         
-        public SoundEffect MeowIntro;
-        public SoundEffect MeowAngry;
-
         public Button FinishButton;
         
         [Header("Select owner")]
@@ -34,13 +30,11 @@ namespace Victorina
         public void Initialize()
         {
             MetagameEvents.PlayerBoardWidgetClicked.Subscribe(OnPlayerBoardWidgetClicked);
-            //     CatInBagData.MeowAngry.Play();
         }
         
         protected override void OnShown()
         {
             RefreshUI();
-            MeowIntro.Play();
         }
 
         private void RefreshUI()

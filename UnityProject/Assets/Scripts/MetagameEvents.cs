@@ -20,11 +20,11 @@ namespace Victorina
         public static GameEvent<PlayerButtonClickData> PlayerButtonClickWidgetClicked { get; } = new GameEvent<PlayerButtonClickData>();
         public static GameEvent<PlayerData> PlayerMoreInfoClicked { get; } = new GameEvent<PlayerData>();
         
+        //Show Question
         public static GameEvent QuestionTimerStarted { get; } = new GameEvent();
         public static GameEvent QuestionTimerPaused { get; } = new GameEvent();
-        
         public static GameEvent MediaRestarted { get; } = new GameEvent();
-        
+
         //Final Round
         public static GameEvent<int> FinalRoundThemeClicked { get; } = new GameEvent<int>();
         public static GameEvent FinalRoundDataChanged { get; } = new GameEvent();

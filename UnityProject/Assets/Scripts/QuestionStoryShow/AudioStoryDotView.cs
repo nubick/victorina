@@ -90,11 +90,10 @@ namespace Victorina
             if (IsActive)
             {
                 Debug.Log($"AudioView: TimerStarted, isPlaying: {AudioSource.isPlaying}, playback pos: {AudioSource.time}, {Time.time}");
-                //todo: finish refactoring
                 // if (QuestionAnswerData.MasterIntention == MasterIntention.RestartMedia)
                 //     AudioSource.Play();
                 // else
-                //     AudioSource.UnPause();
+                    AudioSource.UnPause();
             }
         }
 
