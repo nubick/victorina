@@ -5,6 +5,7 @@ using MLAPI;
 using UnityEngine;
 using Victorina.Commands;
 using Victorina.DevTools;
+using Debug = UnityEngine.Debug;
 
 namespace Victorina
 {
@@ -185,9 +186,11 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<ThemesSelectionFromBagView>());
             _injector.Bind(new CrafterBagSystem());
             //End Crafter
-            
+
+            Stopwatch.Start("CommitBindings");
             _injector.CommitBindings();
-            
+            Stopwatch.Stop();
+
             VolumeSettingsWidget[] widgets = viewsData.ViewsRoot.GetComponentsInChildren<VolumeSettingsWidget>(includeInactive: true);
             widgets.ForEach(_ => _injector.InjectTo(_));
         }
