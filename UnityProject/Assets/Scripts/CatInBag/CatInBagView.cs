@@ -8,11 +8,11 @@ namespace Victorina
     public class CatInBagView : ViewBase
     {
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private CatInBagSystem CatInBagSystem { get; set; }
         
-        private CatInBagPlayState PlayState => PackagePlayStateData.PlayState as CatInBagPlayState;
+        private CatInBagPlayState PlayState => PlayStateData.PlayState as CatInBagPlayState;
         
         public SoundEffect MeowIntro;
         public SoundEffect MeowAngry;

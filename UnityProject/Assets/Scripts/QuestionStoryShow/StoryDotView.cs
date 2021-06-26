@@ -5,7 +5,7 @@ namespace Victorina
 {
     public abstract class StoryDotView : ViewBase
     {
-        [Inject] protected PackagePlayStateData PlayStateData { get; set; }
+        [Inject] protected PlayStateData PlayStateData { get; set; }
 
         protected StoryDot GetCurrentStoryDot()
         {

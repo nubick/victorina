@@ -9,7 +9,7 @@ namespace Victorina
     public class FilesDeliveryStatusManager
     {
         [Inject] private PackageSystem PackageSystem { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         private readonly Dictionary<byte, HashSet<int>> _playerIdToFilesMap = new Dictionary<byte, HashSet<int>>();
         private bool _isSyncRequired;

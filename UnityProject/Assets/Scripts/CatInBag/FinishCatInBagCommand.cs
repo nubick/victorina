@@ -7,7 +7,7 @@ namespace Victorina
     public class FinishCatInBagCommand : Command, IServerCommand
     {
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         public override CommandType Type => CommandType.FinishCatInBag;
         private CatInBagPlayState PlayState => PlayStateData.As<CatInBagPlayState>();

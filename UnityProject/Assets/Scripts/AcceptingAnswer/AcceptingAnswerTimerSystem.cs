@@ -11,7 +11,7 @@ namespace Victorina
         [Inject] private MatchSettingsData MatchSettingsData { get; set; }
         [Inject] private AcceptingAnswerTimerView AcceptingAnswerTimerView { get; set; }
         [Inject] private AcceptAnswerSystem AcceptAnswerSystem { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
 
         private AcceptingAnswerPlayState PlayState => PlayStateData.As<AcceptingAnswerPlayState>();
         

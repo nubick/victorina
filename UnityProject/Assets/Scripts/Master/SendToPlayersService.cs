@@ -16,7 +16,7 @@ namespace Victorina
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
-        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         
         private string All => $"All: ({GetPlayersInfo()})";
@@ -42,8 +42,8 @@ namespace Victorina
             Debug.Log($"Master: Send PlayersBoard: {PlayersBoard} to {networkPlayer.GetPlayerInfo()}");
             networkPlayer.SendPlayersBoard(PlayersBoard);
 
-            Debug.Log($"Master: Send PlayStateData: {PackagePlayStateData} to {networkPlayer.GetPlayerInfo()}");
-            networkPlayer.SendPackagePlayStateData(PackagePlayStateData);
+            Debug.Log($"Master: Send PlayStateData: {PlayStateData} to {networkPlayer.GetPlayerInfo()}");
+            networkPlayer.SendPackagePlayStateData(PlayStateData);
 
             networkPlayer.SendPlayersButtonClickData(PlayersButtonClickData);
 
@@ -92,9 +92,9 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendFinalRoundData(finalRoundData));
         }
 
-        public void SendPackagePlayStateData(PackagePlayStateData data)
+        public void SendPackagePlayStateData(PlayStateData data)
         {
-            Debug.Log($"Master: Send PackagePlayStateData to {All}: {data}");
+            Debug.Log($"Master: Send PlayStateData to {All}: {data}");
             GetPlayers().ForEach(player => player.SendPackagePlayStateData(data));
         }
         

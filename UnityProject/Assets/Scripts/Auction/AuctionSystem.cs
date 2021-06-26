@@ -9,7 +9,7 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         private AuctionPlayState AuctionPlayState => PlayStateData.As<AuctionPlayState>();
         

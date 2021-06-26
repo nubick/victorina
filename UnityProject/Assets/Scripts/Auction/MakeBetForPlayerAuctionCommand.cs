@@ -5,7 +5,7 @@ namespace Victorina
 {
     public class MakeBetForPlayerAuctionCommand : Command, IServerCommand
     {
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
         
         public int Bet { get; set; }

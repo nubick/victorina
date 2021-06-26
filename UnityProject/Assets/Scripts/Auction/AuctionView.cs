@@ -12,7 +12,7 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private PlayersMoreInfoData PlayersMoreInfoData { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         public Text PlayerText;
         public Text BetText;

@@ -5,19 +5,19 @@ namespace Victorina.Commands
 {
     public class FinishQuestionCommand : Command, IServerCommand
     {
-        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         
         public override CommandType Type => CommandType.FinishQuestion;
-        private ShowAnswerPlayState ShowAnswerPlayState => PackagePlayStateData.PlayState as ShowAnswerPlayState;
+        private ShowAnswerPlayState ShowAnswerPlayState => PlayStateData.PlayState as ShowAnswerPlayState;
         
         public bool CanExecuteOnServer()
         {
-            if (PackagePlayStateData.Type != PlayStateType.ShowAnswer)
+            if (PlayStateData.Type != PlayStateType.ShowAnswer)
             {
-                Debug.Log($"Can't finish question when: {PackagePlayStateData.PlayState}");
+                Debug.Log($"Can't finish question when: {PlayStateData.PlayState}");
                 return false;
             }
 

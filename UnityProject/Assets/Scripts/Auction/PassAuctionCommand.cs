@@ -7,7 +7,7 @@ namespace Victorina
 {
     public class PassAuctionCommand : Command, IServerCommand, INetworkCommand
     {
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
         
         public override CommandType Type => CommandType.PassAuction;

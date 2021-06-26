@@ -7,7 +7,7 @@ namespace Victorina
     public class MasterAnswerTipSystem
     {
         [Inject] private MasterAnswerTipData Data { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
         

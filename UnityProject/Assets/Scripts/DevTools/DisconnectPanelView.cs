@@ -25,7 +25,6 @@ namespace Victorina
 
         private void RefreshUI()
         {
-            Debug.Log("---- Refresh");
             for (int i = 0; i < Names.Length; i++)
             {
                 bool hasPlayer = ConnectedPlayersData.Players.Count > i;

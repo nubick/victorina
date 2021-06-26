@@ -5,7 +5,7 @@ namespace Victorina
 {
     public class PlayerAcceptingAnswerView : ViewBase
     {
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         
         public Text AnsweringText;

@@ -8,7 +8,7 @@ namespace Victorina
 {
     public class ShowQuestionSystem
     {
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private AnswerTimerData AnswerTimerData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }

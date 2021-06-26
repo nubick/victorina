@@ -7,7 +7,7 @@ namespace Victorina
 {
     public class GiveCatInBagCommand : Command, IServerCommand, INetworkCommand
     {
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
 
         public byte ReceiverPlayerId { get; set; }

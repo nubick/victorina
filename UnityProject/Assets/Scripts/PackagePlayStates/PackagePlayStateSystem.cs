@@ -8,7 +8,7 @@ namespace Victorina
     {
         private Injector _injector;
         
-        [Inject] private PackagePlayStateData Data { get; set; }
+        [Inject] private PlayStateData Data { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }

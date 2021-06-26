@@ -11,7 +11,7 @@ namespace Victorina
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         [Inject] private AnswerTimerData AnswerTimerData { get; set; }

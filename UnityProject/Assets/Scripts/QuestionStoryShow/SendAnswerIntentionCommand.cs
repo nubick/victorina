@@ -11,7 +11,7 @@ namespace Victorina
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         [Inject] private AnswerTimerData AnswerTimerData { get; set; }
         [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         public float SpentSeconds { get; set; }
         

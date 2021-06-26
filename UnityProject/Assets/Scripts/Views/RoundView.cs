@@ -13,7 +13,7 @@ namespace Victorina
         [Inject] private ClientService ClientService { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private MatchSettingsView MatchSettingsView { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         private readonly Dictionary<string, RoundQuestionWidget> _questionWidgetsCache = new Dictionary<string, RoundQuestionWidget>();
         

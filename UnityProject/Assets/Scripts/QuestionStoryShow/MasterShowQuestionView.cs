@@ -9,7 +9,7 @@ namespace Victorina
     {
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private AnswerTimerData AnswerTimerData { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
         [Inject] private MasterAnswerTipData TipData { get; set; }
         
@@ -50,7 +50,8 @@ namespace Victorina
             StartTimerButton.SetActive(CanStartTimer(AnswerTimerData.State, PlayState.IsLastDot)); 
             StopTimerButton.SetActive(AnswerTimerData.State == QuestionTimerState.Running);
             
-            AcceptAnswer.SetActive(PlayState.NetQuestion.Type != QuestionType.Simple);
+            AcceptAnswer.SetActive(PlayState.NetQuestion.Type != QuestionType.Simple && AnswerTimerData.State != QuestionTimerState.NotStarted);
+            
             ShowAnswerButton.SetActive(ShowQuestionSystem.CanShowAnswer());
 
             AnswerTip.text = TipData.AnswerTip;

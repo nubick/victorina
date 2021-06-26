@@ -188,13 +188,13 @@ namespace Victorina
         
         #endregion
 
-        public void SendPackagePlayStateData(PackagePlayStateData data)
+        public void SendPackagePlayStateData(PlayStateData data)
         {
             InvokeClientRpcOnOwner(ReceivePackagePlayStateDataClientRpc, data, "RFS");
         }
 
         [ClientRPC]
-        private void ReceivePackagePlayStateDataClientRpc(PackagePlayStateData data)
+        private void ReceivePackagePlayStateDataClientRpc(PlayStateData data)
         {
             Debug.Log($"Player {OwnerClientId}: Receive PackagePlayStateData: {data}");
             PlayerDataReceiver.OnReceivePackagePlayStateData(data);

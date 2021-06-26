@@ -9,7 +9,7 @@ namespace Victorina
         public override CommandType Type => CommandType.CancelAcceptingAnswer;
         
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         private AcceptingAnswerPlayState PlayState => PlayStateData.As<AcceptingAnswerPlayState>();
         

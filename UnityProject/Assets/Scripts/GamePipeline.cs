@@ -49,7 +49,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<MatchSettingsView>());
             
             _injector.Bind(new PackagePlayStateSystem());
-            _injector.Bind(new PackagePlayStateData());
+            _injector.Bind(new PlayStateData());
             
             _injector.Bind(new NetworkData());
             

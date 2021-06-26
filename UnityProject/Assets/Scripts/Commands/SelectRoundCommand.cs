@@ -7,7 +7,7 @@ namespace Victorina.Commands
     public class SelectRoundCommand : Command, IServerCommand
     {
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
-        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
@@ -19,11 +19,11 @@ namespace Victorina.Commands
         
         public bool CanExecuteOnServer()
         {
-            if (PackagePlayStateData.Type != PlayStateType.Round && 
-                PackagePlayStateData.Type != PlayStateType.Lobby &&
-                PackagePlayStateData.Type != PlayStateType.ShowAnswer)
+            if (PlayStateData.Type != PlayStateType.Round && 
+                PlayStateData.Type != PlayStateType.Lobby &&
+                PlayStateData.Type != PlayStateType.ShowAnswer)
             {
-                Debug.Log($"Can't select round in PlayState: {PackagePlayStateData.PlayState}");
+                Debug.Log($"Can't select round in PlayState: {PlayStateData.PlayState}");
                 return false;
             }
 

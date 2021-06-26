@@ -5,7 +5,7 @@ namespace Victorina
 {
     public class ShowAnswerSystem
     {
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         
         private ShowAnswerPlayState PlayState => PlayStateData.As<ShowAnswerPlayState>();

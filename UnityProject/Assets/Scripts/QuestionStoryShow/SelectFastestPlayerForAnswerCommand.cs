@@ -9,7 +9,7 @@ namespace Victorina
     {
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         public override CommandType Type => CommandType.SelectFastestPlayerForAnswer;
         private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();

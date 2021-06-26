@@ -9,7 +9,7 @@ namespace Victorina
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
-        [Inject] private PackagePlayStateData PackagePlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         [Inject] private AnswerTimerData AnswerTimerData { get; set; }
 
@@ -58,11 +58,11 @@ namespace Victorina
                     MetagameEvents.PlayersBoardChanged.Publish();
                 }
                 
-                if (PackagePlayStateData.HasChanges)
+                if (PlayStateData.HasChanges)
                 {
-                    Debug.Log($"DataSync: {PackagePlayStateData}");
-                    PackagePlayStateData.ApplyChanges();
-                    SendToPlayersService.SendPackagePlayStateData(PackagePlayStateData);
+                    Debug.Log($"DataSync: {PlayStateData}");
+                    PlayStateData.ApplyChanges();
+                    SendToPlayersService.SendPackagePlayStateData(PlayStateData);
                     MetagameEvents.PackagePlayStateChanged.Publish();
                 }
 

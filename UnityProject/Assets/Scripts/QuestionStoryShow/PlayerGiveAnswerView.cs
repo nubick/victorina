@@ -10,7 +10,7 @@ namespace Victorina
         [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private PlayerAnswerSystem PlayerAnswerSystem { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private AnswerTimerData AnswerTimerData { get; set; }
 
         public Image TimerStrip;

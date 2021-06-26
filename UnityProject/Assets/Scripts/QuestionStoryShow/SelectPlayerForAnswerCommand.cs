@@ -7,7 +7,7 @@ namespace Victorina
     public class SelectPlayerForAnswerCommand : Command, IServerCommand
     {
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         public byte PlayerId { get; set; }
 

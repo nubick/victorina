@@ -30,7 +30,7 @@ namespace Victorina
         [Inject] private PlayerLookAnswerView PlayerLookAnswerView { get; set; }
         
         [Inject] private NetworkData NetworkData { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
 
         public void Initialize()
         {

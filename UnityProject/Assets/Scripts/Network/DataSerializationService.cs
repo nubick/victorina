@@ -402,18 +402,18 @@ namespace Victorina
             return new CommandNetworkData(command);
         }
 
-        private void SerializePackagePlayStateData(Stream stream, PackagePlayStateData data)
+        private void SerializePackagePlayStateData(Stream stream, PlayStateData data)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
             writer.WriteInt32((int) data.PlayState.Type);
             data.PlayState.Serialize(writer);
         }
 
-        private PackagePlayStateData DeserializePackagePlayStateData(Stream stream)
+        private PlayStateData DeserializePackagePlayStateData(Stream stream)
         {
             using PooledBitReader reader = PooledBitReader.Get(stream);
             PlayStateType playStateType = (PlayStateType) reader.ReadInt32();
-            PackagePlayStateData data = new PackagePlayStateData();
+            PlayStateData data = new PlayStateData();
             data.PlayState = PackagePlayStateSystem.Create(playStateType);
             data.PlayState.Deserialize(reader);
             return data;

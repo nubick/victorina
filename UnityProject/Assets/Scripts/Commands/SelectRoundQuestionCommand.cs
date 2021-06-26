@@ -10,7 +10,7 @@ namespace Victorina.Commands
     {
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
-        [Inject] private PackagePlayStateData PlayStateData { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private TimerSystem TimerSystem { get; set; }
         
