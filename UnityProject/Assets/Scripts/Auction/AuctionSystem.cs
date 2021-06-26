@@ -13,10 +13,10 @@ namespace Victorina
         
         private AuctionPlayState AuctionPlayState => PlayStateData.As<AuctionPlayState>();
         
-        public void StartNew(int questionPrice, string theme)
+        public void StartNew(NetQuestion netQuestion)
         {
-            AuctionPlayState.Bet = questionPrice;
-            AuctionPlayState.Theme = theme;
+            AuctionPlayState.Bet = netQuestion.Price;
+            AuctionPlayState.Theme = netQuestion.GetTheme();
             AuctionPlayState.Player = null;
             AuctionPlayState.BettingPlayer = PlayersBoard.Current;
             AuctionPlayState.IsAllIn = false;

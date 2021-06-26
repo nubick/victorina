@@ -26,7 +26,7 @@ namespace Victorina
         public void ExecuteOnServer()
         {
             PlayersBoardSystem.MakePlayerCurrent(PlayState.AnsweringPlayerId);
-            PlayersBoardSystem.RewardPlayer(PlayState.AnsweringPlayerId, PlayState.Price);
+            PlayersBoardSystem.RewardPlayer(PlayState.AnsweringPlayerId, PlayState.ShowQuestionPlayState.Price);
             PlayStateSystem.ChangeToShowAnswerPlayState(PlayState.ShowQuestionPlayState);
         }
     }

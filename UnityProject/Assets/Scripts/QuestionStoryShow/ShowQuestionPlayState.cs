@@ -7,7 +7,8 @@ namespace Victorina
     public class ShowQuestionPlayState : PackagePlayState
     {
         public NetQuestion NetQuestion { get; set; }
-
+        public int Price { get; set; }
+        
         private int _storyDotIndex;
         public int StoryDotIndex
         {
@@ -29,6 +30,7 @@ namespace Victorina
         public override void Serialize(PooledBitWriter writer)
         {
             DataSerializationService.SerializeNetQuestion(writer, NetQuestion);
+            writer.WriteInt32(Price);
             writer.WriteInt32(StoryDotIndex);
             writer.WriteByteArray(WrongAnsweredIds.ToArray());
             writer.WriteByteArray(AdmittedPlayersIds.ToArray());
@@ -37,11 +39,12 @@ namespace Victorina
         public override void Deserialize(PooledBitReader reader)
         {
             NetQuestion = DataSerializationService.DeserializeNetQuestion(reader);
+            Price = reader.ReadInt32();
             StoryDotIndex = reader.ReadInt32();
             WrongAnsweredIds.AddRange(reader.ReadByteArray());
             AdmittedPlayersIds.AddRange(reader.ReadByteArray());
         }
         
-        public override string ToString() => $"[ShowQuestionPlayState, index: {StoryDotIndex}, storyDot: {CurrentStoryDot}]";
+        public override string ToString() => $"[ShowQuestionPlayState, index: {StoryDotIndex}, Price: {Price}, StoryDot: {CurrentStoryDot}]";
     }
 }

@@ -1,12 +1,10 @@
 using Injection;
-using UnityEngine;
 using Victorina.Commands;
 
 namespace Victorina
 {
     public class MatchSystem
     {
-        [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
@@ -44,17 +42,6 @@ namespace Victorina
                 return;
 
             CommandsSystem.AddNewCommand(new SelectRoundCommand {RoundNumber = number});
-        }
-        
-        private int GetQuestionPrice(NetQuestion netQuestion)
-        {
-            //todo: Finish refactoring
-            return netQuestion.Type switch
-            {
-                QuestionType.CatInBag => netQuestion.CatInBagInfo.Price,
-                QuestionType.Auction => 0,//MatchData.QuestionAnswerData.AuctionData.Value.Bet,
-                _ => netQuestion.Price
-            };
         }
     }
 }

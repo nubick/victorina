@@ -31,7 +31,7 @@ namespace Victorina
 
         public void ExecuteOnServer()
         {
-            PlayStateSystem.ChangeToShowQuestionPlayState(PlayState.NetQuestion.QuestionId);
+            PlayStateSystem.ChangeToShowQuestionPlayState(PlayState.NetQuestion, PlayState.NetQuestion.CatInBagInfo.Price);
         }
 
         public override string ToString() => "[FinishCatInBagCommand]";

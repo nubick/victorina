@@ -31,7 +31,7 @@ namespace Victorina
             {
                 case QuestionType.Simple:
                     PlayState.ShowQuestionPlayState.WrongAnsweredIds.Add(PlayState.AnsweringPlayerId);
-                    PlayersBoardSystem.FinePlayer(PlayState.AnsweringPlayerId, PlayState.Price);
+                    PlayersBoardSystem.FinePlayer(PlayState.AnsweringPlayerId, PlayState.ShowQuestionPlayState.Price);
                     PlayStateSystem.ChangeBackToShowQuestionPlayState(PlayState.ShowQuestionPlayState);
                     break;
                 case QuestionType.NoRisk:
@@ -39,7 +39,7 @@ namespace Victorina
                     break;
                 case QuestionType.CatInBag:
                 case QuestionType.Auction:
-                    PlayersBoardSystem.FinePlayer(PlayState.AnsweringPlayerId, PlayState.Price);
+                    PlayersBoardSystem.FinePlayer(PlayState.AnsweringPlayerId, PlayState.ShowQuestionPlayState.Price);
                     PlayStateSystem.ChangeToShowAnswerPlayState(PlayState.ShowQuestionPlayState);
                     break;
                 default:

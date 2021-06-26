@@ -8,7 +8,8 @@ namespace Victorina
     {
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
-        
+        [Inject] private MatchData MatchData { get; set; }
+
         public override CommandType Type => CommandType.FinishNoRisk;
         private NoRiskPlayState PlayState => PlayStateData.As<NoRiskPlayState>();
         
@@ -25,7 +26,7 @@ namespace Victorina
 
         public void ExecuteOnServer()
         {
-            PlayStateSystem.ChangeToShowQuestionPlayState(PlayState.QuestionId);
+            PlayStateSystem.ChangeToShowQuestionPlayState(MatchData.NetQuestion, MatchData.NetQuestion.Price);
         }
 
         public override string ToString() => "[FinishNoRiskCommand]";

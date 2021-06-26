@@ -9,6 +9,7 @@ namespace Victorina
         [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
 
         public override CommandType Type => CommandType.FinishAuction;
         private AuctionPlayState AuctionPlayState => PlayStateData.As<AuctionPlayState>();
@@ -27,7 +28,7 @@ namespace Victorina
         public void ExecuteOnServer()
         {
             PlayersBoardSystem.MakePlayerCurrent(AuctionPlayState.Player);
-            PlayStateSystem.ChangeToShowQuestionPlayState(AuctionPlayState.QuestionId);
+            PlayStateSystem.ChangeToShowQuestionPlayState(MatchData.NetQuestion, AuctionPlayState.Bet);
         }
 
         public override string ToString()

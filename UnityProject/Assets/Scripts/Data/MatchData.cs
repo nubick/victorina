@@ -6,6 +6,7 @@ namespace Victorina
     {
         //Master only
         public int RoundNumber { get; set; }
+        public NetQuestion NetQuestion { get; set; }
         
         //Player only data
         public DateTime EnableAnswerTime { get; set; }

@@ -11,6 +11,7 @@ namespace Victorina.Commands
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
 
         public override CommandType Type => CommandType.StopRoundBlinking;
         
@@ -28,14 +29,14 @@ namespace Victorina.Commands
         {
             RoundBlinkingPlayState blinkingPlayState = PlayStateData.As<RoundBlinkingPlayState>();
             NetQuestion netQuestion = PackageSystem.BuildNetQuestion(blinkingPlayState.QuestionId);
+            MatchData.NetQuestion = netQuestion;
             
             switch (netQuestion.Type)
             {
                 case QuestionType.Auction:
                     AuctionPlayState auctionPlayState = new AuctionPlayState();
-                    auctionPlayState.QuestionId = netQuestion.QuestionId;
                     PlayStateSystem.ChangePlayState(auctionPlayState);
-                    AuctionSystem.StartNew(netQuestion.Price, netQuestion.GetTheme());
+                    AuctionSystem.StartNew(netQuestion);
                     break;
                 case QuestionType.CatInBag:
                     CatInBagPlayState catInBagPlayState = new CatInBagPlayState();
@@ -45,11 +46,10 @@ namespace Victorina.Commands
                     break;
                 case QuestionType.NoRisk:
                     NoRiskPlayState noRiskPlayState = new NoRiskPlayState();
-                    noRiskPlayState.QuestionId = netQuestion.QuestionId;
                     PlayStateSystem.ChangePlayState(noRiskPlayState);
                     break;
                 case QuestionType.Simple:
-                    PlayStateSystem.ChangeToShowQuestionPlayState(blinkingPlayState.QuestionId);
+                    PlayStateSystem.ChangeToShowQuestionPlayState(netQuestion, netQuestion.Price);
                     break;
                 default:
                     throw new Exception($"Not supported QuestionType: {netQuestion.Type}");

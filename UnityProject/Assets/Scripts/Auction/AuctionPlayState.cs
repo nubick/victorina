@@ -10,7 +10,6 @@ namespace Victorina
     {
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         
-        public string QuestionId { get; set; }
         public int Bet { get; set; }
         public string Theme { get; set; }
         public bool IsAllIn { get; set; }
@@ -27,7 +26,6 @@ namespace Victorina
         
         public override void Serialize(PooledBitWriter writer)
         {
-            writer.WriteString(QuestionId);
             writer.WriteInt32(Bet);
             writer.WriteString(Theme);
             writer.WriteBool(IsAllIn);
@@ -38,7 +36,6 @@ namespace Victorina
 
         public override void Deserialize(PooledBitReader reader)
         {
-            QuestionId = reader.ReadString().ToString();
             Bet = reader.ReadInt32();
             Theme = reader.ReadString().ToString();
             IsAllIn = reader.ReadBool();

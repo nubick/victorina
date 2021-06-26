@@ -10,7 +10,6 @@ namespace Victorina
         
         [Inject] private PlayStateData Data { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
-        [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
         
         public void Initialize(Injector injector)
@@ -55,10 +54,11 @@ namespace Victorina
             return playState;
         }
 
-        public void ChangeToShowQuestionPlayState(string questionId)
+        public void ChangeToShowQuestionPlayState(NetQuestion netQuestion, int price)
         {
             ShowQuestionPlayState showQuestionPlayState = new ShowQuestionPlayState();
-            showQuestionPlayState.NetQuestion = PackageSystem.BuildNetQuestion(questionId);
+            showQuestionPlayState.NetQuestion = netQuestion;
+            showQuestionPlayState.Price = price;
             ChangePlayState(showQuestionPlayState);
             ShowQuestionSystem.Start();
         }
@@ -81,9 +81,7 @@ namespace Victorina
         {
             AcceptingAnswerPlayState playState = new AcceptingAnswerPlayState();
             playState.ShowQuestionPlayState = showQuestionPlayState;
-            playState.Price = showQuestionPlayState.NetQuestion.Price;
             playState.AnsweringPlayerId = playerId;
-            
             ChangePlayState(playState);
             PlayersButtonClickData.Clear();
         }
