@@ -13,13 +13,11 @@ namespace Victorina
         public void ShowNext()
         {
             PlayState.StoryDotIndex++;
-            PlayStateData.MarkAsChanged();
         }
 
         public void ShowPrevious()
         {
             PlayState.StoryDotIndex--;
-            PlayStateData.MarkAsChanged();
         }
         
         public void BackToRound()
