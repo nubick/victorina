@@ -40,6 +40,7 @@ namespace Victorina
                     Debug.Log($"DataSync: {PlayersButtonClickData}");
                     PlayersButtonClickData.ApplyChanges();
                     SendToPlayersService.SendPlayersButtonClickData(PlayersButtonClickData);
+                    MetagameEvents.PlayersButtonClickDataChanged.Publish();
                 }
 
                 if (FinalRoundData.HasChanges)

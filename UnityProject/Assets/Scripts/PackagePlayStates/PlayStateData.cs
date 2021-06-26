@@ -1,14 +1,21 @@
 using System;
-using System.Collections.Generic;
 
 namespace Victorina
 {
-    public class PackagePlayStateData : SyncData
+    public class PlayStateData : SyncData
     {
         public PackagePlayState PlayState { get; set; }
         public PlayStateType Type => PlayState.Type;
 
-        public void Update(PackagePlayStateData data)
+        public override bool HasChanges => base.HasChanges || PlayState is {HasChanges: true};
+
+        public override void ApplyChanges()
+        {
+            base.ApplyChanges();
+            PlayState?.ApplyChanges();
+        }
+
+        public void Update(PlayStateData data)
         {
             PlayState = data.PlayState;
         }

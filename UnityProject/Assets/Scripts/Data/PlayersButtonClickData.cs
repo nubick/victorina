@@ -15,7 +15,6 @@ namespace Victorina
             clickData.Time = spentSeconds;
             Players.Add(clickData);
             MarkAsChanged();
-            MetagameEvents.PlayersButtonClickDataChanged.Publish();
         }
         
         public void Clear()
@@ -24,7 +23,6 @@ namespace Victorina
             {
                 Players.Clear();
                 MarkAsChanged();
-                MetagameEvents.PlayersButtonClickDataChanged.Publish();
             }
         }
 

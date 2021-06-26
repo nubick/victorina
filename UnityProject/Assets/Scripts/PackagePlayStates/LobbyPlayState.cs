@@ -7,5 +7,6 @@ namespace Victorina
         public override PlayStateType Type => PlayStateType.Lobby;
         public override void Serialize(PooledBitWriter writer) { }
         public override void Deserialize(PooledBitReader reader) { }
+        public override string ToString() => "[LobbyPlayState]";
     }
 }

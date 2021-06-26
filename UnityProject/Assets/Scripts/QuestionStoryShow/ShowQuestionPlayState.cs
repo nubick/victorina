@@ -7,7 +7,17 @@ namespace Victorina
     public class ShowQuestionPlayState : PackagePlayState
     {
         public NetQuestion NetQuestion { get; set; }
-        public int StoryDotIndex { get; set; }
+
+        private int _storyDotIndex;
+        public int StoryDotIndex
+        {
+            get => _storyDotIndex;
+            set
+            {
+                _storyDotIndex = value;
+                MarkAsChanged();
+            }
+        }
         
         public HashSet<byte> WrongAnsweredIds { get; } = new HashSet<byte>();
         public HashSet<byte> AdmittedPlayersIds { get; } = new HashSet<byte>();
