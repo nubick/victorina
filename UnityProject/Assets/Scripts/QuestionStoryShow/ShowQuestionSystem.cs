@@ -84,6 +84,7 @@ namespace Victorina
         {
             QuestionTimer.Reset(Static.TimeForAnswer);
             StartTimer();
+            CommandsSystem.AddNewCommand(new RestartMediaCommand());
         }
 
         public bool CanShowAnswer()

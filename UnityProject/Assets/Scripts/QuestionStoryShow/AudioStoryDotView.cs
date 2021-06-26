@@ -20,6 +20,7 @@ namespace Victorina
             MetagameEvents.ClientFileDownloaded.Subscribe(OnClientFileDownloaded);
             MetagameEvents.QuestionTimerStarted.Subscribe(OnQuestionTimerStarted);
             MetagameEvents.QuestionTimerPaused.Subscribe(OnQuestionTimerPaused);
+            MetagameEvents.MediaRestarted.Subscribe(OnMediaRestarted);
             
             AppState.Volume.SubscribeChanged(SetVolume);
             SetVolume(AppState.Volume.Value);
@@ -90,10 +91,7 @@ namespace Victorina
             if (IsActive)
             {
                 Debug.Log($"AudioView: TimerStarted, isPlaying: {AudioSource.isPlaying}, playback pos: {AudioSource.time}, {Time.time}");
-                // if (QuestionAnswerData.MasterIntention == MasterIntention.RestartMedia)
-                //     AudioSource.Play();
-                // else
-                    AudioSource.UnPause();
+                AudioSource.UnPause();
             }
         }
 
@@ -103,6 +101,15 @@ namespace Victorina
             {
                 Debug.Log($"AudioView: TimerPaused, isPlaying: {AudioSource.isPlaying}, playback pos: {AudioSource.time}, {Time.time}");
                 AudioSource.Pause();
+            }
+        }
+
+        private void OnMediaRestarted()
+        {
+            if (IsActive)
+            {
+                AudioSource.Stop();
+                AudioSource.Play();
             }
         }
     }

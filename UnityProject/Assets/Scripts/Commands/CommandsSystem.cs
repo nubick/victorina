@@ -143,7 +143,9 @@ namespace Victorina.Commands
             {
                 CommandType.SelectRoundQuestion => new SelectRoundQuestionCommand(),
                 CommandType.GiveCatInBag => new GiveCatInBagCommand(),
+                //Show question
                 CommandType.SendAnswerIntention => new SendAnswerIntentionCommand(),
+                CommandType.RestartMedia => new RestartMediaCommand(),
                 //Auction
                 CommandType.PassAuction => new PassAuctionCommand(),
                 CommandType.MakeBetAuction => new MakeBetAuctionCommand(),
