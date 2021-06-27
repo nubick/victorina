@@ -9,7 +9,7 @@ namespace Victorina
     public class ShowQuestionSystem
     {
         [Inject] private PlayStateData PlayStateData { get; set; }
-        [Inject] private QuestionTimer QuestionTimer { get; set; }
+        [Inject] private QuestionStripTimer QuestionStripTimer { get; set; }
         [Inject] private AnswerTimerData AnswerTimerData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
@@ -21,7 +21,7 @@ namespace Victorina
 
         public void Start()
         {
-            QuestionTimer.Reset(Static.TimeForAnswer);
+            QuestionStripTimer.Reset(Static.TimeForAnswer, Static.TimeForAnswer);
 
             AnswerTimerData.State = QuestionTimerState.NotStarted;
             PlayState.WrongAnsweredIds.Clear();
@@ -65,7 +65,7 @@ namespace Victorina
         public void StartTimer()
         {
             AnswerTimerData.ResetSeconds = Static.TimeForAnswer;
-            AnswerTimerData.LeftSeconds = QuestionTimer.LeftSeconds;
+            AnswerTimerData.LeftSeconds = QuestionStripTimer.LeftSeconds;
             AnswerTimerData.State = QuestionTimerState.Running;
             PlayersButtonClickData.Clear();
         }
@@ -82,8 +82,6 @@ namespace Victorina
 
         public void RestartMedia()
         {
-            QuestionTimer.Reset(Static.TimeForAnswer);
-            StartTimer();
             CommandsSystem.AddNewCommand(new RestartMediaCommand());
         }
 
@@ -94,6 +92,7 @@ namespace Victorina
 
         public void ShowAnswer()
         {
+            PauseTimer();
             CommandsSystem.AddNewCommand(new ShowAnswerCommand());
         }
         

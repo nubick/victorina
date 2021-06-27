@@ -8,10 +8,12 @@ namespace Victorina
     public class AudioStoryDotView : StoryDotView
     {
         private int? _pendingFileId;
-        
+
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private AppState AppState { get; set; }
         [Inject] private PathSystem PathSystem { get; set; }
+
+        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
         
         public AudioSource AudioSource;
         
@@ -30,13 +32,22 @@ namespace Victorina
         {
             AudioSource.volume = volume;
         }
-        
+
         protected override void OnShown()
         {
-            StoryDot currentStoryDot = GetCurrentStoryDot();
-            if (currentStoryDot is AudioStoryDot audioStoryDot)
+            if (PlayStateData.Type == PlayStateType.AcceptingAnswer)
+                return;
+
+            if (PlayState.IsCameBackFromAcceptingAnswer)
             {
-                StartCoroutine(LoadAndPlay(audioStoryDot.FileId));
+                Debug.Log($"Came back from accepting answer");
+                AudioSource.UnPause();
+            }
+            else
+            {
+                StoryDot currentStoryDot = GetCurrentStoryDot();
+                if (currentStoryDot is AudioStoryDot audioStoryDot)
+                    StartCoroutine(LoadAndPlay(audioStoryDot.FileId));
             }
         }
 
@@ -85,7 +96,7 @@ namespace Victorina
             if (_pendingFileId == fileId)
                 StartCoroutine(LoadAndPlay(fileId));
         }
-
+        
         private void OnQuestionTimerStarted()
         {
             if (IsActive)

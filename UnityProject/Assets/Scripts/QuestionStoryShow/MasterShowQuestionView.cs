@@ -7,7 +7,7 @@ namespace Victorina
 {
     public class MasterShowQuestionView : ViewBase
     {
-        [Inject] private QuestionTimer QuestionTimer { get; set; }
+        [Inject] private QuestionStripTimer QuestionStripTimer { get; set; }
         [Inject] private AnswerTimerData AnswerTimerData { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
@@ -33,6 +33,7 @@ namespace Victorina
         public void Initialize()
         {
             MetagameEvents.TimerRunOut.Subscribe(OnTimerRunOut);
+            MetagameEvents.AnswerTimerDataChanged.Subscribe(RefreshUI);
         }
         
         protected override void OnShown()
@@ -42,11 +43,14 @@ namespace Victorina
         
         public void RefreshUI()
         {
+            if (!IsActive)
+                return;
+            
             PreviousQuestionDotButton.SetActive(PlayState.StoryDotIndex > 0);
             NextQuestionDotButton.SetActive(!PlayState.IsLastDot);
             
             TimerStrip.gameObject.SetActive(AnswerTimerData.State != QuestionTimerState.NotStarted);
-            RestartMediaButton.SetActive(false);
+            RestartMediaButton.SetActive(PlayState.CurrentStoryDot is VideoStoryDot || PlayState.CurrentStoryDot is AudioStoryDot);
             StartTimerButton.SetActive(CanStartTimer(AnswerTimerData.State, PlayState.IsLastDot)); 
             StopTimerButton.SetActive(AnswerTimerData.State == QuestionTimerState.Running);
             
@@ -72,7 +76,7 @@ namespace Victorina
         {
             if (IsActive && AnswerTimerData.State == QuestionTimerState.Running)
             {
-                TimerStrip.fillAmount = QuestionTimer.GetLeftSecondsPercentage();
+                TimerStrip.fillAmount = QuestionStripTimer.GetLeftSecondsPercentage();
             }
         }
 
@@ -80,7 +84,6 @@ namespace Victorina
         {
             StartTimerButton.SetActive(false);
             StopTimerButton.SetActive(false);
-            RestartMediaButton.SetActive(true);
         }
 
         public void OnPreviousQuestionDotButtonClicked()

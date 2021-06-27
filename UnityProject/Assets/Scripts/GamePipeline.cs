@@ -101,7 +101,7 @@ namespace Victorina
             _injector.Bind(new ShowQuestionSystem());
             _injector.Bind(new PlayersButtonClickData());
             _injector.Bind(new TimerSystem());  //--- Timer
-            _injector.Bind(new QuestionTimer());
+            _injector.Bind(new QuestionStripTimer());
             _injector.Bind(FindObjectOfType<TimerCoroutinesContainer>());
             _injector.Bind(new AnswerTimerSystem());
             _injector.Bind(new AnswerTimerData());

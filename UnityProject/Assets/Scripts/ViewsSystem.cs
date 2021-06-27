@@ -143,7 +143,10 @@ namespace Victorina
             storyDotView.Show();
 
             if (NetworkData.IsMaster)
+            {
                 MasterShowQuestionView.Show();
+                showQuestionPlayState.IsCameBackFromAcceptingAnswer = false;
+            }
 
             if (NetworkData.IsClient)
                 PlayerGiveAnswerView.Show();

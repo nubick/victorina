@@ -20,6 +20,8 @@ namespace Victorina
             }
         }
         
+        public bool IsCameBackFromAcceptingAnswer { get; set; }
+        
         public HashSet<byte> WrongAnsweredIds { get; } = new HashSet<byte>();
         public HashSet<byte> AdmittedPlayersIds { get; } = new HashSet<byte>();
         
@@ -32,6 +34,7 @@ namespace Victorina
             DataSerializationService.SerializeNetQuestion(writer, NetQuestion);
             writer.WriteInt32(Price);
             writer.WriteInt32(StoryDotIndex);
+            writer.WriteBool(IsCameBackFromAcceptingAnswer);
             writer.WriteByteArray(WrongAnsweredIds.ToArray());
             writer.WriteByteArray(AdmittedPlayersIds.ToArray());
         }
@@ -41,6 +44,7 @@ namespace Victorina
             NetQuestion = DataSerializationService.DeserializeNetQuestion(reader);
             Price = reader.ReadInt32();
             StoryDotIndex = reader.ReadInt32();
+            IsCameBackFromAcceptingAnswer = reader.ReadBool();
             WrongAnsweredIds.AddRange(reader.ReadByteArray());
             AdmittedPlayersIds.AddRange(reader.ReadByteArray());
         }

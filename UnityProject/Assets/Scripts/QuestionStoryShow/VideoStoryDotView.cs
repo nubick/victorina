@@ -38,6 +38,9 @@ namespace Victorina
         
         protected override void OnShown()
         {
+            if (PlayStateData.Type == PlayStateType.AcceptingAnswer)
+                return;
+
             StoryDot currentStoryDot = GetCurrentStoryDot();
             if (currentStoryDot is VideoStoryDot videoStoryDot)
             {

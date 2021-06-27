@@ -8,7 +8,6 @@ namespace Victorina
 {
     public class PlayerAnswerSystem : IKeyPressedHandler
     {
-        [Inject] private QuestionTimer QuestionTimer { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
@@ -17,19 +16,7 @@ namespace Victorina
         [Inject] private AnswerTimerData AnswerTimerData { get; set; }
         
         private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
-
-        public void StartTimer(float resetSeconds, float leftSeconds)
-        {
-            MatchData.EnableAnswerTime = DateTime.UtcNow;
-            QuestionTimer.Reset(resetSeconds, leftSeconds);
-            QuestionTimer.Start();
-        }
         
-        public void StopTimer()
-        {
-            QuestionTimer.Stop();
-        }
-
         private void SendAnswerIntention()
         {
             float spentSeconds = (float) (DateTime.UtcNow - MatchData.EnableAnswerTime).TotalSeconds;

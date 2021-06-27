@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Victorina
 {
-    public class QuestionTimer
+    public class QuestionStripTimer
     {
         private float _resetSeconds;
         private DateTime? _startTime;
@@ -12,11 +12,6 @@ namespace Victorina
 
         public bool IsRunning => _startTime != null && GetNowLeftSeconds() > 0f;
         
-        public void Reset(float resetSeconds)
-        {
-            Reset(resetSeconds, resetSeconds);
-        }
-
         public void Reset(float resetSeconds, float leftSeconds)
         {
             _startTime = null;

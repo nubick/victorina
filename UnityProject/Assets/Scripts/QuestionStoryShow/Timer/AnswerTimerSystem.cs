@@ -1,3 +1,4 @@
+using System;
 using Injection;
 using UnityEngine;
 
@@ -5,10 +6,10 @@ namespace Victorina
 {
     public class AnswerTimerSystem
     {
-        [Inject] private QuestionTimer QuestionTimer { get; set; }
+        [Inject] private QuestionStripTimer QuestionStripTimer { get; set; }
         [Inject] private AnswerTimerData Data { get; set; }
-        [Inject] private PlayerAnswerSystem PlayerAnswerSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
 
         public void Initialize()
         {
@@ -17,28 +18,26 @@ namespace Victorina
 
         private void Refresh()
         {
-            if (QuestionTimer.IsRunning && Data.State != QuestionTimerState.Running)
+            if (QuestionStripTimer.IsRunning && Data.State != QuestionTimerState.Running)
             {
                 Debug.Log($"StopTimer, {Data.State}, {Data.ResetSeconds}, {Data.LeftSeconds}");
-
-                if (NetworkData.IsClient)
-                    PlayerAnswerSystem.StopTimer();
-
-                if (NetworkData.IsMaster)
-                    QuestionTimer.Stop();
-
+                QuestionStripTimer.Stop();
                 MetagameEvents.QuestionTimerPaused.Publish();
             }
 
-            if (!QuestionTimer.IsRunning && Data.State == QuestionTimerState.Running)
+            if (!QuestionStripTimer.IsRunning && Data.State == QuestionTimerState.Running)
             {
                 Debug.Log($"StartTimer, {Data.State}, {Data.ResetSeconds}, {Data.LeftSeconds}");
 
                 if (NetworkData.IsClient)
-                    PlayerAnswerSystem.StartTimer(Data.ResetSeconds, Data.LeftSeconds);
+                {
+                    MatchData.EnableAnswerTime = DateTime.UtcNow;
+                    QuestionStripTimer.Reset(Data.ResetSeconds, Data.LeftSeconds);
+                    QuestionStripTimer.Start();
+                }
 
                 if (NetworkData.IsMaster)
-                    QuestionTimer.Start();
+                    QuestionStripTimer.Start();
 
                 MetagameEvents.QuestionTimerStarted.Publish();
             }

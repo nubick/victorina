@@ -65,6 +65,7 @@ namespace Victorina
 
         public void ChangeBackToShowQuestionPlayState(ShowQuestionPlayState showQuestionPlayState)
         {
+            showQuestionPlayState.IsCameBackFromAcceptingAnswer = true;
             ChangePlayState(showQuestionPlayState);
             ShowQuestionSystem.StartTimer();
         }

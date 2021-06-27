@@ -7,7 +7,7 @@ namespace Victorina
 {
     public class PlayerGiveAnswerView : ViewBase
     {
-        [Inject] private QuestionTimer QuestionTimer { get; set; }
+        [Inject] private QuestionStripTimer QuestionStripTimer { get; set; }
         [Inject] private PlayerAnswerSystem PlayerAnswerSystem { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
@@ -75,7 +75,7 @@ namespace Victorina
         {
             if (IsActive)
             {
-                float leftSeconds = QuestionTimer.GetLeftSecondsPercentage();
+                float leftSeconds = QuestionStripTimer.GetLeftSecondsPercentage();
                 TimerStrip.fillAmount = leftSeconds;
             }
         }
