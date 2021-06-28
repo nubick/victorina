@@ -30,6 +30,8 @@ namespace Victorina
         [Inject] private PlayerAcceptingAnswerView PlayerAcceptingAnswerView { get; set; }
         [Inject] private PlayerLookAnswerView PlayerLookAnswerView { get; set; }
         
+        [Inject] private ResultView ResultView { get; set; }
+        
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
 
@@ -98,6 +100,9 @@ namespace Victorina
                     break;
                 case PlayStateType.ShowFinalRoundQuestion:
                     ShowFinalRoundQuestionViews(PlayStateData.As<ShowFinalRoundQuestionPlayState>());
+                    break;
+                case PlayStateType.Result:
+                    ShowResultViews();
                     break;
                 default:
                     throw new Exception($"Not supported PackagePlayState: {PlayStateData.PlayState}");
@@ -215,6 +220,13 @@ namespace Victorina
 
             if (NetworkData.IsMaster)
                 MasterShowFinalRoundQuestionView.Show();
+        }
+
+        private void ShowResultViews()
+        {
+            HideAll();
+            ResultView.Show();
+            PlayersBoardView.Show();
         }
     }
 }

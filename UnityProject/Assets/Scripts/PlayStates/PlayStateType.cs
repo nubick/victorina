@@ -16,5 +16,7 @@ namespace Victorina
         AcceptingAnswer,
         ShowAnswer,
         ShowFinalRoundQuestion,
+        
+        Result
     }
 }

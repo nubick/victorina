@@ -123,6 +123,9 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<MasterShowFinalRoundQuestionView>());
             _injector.Bind(new FinalRoundSystem());
 
+            //Result
+            _injector.Bind(FindObjectOfType<ResultView>());
+            
             //Master Only
             _injector.Bind(new ServerService());
             _injector.Bind(new ConnectedPlayersData());

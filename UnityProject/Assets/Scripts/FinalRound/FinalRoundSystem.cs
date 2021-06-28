@@ -260,12 +260,13 @@ namespace Victorina
             
             PlayState.SetAcceptingInfo(sb.ToString());
         }
-        
+
         public void FinishRound()
         {
-            
+            ResultPlayState resultPlayState = new ResultPlayState();
+            PlayStateSystem.ChangePlayState(resultPlayState);
         }
-        
+
         #endregion
     }
 }

@@ -48,6 +48,8 @@ namespace Victorina
                 PlayStateType.ShowQuestion => new ShowQuestionPlayState(),
                 PlayStateType.AcceptingAnswer => new AcceptingAnswerPlayState(),
                 PlayStateType.ShowAnswer => new ShowAnswerPlayState(),
+                
+                PlayStateType.Result => new ResultPlayState(),
 
                 _ => throw new Exception($"Not supported PlayStateType: {playStateType}")
             };
