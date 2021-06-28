@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Victorina
 {
-    public class PackagePlayStateSystem
+    public class PlayStateSystem
     {
         private Injector _injector;
         
@@ -37,7 +37,9 @@ namespace Victorina
 
                 PlayStateType.Round => new RoundPlayState(),
                 PlayStateType.RoundBlinking => new RoundBlinkingPlayState(),
+                
                 PlayStateType.FinalRound => new FinalRoundPlayState(),
+                PlayStateType.ShowFinalRoundQuestion => new ShowFinalRoundQuestionPlayState(),
 
                 PlayStateType.Auction => new AuctionPlayState(),
                 PlayStateType.CatInBag => new CatInBagPlayState(),

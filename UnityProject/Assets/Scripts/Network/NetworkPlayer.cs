@@ -172,22 +172,6 @@ namespace Victorina
             PlayerDataReceiver.OnReceiveAcceptingAnswerTimerData(isRunning, maxSeconds, leftSeconds);
         }
         
-        #region Final Round
-        
-        public void SendFinalRoundData(FinalRoundData finalRoundData)
-        {
-            InvokeClientRpcOnOwner(ReceiveFinalRoundData, finalRoundData);
-        }
-
-        [ClientRPC]
-        private void ReceiveFinalRoundData(FinalRoundData finalRoundData)
-        {
-            Debug.Log($"Player {OwnerClientId}: Receive FinalRoundData: {finalRoundData}");
-            PlayerDataReceiver.OnReceiveFinalRoundData(finalRoundData);
-        }
-        
-        #endregion
-
         public void SendPackagePlayStateData(PlayStateData data)
         {
             InvokeClientRpcOnOwner(ReceivePackagePlayStateDataClientRpc, data, "RFS");

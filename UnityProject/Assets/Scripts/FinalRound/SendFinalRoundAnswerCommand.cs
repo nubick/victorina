@@ -1,19 +1,21 @@
 using Injection;
 using MLAPI.Serialization.Pooled;
 using UnityEngine;
+using Victorina.Commands;
 
-namespace Victorina.Commands
+namespace Victorina
 {
     public class SendFinalRoundAnswerCommand : Command, INetworkCommand, IServerCommand
     {
-        [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         public string AnswerText { get; set; }
 
         public override CommandType Type => CommandType.SendFinalRoundAnswer;
         public bool CanSend() => true;
-
+        private FinalRoundPlayState PlayState => PlayStateData.As<FinalRoundPlayState>();
+        
         public bool CanExecuteOnServer()
         {
             return Owner == CommandOwner.Player;
@@ -23,7 +25,7 @@ namespace Victorina.Commands
         {
             Debug.Log($"Set player '{OwnerPlayer}' answer '{AnswerText}");
             int index = PlayersBoard.GetPlayerIndex(OwnerPlayer);
-            FinalRoundData.SetAnswer(index, AnswerText);
+            PlayState.SetAnswer(index, AnswerText);
         }
 
         #region Serialization

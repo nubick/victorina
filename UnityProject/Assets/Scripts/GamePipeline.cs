@@ -48,7 +48,7 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<PlayersBoardView>());
             _injector.Bind(FindObjectOfType<MatchSettingsView>());
             
-            _injector.Bind(new PackagePlayStateSystem());
+            _injector.Bind(new PlayStateSystem());
             _injector.Bind(new PlayStateData());
             
             _injector.Bind(new NetworkData());
@@ -120,9 +120,9 @@ namespace Victorina
             
             //Final Round
             _injector.Bind(FindObjectOfType<FinalRoundView>());
+            _injector.Bind(FindObjectOfType<MasterShowFinalRoundQuestionView>());
             _injector.Bind(new FinalRoundSystem());
-            _injector.Bind(new FinalRoundData());
-            
+
             //Master Only
             _injector.Bind(new ServerService());
             _injector.Bind(new ConnectedPlayersData());
@@ -255,7 +255,7 @@ namespace Victorina
             _injector.Get<FinalRoundView>().Initialize();
 
             _injector.Get<CommandsSystem>().Initialize(_injector);
-            _injector.Get<PackagePlayStateSystem>().Initialize(_injector);
+            _injector.Get<PlayStateSystem>().Initialize(_injector);
 
             //DevTools
             //Analytics

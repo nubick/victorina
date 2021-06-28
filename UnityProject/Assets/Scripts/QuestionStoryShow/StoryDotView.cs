@@ -9,13 +9,13 @@ namespace Victorina
 
         protected StoryDot GetCurrentStoryDot()
         {
-            return PlayStateData.Type switch
-            {
-                PlayStateType.ShowQuestion => PlayStateData.As<ShowQuestionPlayState>().CurrentStoryDot,
-                PlayStateType.ShowAnswer => PlayStateData.As<ShowAnswerPlayState>().CurrentStoryDot,
-                PlayStateType.AcceptingAnswer => PlayStateData.As<AcceptingAnswerPlayState>().ShowQuestionPlayState.CurrentStoryDot,
-                _ => throw new Exception($"Not supported PlayState: {PlayStateData}")
-            };
+            if (PlayStateData.PlayState is StoryDotPlayState storyDotPlayState)
+                return storyDotPlayState.CurrentStoryDot;
+            
+            if (PlayStateData.Type == PlayStateType.AcceptingAnswer)
+                return PlayStateData.As<AcceptingAnswerPlayState>().ShowQuestionPlayState.CurrentStoryDot;
+
+            throw new Exception($"Not supported PlayState: {PlayStateData}");
         }
     }
 }

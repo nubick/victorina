@@ -14,7 +14,6 @@ namespace Victorina
         [Inject] private PlayerFilesRequestSystem PlayerFilesRequestSystem { get; set; }
         [Inject] private PlayEffectsSystem PlayEffectsSystem { get; set; }
         [Inject] private AcceptingAnswerTimerData AcceptingAnswerTimerData { get; set; }
-        [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
@@ -79,16 +78,10 @@ namespace Victorina
             AcceptingAnswerTimerData.LeftSeconds = leftSeconds;
         }
         
-        public void OnReceiveFinalRoundData(FinalRoundData finalRoundData)
-        {
-            FinalRoundData.Update(finalRoundData);
-            MetagameEvents.FinalRoundDataChanged.Publish();
-        }
-
         public void OnReceivePackagePlayStateData(PlayStateData data)
         {
             PlayStateData.Update(data);
-            MetagameEvents.PackagePlayStateChanged.Publish();
+            MetagameEvents.PlayStateChanged.Publish();
         }
         
         public void OnReceiveCommand(INetworkCommand command)

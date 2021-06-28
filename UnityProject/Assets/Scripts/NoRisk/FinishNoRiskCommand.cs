@@ -6,7 +6,7 @@ namespace Victorina
 {
     public class FinishNoRiskCommand : Command, IServerCommand
     {
-        [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
+        [Inject] private PlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private MatchData MatchData { get; set; }
 

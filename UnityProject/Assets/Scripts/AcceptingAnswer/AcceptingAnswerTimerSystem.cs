@@ -17,7 +17,7 @@ namespace Victorina
         
         public void Initialize()
         {
-            MetagameEvents.PackagePlayStateChanged.Subscribe(OnPlayStateChanged);
+            MetagameEvents.PlayStateChanged.Subscribe(OnPlayStateChanged);
         }
 
         private void OnPlayStateChanged()

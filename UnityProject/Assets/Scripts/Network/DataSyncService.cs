@@ -7,7 +7,6 @@ namespace Victorina
     public class DataSyncService : MonoBehaviour
     {
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
-        [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
@@ -42,15 +41,7 @@ namespace Victorina
                     SendToPlayersService.SendPlayersButtonClickData(PlayersButtonClickData);
                     MetagameEvents.PlayersButtonClickDataChanged.Publish();
                 }
-
-                if (FinalRoundData.HasChanges)
-                {
-                    Debug.Log($"DataSync: {FinalRoundData}");
-                    FinalRoundData.ApplyChanges();
-                    SendToPlayersService.SendFinalRoundData(FinalRoundData);
-                    MetagameEvents.FinalRoundDataChanged.Publish();
-                }
-
+                
                 if (PlayersBoard.HasChanges)
                 {
                     //Debug.Log("DataSync: PlayersBoard");
@@ -64,7 +55,7 @@ namespace Victorina
                     Debug.Log($"DataSync: {PlayStateData}");
                     PlayStateData.ApplyChanges();
                     SendToPlayersService.SendPackagePlayStateData(PlayStateData);
-                    MetagameEvents.PackagePlayStateChanged.Publish();
+                    MetagameEvents.PlayStateChanged.Publish();
                 }
 
                 if (AnswerTimerData.HasChanges)

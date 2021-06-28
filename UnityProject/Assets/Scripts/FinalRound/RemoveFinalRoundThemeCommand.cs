@@ -1,20 +1,22 @@
 using Injection;
 using MLAPI.Serialization.Pooled;
 using UnityEngine;
+using Victorina.Commands;
 
-namespace Victorina.Commands
+namespace Victorina
 {
     public class RemoveFinalRoundThemeCommand : Command, INetworkCommand, IServerCommand
     {
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
-        [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         public int ThemeIndex { get; set; }
         
         public override CommandType Type => CommandType.RemoveFinalRoundTheme;
         private bool IsOwnerCurrentPlayerOrMaster => Owner == CommandOwner.Master || PlayersBoardSystem.IsCurrentPlayer(OwnerPlayer);
+        private FinalRoundPlayState PlayState => PlayStateData.As<FinalRoundPlayState>();
         
         public bool CanSend()
         {
@@ -34,19 +36,19 @@ namespace Victorina.Commands
                 return false;
             }
             
-            if (FinalRoundData.RemainedThemesAmount <= 1)
+            if (PlayState.RemainedThemesAmount <= 1)
             {
-                Debug.Log($"Can't remove any theme anymore, remained themes amount: {FinalRoundData.RemainedThemesAmount}");
+                Debug.Log($"Can't remove any theme anymore, remained themes amount: {PlayState.RemainedThemesAmount}");
                 return false;
             }
 
-            if (ThemeIndex < 0 || ThemeIndex >= FinalRoundData.RemovedThemes.Length)
+            if (ThemeIndex < 0 || ThemeIndex >= PlayState.RemovedThemes.Length)
             {
-                Debug.Log($"Not correct remove theme index '{ThemeIndex}'. Length is '{FinalRoundData.RemovedThemes.Length}'");
+                Debug.Log($"Not correct remove theme index '{ThemeIndex}'. Length is '{PlayState.RemovedThemes.Length}'");
                 return false;
             }
 
-            if (FinalRoundData.RemovedThemes[ThemeIndex])
+            if (PlayState.RemovedThemes[ThemeIndex])
             {
                 Debug.Log($"Theme by index '{ThemeIndex}' was removed before");
                 return false;
@@ -58,9 +60,9 @@ namespace Victorina.Commands
         public void ExecuteOnServer()
         {
             Debug.Log($"Master. Remove theme '{ThemeIndex}' for player '{PlayersBoard.Current}' by '{OwnerString}'");
-            FinalRoundData.RemoveTheme(ThemeIndex);
+            PlayState.RemoveTheme(ThemeIndex);
 
-            if (FinalRoundData.IsAllThemesRemoved)
+            if (PlayState.IsAllThemesRemoved)
                 PlayersBoard.SetCurrent(null);
 
             if (PlayersBoard.Current != null)

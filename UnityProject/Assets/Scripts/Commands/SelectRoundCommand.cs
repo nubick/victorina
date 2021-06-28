@@ -6,7 +6,7 @@ namespace Victorina.Commands
 {
     public class SelectRoundCommand : Command, IServerCommand
     {
-        [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
+        [Inject] private PlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PackageData PackageData { get; set; }
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
@@ -44,8 +44,8 @@ namespace Victorina.Commands
             }
             else if (round.Type == RoundType.Final)
             {
-                PlayStateSystem.ChangePlayState(new FinalRoundPlayState());
-                FinalRoundSystem.Select(round);
+                PlayStateSystem.ChangePlayState(new FinalRoundPlayState{Round = round});
+                FinalRoundSystem.Reset();
             }
         }
         

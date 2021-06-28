@@ -22,6 +22,7 @@ namespace Victorina
         [Inject] private PlayersMoreInfoView PlayersMoreInfoView { get; set; }
 
         [Inject] private MasterShowQuestionView MasterShowQuestionView { get; set; }
+        [Inject] private MasterShowFinalRoundQuestionView MasterShowFinalRoundQuestionView { get; set; }
         [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
         [Inject] private MasterShowAnswerView MasterShowAnswerView { get; set; }
         
@@ -38,7 +39,7 @@ namespace Victorina
                 view.Content.SetActive(false);
             StartupView.Show();
             
-            MetagameEvents.PackagePlayStateChanged.Subscribe(OnPackagePlayStateChanged);
+            MetagameEvents.PlayStateChanged.Subscribe(OnPackagePlayStateChanged);
             MetagameEvents.DisconnectedAsClient.Subscribe(ShowStartUpView);
             MetagameEvents.ServerStopped.Subscribe(ShowStartUpView);
         }
@@ -63,9 +64,6 @@ namespace Victorina
             {
                 case PlayStateType.Lobby:
                     ShowLobbyViews();
-                    break;
-                case PlayStateType.FinalRound:
-                    ShowFinalRoundViews();
                     break;
                 case PlayStateType.Round:
                 case PlayStateType.RoundBlinking:
@@ -95,6 +93,12 @@ namespace Victorina
                 case PlayStateType.ShowAnswer:
                     ShowAnswerStoryDotView(PlayStateData.As<ShowAnswerPlayState>());
                     break;
+                case PlayStateType.FinalRound:
+                    ShowFinalRoundViews();
+                    break;
+                case PlayStateType.ShowFinalRoundQuestion:
+                    ShowFinalRoundQuestionViews(PlayStateData.As<ShowFinalRoundQuestionPlayState>());
+                    break;
                 default:
                     throw new Exception($"Not supported PackagePlayState: {PlayStateData.PlayState}");
             }
@@ -115,15 +119,7 @@ namespace Victorina
             RoundView.Show();
             PlayersBoardView.Show();
         }
-
-        private void ShowFinalRoundViews()
-        {
-            HideAll();
-            Debug.Log("Show: FinalRoundView");
-            FinalRoundView.Show();
-            PlayersBoardView.Show();
-        }
-
+        
         private void ShowCatInBagViews()
         {
             HideAll();
@@ -137,10 +133,7 @@ namespace Victorina
         private void ShowQuestionStoryDotView(ShowQuestionPlayState showQuestionPlayState)
         {
             HideAll();
-            StoryDot currentStoryDot = showQuestionPlayState.CurrentStoryDot;
-            ViewBase storyDotView = GetStoryDotView(currentStoryDot);
-            Debug.Log($"Show: {storyDotView.name}");
-            storyDotView.Show();
+            ShowStoryDotView(showQuestionPlayState);
 
             if (NetworkData.IsMaster)
             {
@@ -155,16 +148,21 @@ namespace Victorina
         private void ShowAnswerStoryDotView(ShowAnswerPlayState showAnswerPlayState)
         {
             HideAll();
-            StoryDot currentStoryDot = showAnswerPlayState.CurrentStoryDot;
-            ViewBase storyDotView = GetStoryDotView(currentStoryDot);
-            Debug.Log($"Show: {storyDotView.name}");
-            storyDotView.Show();
+            ShowStoryDotView(showAnswerPlayState);
 
             if (NetworkData.IsMaster)
                 MasterShowAnswerView.Show();
 
             if (NetworkData.IsClient)
                 PlayerLookAnswerView.Show();
+        }
+
+        private void ShowStoryDotView(StoryDotPlayState storyDotPlayState)
+        {
+            StoryDot currentStoryDot = storyDotPlayState.CurrentStoryDot;
+            ViewBase storyDotView = GetStoryDotView(currentStoryDot);
+            Debug.Log($"Show: {storyDotView.name}");
+            storyDotView.Show();
         }
         
         private ViewBase GetStoryDotView(StoryDot storyDot)
@@ -200,6 +198,23 @@ namespace Victorina
         {
             HideAll();
             StartupView.Show();
+        }
+
+        private void ShowFinalRoundViews()
+        {
+            HideAll();
+            Debug.Log("Show: FinalRoundView");
+            FinalRoundView.Show();
+            PlayersBoardView.Show();
+        }
+
+        private void ShowFinalRoundQuestionViews(ShowFinalRoundQuestionPlayState playState)
+        {
+            HideAll();
+            ShowStoryDotView(playState);
+
+            if (NetworkData.IsMaster)
+                MasterShowFinalRoundQuestionView.Show();
         }
     }
 }

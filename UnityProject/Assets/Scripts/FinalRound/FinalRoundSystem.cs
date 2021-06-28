@@ -9,24 +9,22 @@ namespace Victorina
 {
     public class FinalRoundSystem
     {
-        [Inject] private FinalRoundData Data { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private MessageDialogueView MessageDialogueView { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
-        
-        public void Select(Round round)
-        {
-            Data.Round = round;
-            Reset();
-        }
+        [Inject] private PlayStateSystem PlayStateSystem { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
+        [Inject] private PackageSystem PackageSystem { get; set; }
 
+        private FinalRoundPlayState PlayState => PlayStateData.As<FinalRoundPlayState>();
+        
         public void Reset()
         {
-            Data.Reset(Data.Round.Themes.Select(_ => _.Name).ToArray());
-            Data.SetPhase(FinalRoundPhase.ThemesRemoving);
+            PlayState.Reset(PlayState.Round.Themes.Select(_ => _.Name).ToArray());
+            PlayState.SetPhase(FinalRoundPhase.ThemesRemoving);
             if (CanAnyParticipate())
             {
                 SelectFirstPlayerForRemoving();
@@ -50,27 +48,36 @@ namespace Victorina
         
         public string GetSelectedTheme()
         {
-            for (int i = 0; i < Data.RemovedThemes.Length; i++)
-                if (!Data.RemovedThemes[i])
-                    return Data.Themes[i];
-
-            throw new Exception($"All themes are removed: {Data}");
+            return PlayState.Themes[GetSelectedThemeIndex()];
         }
 
+        private int GetSelectedThemeIndex()
+        {
+            for (int i = 0; i < PlayState.RemovedThemes.Length; i++)
+                if (!PlayState.RemovedThemes[i])
+                    return i;
+
+            throw new Exception($"All themes are removed: {PlayState}");
+        }
+        
         public void ChangePhase(FinalRoundPhase phase)
         {
             Debug.Log($"FinalRound change phase: {phase}");
-            Data.SetPhase(phase);
+            PlayState.SetPhase(phase);
 
             if (phase == FinalRoundPhase.Betting)
             {
-                Data.ClearBets(PlayersBoard.Players.Count);
-                Data.SetDoneBets(PlayersBoard.Players.Select(player => !CanParticipate(player)).ToArray());
+                PlayState.ClearBets(PlayersBoard.Players.Count);
+                PlayState.SetDoneBets(PlayersBoard.Players.Select(player => !CanParticipate(player)).ToArray());
+            }
+            else if (phase == FinalRoundPhase.QuestionShowing)
+            {
+                ShowFinalRoundQuestion();
             }
             else if (phase == FinalRoundPhase.Answering)
             {
-                Data.ClearAnswers(PlayersBoard.Players.Count);
-                Data.SetDoneAnswers(PlayersBoard.Players.Select(player => !CanParticipate(player)).ToArray());
+                PlayState.ClearAnswers(PlayersBoard.Players.Count);
+                PlayState.SetDoneAnswers(PlayersBoard.Players.Select(player => !CanParticipate(player)).ToArray());
             }
             else if (phase == FinalRoundPhase.AnswersAccepting)
             {
@@ -105,8 +112,33 @@ namespace Victorina
             if (NetworkData.IsClient)
                 TryMakeBet(MatchData.ThisPlayer.Score);
 
-            if (NetworkData.IsMaster && Data.SelectedPlayerByMaster != null)
-                TryMakeBet(Data.SelectedPlayerByMaster.Score);
+            if (NetworkData.IsMaster && PlayState.SelectedPlayerByMaster != null)
+                TryMakeBet(PlayState.SelectedPlayerByMaster.Score);
+        }
+        
+        #endregion
+
+        #region Phase 3: Show Question
+
+        private void ShowFinalRoundQuestion()
+        {
+            ShowFinalRoundQuestionPlayState showQuestionPlayState = new ShowFinalRoundQuestionPlayState();
+            showQuestionPlayState.FinalRoundPlayState = PlayState;
+            showQuestionPlayState.NetQuestion = GetSelectedNetQuestion();
+            PlayStateSystem.ChangePlayState(showQuestionPlayState);
+        }
+
+        private NetQuestion GetSelectedNetQuestion()
+        {
+            Theme theme = PlayState.Round.Themes[GetSelectedThemeIndex()];
+            return PackageSystem.BuildNetQuestion(theme.Questions.First().Id);
+        }
+        
+        public void SwitchToAnsweringPhase()
+        {
+            FinalRoundPlayState finalRoundPlayState = PlayStateData.As<ShowFinalRoundQuestionPlayState>().FinalRoundPlayState;
+            PlayStateSystem.ChangePlayState(finalRoundPlayState);
+            ChangePhase(FinalRoundPhase.Answering);
         }
         
         #endregion
@@ -123,21 +155,21 @@ namespace Victorina
 
         public void ClearAnswer()
         {
-            if (Data.SelectedPlayerByMaster == null)
+            if (PlayState.SelectedPlayerByMaster == null)
                 throw new Exception("Should not be possible to click Clear Answer button when player is not selected.");
             
-            CommandsSystem.AddNewCommand(new ClearFinalRoundAnswerCommand {Player = Data.SelectedPlayerByMaster});
+            CommandsSystem.AddNewCommand(new ClearFinalRoundAnswerCommand {Player = PlayState.SelectedPlayerByMaster});
         }
         
         #endregion
         
         #region Phase 5: Answers Accepting
 
-        private PlayerData AcceptingPlayer => PlayersBoard.Players[Data.AcceptingPlayerIndex];
+        private PlayerData AcceptingPlayer => PlayersBoard.Players[PlayState.AcceptingPlayerIndex];
         
         private void StartAnswersAcceptingPhase()
         {
-            Data.AcceptingPlayerIndex = -1;
+            PlayState.AcceptingPlayerIndex = -1;
             SwitchToNextAcceptingPlayer();
             RefreshAcceptingInfo();
         }
@@ -158,52 +190,52 @@ namespace Victorina
 
         public void SwitchToNextAcceptingPlayer()
         {
-            int? nextIndex = GetNextAcceptingPlayerIndex(Data.AcceptingPlayerIndex);
+            int? nextIndex = GetNextAcceptingPlayerIndex(PlayState.AcceptingPlayerIndex);
             if (nextIndex.HasValue)
             {
-                Data.AcceptingPlayerIndex = nextIndex.Value;
-                Data.AcceptingPhase = FinalRoundAcceptingPhase.Name;
+                PlayState.AcceptingPlayerIndex = nextIndex.Value;
+                PlayState.AcceptingPhase = FinalRoundAcceptingPhase.Name;
             }
             else
             {
-                Data.AcceptingPhase = FinalRoundAcceptingPhase.Finish;
+                PlayState.AcceptingPhase = FinalRoundAcceptingPhase.Finish;
             }
             RefreshAcceptingInfo();
         }
         
         public void ShowAcceptingAnswer()
         {
-            Data.AcceptingPhase = FinalRoundAcceptingPhase.Answer;
+            PlayState.AcceptingPhase = FinalRoundAcceptingPhase.Answer;
             RefreshAcceptingInfo();
         }
         
         public void AcceptAnswerAsCorrect()
         {
-            Data.IsAcceptedAsCorrect = true;
-            Data.AcceptingPhase = FinalRoundAcceptingPhase.Result;
+            PlayState.IsAcceptedAsCorrect = true;
+            PlayState.AcceptingPhase = FinalRoundAcceptingPhase.Result;
             RefreshAcceptingInfo();
         }
 
         public void AcceptAnswerAsWrong()
         {
-            Data.IsAcceptedAsCorrect = false;
-            Data.AcceptingPhase = FinalRoundAcceptingPhase.Result;
+            PlayState.IsAcceptedAsCorrect = false;
+            PlayState.AcceptingPhase = FinalRoundAcceptingPhase.Result;
             RefreshAcceptingInfo();
         }
 
         public void ApplyPlayerBet()
         {
-            Data.AcceptingPhase = FinalRoundAcceptingPhase.Bet;
+            PlayState.AcceptingPhase = FinalRoundAcceptingPhase.Bet;
             
-            int bet = Data.Bets[Data.AcceptingPlayerIndex];
-            if (Data.IsAcceptedAsCorrect)
+            int bet = PlayState.Bets[PlayState.AcceptingPlayerIndex];
+            if (PlayState.IsAcceptedAsCorrect)
                 PlayersBoardSystem.RewardPlayer(AcceptingPlayer, bet);
             else
                 PlayersBoardSystem.FinePlayer(AcceptingPlayer, bet);
 
-            int? nextIndex = GetNextAcceptingPlayerIndex(Data.AcceptingPlayerIndex);
+            int? nextIndex = GetNextAcceptingPlayerIndex(PlayState.AcceptingPlayerIndex);
             if (nextIndex == null)
-                Data.AcceptingPhase = FinalRoundAcceptingPhase.Finish;
+                PlayState.AcceptingPhase = FinalRoundAcceptingPhase.Finish;
             
             RefreshAcceptingInfo();
         }
@@ -212,21 +244,21 @@ namespace Victorina
         {
             StringBuilder sb = new StringBuilder();
             
-            sb.AppendLine(PlayersBoard.Players[Data.AcceptingPlayerIndex].Name);
+            sb.AppendLine(PlayersBoard.Players[PlayState.AcceptingPlayerIndex].Name);
 
-            if (Data.AcceptingPhase >= FinalRoundAcceptingPhase.Answer)
-                sb.AppendLine(Data.Answers[Data.AcceptingPlayerIndex]);
+            if (PlayState.AcceptingPhase >= FinalRoundAcceptingPhase.Answer)
+                sb.AppendLine(PlayState.Answers[PlayState.AcceptingPlayerIndex]);
 
-            if (Data.AcceptingPhase >= FinalRoundAcceptingPhase.Result)
+            if (PlayState.AcceptingPhase >= FinalRoundAcceptingPhase.Result)
             {
-                string result = Data.IsAcceptedAsCorrect ? "Верно" : "Неверно";
+                string result = PlayState.IsAcceptedAsCorrect ? "Верно" : "Неверно";
                 sb.AppendLine(result);
             }
 
-            if (Data.AcceptingPhase >= FinalRoundAcceptingPhase.Bet)
-                sb.AppendLine(Data.Bets[Data.AcceptingPlayerIndex].ToString());
+            if (PlayState.AcceptingPhase >= FinalRoundAcceptingPhase.Bet)
+                sb.AppendLine(PlayState.Bets[PlayState.AcceptingPlayerIndex].ToString());
             
-            Data.SetAcceptingInfo(sb.ToString());
+            PlayState.SetAcceptingInfo(sb.ToString());
         }
         
         public void FinishRound()

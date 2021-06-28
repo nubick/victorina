@@ -9,7 +9,7 @@ namespace Victorina.Commands
     public class SelectRoundQuestionCommand : Command, INetworkCommand, IServerCommand
     {
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
+        [Inject] private PlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private TimerSystem TimerSystem { get; set; }

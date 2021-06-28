@@ -2,17 +2,19 @@ using System;
 using Injection;
 using MLAPI.Serialization.Pooled;
 using UnityEngine;
+using Victorina.Commands;
 
-namespace Victorina.Commands
+namespace Victorina
 {
     public class MakeFinalRoundBetCommand : Command, INetworkCommand, IServerCommand
     {
-        [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         public int Bet { get; set; }
 
         public override CommandType Type => CommandType.MakeFinalRoundBet;
+        private FinalRoundPlayState PlayState => PlayStateData.As<FinalRoundPlayState>();
         
         public bool CanSend()
         {
@@ -36,7 +38,7 @@ namespace Victorina.Commands
             PlayerData bettingPlayer = GetBettingPlayer();
             Debug.Log($"Make bet '{Bet}' for player '{bettingPlayer}'");
             int index = PlayersBoard.GetPlayerIndex(bettingPlayer);
-            FinalRoundData.SetBet(index, Bet);
+            PlayState.SetBet(index, Bet);
         }
 
         private PlayerData GetBettingPlayer()
@@ -44,7 +46,7 @@ namespace Victorina.Commands
             switch (Owner)
             {
                 case CommandOwner.Master:
-                    return FinalRoundData.SelectedPlayerByMaster;
+                    return PlayState.SelectedPlayerByMaster;
                 case CommandOwner.Player:
                     return OwnerPlayer;
                 default:

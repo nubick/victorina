@@ -27,12 +27,11 @@ namespace Victorina
 
         //Final Round
         public static GameEvent<int> FinalRoundThemeClicked { get; } = new GameEvent<int>();
-        public static GameEvent FinalRoundDataChanged { get; } = new GameEvent();
-        
+
         //Data changed
         public static GameEvent PlayersButtonClickDataChanged { get; } = new GameEvent();
         public static GameEvent PlayersMoreInfoDataChanged { get; } = new GameEvent();
-        public static GameEvent PackagePlayStateChanged { get; } = new GameEvent();
+        public static GameEvent PlayStateChanged { get; } = new GameEvent();
         public static GameEvent AnswerTimerDataChanged { get; } = new GameEvent();
         
         //Master events

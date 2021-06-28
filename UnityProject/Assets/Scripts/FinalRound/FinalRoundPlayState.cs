@@ -1,9 +1,12 @@
 using System.Linq;
+using MLAPI.Serialization.Pooled;
 
 namespace Victorina
 {
-    public class FinalRoundData : SyncData
+    public class FinalRoundPlayState : PackagePlayState
     {
+        public override PlayStateType Type => PlayStateType.FinalRound;
+        
         public FinalRoundPhase Phase { get; private set; }
         
         public string[] Themes { get; private set; }
@@ -28,7 +31,7 @@ namespace Victorina
         public int[] Bets { get; set; }
         public string[] Answers { get; set; }
 
-        public FinalRoundData()
+        public FinalRoundPlayState()
         {
             Themes = new string[0];
             RemovedThemes = new bool[0];
@@ -38,19 +41,7 @@ namespace Victorina
             DoneAnswers = new bool[0];
             AcceptingInfo = string.Empty;
         }
-
-        public FinalRoundData(FinalRoundPhase phase, string[] themes, bool[] removedThemes)
-        {
-            Phase = phase;
-            Themes = themes;
-            RemovedThemes = removedThemes;
-            Bets = new int[0];
-            DoneBets = new bool[0];
-            Answers = new string[0];
-            DoneAnswers = new bool[0];
-            AcceptingInfo = string.Empty;
-        }
-
+        
         public void Reset(string[] themes)
         {
             Themes = themes;
@@ -64,17 +55,6 @@ namespace Victorina
             MarkAsChanged();
         }
         
-        public void Update(FinalRoundData finalRoundData)
-        {
-            Phase = finalRoundData.Phase;
-            Themes = finalRoundData.Themes;
-            RemovedThemes = finalRoundData.RemovedThemes;
-            DoneBets = finalRoundData.DoneBets;
-            DoneAnswers = finalRoundData.DoneAnswers;
-            AcceptingInfo = finalRoundData.AcceptingInfo;
-            MarkAsChanged();
-        }
-
         public void RemoveTheme(int index)
         {
             RemovedThemes[index] = true;
@@ -138,9 +118,26 @@ namespace Victorina
             MarkAsChanged();
         }
         
-        public override string ToString()
+        public override string ToString() => $"{nameof(Phase)}: {Phase}, {nameof(Themes)}: {Themes.Length}, {nameof(RemovedThemes)}: {RemovedThemes.Length}, [{nameof(Bets)}: {string.Join(",", Bets)}]";
+
+        public override void Serialize(PooledBitWriter writer)
         {
-            return $"{nameof(Phase)}: {Phase}, {nameof(Themes)}: {Themes.Length}, {nameof(RemovedThemes)}: {RemovedThemes.Length}, [{nameof(Bets)}: {string.Join(",", Bets)}]";
+            writer.WriteInt32((int) Phase);
+            SerializationTools.SerializeStringsArray(writer, Themes);
+            SerializationTools.SerializeBooleansArray(writer, RemovedThemes);
+            SerializationTools.SerializeBooleansArray(writer, DoneBets);
+            SerializationTools.SerializeBooleansArray(writer, DoneAnswers);
+            writer.WriteString(AcceptingInfo);
+        }
+
+        public override void Deserialize(PooledBitReader reader)
+        {
+            Phase = (FinalRoundPhase) reader.ReadInt32();
+            Themes = SerializationTools.DeserializeStringsArray(reader);
+            RemovedThemes = SerializationTools.DeserializeBooleanArray(reader);
+            SetDoneBets(SerializationTools.DeserializeBooleanArray(reader));
+            SetDoneAnswers(SerializationTools.DeserializeBooleanArray(reader));
+            SetAcceptingInfo(reader.ReadString().ToString());
         }
     }
 }

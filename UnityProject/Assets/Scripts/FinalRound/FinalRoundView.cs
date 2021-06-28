@@ -6,13 +6,15 @@ namespace Victorina
 {
     public class FinalRoundView : ViewBase
     {
-        [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private PlayersMoreInfoView PlayersMoreInfoView { get; set; }
         [Inject] private PlayersMoreInfoData PlayersMoreInfoData { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
+
+        private FinalRoundPlayState PlayState => PlayStateData.As<FinalRoundPlayState>();
         
         [Header("Phase 1: Phase Removing")]
         public GameObject Phase1State;
@@ -56,9 +58,8 @@ namespace Victorina
         public void Initialize()
         {
             MetagameEvents.FinalRoundThemeClicked.Subscribe(OnThemeClicked);
-            MetagameEvents.FinalRoundDataChanged.Subscribe(OnFinalRoundDataChanged);
             MetagameEvents.PlayerMoreInfoClicked.Subscribe(OnPlayerMoreInfoClicked);
-
+            
             BetBoardWidget.MakeBetEvent += OnPlayerMakeBet;
             BetBoardWidget.AllInEvent += OnPlayerAllIn;
         }
@@ -68,22 +69,17 @@ namespace Victorina
             AnswerInputField.text = string.Empty;
             RefreshUI();
         }
-
-        private void OnFinalRoundDataChanged()
-        {
-            RefreshUI();
-        }
-
+        
         public void RefreshUI()
         {
-            Phase1State.SetActive(FinalRoundData.Phase == FinalRoundPhase.ThemesRemoving);
-            Phase2State.SetActive(FinalRoundData.Phase == FinalRoundPhase.Betting);
-            Phase4State.SetActive(FinalRoundData.Phase == FinalRoundPhase.Answering);
-            Phase5State.SetActive(FinalRoundData.Phase == FinalRoundPhase.AnswersAccepting);
+            Phase1State.SetActive(PlayState.Phase == FinalRoundPhase.ThemesRemoving);
+            Phase2State.SetActive(PlayState.Phase == FinalRoundPhase.Betting);
+            Phase4State.SetActive(PlayState.Phase == FinalRoundPhase.Answering);
+            Phase5State.SetActive(PlayState.Phase == FinalRoundPhase.AnswersAccepting);
 
-            UpdatePlayersMoreInfoView(FinalRoundData.Phase);
+            UpdatePlayersMoreInfoView(PlayState.Phase);
 
-            switch (FinalRoundData.Phase)
+            switch (PlayState.Phase)
             {
                 case FinalRoundPhase.ThemesRemoving:
                     RefreshThemesRemovingUI();
@@ -105,13 +101,13 @@ namespace Victorina
         private void RefreshThemesRemovingUI()
         {
             MasterPanelPhase1.SetActive(NetworkData.IsMaster);
-            AcceptBetsButton.interactable = FinalRoundData.IsAllThemesRemoved;
+            AcceptBetsButton.interactable = PlayState.IsAllThemesRemoved;
 
             ClearChild(ThemeButtonsRoot);
-            for (int i = 0; i < FinalRoundData.Themes.Length; i++)
+            for (int i = 0; i < PlayState.Themes.Length; i++)
             {
                 FinalRoundThemeButton button = Instantiate(RemoveThemeButtonPrefab, ThemeButtonsRoot);
-                button.Bind(i, FinalRoundData.Themes[i], isEven: i % 2 == 0, isRemoved: FinalRoundData.RemovedThemes[i]);
+                button.Bind(i, PlayState.Themes[i], isEven: i % 2 == 0, isRemoved: PlayState.RemovedThemes[i]);
             }
         }
         
@@ -127,7 +123,7 @@ namespace Victorina
 
         public void OnPassFinalRoundButtonClicked()
         {
-            
+            //todo: add and use PassFinalRoundCommand
         }
 
         public void OnRestartButtonClicked()
@@ -144,8 +140,8 @@ namespace Victorina
             MasterPanelPhase2.SetActive(NetworkData.IsMaster);
 
             bool canThisParticipate = NetworkData.IsMaster || FinalRoundSystem.CanParticipate(MatchData.ThisPlayer);
-            MakeYourBetsLabel.SetActive(canThisParticipate && !FinalRoundData.IsAllBetsDone);
-            BetsDoneLabel.SetActive(canThisParticipate && FinalRoundData.IsAllBetsDone);
+            MakeYourBetsLabel.SetActive(canThisParticipate && !PlayState.IsAllBetsDone);
+            BetsDoneLabel.SetActive(canThisParticipate && PlayState.IsAllBetsDone);
             YouPassLabel.SetActive(!canThisParticipate);
 
             Theme.text = $"Тема: {FinalRoundSystem.GetSelectedTheme()}";
@@ -164,7 +160,7 @@ namespace Victorina
                 {
                     if (!canParticipate)
                         infoTexts[i] = "Пас";
-                    else if (FinalRoundData.DoneBets[i])
+                    else if (PlayState.DoneBets[i])
                         infoTexts[i] = "Ставка сделана";
                     else
                         infoTexts[i] = "Делает ставку";
@@ -172,7 +168,7 @@ namespace Victorina
 
                 if (NetworkData.IsMaster)
                 {
-                    int bet = FinalRoundData.Bets[i];
+                    int bet = PlayState.Bets[i];
                     if (!canParticipate)
                         infoTexts[i] = "Пас";
                     else if (bet > 0)
@@ -180,10 +176,10 @@ namespace Victorina
                     else
                         infoTexts[i] = "Делает ставку";
 
-                    selections[i] = PlayersBoard.Players[i] == FinalRoundData.SelectedPlayerByMaster;
+                    selections[i] = PlayersBoard.Players[i] == PlayState.SelectedPlayerByMaster;
                 }
 
-                highlights[i] = canParticipate && !FinalRoundData.DoneBets[i];
+                highlights[i] = canParticipate && !PlayState.DoneBets[i];
             }
             
             RefreshBetBoardWidget();
@@ -201,10 +197,10 @@ namespace Victorina
                 BindBetBoardWidget(MatchData.ThisPlayer);
             }
 
-            if (NetworkData.IsMaster && FinalRoundData.SelectedPlayerByMaster != null)
+            if (NetworkData.IsMaster && PlayState.SelectedPlayerByMaster != null)
             {
                 BetBoardWidget.gameObject.SetActive(true);
-                BindBetBoardWidget(FinalRoundData.SelectedPlayerByMaster);
+                BindBetBoardWidget(PlayState.SelectedPlayerByMaster);
             }
         }
 
@@ -261,19 +257,19 @@ namespace Victorina
 
                 if (!canParticipate)
                     infoTexts[i] = "Пас";
-                else if (FinalRoundData.DoneAnswers[i])
+                else if (PlayState.DoneAnswers[i])
                     infoTexts[i] = "Ответ принят";
                 else
                     infoTexts[i] = "Отвечает";
 
-                highlights[i] = canParticipate && !FinalRoundData.DoneAnswers[i];
+                highlights[i] = canParticipate && !PlayState.DoneAnswers[i];
 
                 if (NetworkData.IsMaster)
-                    selections[i] = PlayersBoard.Players[i] == FinalRoundData.SelectedPlayerByMaster;
+                    selections[i] = PlayersBoard.Players[i] == PlayState.SelectedPlayerByMaster;
                 
                 if (NetworkData.IsClient && MatchData.ThisPlayer == player)
                 {
-                    bool isAnswered = FinalRoundData.DoneAnswers[i];
+                    bool isAnswered = PlayState.DoneAnswers[i];
                     SendAnswerButton.interactable = !isAnswered;
                     AnswerInputField.interactable = !isAnswered;
                     AnswerAcceptedLabel.SetActive(canParticipate && isAnswered);
@@ -283,11 +279,11 @@ namespace Victorina
             }
             
             AnswerPreviewPanel.SetActive(false);
-            if (NetworkData.IsMaster && FinalRoundData.SelectedPlayerByMaster != null)
+            if (NetworkData.IsMaster && PlayState.SelectedPlayerByMaster != null)
             {
                 AnswerPreviewPanel.SetActive(true);
-                int selectedPlayerIndex = PlayersBoard.Players.IndexOf(FinalRoundData.SelectedPlayerByMaster);
-                AnswerPreviewText.text = FinalRoundData.Answers[selectedPlayerIndex];
+                int selectedPlayerIndex = PlayersBoard.Players.IndexOf(PlayState.SelectedPlayerByMaster);
+                AnswerPreviewText.text = PlayState.Answers[selectedPlayerIndex];
             }
             
             PlayersMoreInfoData.Update(infoTexts, highlights, selections);
@@ -315,13 +311,13 @@ namespace Victorina
         private void RefreshAnswersAcceptingUI()
         {
             MasterPanelPhase5.SetActive(NetworkData.IsMaster);
-            AnswerText.text = FinalRoundData.AcceptingInfo;
-            ShowAnswerButton.interactable = FinalRoundData.AcceptingPhase == FinalRoundAcceptingPhase.Name;
-            CorrectButton.interactable = FinalRoundData.AcceptingPhase == FinalRoundAcceptingPhase.Answer;
-            WrongButton.interactable = FinalRoundData.AcceptingPhase == FinalRoundAcceptingPhase.Answer;
-            ShowBetButton.interactable = FinalRoundData.AcceptingPhase == FinalRoundAcceptingPhase.Result;
-            NextAcceptingPlayerButton.interactable = FinalRoundData.AcceptingPhase == FinalRoundAcceptingPhase.Bet;
-            FinishRoundButton.interactable = FinalRoundData.AcceptingPhase == FinalRoundAcceptingPhase.Finish;
+            AnswerText.text = PlayState.AcceptingInfo;
+            ShowAnswerButton.interactable = PlayState.AcceptingPhase == FinalRoundAcceptingPhase.Name;
+            CorrectButton.interactable = PlayState.AcceptingPhase == FinalRoundAcceptingPhase.Answer;
+            WrongButton.interactable = PlayState.AcceptingPhase == FinalRoundAcceptingPhase.Answer;
+            ShowBetButton.interactable = PlayState.AcceptingPhase == FinalRoundAcceptingPhase.Result;
+            NextAcceptingPlayerButton.interactable = PlayState.AcceptingPhase == FinalRoundAcceptingPhase.Bet;
+            FinishRoundButton.interactable = PlayState.AcceptingPhase == FinalRoundAcceptingPhase.Finish;
         }
 
         public void OnShowAcceptingAnswerButtonClicked()
@@ -371,10 +367,9 @@ namespace Victorina
         {
             if (IsActive && NetworkData.IsMaster)
             {
-                FinalRoundData.SelectPlayer(player);
+                PlayState.SelectPlayer(player);
                 RefreshBetBoardWidget();
             }
         }
-        
     }
 }

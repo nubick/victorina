@@ -12,7 +12,7 @@ namespace Victorina
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private ServerService ServerService { get; set; }
-        [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
+        [Inject] private PlayStateSystem PlayStateSystem { get; set; }
 
         public void RefreshPackages()
         {

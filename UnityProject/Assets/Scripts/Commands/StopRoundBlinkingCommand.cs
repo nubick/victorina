@@ -7,7 +7,7 @@ namespace Victorina.Commands
     public class StopRoundBlinkingCommand : Command, IServerCommand
     {
         [Inject] private PlayStateData PlayStateData { get; set; }
-        [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
+        [Inject] private PlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }

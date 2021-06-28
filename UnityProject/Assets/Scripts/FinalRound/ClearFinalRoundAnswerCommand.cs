@@ -1,17 +1,19 @@
 using Injection;
 using UnityEngine;
+using Victorina.Commands;
 
-namespace Victorina.Commands
+namespace Victorina
 {
     public class ClearFinalRoundAnswerCommand : Command, IServerCommand
     {
-        [Inject] private FinalRoundData FinalRoundData { get; set; }
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
+        [Inject] private PlayStateData PlayStateData { get; set; }
         
         public PlayerData Player { get; set; }
         
         public override CommandType Type => CommandType.ClearFinalRoundAnswer;
+        private FinalRoundPlayState PlayState => PlayStateData.As<FinalRoundPlayState>();
         
         public bool CanExecuteOnServer()
         {
@@ -22,7 +24,7 @@ namespace Victorina.Commands
             }
             
             int index = PlayersBoard.GetPlayerIndex(Player);
-            if (!FinalRoundData.DoneAnswers[index])
+            if (!PlayState.DoneAnswers[index])
             {
                 Debug.Log($"Can't clear player {Player} answer. There is no any answers yet from this player.");
                 return false;
@@ -34,7 +36,7 @@ namespace Victorina.Commands
         public void ExecuteOnServer()
         {
             int index = PlayersBoard.GetPlayerIndex(Player);
-            FinalRoundData.ClearAnswer(index);
+            PlayState.ClearAnswer(index);
         }
         
         public override string ToString()

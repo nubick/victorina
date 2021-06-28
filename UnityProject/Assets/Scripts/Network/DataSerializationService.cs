@@ -11,7 +11,7 @@ namespace Victorina
     public class DataSerializationService
     {
         [Inject] private CommandsSystem CommandsSystem { get; set; }
-        [Inject] private PackagePlayStateSystem PackagePlayStateSystem { get; set; }
+        [Inject] private PlayStateSystem PlayStateSystem { get; set; }
         
         public void Initialize()
         {
@@ -19,7 +19,6 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializeNetRoundQuestion, DeserializeNetRoundQuestion);
             SerializationManager.RegisterSerializationHandlers(SerializeNetQuestion, DeserializeNetQuestion);
             SerializationManager.RegisterSerializationHandlers(SerializePlayersButtonClickData, DeserializePlayersButtonClickData);
-            SerializationManager.RegisterSerializationHandlers(SerializeFinalRoundData, DeserializeFinalRoundData);
             SerializationManager.RegisterSerializationHandlers(SerializeAnswerTimerData, DeserializeAnswerTimerData);
             SerializationManager.RegisterSerializationHandlers(SerializePackagePlayStateData, DeserializePackagePlayStateData);
             SerializationManager.RegisterSerializationHandlers(SerializeCommandNetworkData, DeserializeCommandNetworkData);
@@ -362,30 +361,6 @@ namespace Victorina
             return data;
         }
         
-        private void SerializeFinalRoundData(Stream stream, FinalRoundData data)
-        {
-            using PooledBitWriter writer = PooledBitWriter.Get(stream);
-            writer.WriteInt32((int) data.Phase);
-            SerializationTools.SerializeStringsArray(writer, data.Themes);
-            SerializationTools.SerializeBooleansArray(writer, data.RemovedThemes);
-            SerializationTools.SerializeBooleansArray(writer, data.DoneBets);
-            SerializationTools.SerializeBooleansArray(writer, data.DoneAnswers);
-            writer.WriteString(data.AcceptingInfo);
-        }
-
-        private FinalRoundData DeserializeFinalRoundData(Stream stream)
-        {
-            using PooledBitReader reader = PooledBitReader.Get(stream);
-            FinalRoundPhase phase = (FinalRoundPhase) reader.ReadInt32();
-            string[] themes = SerializationTools.DeserializeStringsArray(reader);
-            bool[] removedThemes = SerializationTools.DeserializeBooleanArray(reader);
-            FinalRoundData finalRoundData = new FinalRoundData(phase, themes, removedThemes);
-            finalRoundData.SetDoneBets(SerializationTools.DeserializeBooleanArray(reader));
-            finalRoundData.SetDoneAnswers(SerializationTools.DeserializeBooleanArray(reader));
-            finalRoundData.SetAcceptingInfo(reader.ReadString().ToString());
-            return finalRoundData;
-        }
-        
         private void SerializeCommandNetworkData(Stream stream, CommandNetworkData data)
         {
             using PooledBitWriter writer = PooledBitWriter.Get(stream);
@@ -414,7 +389,7 @@ namespace Victorina
             using PooledBitReader reader = PooledBitReader.Get(stream);
             PlayStateType playStateType = (PlayStateType) reader.ReadInt32();
             PlayStateData data = new PlayStateData();
-            data.PlayState = PackagePlayStateSystem.Create(playStateType);
+            data.PlayState = PlayStateSystem.Create(playStateType);
             data.PlayState.Deserialize(reader);
             return data;
         }

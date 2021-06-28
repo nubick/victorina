@@ -86,12 +86,6 @@ namespace Victorina
             GetPlayers().ForEach(player => player.SendAcceptingAnswerTimerData(data));
         }
         
-        public void SendFinalRoundData(FinalRoundData finalRoundData)
-        {
-            Debug.Log($"Master: Send FinalRoundData to {All}: {finalRoundData}");
-            GetPlayers().ForEach(player => player.SendFinalRoundData(finalRoundData));
-        }
-
         public void SendPackagePlayStateData(PlayStateData data)
         {
             Debug.Log($"Master: Send PlayStateData to {All}: {data}");

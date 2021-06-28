@@ -8,7 +8,7 @@ namespace Victorina
     public class SelectFastestPlayerForAnswerCommand : Command, IServerCommand
     {
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
-        [Inject] private PackagePlayStateSystem PlayStateSystem { get; set; }
+        [Inject] private PlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
         
         public override CommandType Type => CommandType.SelectFastestPlayerForAnswer;
