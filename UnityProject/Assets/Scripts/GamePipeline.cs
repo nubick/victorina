@@ -94,6 +94,9 @@ namespace Victorina
             
             _injector.Bind(new CommandsSystem());
             
+            _injector.Bind(new ServerEventsSystem());
+            _injector.Bind(new ServerEventsData());
+            
             //Show Question
             _injector.Bind(FindObjectOfType<MasterShowQuestionView>());
             _injector.Bind(FindObjectOfType<PlayerGiveAnswerView>());
@@ -264,6 +267,8 @@ namespace Victorina
 
             _injector.Get<CommandsSystem>().Initialize(_injector);
             _injector.Get<PlayStateSystem>().Initialize(_injector);
+
+            _injector.Get<ServerEventsSystem>().Initialize();
 
             //DevTools
             //Analytics

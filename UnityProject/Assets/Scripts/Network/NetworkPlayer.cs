@@ -212,5 +212,16 @@ namespace Victorina
         }
         
         #endregion
+
+        public void SendServerEvent(string serverEventId)
+        {
+            InvokeClientRpcOnOwner(ReceiveServerEventClientRpc, serverEventId);
+        }
+
+        [ClientRPC]
+        private void ReceiveServerEventClientRpc(string serverEventId)
+        {
+            PlayerDataReceiver.OnReceiveServerEvent(serverEventId);
+        }
     }
 }

@@ -59,6 +59,7 @@ namespace Victorina
         {
             MetagameEvents.FinalRoundThemeClicked.Subscribe(OnThemeClicked);
             MetagameEvents.PlayerMoreInfoClicked.Subscribe(OnPlayerMoreInfoClicked);
+            ServerEvents.FinalRoundStarted.Subscribe(ClearWidgets);
             
             BetBoardWidget.MakeBetEvent += OnPlayerMakeBet;
             BetBoardWidget.AllInEvent += OnPlayerAllIn;
@@ -66,8 +67,15 @@ namespace Victorina
         
         protected override void OnShown()
         {
-            AnswerInputField.text = string.Empty;
             RefreshUI();
+        }
+
+        private void ClearWidgets()
+        {
+            AnswerInputField.text = string.Empty;
+
+            if (NetworkData.IsClient)
+                BindBetBoardWidget(MatchData.ThisPlayer);
         }
         
         public void RefreshUI()
@@ -192,10 +200,7 @@ namespace Victorina
             BetBoardWidget.gameObject.SetActive(false);
 
             if (NetworkData.IsClient && FinalRoundSystem.CanParticipate(MatchData.ThisPlayer))
-            {
                 BetBoardWidget.gameObject.SetActive(true);
-                BindBetBoardWidget(MatchData.ThisPlayer);
-            }
 
             if (NetworkData.IsMaster && PlayState.SelectedPlayerByMaster != null)
             {
@@ -370,6 +375,16 @@ namespace Victorina
                 PlayState.SelectPlayer(player);
                 RefreshBetBoardWidget();
             }
+        }
+
+        public void LookAnswerButtonClicked()
+        {
+            
+        }
+
+        public void ShowAnswerButtonClicked()
+        {
+            
         }
     }
 }

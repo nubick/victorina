@@ -104,5 +104,11 @@ namespace Victorina
             Debug.Log($"Master: Send PlayerCommand to {All}: {playerCommand}");
             GetPlayers().ForEach(player => player.SendCommandToPlayer(playerCommand));
         }
+
+        public void SendServerEvent(string serverEventId)
+        {
+            Debug.Log($"Master: Send server event to {All}: {serverEventId}");
+            GetPlayers().ForEach(player => player.SendServerEvent(serverEventId));
+        }
     }
 }

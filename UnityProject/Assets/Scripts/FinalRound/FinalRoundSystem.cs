@@ -34,6 +34,8 @@ namespace Victorina
                 PlayersBoard.SetCurrent(null);
                 MessageDialogueView.Show("Некому учавствовать!", "Ни один из игроков не может принять участие в финальном раунде!");
             }
+            
+            ServerEvents.FinalRoundStarted.Publish();
         }
         
         public bool CanAnyParticipate()

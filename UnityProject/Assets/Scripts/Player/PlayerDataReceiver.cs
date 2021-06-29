@@ -19,6 +19,7 @@ namespace Victorina
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         [Inject] private AnswerTimerData AnswerTimerData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
+        [Inject] private ServerEventsSystem ServerEventsSystem { get; set; }
         
         public void OnReceiveRegisteredPlayerId(byte playerId)
         {
@@ -88,6 +89,12 @@ namespace Victorina
         {
             Debug.Log($"Receive command from Master, {command}");
             CommandsSystem.AddReceivedMasterCommand(command);
+        }
+
+        public void OnReceiveServerEvent(string eventId)
+        {
+            Debug.Log($"Receive server event: {eventId}");
+            ServerEventsSystem.OnPlayerReceiveServerEvent(eventId);
         }
     }
 }

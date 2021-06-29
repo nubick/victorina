@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using Injection;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ namespace Victorina
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         [Inject] private AnswerTimerData AnswerTimerData { get; set; }
+        [Inject] private ServerEventsData ServerEventsData { get; set; }
 
         public void Initialize()
         {
@@ -64,6 +66,13 @@ namespace Victorina
                     AnswerTimerData.ApplyChanges();
                     SendToPlayersService.SendAnswerTimerData(AnswerTimerData);
                     MetagameEvents.AnswerTimerDataChanged.Publish();
+                }
+
+                while (ServerEventsData.PendingToSendEventIds.Any())
+                {
+                    Debug.Log($"DataSync: {ServerEventsData}");
+                    string serverEventId = ServerEventsData.PendingToSendEventIds.Dequeue();
+                    SendToPlayersService.SendServerEvent(serverEventId);
                 }
                 
                 yield return delay;
