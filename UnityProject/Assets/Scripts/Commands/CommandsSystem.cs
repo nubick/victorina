@@ -112,6 +112,7 @@ namespace Victorina.Commands
             {
                 Dev.Log($"EXECUTE: {serverCommand}", new Color(0.67f, 0.67f, 1f));
                 serverCommand.ExecuteOnServer();
+                MetagameEvents.ServerCommandExecuted.Publish(serverCommand);
             }
             else
             {

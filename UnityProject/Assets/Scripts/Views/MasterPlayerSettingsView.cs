@@ -1,6 +1,8 @@
+using Commands;
 using Injection;
 using UnityEngine;
 using UnityEngine.UI;
+using Victorina.Commands;
 using Victorina.DevTools;
 
 namespace Victorina
@@ -10,8 +12,8 @@ namespace Victorina
         private PlayerData _playerData;
         
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private ServerService ServerService { get; set; }
         [Inject] private DevToolsSystem DevToolsSystem { get; set; }
+        [Inject] private CommandsSystem CommandsSystem { get; set; }
         
         public Text PlayerId;
         public ValidatedInputField PlayerNameInputField;
@@ -35,7 +37,7 @@ namespace Victorina
         
         public void OnMakeCurrentButtonClicked()
         {
-            PlayersBoardSystem.MakePlayerCurrent(_playerData);
+            CommandsSystem.AddNewCommand(new MasterMakePlayerAsCurrentCommand {Player = _playerData});
             Hide();
         }
 
@@ -51,14 +53,10 @@ namespace Victorina
             if (_playerData.Name != PlayerNameInputField.Text)
             {
                 string newPlayerName = PlayerNameInputField.Text;
-                if (ServerService.IsPlayerNameValid(newPlayerName))
-                {
-                    PlayersBoardSystem.UpdatePlayerName(_playerData, newPlayerName);
-                }
+                if (PlayersBoardSystem.IsPlayerNameValid(newPlayerName))
+                    CommandsSystem.AddNewCommand(new MasterUpdatePlayerNameCommand {Player = _playerData, NewPlayerName = newPlayerName});
                 else
-                {
                     PlayerNameInputField.MarkInvalid();
-                }
             }
         }
 
@@ -66,10 +64,7 @@ namespace Victorina
         {
             if (int.TryParse(PlayerScoreInputField.Text, out int newScore))
             {
-                if (newScore != _playerData.Score)
-                {
-                    PlayersBoardSystem.UpdatePlayerScore(_playerData, newScore);
-                }
+                CommandsSystem.AddNewCommand(new MasterUpdatePlayerScoreCommand {Player = _playerData, NewScore = newScore});
             }
             else
             {

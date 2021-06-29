@@ -2,6 +2,13 @@ namespace Victorina.Commands
 {
     public enum CommandType
     {
+        RegisterPlayer,
+        
+        MasterMakePlayerAsCurrent,
+        MasterUpdatePlayerName,
+        MasterUpdatePlayerScore,
+        
+        //Round
         SelectRound,
         SelectRoundQuestion,
         StopRoundBlinking,

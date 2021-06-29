@@ -9,7 +9,6 @@ namespace Victorina
     {
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
-        [Inject] private ServerService ServerService { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
 
         public void Initialize()
@@ -19,7 +18,7 @@ namespace Victorina
             MetagameEvents.ServerStopped.Subscribe(OnServerStopped);
         }
         
-        private void UpdatePlayersBoard()
+        public void UpdatePlayersBoard()
         {
             if (NetworkData.IsClient)
                 return;
@@ -38,8 +37,6 @@ namespace Victorina
                 boardPlayer.Name = joinedPlayer.ConnectionMessage.Name;
                 boardPlayer.IsConnected = joinedPlayer.IsConnected;
             }
-            
-            PlayersBoard.MarkAsChanged();
         }
 
         private void OnServerStopped()
@@ -80,27 +77,10 @@ namespace Victorina
             playerData.FilesLoadingPercentage = percentage;
             PlayersBoard.MarkAsChanged();
         }
-
-        public void UpdatePlayerName(PlayerData playerData, string newPlayerName)
+        
+        public bool IsPlayerNameValid(string playerName)
         {
-            Debug.Log($"Update player name from '{playerData.Name}' to '{newPlayerName}'");
-            if (ServerService.IsPlayerNameValid(newPlayerName))
-            {
-                ConnectionMessage msg = ConnectedPlayersData.GetByPlayerId(playerData.PlayerId).ConnectionMessage;
-                msg.Name = newPlayerName;
-                UpdatePlayersBoard();
-            }
-            else
-            {
-                Debug.LogError($"New player name '{newPlayerName}' is not valid/");
-            }
-        }
-
-        public void UpdatePlayerScore(PlayerData playerData, int newScore)
-        {
-            Debug.Log($"Update player score from '{playerData.Score}' to '{newScore}'");
-            playerData.Score = newScore;
-            UpdatePlayersBoard();
+            return !string.IsNullOrWhiteSpace(playerName);
         }
         
         public PlayerData GetPlayer(byte playerId)

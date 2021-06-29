@@ -13,6 +13,7 @@ namespace Victorina
         [Inject] private SaveSystem SaveSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private ServerService ServerService { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
 
         public ValidatedInputField PlayerNameInputField;
         public ValidatedInputField GameCodeInputField;
@@ -40,7 +41,7 @@ namespace Victorina
             bool hasValidationError = false;
             
             string playerName = PlayerNameInputField.Text;
-            if (!ServerService.IsPlayerNameValid(playerName))
+            if (!PlayersBoardSystem.IsPlayerNameValid(playerName))
             {
                 PlayerNameInputField.MarkInvalid();
                 hasValidationError = true;

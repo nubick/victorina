@@ -139,6 +139,11 @@ namespace Victorina
             _injector.Bind(FindObjectOfType<MasterEffectsView>());
             _injector.Bind(FindObjectOfType<DataSyncService>());
             
+            //Journal
+            _injector.Bind(new PlayJournalSystem());
+            _injector.Bind(new PlayJournalData());
+            _injector.Bind(new PlayJournalSerializer());
+            
             //Master Only - Debug
             _injector.Bind(FindObjectOfType<DisconnectPanelView>());
             
@@ -267,6 +272,8 @@ namespace Victorina
             //Debug
             _injector.Get<DisconnectPanelView>().Initialize();
             
+            //Journal
+            _injector.Get<PlayJournalSystem>().Initialize();
             
             //Crafter
             _injector.Get<PackageCrafterView>().Initialize();

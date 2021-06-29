@@ -123,7 +123,7 @@ namespace Victorina
 
         public void OnPassFinalRoundButtonClicked()
         {
-            //todo: add and use PassFinalRoundCommand
+            FinalRoundSystem.FinishRound();
         }
 
         public void OnRestartButtonClicked()

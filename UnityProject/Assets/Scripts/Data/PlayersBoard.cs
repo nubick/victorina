@@ -1,31 +1,47 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Victorina
 {
     public class PlayersBoard : SyncData
     {
         public List<PlayerData> Players { get; } = new List<PlayerData>();
-        public PlayerData Current { get; private set; }
+
+        private PlayerData _current;
+        public PlayerData Current
+        {
+            get => _current;
+            private set
+            {
+                _current = value; 
+                MarkAsChanged();
+            }
+        }
+
+        public override bool HasChanges => base.HasChanges || Players.Any(_ => _.HasChanges);
+
+        public override void ApplyChanges()
+        {
+            base.ApplyChanges();
+            Players.ForEach(_ => _.ApplyChanges());
+        }
 
         public void SetCurrent(PlayerData player)
         {
             Current = player;
-            MarkAsChanged();
         }
 
         public void Clear()
         {
             Players.Clear();
             Current = null;
-            MarkAsChanged();
         }
 
         public void Update(PlayersBoard playersBoard)
         {
             Players.Rewrite(playersBoard.Players);
             Current = playersBoard.Current;
-            MarkAsChanged();
         }
 
         public int GetPlayerIndex(PlayerData player)

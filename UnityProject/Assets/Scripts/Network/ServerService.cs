@@ -193,11 +193,5 @@ namespace Victorina
                 MetagameEvents.ServerStopped.Publish();
             }
         }
-        
-        public bool IsPlayerNameValid(string playerName)
-        {
-            return !string.IsNullOrWhiteSpace(playerName);
-        }
-
     }
 }

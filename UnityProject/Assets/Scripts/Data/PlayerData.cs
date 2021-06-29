@@ -1,28 +1,62 @@
 namespace Victorina
 {
-    public class PlayerData
+    public class PlayerData : SyncData
     {
         public byte PlayerId { get; }
-        public string Name { get; set; }
-        public bool IsConnected { get; set; }
-        public int Score { get; set; }
-        public byte FilesLoadingPercentage { get; set; }
+
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value; 
+                MarkAsChanged();
+            }
+        }
+
+        private bool _isConnected;
+        public bool IsConnected
+        {
+            get => _isConnected;
+            set
+            {
+                _isConnected = value; 
+                MarkAsChanged();
+            }
+        }
+
+        private int _score;
+        public int Score
+        {
+            get => _score;
+            set
+            {
+                _score = value; 
+                MarkAsChanged();
+            }
+        }
+
+        private byte _filesLoadingPercentage;
+        public byte FilesLoadingPercentage
+        {
+            get => _filesLoadingPercentage;
+            set
+            {
+                _filesLoadingPercentage = value; 
+                MarkAsChanged();
+            }
+        }
 
         public PlayerData(byte playerId)
         {
             PlayerId = playerId;
         }
         
-        public override string ToString()
-        {
-            return $"[{PlayerId}:{Name}:{Score}]";
-        }
-
-        public override int GetHashCode()
-        {
-            return PlayerId;
-        }
-
+        public override string ToString() => $"[{PlayerId}:{Name}:{Score}]";
+        public override int GetHashCode() => PlayerId;
+        protected bool Equals(PlayerData other) => PlayerId == other.PlayerId;
+        
         public static bool operator ==(PlayerData player1, PlayerData player2)
         {
             if (ReferenceEquals(player1, null))
@@ -39,11 +73,6 @@ namespace Victorina
             return !(player1 == player2);
         }
         
-        protected bool Equals(PlayerData other)
-        {
-            return PlayerId == other.PlayerId;
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
