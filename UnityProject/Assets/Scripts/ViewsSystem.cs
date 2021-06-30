@@ -99,7 +99,8 @@ namespace Victorina
                     ShowFinalRoundViews();
                     break;
                 case PlayStateType.ShowFinalRoundQuestion:
-                    ShowFinalRoundQuestionViews(PlayStateData.As<ShowFinalRoundQuestionPlayState>());
+                case PlayStateType.ShowFinalRoundAnswer:
+                    ShowFinalRoundQuestionViews(PlayStateData.As<StoryDotPlayState>());
                     break;
                 case PlayStateType.Result:
                     ShowResultViews();
@@ -213,7 +214,7 @@ namespace Victorina
             PlayersBoardView.Show();
         }
 
-        private void ShowFinalRoundQuestionViews(ShowFinalRoundQuestionPlayState playState)
+        private void ShowFinalRoundQuestionViews(StoryDotPlayState playState)
         {
             HideAll();
             ShowStoryDotView(playState);

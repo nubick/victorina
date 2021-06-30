@@ -10,8 +10,11 @@ namespace Victorina
         
         public GameObject PreviousStoryDotButton;
         public GameObject NextStoryDotButton;
+
+        public GameObject AcceptAnswerButton;
+        public GameObject BackButton;
         
-        private ShowFinalRoundQuestionPlayState PlayState => PlayStateData.As<ShowFinalRoundQuestionPlayState>();
+        private StoryDotPlayState PlayState => PlayStateData.As<StoryDotPlayState>();
         
         protected override void OnShown()
         {
@@ -22,6 +25,9 @@ namespace Victorina
         {
             PreviousStoryDotButton.SetActive(PlayState.StoryDotIndex > 0);
             NextStoryDotButton.SetActive(!PlayState.IsLastDot);
+            
+            AcceptAnswerButton.SetActive(PlayStateData.Type == PlayStateType.ShowFinalRoundQuestion);
+            BackButton.SetActive(PlayStateData.Type == PlayStateType.ShowFinalRoundAnswer);
         }
         
         public void OnPreviousStoryDotButtonClicked()
@@ -37,6 +43,11 @@ namespace Victorina
         public void OnAcceptAnswerButtonClicked()
         {
             FinalRoundSystem.SwitchToAnsweringPhase();
+        }
+
+        public void OnBackButtonClicked()
+        {
+            FinalRoundSystem.SwitchBackToAnswerAcceptingPhase();
         }
     }
 }

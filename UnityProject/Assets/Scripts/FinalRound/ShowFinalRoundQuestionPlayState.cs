@@ -1,5 +1,3 @@
-using Victorina;
-
 namespace Victorina
 {
     public class ShowFinalRoundQuestionPlayState : StoryDotPlayState

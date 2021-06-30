@@ -377,14 +377,14 @@ namespace Victorina
             }
         }
 
-        public void LookAnswerButtonClicked()
+        public void OnLookAnswerButtonClicked()
         {
             
         }
 
-        public void ShowAnswerButtonClicked()
+        public void OnShowAnswerButtonClicked()
         {
-            
+            FinalRoundSystem.ShowFinalRoundAnswer();
         }
     }
 }

@@ -40,6 +40,7 @@ namespace Victorina
                 
                 PlayStateType.FinalRound => new FinalRoundPlayState(),
                 PlayStateType.ShowFinalRoundQuestion => new ShowFinalRoundQuestionPlayState(),
+                PlayStateType.ShowFinalRoundAnswer => new ShowFinalRoundAnswerPlayState(),
 
                 PlayStateType.Auction => new AuctionPlayState(),
                 PlayStateType.CatInBag => new CatInBagPlayState(),

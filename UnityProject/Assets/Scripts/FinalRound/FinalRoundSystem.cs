@@ -263,6 +263,20 @@ namespace Victorina
             PlayState.SetAcceptingInfo(sb.ToString());
         }
 
+        public void ShowFinalRoundAnswer()
+        {
+            ShowFinalRoundAnswerPlayState showAnswerPlayState = new ShowFinalRoundAnswerPlayState();
+            showAnswerPlayState.FinalRoundPlayState = PlayState;
+            showAnswerPlayState.NetQuestion = GetSelectedNetQuestion();
+            PlayStateSystem.ChangePlayState(showAnswerPlayState);
+        }
+
+        public void SwitchBackToAnswerAcceptingPhase()
+        {
+            FinalRoundPlayState finalRoundPlayState = PlayStateData.As<ShowFinalRoundAnswerPlayState>().FinalRoundPlayState;
+            PlayStateSystem.ChangePlayState(finalRoundPlayState);
+        }
+
         public void FinishRound()
         {
             ResultPlayState resultPlayState = new ResultPlayState();

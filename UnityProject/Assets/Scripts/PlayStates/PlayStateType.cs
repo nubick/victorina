@@ -16,6 +16,7 @@ namespace Victorina
         AcceptingAnswer,
         ShowAnswer,
         ShowFinalRoundQuestion,
+        ShowFinalRoundAnswer,
         
         Result
     }
