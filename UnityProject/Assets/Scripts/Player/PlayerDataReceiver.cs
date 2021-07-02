@@ -90,11 +90,11 @@ namespace Victorina
             Debug.Log($"Receive command from Master, {command}");
             CommandsSystem.AddReceivedMasterCommand(command);
         }
-
-        public void OnReceiveServerEvent(string eventId)
+        
+        public void OnReceiveServerEvent(string serverEventId, ServerEventArgument argument)
         {
-            Debug.Log($"Receive server event: {eventId}");
-            ServerEventsSystem.OnPlayerReceiveServerEvent(eventId);
+            Debug.Log($"Receive server event: {serverEventId}, {argument}");
+            ServerEventsSystem.OnPlayerReceiveServerEvent(serverEventId, argument);
         }
     }
 }

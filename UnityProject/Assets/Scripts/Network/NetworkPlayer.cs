@@ -18,7 +18,7 @@ namespace Victorina
             JoinedPlayer joinedPlayer = ConnectedPlayersData.GetByClientId(OwnerClientId);
             return joinedPlayer == null ?
                 $"[Can't find by: {OwnerClientId}]" : 
-                $"[{joinedPlayer.ConnectionMessage.Name}|{OwnerClientId}]";
+                $"[{joinedPlayer.Name}|{OwnerClientId}]";
         }
 
         public void SendRegisteredPlayerId(byte playerId)
@@ -213,15 +213,15 @@ namespace Victorina
         
         #endregion
 
-        public void SendServerEvent(string serverEventId)
+        public void SendServerEvent(string serverEventId, ServerEventArgument argument)
         {
-            InvokeClientRpcOnOwner(ReceiveServerEventClientRpc, serverEventId);
+            InvokeClientRpcOnOwner(ReceiveServerEventClientRpc, serverEventId, argument);
         }
 
         [ClientRPC]
-        private void ReceiveServerEventClientRpc(string serverEventId)
+        private void ReceiveServerEventClientRpc(string serverEventId, ServerEventArgument argument)
         {
-            PlayerDataReceiver.OnReceiveServerEvent(serverEventId);
+            PlayerDataReceiver.OnReceiveServerEvent(serverEventId, argument);
         }
     }
 }

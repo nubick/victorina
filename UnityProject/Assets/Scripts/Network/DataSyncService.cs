@@ -68,11 +68,11 @@ namespace Victorina
                     MetagameEvents.AnswerTimerDataChanged.Publish();
                 }
 
-                while (ServerEventsData.PendingToSendEventIds.Any())
+                while (ServerEventsData.PendingToSendEvents.Any())
                 {
                     Debug.Log($"DataSync: {ServerEventsData}");
-                    string serverEventId = ServerEventsData.PendingToSendEventIds.Dequeue();
-                    SendToPlayersService.SendServerEvent(serverEventId);
+                    (string, ServerEventArgument) serverEvent = ServerEventsData.PendingToSendEvents.Dequeue();
+                    SendToPlayersService.SendServerEvent(serverEvent.Item1, serverEvent.Item2);
                 }
                 
                 yield return delay;

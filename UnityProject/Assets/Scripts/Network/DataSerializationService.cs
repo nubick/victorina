@@ -23,6 +23,7 @@ namespace Victorina
             SerializationManager.RegisterSerializationHandlers(SerializePackagePlayStateData, DeserializePackagePlayStateData);
             SerializationManager.RegisterSerializationHandlers(SerializeCommandNetworkData, DeserializeCommandNetworkData);
             SerializationManager.RegisterSerializationHandlers(SerializationTools.SerializeBytesArray, SerializationTools.DeserializeBytesArray);
+            SerializationManager.RegisterSerializationHandlers(SerializeServerEventArgument, DeserializeServerEventArgument);
         }
         
         #region PlayersBoard
@@ -392,6 +393,49 @@ namespace Victorina
             data.PlayState = PlayStateSystem.Create(playStateType);
             data.PlayState.Deserialize(reader);
             return data;
+        }
+
+        private void SerializeServerEventArgument(Stream stream, ServerEventArgument argument)
+        {
+            using PooledBitWriter writer = PooledBitWriter.Get(stream);
+            writer.WriteInt32((int) argument.Type);
+            
+            switch (argument.Type)
+            {
+                case ServerEventArgumentType.Empty:
+                    break;
+                case ServerEventArgumentType.String:
+                    writer.WriteString(argument.AsString());
+                    break;
+                case ServerEventArgumentType.Int:
+                    writer.WriteInt32(argument.AsInt());
+                    break;
+                default:
+                    throw new Exception($"Not supported ServerEventArgumentType: {argument.Type}");
+            }
+        }
+
+        private ServerEventArgument DeserializeServerEventArgument(Stream stream)
+        {
+            ServerEventArgument argument = new ServerEventArgument();
+            using PooledBitReader reader = PooledBitReader.Get(stream);
+            ServerEventArgumentType argumentType = (ServerEventArgumentType) reader.ReadInt32();
+            switch (argumentType)
+            {
+                case ServerEventArgumentType.Empty:
+                    break;
+                case ServerEventArgumentType.String:
+                    string strValue = reader.ReadString().ToString();
+                    argument.SetString(strValue);
+                    break;
+                case ServerEventArgumentType.Int:
+                    int intValue = reader.ReadInt32();
+                    argument.SetInt(intValue);
+                    break;
+                default:
+                    throw new Exception($"Not supported ServerEventArgumentType: {argumentType}");
+            }
+            return argument;
         }
     }
 }
