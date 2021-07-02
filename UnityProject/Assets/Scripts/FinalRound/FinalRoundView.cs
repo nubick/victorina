@@ -379,7 +379,7 @@ namespace Victorina
 
         public void OnLookAnswerButtonClicked()
         {
-            
+            FinalRoundSystem.ShowFinalRoundAnswerToMasterOnly();
         }
 
         public void OnShowAnswerButtonClicked()

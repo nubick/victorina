@@ -89,5 +89,15 @@ namespace Victorina
             ChangePlayState(playState);
             PlayersButtonClickData.Clear();
         }
+
+        public void LockForMasterOnly()
+        {
+            Data.IsLockedForMasterOnly = true;
+        }
+
+        public void UnlockForMasterOnly()
+        {
+            Data.IsLockedForMasterOnly = false;
+        }
     }
 }

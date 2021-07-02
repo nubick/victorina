@@ -5,6 +5,7 @@ namespace Victorina
     public class PlayStateData : SyncData
     {
         public PackagePlayState PlayState { get; set; }
+        public bool IsLockedForMasterOnly { get; set; }
         public PlayStateType Type => PlayState.Type;
 
         public override bool HasChanges => base.HasChanges || PlayState is {HasChanges: true};

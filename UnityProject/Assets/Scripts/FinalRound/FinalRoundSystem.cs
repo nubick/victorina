@@ -271,10 +271,17 @@ namespace Victorina
             PlayStateSystem.ChangePlayState(showAnswerPlayState);
         }
 
+        public void ShowFinalRoundAnswerToMasterOnly()
+        {
+            PlayStateSystem.LockForMasterOnly();
+            ShowFinalRoundAnswer();
+        }
+        
         public void SwitchBackToAnswerAcceptingPhase()
         {
             FinalRoundPlayState finalRoundPlayState = PlayStateData.As<ShowFinalRoundAnswerPlayState>().FinalRoundPlayState;
             PlayStateSystem.ChangePlayState(finalRoundPlayState);
+            PlayStateSystem.UnlockForMasterOnly();
         }
 
         public void FinishRound()

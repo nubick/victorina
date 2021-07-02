@@ -54,9 +54,13 @@ namespace Victorina
                 
                 if (PlayStateData.HasChanges)
                 {
-                    Debug.Log($"DataSync: {PlayStateData}");
+                    if (!PlayStateData.IsLockedForMasterOnly)
+                    {
+                        Debug.Log($"DataSync: {PlayStateData}");
+                        SendToPlayersService.SendPackagePlayStateData(PlayStateData);
+                    }
+                    
                     PlayStateData.ApplyChanges();
-                    SendToPlayersService.SendPackagePlayStateData(PlayStateData);
                     MetagameEvents.PlayStateChanged.Publish();
                 }
 
