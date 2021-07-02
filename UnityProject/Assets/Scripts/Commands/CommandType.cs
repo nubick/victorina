@@ -11,7 +11,7 @@ namespace Victorina.Commands
         //Round
         SelectRound,
         SelectRoundQuestion,
-        StopRoundBlinking,
+        StartRoundQuestion,
         FinishQuestion,
 
         //Cat In Bag

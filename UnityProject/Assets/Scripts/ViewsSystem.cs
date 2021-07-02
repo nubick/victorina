@@ -68,7 +68,6 @@ namespace Victorina
                     ShowLobbyViews();
                     break;
                 case PlayStateType.Round:
-                case PlayStateType.RoundBlinking:
                     ShowSimpleRoundViews();
                     break;
                 case PlayStateType.Auction:

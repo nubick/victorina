@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Victorina.Commands
 {
-    public class StopRoundBlinkingCommand : Command, IServerCommand
+    public class StartRoundQuestionCommand : Command, IServerCommand
     {
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PlayStateSystem PlayStateSystem { get; set; }
@@ -13,22 +13,29 @@ namespace Victorina.Commands
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
 
-        public override CommandType Type => CommandType.StopRoundBlinking;
+        public override CommandType Type => CommandType.StartRoundQuestion;
+        private RoundPlayState PlayState => PlayStateData.As<RoundPlayState>();
         
         public bool CanExecuteOnServer()
         {
-            if (PlayStateData.Type != PlayStateType.RoundBlinking)
+            if (PlayStateData.Type != PlayStateType.Round)
             {
-                Debug.Log($"Can stop round blinking only at RoundBlinkingPlayState, current play state: {PlayStateData}");
+                Debug.Log($"Can't start round question from play state: {PlayStateData}");
                 return false;
             }
+
+            if (PlayState.SelectedQuestionId == null)
+            {
+                Debug.Log($"Can't start question. Selected question id is null.");
+                return false;
+            }
+            
             return true;
         }
 
         public void ExecuteOnServer()
         {
-            RoundBlinkingPlayState blinkingPlayState = PlayStateData.As<RoundBlinkingPlayState>();
-            NetQuestion netQuestion = PackageSystem.BuildNetQuestion(blinkingPlayState.QuestionId);
+            NetQuestion netQuestion = PackageSystem.BuildNetQuestion(PlayState.SelectedQuestionId);
             MatchData.NetQuestion = netQuestion;
             
             switch (netQuestion.Type)
@@ -58,7 +65,7 @@ namespace Victorina.Commands
         
         public override string ToString()
         {
-            return "[StopRoundBlinkingCommand]";
+            return "[StartRoundQuestionCommand]";
         }
     }
 }

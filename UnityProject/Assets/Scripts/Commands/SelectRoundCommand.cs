@@ -13,9 +13,14 @@ namespace Victorina.Commands
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         
-        public int RoundNumber { get; set; }
+        public int RoundNumber { get; }
         
         public override CommandType Type => CommandType.SelectRound;
+
+        public SelectRoundCommand(int roundNumber)
+        {
+            RoundNumber = roundNumber;
+        }
         
         public bool CanExecuteOnServer()
         {

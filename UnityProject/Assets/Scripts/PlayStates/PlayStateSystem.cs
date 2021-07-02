@@ -34,10 +34,8 @@ namespace Victorina
             PackagePlayState playState = playStateType switch
             {
                 PlayStateType.Lobby => new LobbyPlayState(),
-
                 PlayStateType.Round => new RoundPlayState(),
-                PlayStateType.RoundBlinking => new RoundBlinkingPlayState(),
-                
+
                 PlayStateType.FinalRound => new FinalRoundPlayState(),
                 PlayStateType.ShowFinalRoundQuestion => new ShowFinalRoundQuestionPlayState(),
                 PlayStateType.ShowFinalRoundAnswer => new ShowFinalRoundAnswerPlayState(),

@@ -28,7 +28,7 @@ namespace Victorina.Commands
         {
             PackageData.PackageProgress.SetQuestionAsAnswered(ShowAnswerPlayState.NetQuestion.QuestionId);
             MatchData.NetQuestion = null;
-            CommandsSystem.AddNewCommand(new SelectRoundCommand {RoundNumber = MatchData.RoundNumber});
+            CommandsSystem.AddNewCommand(new SelectRoundCommand(MatchData.RoundNumber));
         }
 
         public override string ToString() => "[FinishQuestionCommand]";

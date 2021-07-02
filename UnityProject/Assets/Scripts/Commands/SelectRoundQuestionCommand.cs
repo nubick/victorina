@@ -9,18 +9,19 @@ namespace Victorina.Commands
     public class SelectRoundQuestionCommand : Command, INetworkCommand, IServerCommand
     {
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private PlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private TimerSystem TimerSystem { get; set; }
         
         public string QuestionId { get; set; }
+
         public override CommandType Type => CommandType.SelectRoundQuestion;
         private bool IsOwnerCurrentPlayerOrMaster => Owner == CommandOwner.Master || PlayersBoardSystem.IsCurrentPlayer(OwnerPlayer);
+        private RoundPlayState PlayState => PlayStateData.As<RoundPlayState>();
 
         public NetRoundQuestion GetNetQuestion(string questionId)
         {
-            List<NetRoundQuestion> roundQuestions = PlayStateData.As<RoundPlayState>().NetRound.Themes.SelectMany(theme => theme.Questions).ToList();
+            List<NetRoundQuestion> roundQuestions = PlayState.NetRound.Themes.SelectMany(theme => theme.Questions).ToList();
             return roundQuestions.SingleOrDefault(_ => _.QuestionId == questionId);
         }
 
@@ -38,6 +39,12 @@ namespace Victorina.Commands
                 return false;
             }
 
+            if (PlayState.SelectedQuestionId != null)
+            {
+                Debug.Log($"Can't select question again. Question is selected, id: {PlayState.SelectedQuestionId}");
+                return false;
+            }
+            
             NetRoundQuestion question = GetNetQuestion(questionId);
             
             if (question == null)
@@ -67,23 +74,18 @@ namespace Victorina.Commands
         
         public void ExecuteOnServer()
         {
-            RoundPlayState roundPlayState = PlayStateData.As<RoundPlayState>();
+            SendSelectQuestionEvents(PlayState.NetRound, PlayState.RoundNumber);
+
+            PlayState.SelectedQuestionId = QuestionId;
             
-            SendSelectQuestionEvents(roundPlayState.NetRound, roundPlayState.RoundNumber);
+            ServerEvents.RoundQuestionSelected.Publish(QuestionId);
             
-            RoundBlinkingPlayState blinkingPlayState = new RoundBlinkingPlayState();
-            blinkingPlayState.QuestionId = QuestionId;
-            blinkingPlayState.RoundNumber = roundPlayState.RoundNumber;
-            blinkingPlayState.RoundTypes = roundPlayState.RoundTypes;
-            blinkingPlayState.NetRound = roundPlayState.NetRound;
-            PlayStateSystem.ChangePlayState(blinkingPlayState);
-            
-            TimerSystem.RunAfter(1.5f, CreateStopRoundBlinkingCommand);
+            TimerSystem.RunAfter(1.5f, CreateStartRoundQuestionCommand);
         }
 
-        private void CreateStopRoundBlinkingCommand()
+        private void CreateStartRoundQuestionCommand()
         {
-            CommandsSystem.AddNewCommand(new StopRoundBlinkingCommand());
+            CommandsSystem.AddNewCommand(new StartRoundQuestionCommand());
         }
         
         private void SendSelectQuestionEvents(NetRound netRound, int roundNumber)

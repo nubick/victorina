@@ -5,9 +5,9 @@ namespace Victorina
         Lobby,
         
         Round,
-        FinalRound,
-        RoundBlinking,
         
+        FinalRound,
+
         Auction,
         CatInBag,
         NoRisk,

@@ -30,18 +30,19 @@ namespace Victorina
         public RectTransform RoundsInfoRoot;
         public RoundInfoWidget RoundInfoWidgetPrefab;
 
-        private RoundPlayState RoundPlayState => PlayStateData.PlayState as RoundPlayState;
+        private RoundPlayState PlayState => PlayStateData.As<RoundPlayState>();
         
         public void Initialize()
         {
             MetagameEvents.RoundQuestionClicked.Subscribe(OnRoundQuestionClicked);
             MetagameEvents.RoundInfoClicked.Subscribe(OnRoundInfoClicked);
+            
+            ServerEvents.RoundQuestionSelected.Subscribe(OnRoundQuestionSelected);
         }
         
         protected override void OnShown()
         {
-            RefreshUI(RoundPlayState.NetRound);
-            StartCoroutine(ShowQuestionBlinkEffect());
+            RefreshUI(PlayState.NetRound);
         }
 
         protected override void OnHide()
@@ -61,7 +62,7 @@ namespace Victorina
                 InstantiateLayout(netRound);
             }
             
-            RefreshRoundsInfo(RoundPlayState);
+            RefreshRoundsInfo(PlayState);
             MatchSettingsButton.SetActive(NetworkData.IsMaster);
         }
         
@@ -108,7 +109,7 @@ namespace Victorina
             foreach (NetRoundQuestion netRoundQuestion in netRound.Themes.SelectMany(theme => theme.Questions))
             {
                 RoundQuestionWidget widget = _questionWidgetsCache[netRoundQuestion.QuestionId];
-                widget.Bind(netRoundQuestion);
+                widget.Refresh(netRoundQuestion);
             }
         }
         
@@ -140,24 +141,26 @@ namespace Victorina
             MatchSystem.TrySelectQuestion(netRoundQuestion);
         }
         
-        private IEnumerator ShowQuestionBlinkEffect()
+        private IEnumerator ShowQuestionBlinkEffect(string questionId)
         {
             WaitForSeconds delay = new WaitForSeconds(0.1f);
             RoundQuestionWidget cachedWidget = null;
             for (;;)
             {
-                if (PlayStateData.Type == PlayStateType.RoundBlinking)
-                {
-                    string questionId = PlayStateData.As<RoundBlinkingPlayState>().QuestionId;
-                    if (cachedWidget == null || cachedWidget.NetRoundQuestion.QuestionId != questionId)
-                        cachedWidget = QuestionsRoot.GetComponentsInChildren<RoundQuestionWidget>().Single(_ => _.NetRoundQuestion != null && _.NetRoundQuestion.QuestionId == questionId);
-                    
-                    cachedWidget.ShowHighlighted();
-                    yield return delay;
-                    cachedWidget.ShowDefault();
-                }
+                if (cachedWidget == null || cachedWidget.NetRoundQuestion.QuestionId != questionId)
+                    cachedWidget = QuestionsRoot.GetComponentsInChildren<RoundQuestionWidget>().Single(_ => _.NetRoundQuestion != null && _.NetRoundQuestion.QuestionId == questionId);
+
+                cachedWidget.ShowHighlighted();
+                yield return delay;
+                cachedWidget.ShowDefault();
+
                 yield return delay;
             }
+        }
+        
+        private void OnRoundQuestionSelected(string questionId)
+        {
+            StartCoroutine(ShowQuestionBlinkEffect(questionId));
         }
         
         private void OnRoundInfoClicked(int number)

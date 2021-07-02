@@ -12,6 +12,8 @@ namespace Victorina
         public RoundType[] RoundTypes { get; set; }
         public NetRound NetRound { get; set; }
         
+        public string SelectedQuestionId { get; set; }//Don't sync, server only
+        
         public override PlayStateType Type => PlayStateType.Round;
         
         public override void Serialize(PooledBitWriter writer)
