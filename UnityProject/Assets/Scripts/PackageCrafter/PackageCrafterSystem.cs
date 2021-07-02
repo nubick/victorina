@@ -214,8 +214,12 @@ namespace Victorina
 
         public void UpdateSelectedQuestion(QuestionType questionType, int price)
         {
+            if (Data.SelectedQuestion.Type != QuestionType.CatInBag && questionType == QuestionType.CatInBag)
+                Data.SelectedQuestion.CatInBagInfo = new CatInBagInfo(theme: string.Empty, price, true);
+
             Data.SelectedQuestion.Type = questionType;
             Data.SelectedQuestion.Price = price;
+
             PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
         }
 

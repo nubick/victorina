@@ -109,7 +109,7 @@ namespace Victorina
             foreach (NetRoundQuestion netRoundQuestion in netRound.Themes.SelectMany(theme => theme.Questions))
             {
                 RoundQuestionWidget widget = _questionWidgetsCache[netRoundQuestion.QuestionId];
-                widget.Refresh(netRoundQuestion);
+                widget.Bind(netRoundQuestion);
             }
         }
         

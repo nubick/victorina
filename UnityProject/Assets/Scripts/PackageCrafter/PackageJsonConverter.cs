@@ -74,7 +74,7 @@ namespace Victorina
             
             foreach (Question question in theme.Questions)
             {
-                JSONNode questionNode = ToJsonNode(question);
+                JSONNode questionNode = ToJsonNode(question, theme);
                 questionsArray.Add(questionNode);
             }
 
@@ -86,7 +86,7 @@ namespace Victorina
             return ToJsonNode(theme).ToString(2);
         }
         
-        private JSONNode ToJsonNode(Question question)
+        private JSONNode ToJsonNode(Question question, Theme theme)
         {
             JSONNode jsonNode = new JSONObject();
             jsonNode.Add(TypeKey, question.Type.ToString());
@@ -96,6 +96,9 @@ namespace Victorina
 
             if (question.Type == QuestionType.CatInBag)
             {
+                if (string.IsNullOrEmpty(question.CatInBagInfo.Theme))
+                    question.CatInBagInfo.Theme = theme.Name;
+                
                 JSONNode catInBagNode = ToJsonNode(question.CatInBagInfo);
                 jsonNode.Add(CatInBagKey, catInBagNode);
             }

@@ -38,13 +38,7 @@ namespace Victorina
             
             ShowDefault();
         }
-
-        public void Refresh(NetRoundQuestion netRoundQuestion)
-        {
-            AllDownloadingIcon.SetActive(!netRoundQuestion.IsAnswered && !netRoundQuestion.IsDownloadedByAll);
-            MyDownloadingIcon.SetActive(!netRoundQuestion.IsAnswered && !netRoundQuestion.IsDownloadedByMe);
-        }
-
+        
         public void BindEmpty()
         {
             NetRoundQuestion = null;
