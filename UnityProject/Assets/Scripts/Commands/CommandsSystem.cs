@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Injection;
 using UnityEngine;
 using Victorina.DevTools;
@@ -138,6 +139,23 @@ namespace Victorina.Commands
             }
         }
 
+        public void PlayJournalCommands(List<IServerCommand> commands)
+        {
+            foreach (IServerCommand serverCommand in commands)
+            {
+                _injector.InjectTo(serverCommand);
+
+                if (serverCommand.CanExecuteOnServer())
+                {
+                    serverCommand.ExecuteOnServer();
+                }
+                else
+                {
+                    throw new Exception($"Journal Command: Can't execute, {serverCommand}");
+                }
+            }
+        }
+        
         public INetworkCommand CreateNetworkCommand(CommandType commandType)
         {
             return commandType switch

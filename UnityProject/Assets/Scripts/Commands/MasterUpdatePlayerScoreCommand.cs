@@ -1,3 +1,4 @@
+using Injection;
 using UnityEngine;
 using Victorina;
 using Victorina.Commands;
@@ -6,10 +7,19 @@ namespace Commands
 {
     public class MasterUpdatePlayerScoreCommand : Command, IServerCommand
     {
-        public PlayerData Player { get; set; }
-        public int NewScore { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
+        
+        public byte PlayerId { get; }
+        public int NewScore { get; }
         
         public override CommandType Type => CommandType.MasterUpdatePlayerScore;
+        private PlayerData Player => PlayersBoardSystem.GetPlayer(PlayerId);
+        
+        public MasterUpdatePlayerScoreCommand(byte playerId, int newScore)
+        {
+            PlayerId = playerId;
+            NewScore = newScore;
+        }
         
         public bool CanExecuteOnServer()
         {

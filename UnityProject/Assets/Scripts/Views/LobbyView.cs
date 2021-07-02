@@ -57,7 +57,7 @@ namespace Victorina
 
         public void OnStartFirstRoundButtonClicked()
         {
-            CommandsSystem.AddNewCommand(new SelectRoundCommand {RoundNumber = 1});
+            CommandsSystem.AddNewCommand(new SelectRoundCommand(1));
         }
 
         public void OnBackButtonClicked()

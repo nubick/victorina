@@ -34,7 +34,7 @@ namespace Victorina
                     PlayersBoard.Players.Add(boardPlayer);
                 }
                 
-                boardPlayer.Name = joinedPlayer.ConnectionMessage.Name;
+                boardPlayer.Name = joinedPlayer.Name;
                 boardPlayer.IsConnected = joinedPlayer.IsConnected;
             }
         }

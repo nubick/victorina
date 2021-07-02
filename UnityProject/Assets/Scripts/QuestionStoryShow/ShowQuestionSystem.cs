@@ -105,7 +105,7 @@ namespace Victorina
         public void SelectPlayerForAnswer(byte playerId)
         {
             if (NetworkData.IsMaster)
-                CommandsSystem.AddNewCommand(new SelectPlayerForAnswerCommand {PlayerId = playerId});
+                CommandsSystem.AddNewCommand(new SelectPlayerForAnswerCommand(playerId));
         }
 
         public void AcceptSinglePlayerQuestion()

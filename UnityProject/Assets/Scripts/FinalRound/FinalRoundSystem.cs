@@ -159,8 +159,8 @@ namespace Victorina
         {
             if (PlayState.SelectedPlayerByMaster == null)
                 throw new Exception("Should not be possible to click Clear Answer button when player is not selected.");
-            
-            CommandsSystem.AddNewCommand(new ClearFinalRoundAnswerCommand {Player = PlayState.SelectedPlayerByMaster});
+
+            CommandsSystem.AddNewCommand(new ClearFinalRoundAnswerCommand(PlayState.SelectedPlayerByMaster.PlayerId));
         }
         
         #endregion

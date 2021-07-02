@@ -5,6 +5,7 @@ using MLAPI;
 using MLAPI.Spawning;
 using MLAPI.Transports.UNET;
 using UnityEngine;
+using Victorina.Commands;
 
 namespace Victorina
 {
@@ -15,6 +16,7 @@ namespace Victorina
         [Inject] private ExternalIpData ExternalIpData { get; set; }
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
+        [Inject] private CommandsSystem CommandsSystem { get; set; }
         
         public void Initialize()
         {
@@ -48,7 +50,7 @@ namespace Victorina
 
             if (!TryParse(connectionData, out ConnectionMessage connectionMessage))
             {
-                Debug.Log($"Master: Can't parse connection data from client");
+                Debug.Log("Master: Can't parse connection data from client");
                 SendNotApproveMessage(callback);
                 return;
             }
@@ -66,7 +68,7 @@ namespace Victorina
             }
             else
             {
-                RegisterPlayer(clientId, connectionMessage);
+                ApprovePlayer(clientId, connectionMessage);
                 ulong? prefabHash = SpawnManager.GetPrefabHashFromGenerator("NetworkPlayer");
                 callback(createPlayerObject: true, prefabHash, approved: true, Vector3.zero, Quaternion.identity);
             }
@@ -115,18 +117,12 @@ namespace Victorina
             return isSupported;
         }
 
-        private void RegisterPlayer(ulong clientId, ConnectionMessage connectionMessage)
+        private void ApprovePlayer(ulong clientId, ConnectionMessage connectionMessage)
         {
+            CommandsSystem.AddNewCommand(new RegisterPlayerCommand {Guid = connectionMessage.Guid, Name = connectionMessage.Name});
+            
             JoinedPlayer player = ConnectedPlayersData.GetByGuid(connectionMessage.Guid);
-            if (player == null)
-            {
-                player = new JoinedPlayer();
-                player.PlayerId = ConnectedPlayersData.NextPlayerId;
-                ConnectedPlayersData.NextPlayerId++;
-                ConnectedPlayersData.Players.Add(player);
-                Debug.Log($"Master: New player is registered, PlayerId {player.PlayerId}");
-            }
-            player.ConnectionMessage = connectionMessage;
+            player.Name = connectionMessage.Name;
             player.ClientId = clientId;
         }
         

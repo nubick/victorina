@@ -10,10 +10,17 @@ namespace Commands
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         [Inject] private ConnectedPlayersData ConnectedPlayersData { get; set; }
         
+        public byte PlayerId { get; }
+        public string NewPlayerName { get; }
+
         public override CommandType Type => CommandType.MasterUpdatePlayerName;
+        private PlayerData Player => PlayersBoardSystem.GetPlayer(PlayerId);
         
-        public PlayerData Player { get; set; }
-        public string NewPlayerName { get; set; }
+        public MasterUpdatePlayerNameCommand(byte playerId, string newPlayerName)
+        {
+            PlayerId = playerId;
+            NewPlayerName = newPlayerName;
+        }
         
         public bool CanExecuteOnServer()
         {
@@ -29,8 +36,8 @@ namespace Commands
         public void ExecuteOnServer()
         {
             Debug.Log($"Update player name from '{Player.Name}' to '{NewPlayerName}'");
-            ConnectionMessage msg = ConnectedPlayersData.GetByPlayerId(Player.PlayerId).ConnectionMessage;
-            msg.Name = NewPlayerName;
+            JoinedPlayer joinedPlayer = ConnectedPlayersData.GetByPlayerId(Player.PlayerId);
+            joinedPlayer.Name = NewPlayerName;
             PlayersBoardSystem.UpdatePlayersBoard();
         }
 

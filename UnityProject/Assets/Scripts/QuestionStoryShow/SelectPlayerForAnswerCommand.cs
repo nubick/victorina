@@ -9,10 +9,15 @@ namespace Victorina
         [Inject] private PlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
         
-        public byte PlayerId { get; set; }
+        public byte PlayerId { get; }
 
         public override CommandType Type => CommandType.SelectPlayerForAnswer;
         private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
+
+        public SelectPlayerForAnswerCommand(byte playerId)
+        {
+            PlayerId = playerId;
+        }
         
         public bool CanExecuteOnServer()
         {

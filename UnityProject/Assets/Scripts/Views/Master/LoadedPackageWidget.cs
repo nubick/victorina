@@ -10,6 +10,8 @@ namespace Victorina
         public Text PackageName;
         public Text Author;
         public Image Background;
+
+        public GameObject ResumeButton;
         
         public void Bind(Package package, Color color)
         {
@@ -17,6 +19,7 @@ namespace Victorina
             Background.color = color;
             PackageName.text = $"{package.FolderName}";
             Author.text = $"Автор: {package.Author}";
+            ResumeButton.SetActive(package.HasJournal);
         }
         
         public void OnDeleteButtonClicked()

@@ -41,7 +41,7 @@ namespace Victorina
             if (NetworkData.IsClient)
                 return;
 
-            CommandsSystem.AddNewCommand(new SelectRoundCommand {RoundNumber = number});
+            CommandsSystem.AddNewCommand(new SelectRoundCommand(number));
         }
     }
 }

@@ -9,15 +9,20 @@ namespace Commands
     {
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
 
-        public PlayerData Player { get; set; }
+        public byte PlayerId { get; }
         
         public override CommandType Type => CommandType.MasterMakePlayerAsCurrent;
 
+        public MasterMakePlayerAsCurrentCommand(byte playerId)
+        {
+            PlayerId = playerId;
+        }
+        
         public bool CanExecuteOnServer()
         {
-            if (PlayersBoardSystem.IsCurrentPlayer(Player))
+            if (PlayersBoardSystem.IsCurrentPlayer(PlayerId))
             {
-                Debug.Log($"Cmd: Can't make player '{Player}' as current. Is it current now.");
+                Debug.Log($"Cmd: Can't make player '{PlayerId}' as current. Is it current now.");
                 return false;
             }
 
@@ -26,9 +31,9 @@ namespace Commands
 
         public void ExecuteOnServer()
         {
-            PlayersBoardSystem.MakePlayerCurrent(Player);
+            PlayersBoardSystem.MakePlayerCurrent(PlayerId);
         }
 
-        public override string ToString() => $"[MasterMakePlayerAsCurrentCommand, Player: {Player}]";
+        public override string ToString() => $"[MasterMakePlayerAsCurrentCommand, Player: {PlayerId}]";
     }
 }

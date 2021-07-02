@@ -13,6 +13,7 @@ namespace Victorina
         [Inject] private MatchSystem MatchSystem { get; set; }
         [Inject] private ServerService ServerService { get; set; }
         [Inject] private PlayStateSystem PlayStateSystem { get; set; }
+        [Inject] private PlayJournalSystem PlayJournalSystem { get; set; }
 
         public void RefreshPackages()
         {
@@ -22,6 +23,7 @@ namespace Victorina
             {
                 Package package = PackageFilesSystem.LoadPackage(packageFullPath);
                 Data.Packages.Add(package);
+                package.HasJournal = PlayJournalSystem.HasJournal(package);
             }
             Debug.Log($"Loaded packages: {Data.Packages.Count}");
         }
@@ -44,17 +46,24 @@ namespace Victorina
             RefreshPackages();
         }
 
-        public void CreatePackageGame(Package package)
+        private void StartPackageGame(Package package)
         {
             PackageSystem.StartPackageGame(package);
             MatchSystem.StartMatch();
             ServerService.StartServer();
             PlayStateSystem.StartPackageOnLobby();
+        }
+        
+        public void CreatePackageGame(Package package)
+        {
+            StartPackageGame(package);
             AnalyticsEvents.StartPackageGame.Publish(package.FolderName);
         }
 
         public void ResumePackageGame(Package package)
         {
+            StartPackageGame(package);
+            PlayJournalSystem.Play(package);
             AnalyticsEvents.ResumePackageGame.Publish(package.FolderName);
         }
         

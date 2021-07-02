@@ -43,7 +43,7 @@ namespace Victorina
 
         public JoinedPlayer GetByGuid(string guid)
         {
-            return Players.SingleOrDefault(_ => _.ConnectionMessage.Guid == guid);
+            return Players.SingleOrDefault(_ => _.Guid == guid);
         }
     }
 }

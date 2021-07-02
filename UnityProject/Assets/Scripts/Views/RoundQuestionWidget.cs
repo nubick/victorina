@@ -33,8 +33,14 @@ namespace Victorina
                     Price.text += ":auction";
             }
             
-            ShowDefault();
+            AllDownloadingIcon.SetActive(!netRoundQuestion.IsAnswered && !netRoundQuestion.IsDownloadedByAll);
+            MyDownloadingIcon.SetActive(!netRoundQuestion.IsAnswered && !netRoundQuestion.IsDownloadedByMe);
             
+            ShowDefault();
+        }
+
+        public void Refresh(NetRoundQuestion netRoundQuestion)
+        {
             AllDownloadingIcon.SetActive(!netRoundQuestion.IsAnswered && !netRoundQuestion.IsDownloadedByAll);
             MyDownloadingIcon.SetActive(!netRoundQuestion.IsAnswered && !netRoundQuestion.IsDownloadedByMe);
         }

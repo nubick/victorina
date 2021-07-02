@@ -37,7 +37,7 @@ namespace Victorina
         
         public void OnMakeCurrentButtonClicked()
         {
-            CommandsSystem.AddNewCommand(new MasterMakePlayerAsCurrentCommand {Player = _playerData});
+            CommandsSystem.AddNewCommand(new MasterMakePlayerAsCurrentCommand(_playerData.PlayerId));
             Hide();
         }
 
@@ -54,7 +54,7 @@ namespace Victorina
             {
                 string newPlayerName = PlayerNameInputField.Text;
                 if (PlayersBoardSystem.IsPlayerNameValid(newPlayerName))
-                    CommandsSystem.AddNewCommand(new MasterUpdatePlayerNameCommand {Player = _playerData, NewPlayerName = newPlayerName});
+                    CommandsSystem.AddNewCommand(new MasterUpdatePlayerNameCommand(_playerData.PlayerId, newPlayerName));
                 else
                     PlayerNameInputField.MarkInvalid();
             }
@@ -64,7 +64,7 @@ namespace Victorina
         {
             if (int.TryParse(PlayerScoreInputField.Text, out int newScore))
             {
-                CommandsSystem.AddNewCommand(new MasterUpdatePlayerScoreCommand {Player = _playerData, NewScore = newScore});
+                CommandsSystem.AddNewCommand(new MasterUpdatePlayerScoreCommand(_playerData.PlayerId, newScore));
             }
             else
             {

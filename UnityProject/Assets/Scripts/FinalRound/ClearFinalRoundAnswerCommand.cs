@@ -9,12 +9,19 @@ namespace Victorina
         [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         
-        public PlayerData Player { get; set; }
+        public byte PlayerId { get; }
         
         public override CommandType Type => CommandType.ClearFinalRoundAnswer;
         private FinalRoundPlayState PlayState => PlayStateData.As<FinalRoundPlayState>();
+        private PlayerData Player => PlayersBoardSystem.GetPlayer(PlayerId);
         
+        public ClearFinalRoundAnswerCommand(byte playerId)
+        {
+            PlayerId = playerId;
+        }
+
         public bool CanExecuteOnServer()
         {
             if (!FinalRoundSystem.CanParticipate(Player))

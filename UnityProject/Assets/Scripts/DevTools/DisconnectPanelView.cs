@@ -30,7 +30,7 @@ namespace Victorina
                 bool hasPlayer = ConnectedPlayersData.Players.Count > i;
                 Names[i].transform.parent.gameObject.SetActive(hasPlayer);
                 if (hasPlayer)
-                    Names[i].text = ConnectedPlayersData.Players[i].ConnectionMessage.Name;
+                    Names[i].text = ConnectedPlayersData.Players[i].Name;
             }
         }
 
