@@ -57,7 +57,7 @@ namespace Victorina
             PlayersBoardSystem.MakePlayerCurrent(ReceiverPlayerId);
             CatInBagPlayState.WasGiven = true;
             PlayStateData.MarkAsChanged();
-            CommandsSystem.AddNewCommand(new PlaySoundEffectCommand {SoundId = SoundId.MeowAngry});
+            ServerEvents.PlaySoundEffect.Publish(SoundId.MeowAngry.ToString());
         }
 
         public void Serialize(PooledBitWriter writer)

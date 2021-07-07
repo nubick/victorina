@@ -178,8 +178,6 @@ namespace Victorina.Commands
                 CommandType.RemoveFinalRoundTheme => new RemoveFinalRoundThemeCommand(),
                 CommandType.MakeFinalRoundBet => new MakeFinalRoundBetCommand(),
                 CommandType.SendFinalRoundAnswer => new SendFinalRoundAnswerCommand(),
-                //Effects
-                CommandType.PlaySoundEffect => new PlaySoundEffectCommand(),
                 //Logs
                 CommandType.SendPlayerLogs => new SendPlayerLogsCommand(),
                 CommandType.SavePlayerLogs => new SavePlayerLogsCommand(),

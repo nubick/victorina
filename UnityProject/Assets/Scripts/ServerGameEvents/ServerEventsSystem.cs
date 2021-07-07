@@ -13,6 +13,7 @@ namespace Victorina
         {
             Register(ServerEvents.FinalRoundStarted);
             Register(ServerEvents.RoundQuestionSelected);
+            Register(ServerEvents.PlaySoundEffect);
         }
 
         private void Register(ServerEventBase serverEvent)

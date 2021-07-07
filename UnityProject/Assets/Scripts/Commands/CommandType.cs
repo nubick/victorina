@@ -46,9 +46,6 @@ namespace Victorina.Commands
         AcceptAnswerAsWrong,
         CancelAcceptingAnswer,
         
-        //Effects
-        PlaySoundEffect,
-        
         //DevTools
         SendPlayerLogs,
         SavePlayerLogs

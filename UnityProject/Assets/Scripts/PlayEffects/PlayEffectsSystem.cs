@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Assets.Scripts.Data;
 using Injection;
@@ -16,6 +17,7 @@ namespace Victorina
             SetVolume(AppState.Volume.Value);
             
             MetagameEvents.PlaySoundEffectCommand.Subscribe(OnPlaySoundEffect);
+            ServerEvents.PlaySoundEffect.Subscribe(OnServerSoundEffect);
         }
 
         private void SetVolume(float volume)
@@ -43,13 +45,20 @@ namespace Victorina
             soundEffect.Play(Data.SoundEffectsAudioSource);
         }
 
-        public void PlaySound(SoundId soundId)
+        private void OnServerSoundEffect(string soundIdStr)
         {
-            SoundIdItem soundIdItem = Data.SoundIdItems.SingleOrDefault(item => item.SoundId == soundId);
-            if (soundIdItem == null)
-                Debug.LogWarning($"Can't find SoundIdItem by soundId: {soundId}");
+            if (Enum.TryParse(soundIdStr, out SoundId soundId))
+            {
+                SoundIdItem soundIdItem = Data.SoundIdItems.SingleOrDefault(item => item.SoundId == soundId);
+                if (soundIdItem == null)
+                    Debug.LogWarning($"Can't find SoundIdItem by soundId: {soundId}");
+                else
+                    OnPlaySoundEffect(soundIdItem.SoundEffect);
+            }
             else
-                OnPlaySoundEffect(soundIdItem.SoundEffect);
+            {
+                Debug.LogWarning($"Can't parse soundIdStr '{soundIdStr}'");
+            }
         }
     }
 }

@@ -10,7 +10,6 @@ namespace Victorina.Commands
         [Inject] private PlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PackageSystem PackageSystem { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
-        [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
 
         public override CommandType Type => CommandType.StartRoundQuestion;
@@ -49,7 +48,7 @@ namespace Victorina.Commands
                     CatInBagPlayState catInBagPlayState = new CatInBagPlayState();
                     catInBagPlayState.NetQuestion = netQuestion;
                     PlayStateSystem.ChangePlayState(catInBagPlayState);
-                    CommandsSystem.AddNewCommand(new PlaySoundEffectCommand {SoundId = SoundId.MeowIntro});
+                    ServerEvents.PlaySoundEffect.Publish(SoundId.MeowIntro.ToString());
                     break;
                 case QuestionType.NoRisk:
                     NoRiskPlayState noRiskPlayState = new NoRiskPlayState();
