@@ -41,11 +41,7 @@ namespace Victorina.Commands
             Round round = PackageData.Package.Rounds[RoundNumber - 1];
             if (round.Type == RoundType.Simple)
             {
-                RoundPlayState playState = new RoundPlayState();
-                playState.RoundNumber = RoundNumber;
-                playState.RoundTypes = PackageData.Package.Rounds.Select(_ => _.Type).ToArray();
-                playState.NetRound = PackageSystem.GetNetRound(round, PackageData.PackageProgress);
-                PlayStateSystem.ChangePlayState(playState);
+                PlayStateSystem.ChangeToRoundPlayState(RoundNumber);
             }
             else if (round.Type == RoundType.Final)
             {

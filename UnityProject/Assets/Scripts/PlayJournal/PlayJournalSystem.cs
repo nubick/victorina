@@ -20,6 +20,11 @@ namespace Victorina
             MetagameEvents.ServerCommandExecuted.Subscribe(OnServerCommandExecuted);
         }
 
+        public void Clear()
+        {
+            Data.ExecutedCommands.Clear();
+        }
+        
         private string GetJournalPath(Package package) => $"{package.Path}/journal.txt";
 
         public bool HasJournal(Package package)
@@ -30,6 +35,8 @@ namespace Victorina
 
         public void Play(Package package)
         {
+            Clear();
+
             string journalPath = GetJournalPath(package);
             if (!File.Exists(journalPath))
                 throw new Exception($"Journal doesn't exist by path: '{journalPath}'");
@@ -37,6 +44,8 @@ namespace Victorina
             string journalText = File.ReadAllText(journalPath);
             List<IServerCommand> commands = ReadCommands(journalText);
             CommandsSystem.PlayJournalCommands(commands);
+
+            Data.ExecutedCommands.AddRange(commands);
         }
 
         private List<IServerCommand> ReadCommands(string journalText)
@@ -46,6 +55,13 @@ namespace Victorina
             foreach (string line in lines)
             {
                 Debug.Log($"Read command line: {line}");
+
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+                
+                if (line.StartsWith(PlayJournalSerializer.NotImplemented))
+                    continue;
+
                 IServerCommand command = Serializer.FromStringLine(line);
                 commands.Add(command);
             }

@@ -74,12 +74,13 @@ namespace Victorina.Commands
         
         public void ExecuteOnServer()
         {
-            SendSelectQuestionEvents(PlayState.NetRound, PlayState.RoundNumber);
-
             PlayState.SelectedQuestionId = QuestionId;
-            
+
+            if (IsJournal)
+                return;
+
+            SendSelectQuestionEvents(PlayState.NetRound, PlayState.RoundNumber);
             ServerEvents.RoundQuestionSelected.Publish(QuestionId);
-            
             TimerSystem.RunAfter(1.5f, CreateStartRoundQuestionCommand);
         }
 

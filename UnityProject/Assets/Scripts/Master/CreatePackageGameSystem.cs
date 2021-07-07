@@ -57,6 +57,7 @@ namespace Victorina
         public void CreatePackageGame(Package package)
         {
             StartPackageGame(package);
+            PlayJournalSystem.Clear();
             AnalyticsEvents.StartPackageGame.Publish(package.FolderName);
         }
 

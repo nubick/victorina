@@ -1,12 +1,15 @@
 using System;
 using System.Globalization;
 using Commands;
+using UnityEngine;
 using Victorina.Commands;
 
 namespace Victorina
 {
     public class PlayJournalSerializer
     {
+        public const string NotImplemented = "NOT_IMPLEMENTED";
+        
         public string ToStringLine(IServerCommand serverCommand)
         {
             Command command = serverCommand as Command;
@@ -30,14 +33,30 @@ namespace Victorina
                     return Serialize(command as SelectRoundCommand);
                 case CommandType.SelectRoundQuestion:
                     return Serialize(command as SelectRoundQuestionCommand);
+                case CommandType.StartRoundQuestion:
+                    return Serialize(command as StartRoundQuestionCommand);
+                case CommandType.FinishQuestion:
+                    return Serialize(command as FinishQuestionCommand);
+                
                 case CommandType.SendAnswerIntention:
                     return Serialize(command as SendAnswerIntentionCommand);
                 case CommandType.SelectPlayerForAnswer:
                     return Serialize(command as SelectPlayerForAnswerCommand);
+                case CommandType.SelectFastestPlayerForAnswer:
+                    return Serialize(command as SelectFastestPlayerForAnswerCommand);
                 case CommandType.AcceptAnswerAsCorrect:
                     return Serialize(command as AcceptAnswerAsCorrectCommand);
                 case CommandType.AcceptAnswerAsWrong:
                     return Serialize(command as AcceptAnswerAsWrongCommand);
+                case CommandType.CancelAcceptingAnswer:
+                    return Serialize(command as CancelAcceptingAnswerCommand);
+                case CommandType.ShowAnswer:
+                    return Serialize(command as ShowAnswerCommand);
+                
+                case CommandType.GiveCatInBag:
+                    return Serialize(command as GiveCatInBagCommand);
+                case CommandType.FinishCatInBag:
+                    return Serialize(command as FinishCatInBagCommand);
                 
                 case CommandType.RemoveFinalRoundTheme:
                     return Serialize(command as RemoveFinalRoundThemeCommand);
@@ -49,13 +68,23 @@ namespace Victorina
                     return Serialize(command as ClearFinalRoundAnswerCommand);
                 
                 default:
-                    return $"NOT_IMPLEMENTED: {command.Type} : {serverCommand}";
+                    return $"{NotImplemented}: {command.Type} : {serverCommand}";
             }
+        }
+
+        private string SerializeInfo(Command command)
+        {
+            return command.Owner switch
+            {
+                CommandOwner.Master => $"{command.Type}|{command.Owner}",
+                CommandOwner.Player => $"{command.Type}|{command.OwnerPlayer.PlayerId}",
+                _ => throw new Exception($"Not supported CommandOwner: {command.Owner}")
+            };
         }
 
         private string Serialize(RegisterPlayerCommand command)
         {
-            return $"{command.Type} {command.Guid} {command.Name}";//todo: Name is text!!! Can be any with whitespaces
+            return $"{SerializeInfo(command)} {command.Guid} {command.Name}";//todo: Name is text!!! Can be any with whitespaces
         }
 
         private RegisterPlayerCommand ReadRegisterPlayerCommand(string[] parts)
@@ -67,7 +96,7 @@ namespace Victorina
 
         private string Serialize(MasterMakePlayerAsCurrentCommand command)
         {
-            return $"{command.Type} {command.PlayerId}";
+            return $"{SerializeInfo(command)} {command.PlayerId}";
         }
 
         private MasterMakePlayerAsCurrentCommand ReadMasterMakePlayerAsCurrentCommand(string[] parts)
@@ -78,7 +107,7 @@ namespace Victorina
         
         private string Serialize(MasterUpdatePlayerScoreCommand command)
         {
-            return $"{command.Type} {command.PlayerId} {command.NewScore}";
+            return $"{SerializeInfo(command)} {command.PlayerId} {command.NewScore}";
         }
 
         private MasterUpdatePlayerScoreCommand ReadMasterUpdatePlayerScoreCommand(string[] parts)
@@ -90,7 +119,7 @@ namespace Victorina
         
         private string Serialize(MasterUpdatePlayerNameCommand command)
         {
-            return $"{command.Type} {command.PlayerId} {command.NewPlayerName}";
+            return $"{SerializeInfo(command)} {command.PlayerId} {command.NewPlayerName}";
         }
 
         private MasterUpdatePlayerNameCommand ReadMasterUpdatePlayerNameCommand(string[] parts)
@@ -102,7 +131,7 @@ namespace Victorina
         
         private string Serialize(SelectRoundCommand command)
         {
-            return $"{command.Type} {command.RoundNumber}";
+            return $"{SerializeInfo(command)} {command.RoundNumber}";
         }
 
         private SelectRoundCommand ReadSelectRoundCommand(string[] parts)
@@ -113,7 +142,7 @@ namespace Victorina
         
         private string Serialize(SelectRoundQuestionCommand command)
         {
-            return $"{command.Type} {command.QuestionId}";
+            return $"{SerializeInfo(command)} {command.QuestionId}";
         }
 
         private SelectRoundQuestionCommand ReadSelectRoundQuestionCommand(string[] parts)
@@ -121,11 +150,31 @@ namespace Victorina
             string questionId = parts[1];
             return new SelectRoundQuestionCommand {QuestionId = questionId};
         }
+
+        private string Serialize(StartRoundQuestionCommand command)
+        {
+            return $"{SerializeInfo(command)}";
+        }
+
+        private StartRoundQuestionCommand ReadStartRoundQuestionCommand()
+        {
+            return new StartRoundQuestionCommand();
+        }
+
+        private string Serialize(FinishQuestionCommand command)
+        {
+            return $"{SerializeInfo(command)}";
+        }
+
+        private FinishQuestionCommand ReadFinishQuestionCommand()
+        {
+            return new FinishQuestionCommand();
+        }
         
         private string Serialize(SendAnswerIntentionCommand command)
         {
             string spentSecondsString = command.SpentSeconds.ToString(CultureInfo.InvariantCulture);
-            return $"{command.Type} {spentSecondsString} {command.OwnerPlayer.PlayerId}";
+            return $"{SerializeInfo(command)} {spentSecondsString} {command.OwnerPlayer.PlayerId}";
         }
 
         private SendAnswerIntentionCommand ReadSendAnswerIntentionCommand(string[] parts)
@@ -138,7 +187,7 @@ namespace Victorina
         
         private string Serialize(SelectPlayerForAnswerCommand command)
         {
-            return $"{command.Type} {command.PlayerId}";
+            return $"{SerializeInfo(command)} {command.PlayerId}";
         }
 
         private SelectPlayerForAnswerCommand ReadSelectPlayerForAnswerCommand(string[] parts)
@@ -146,10 +195,20 @@ namespace Victorina
             byte playerId = byte.Parse(parts[1]);
             return new SelectPlayerForAnswerCommand(playerId);
         }
+
+        private string Serialize(SelectFastestPlayerForAnswerCommand command)
+        {
+            return $"{SerializeInfo(command)}";
+        }
+
+        private SelectFastestPlayerForAnswerCommand ReadSelectFastestPlayerForAnswerCommand()
+        {
+            return new SelectFastestPlayerForAnswerCommand();
+        }
         
         private string Serialize(AcceptAnswerAsCorrectCommand command)
         {
-            return $"{command.Type}";
+            return $"{SerializeInfo(command)}";
         }
 
         private AcceptAnswerAsCorrectCommand ReadAcceptAnswerAsCorrectCommand()
@@ -159,7 +218,7 @@ namespace Victorina
         
         private string Serialize(AcceptAnswerAsWrongCommand command)
         {
-            return $"{command.Type}";
+            return $"{SerializeInfo(command)}";
         }
 
         private AcceptAnswerAsWrongCommand ReadAcceptAnswerAsWrongCommand()
@@ -167,9 +226,50 @@ namespace Victorina
             return new AcceptAnswerAsWrongCommand();
         }
 
+        private string Serialize(CancelAcceptingAnswerCommand command)
+        {
+            return $"{SerializeInfo(command)}";
+        }
+
+        private CancelAcceptingAnswerCommand ReadCancelAcceptingAnswerCommand()
+        {
+            return new CancelAcceptingAnswerCommand();
+        }
+
+        private string Serialize(ShowAnswerCommand command)
+        {
+            return $"{SerializeInfo(command)}";
+        }
+
+        private ShowAnswerCommand ReadShowAnswerCommand()
+        {
+            return new ShowAnswerCommand();
+        }
+
+        private string Serialize(GiveCatInBagCommand command)
+        {
+            return $"{SerializeInfo(command)} {command.ReceiverPlayerId}";
+        }
+
+        private GiveCatInBagCommand ReadGiveCatInBagCommand(string[] parts)
+        {
+            byte playerId = byte.Parse(parts[1]);
+            return new GiveCatInBagCommand {ReceiverPlayerId = playerId};
+        }
+
+        private string Serialize(FinishCatInBagCommand command)
+        {
+            return $"{SerializeInfo(command)}";
+        }
+
+        private FinishCatInBagCommand ReadFinishCatInBagCommand()
+        {
+            return new FinishCatInBagCommand();
+        }
+        
         private string Serialize(RemoveFinalRoundThemeCommand command)
         {
-            return $"{command.Type} {command.ThemeIndex}";
+            return $"{SerializeInfo(command)} {command.ThemeIndex}";
         }
 
         private RemoveFinalRoundThemeCommand ReadRemoveFinalRoundThemeCommand(string[] parts)
@@ -180,7 +280,7 @@ namespace Victorina
 
         private string Serialize(MakeFinalRoundBetCommand command)
         {
-            return $"{command.Type} {command.Bet} {command.OwnerPlayer.PlayerId}";
+            return $"{SerializeInfo(command)} {command.Bet} {command.OwnerPlayer.PlayerId}";
         }
 
         private MakeFinalRoundBetCommand ReadMakeFinalRoundBetCommand(string[] parts)
@@ -194,7 +294,7 @@ namespace Victorina
         
         private string Serialize(SendFinalRoundAnswerCommand command)
         {
-            return $"{command.Type} {command.OwnerPlayer.PlayerId} {command.AnswerText}";//todo: how correctly read any text?
+            return $"{SerializeInfo(command)} {command.OwnerPlayer.PlayerId} {command.AnswerText}";//todo: how correctly read any text?
         }
 
         private SendFinalRoundAnswerCommand ReadSendFinalRoundAnswerCommand(string[] parts)
@@ -206,7 +306,7 @@ namespace Victorina
         
         private string Serialize(ClearFinalRoundAnswerCommand command)
         {
-            return $"{command.Type} {command.PlayerId}";
+            return $"{SerializeInfo(command)} {command.PlayerId}";
         }
 
         private ClearFinalRoundAnswerCommand ReadClearFinalRoundAnswerCommand(string[] parts)
@@ -215,23 +315,50 @@ namespace Victorina
             return new ClearFinalRoundAnswerCommand(playerId);
         }
 
-        
+        private (CommandType, CommandOwner, byte playerId) ReadCommandInfo(string infoString)
+        {
+            //Possible variants:
+            //RegisterPlayer|Master
+            //SelectRoundQuestion|1
+
+            string[] parts = infoString.Split('|');
+
+            if (!Enum.TryParse(parts[0], ignoreCase: true, out CommandType commandType))
+                throw new Exception($"Can't extract CommandType from '{infoString}'");
+
+            CommandOwner owner = parts[1] == CommandOwner.Master.ToString() ? CommandOwner.Master : CommandOwner.Player;
+
+            byte playerId = 0;
+            if (owner == CommandOwner.Player)
+            {
+                if (!byte.TryParse(parts[1], out playerId))
+                    throw new Exception($"Can't extract player id from '{infoString}'");
+            }
+
+            return (commandType, owner, playerId);
+        }
+
         public IServerCommand FromStringLine(string line)
         {
-            if (string.IsNullOrWhiteSpace(line))
-                throw new Exception($"Line '{line}' is empty.");
-
             string[] parts = line.Split(' ');
 
             if (parts.Length == 0)
                 throw new Exception($"Line '{line}' doesn't have any parts after split");
 
-            string commandTypeString = parts[0];
+            (CommandType CommandType, CommandOwner Owner, byte PlayerId) info = ReadCommandInfo(parts[0]);
+            
+            IServerCommand serverCommand = ReadCommand(info.CommandType, parts);
 
-            if (!Enum.TryParse(commandTypeString, ignoreCase: true, out CommandType commandType))
-                throw new Exception($"Can't parse '{commandTypeString}' to CommandType enum");
+            if (serverCommand is Command command)
+            {
+                command.IsJournal = true;
+                command.Owner = info.Owner;
+                command.OwnerPlayerId = info.PlayerId;
+            }
+            else
+                Debug.LogWarning($"Can't cast IServerCommand to Command: {serverCommand}");
 
-            return ReadCommand(commandType, parts);
+            return serverCommand;
         }
 
         private IServerCommand ReadCommand(CommandType commandType, string[] parts)
@@ -246,11 +373,20 @@ namespace Victorina
 
                 CommandType.SelectRound => ReadSelectRoundCommand(parts),
                 CommandType.SelectRoundQuestion => ReadSelectRoundQuestionCommand(parts),
+                CommandType.StartRoundQuestion => ReadStartRoundQuestionCommand(),
+                CommandType.FinishQuestion => ReadFinishQuestionCommand(),
+                
                 CommandType.SendAnswerIntention => ReadSendAnswerIntentionCommand(parts),
                 CommandType.SelectPlayerForAnswer => ReadSelectPlayerForAnswerCommand(parts),
+                CommandType.SelectFastestPlayerForAnswer => ReadSelectFastestPlayerForAnswerCommand(),
                 CommandType.AcceptAnswerAsCorrect => ReadAcceptAnswerAsCorrectCommand(),
                 CommandType.AcceptAnswerAsWrong => ReadAcceptAnswerAsWrongCommand(),
+                CommandType.CancelAcceptingAnswer => ReadCancelAcceptingAnswerCommand(),
+                CommandType.ShowAnswer => ReadShowAnswerCommand(),
 
+                CommandType.GiveCatInBag => ReadGiveCatInBagCommand(parts),
+                CommandType.FinishCatInBag => ReadFinishCatInBagCommand(),
+                
                 CommandType.RemoveFinalRoundTheme => ReadRemoveFinalRoundThemeCommand(parts),
                 CommandType.MakeFinalRoundBet => ReadMakeFinalRoundBetCommand(parts),
                 CommandType.SendFinalRoundAnswer => ReadSendFinalRoundAnswerCommand(parts),

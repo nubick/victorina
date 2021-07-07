@@ -14,6 +14,7 @@ namespace Victorina.Commands
         [Inject] private MatchData MatchData { get; set; }
         [Inject] private SendToMasterService SendToMasterService { get; set; }
         [Inject] private SendToPlayersService SendToPlayersService { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
 
         public void Initialize(Injector injector)
         {
@@ -59,6 +60,7 @@ namespace Victorina.Commands
             {
                 command.Owner = CommandOwner.Player;
                 command.OwnerPlayer = MatchData.ThisPlayer;
+                command.OwnerPlayerId = MatchData.ThisPlayer.PlayerId;
 
                 if (networkCommand.CanSend())
                 {
@@ -85,6 +87,7 @@ namespace Victorina.Commands
 
             command.Owner = CommandOwner.Player;
             command.OwnerPlayer = player;
+            command.OwnerPlayerId = player.PlayerId;
 
             if (command is IServerCommand serverCommand)
                 TryExecuteOnServer(serverCommand);
@@ -145,17 +148,19 @@ namespace Victorina.Commands
             {
                 _injector.InjectTo(serverCommand);
 
+                if (serverCommand is Command {Owner: CommandOwner.Player} command)
+                    command.OwnerPlayer = PlayersBoardSystem.GetPlayer(command.OwnerPlayerId);
+
                 if (serverCommand.CanExecuteOnServer())
                 {
+                    Dev.Log($"EXECUTE: {serverCommand}", Color.magenta);
                     serverCommand.ExecuteOnServer();
                 }
                 else
-                {
                     throw new Exception($"Journal Command: Can't execute, {serverCommand}");
-                }
             }
         }
-        
+
         public INetworkCommand CreateNetworkCommand(CommandType commandType)
         {
             return commandType switch

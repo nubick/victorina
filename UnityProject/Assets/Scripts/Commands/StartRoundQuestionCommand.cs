@@ -26,7 +26,7 @@ namespace Victorina.Commands
 
             if (PlayState.SelectedQuestionId == null)
             {
-                Debug.Log($"Can't start question. Selected question id is null.");
+                Debug.Log("Can't start question. Selected question id is null.");
                 return false;
             }
             

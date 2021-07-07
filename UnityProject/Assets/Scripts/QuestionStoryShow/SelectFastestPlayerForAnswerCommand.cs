@@ -24,7 +24,7 @@ namespace Victorina
 
             if (PlayersButtonClickData.Players.Count == 0)
             {
-                Debug.Log($"Can't execute, players list is empty.");
+                Debug.Log("Can't execute, players list is empty.");
                 return false;
             }
 
@@ -35,6 +35,11 @@ namespace Victorina
         {
             PlayerButtonClickData fastest = PlayersButtonClickData.Players.OrderBy(_ => _.Time).First();
             PlayStateSystem.ChangeToAcceptingAnswerPlayState(PlayState, fastest.PlayerId);
+        }
+
+        public override string ToString()
+        {
+            return "[SelectFastestPlayerForAnswerCommand]";
         }
     }
 }

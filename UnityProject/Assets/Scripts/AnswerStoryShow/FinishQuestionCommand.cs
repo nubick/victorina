@@ -5,9 +5,9 @@ namespace Victorina.Commands
 {
     public class FinishQuestionCommand : Command, IServerCommand
     {
+        [Inject] private PlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PackageData PackageData { get; set; }
-        [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private MatchData MatchData { get; set; }
         
         public override CommandType Type => CommandType.FinishQuestion;
@@ -28,7 +28,7 @@ namespace Victorina.Commands
         {
             PackageData.PackageProgress.SetQuestionAsAnswered(ShowAnswerPlayState.NetQuestion.QuestionId);
             MatchData.NetQuestion = null;
-            CommandsSystem.AddNewCommand(new SelectRoundCommand(MatchData.RoundNumber));
+            PlayStateSystem.ChangeToRoundPlayState(MatchData.RoundNumber);
         }
 
         public override string ToString() => "[FinishQuestionCommand]";

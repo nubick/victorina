@@ -27,5 +27,10 @@ namespace Victorina
         {
             PlayStateSystem.ChangeBackToShowQuestionPlayState(PlayState.ShowQuestionPlayState);
         }
+
+        public override string ToString()
+        {
+            return "[CancelAcceptingAnswerCommand]";
+        }
     }
 }

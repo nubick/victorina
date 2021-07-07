@@ -36,5 +36,10 @@ namespace Victorina
             PlayersBoardSystem.UpdatePlayersBoard();
             Debug.Log($"New player is registered, Name {player.Name}, Guid: {player.Guid}");
         }
+
+        public override string ToString()
+        {
+            return $"[RegisterPlayerCommand, Name: {Name}, Guid: {Guid}]";
+        }
     }
 }

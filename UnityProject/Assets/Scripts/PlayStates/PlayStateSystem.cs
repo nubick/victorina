@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Injection;
 using UnityEngine;
 
@@ -11,6 +12,8 @@ namespace Victorina
         [Inject] private PlayStateData Data { get; set; }
         [Inject] private PlayersButtonClickData PlayersButtonClickData { get; set; }
         [Inject] private ShowQuestionSystem ShowQuestionSystem { get; set; }
+        [Inject] private PackageData PackageData { get; set; }
+        [Inject] private PackageSystem PackageSystem { get; set; }
         
         public void Initialize(Injector injector)
         {
@@ -90,6 +93,16 @@ namespace Victorina
             PlayersButtonClickData.Clear();
         }
 
+        public void ChangeToRoundPlayState(int roundNumber)
+        {
+            Round round = PackageData.Package.Rounds[roundNumber - 1];
+            RoundPlayState playState = new RoundPlayState();
+            playState.RoundNumber = roundNumber;
+            playState.RoundTypes = PackageData.Package.Rounds.Select(_ => _.Type).ToArray();
+            playState.NetRound = PackageSystem.GetNetRound(round, PackageData.PackageProgress);
+            ChangePlayState(playState);
+        }
+        
         public void LockForMasterOnly()
         {
             Data.IsLockedForMasterOnly = true;
