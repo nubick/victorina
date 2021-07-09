@@ -724,6 +724,7 @@ PlayerSettings:
   vrEditorSettings: {}
   cloudServicesEnabled:
     Analytics: 1
+    Collab: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
