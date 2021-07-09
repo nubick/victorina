@@ -43,7 +43,7 @@ namespace Victorina
                 CommandsSystem.AddNewCommand(new MakeBetAuctionCommand {Bet = bet});
 
             if (NetworkData.IsMaster)
-                CommandsSystem.AddNewCommand(new MakeBetForPlayerAuctionCommand {Bet = bet, Player = AuctionPlayState.SelectedPlayerByMaster});
+                CommandsSystem.AddNewCommand(new MakeBetForPlayerAuctionCommand {Bet = bet, BettingPlayerId = AuctionPlayState.SelectedPlayerByMaster.PlayerId});
         }
 
         public PlayerData SelectNextBettingPlayer()

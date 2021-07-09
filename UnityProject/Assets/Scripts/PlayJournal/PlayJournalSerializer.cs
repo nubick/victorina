@@ -34,29 +34,43 @@ namespace Victorina
                 case CommandType.SelectRoundQuestion:
                     return Serialize(command as SelectRoundQuestionCommand);
                 case CommandType.StartRoundQuestion:
-                    return Serialize(command as StartRoundQuestionCommand);
+                    return SerializeSimpleCommand(command);
                 case CommandType.FinishQuestion:
-                    return Serialize(command as FinishQuestionCommand);
+                    return SerializeSimpleCommand(command);
                 
                 case CommandType.SendAnswerIntention:
                     return Serialize(command as SendAnswerIntentionCommand);
                 case CommandType.SelectPlayerForAnswer:
                     return Serialize(command as SelectPlayerForAnswerCommand);
                 case CommandType.SelectFastestPlayerForAnswer:
-                    return Serialize(command as SelectFastestPlayerForAnswerCommand);
+                    return SerializeSimpleCommand(command);
                 case CommandType.AcceptAnswerAsCorrect:
-                    return Serialize(command as AcceptAnswerAsCorrectCommand);
+                    return SerializeSimpleCommand(command);
                 case CommandType.AcceptAnswerAsWrong:
-                    return Serialize(command as AcceptAnswerAsWrongCommand);
+                    return SerializeSimpleCommand(command);
                 case CommandType.CancelAcceptingAnswer:
-                    return Serialize(command as CancelAcceptingAnswerCommand);
+                    return SerializeSimpleCommand(command);
                 case CommandType.ShowAnswer:
-                    return Serialize(command as ShowAnswerCommand);
+                    return SerializeSimpleCommand(command);
                 
                 case CommandType.GiveCatInBag:
                     return Serialize(command as GiveCatInBagCommand);
                 case CommandType.FinishCatInBag:
-                    return Serialize(command as FinishCatInBagCommand);
+                    return SerializeSimpleCommand(command);
+                
+                case CommandType.FinishNoRisk:
+                    return SerializeSimpleCommand(command);
+                
+                case CommandType.PassAuction:
+                    return SerializeSimpleCommand(command);
+                case CommandType.MakeAllInAuction:
+                    return SerializeSimpleCommand(command);
+                case CommandType.MakeBetAuction:
+                    return Serialize(command as MakeBetAuctionCommand);
+                case CommandType.MakeBetForPlayerAuction:
+                    return Serialize(command as MakeBetForPlayerAuctionCommand);
+                case CommandType.FinishAuction:
+                    return SerializeSimpleCommand(command);
                 
                 case CommandType.RemoveFinalRoundTheme:
                     return Serialize(command as RemoveFinalRoundThemeCommand);
@@ -82,6 +96,16 @@ namespace Victorina
             };
         }
 
+        private string SerializeSimpleCommand(Command command)
+        {
+            return $"{SerializeInfo(command)}";
+        }
+
+        private T ReadSimpleCommand<T>() where T: new()
+        {
+            return new T();
+        }
+        
         private string Serialize(RegisterPlayerCommand command)
         {
             return $"{SerializeInfo(command)} {command.Guid} {command.Name}";//todo: Name is text!!! Can be any with whitespaces
@@ -151,40 +175,18 @@ namespace Victorina
             return new SelectRoundQuestionCommand {QuestionId = questionId};
         }
 
-        private string Serialize(StartRoundQuestionCommand command)
-        {
-            return $"{SerializeInfo(command)}";
-        }
-
-        private StartRoundQuestionCommand ReadStartRoundQuestionCommand()
-        {
-            return new StartRoundQuestionCommand();
-        }
-
-        private string Serialize(FinishQuestionCommand command)
-        {
-            return $"{SerializeInfo(command)}";
-        }
-
-        private FinishQuestionCommand ReadFinishQuestionCommand()
-        {
-            return new FinishQuestionCommand();
-        }
-        
         private string Serialize(SendAnswerIntentionCommand command)
         {
             string spentSecondsString = command.SpentSeconds.ToString(CultureInfo.InvariantCulture);
-            return $"{SerializeInfo(command)} {spentSecondsString} {command.OwnerPlayer.PlayerId}";
+            return $"{SerializeInfo(command)} {spentSecondsString}";
         }
 
         private SendAnswerIntentionCommand ReadSendAnswerIntentionCommand(string[] parts)
         {
             float spentSeconds = float.Parse(parts[1], CultureInfo.InvariantCulture);
-            byte playerId = byte.Parse(parts[2]);
-            return new SendAnswerIntentionCommand {SpentSeconds = spentSeconds, OwnerPlayer = null};//todo: Implement
-            //return new SendAnswerIntentionCommand {SpentSeconds = spentSeconds, OwnerPlayer = playerId};
+            return new SendAnswerIntentionCommand {SpentSeconds = spentSeconds};
         }
-        
+
         private string Serialize(SelectPlayerForAnswerCommand command)
         {
             return $"{SerializeInfo(command)} {command.PlayerId}";
@@ -194,56 +196,6 @@ namespace Victorina
         {
             byte playerId = byte.Parse(parts[1]);
             return new SelectPlayerForAnswerCommand(playerId);
-        }
-
-        private string Serialize(SelectFastestPlayerForAnswerCommand command)
-        {
-            return $"{SerializeInfo(command)}";
-        }
-
-        private SelectFastestPlayerForAnswerCommand ReadSelectFastestPlayerForAnswerCommand()
-        {
-            return new SelectFastestPlayerForAnswerCommand();
-        }
-        
-        private string Serialize(AcceptAnswerAsCorrectCommand command)
-        {
-            return $"{SerializeInfo(command)}";
-        }
-
-        private AcceptAnswerAsCorrectCommand ReadAcceptAnswerAsCorrectCommand()
-        {
-            return new AcceptAnswerAsCorrectCommand();
-        }
-        
-        private string Serialize(AcceptAnswerAsWrongCommand command)
-        {
-            return $"{SerializeInfo(command)}";
-        }
-
-        private AcceptAnswerAsWrongCommand ReadAcceptAnswerAsWrongCommand()
-        {
-            return new AcceptAnswerAsWrongCommand();
-        }
-
-        private string Serialize(CancelAcceptingAnswerCommand command)
-        {
-            return $"{SerializeInfo(command)}";
-        }
-
-        private CancelAcceptingAnswerCommand ReadCancelAcceptingAnswerCommand()
-        {
-            return new CancelAcceptingAnswerCommand();
-        }
-
-        private string Serialize(ShowAnswerCommand command)
-        {
-            return $"{SerializeInfo(command)}";
-        }
-
-        private ShowAnswerCommand ReadShowAnswerCommand()
-        {
-            return new ShowAnswerCommand();
         }
 
         private string Serialize(GiveCatInBagCommand command)
@@ -257,16 +209,29 @@ namespace Victorina
             return new GiveCatInBagCommand {ReceiverPlayerId = playerId};
         }
 
-        private string Serialize(FinishCatInBagCommand command)
+        private string Serialize(MakeBetAuctionCommand command)
         {
-            return $"{SerializeInfo(command)}";
+            return $"{SerializeInfo(command)} {command.Bet}";
         }
 
-        private FinishCatInBagCommand ReadFinishCatInBagCommand()
+        private MakeBetAuctionCommand ReadMakeBetAuctionCommand(string[] parts)
         {
-            return new FinishCatInBagCommand();
+            int bet = int.Parse(parts[1]);
+            return new MakeBetAuctionCommand {Bet = bet};
         }
-        
+
+        private string Serialize(MakeBetForPlayerAuctionCommand command)
+        {
+            return $"{SerializeInfo(command)} {command.BettingPlayerId} {command.Bet}";
+        }
+
+        private MakeBetForPlayerAuctionCommand ReadMakeBetForPlayerAuctionCommand(string[] parts)
+        {
+            byte bettingPlayerId = byte.Parse(parts[1]);
+            int bet = int.Parse(parts[2]);
+            return new MakeBetForPlayerAuctionCommand {BettingPlayerId = bettingPlayerId, Bet = bet};
+        }
+
         private string Serialize(RemoveFinalRoundThemeCommand command)
         {
             return $"{SerializeInfo(command)} {command.ThemeIndex}";
@@ -280,28 +245,24 @@ namespace Victorina
 
         private string Serialize(MakeFinalRoundBetCommand command)
         {
-            return $"{SerializeInfo(command)} {command.Bet} {command.OwnerPlayer.PlayerId}";
+            return $"{SerializeInfo(command)} {command.Bet}";
         }
 
         private MakeFinalRoundBetCommand ReadMakeFinalRoundBetCommand(string[] parts)
         {
             int bet = int.Parse(parts[1]);
-            byte playerId = byte.Parse(parts[2]);
-            
-            return new MakeFinalRoundBetCommand {Bet = bet, OwnerPlayer = null};//todo: implement
-            //return new MakeFinalRoundBetCommand {Bet = bet, OwnerPlayer = playerId};
+            return new MakeFinalRoundBetCommand {Bet = bet};
         }
         
         private string Serialize(SendFinalRoundAnswerCommand command)
         {
-            return $"{SerializeInfo(command)} {command.OwnerPlayer.PlayerId} {command.AnswerText}";//todo: how correctly read any text?
+            return $"{SerializeInfo(command)} {command.AnswerText}";//todo: how correctly read any text?
         }
 
         private SendFinalRoundAnswerCommand ReadSendFinalRoundAnswerCommand(string[] parts)
         {
-            byte playerId = byte.Parse(parts[1]);
-            return new SendFinalRoundAnswerCommand {OwnerPlayer = null, AnswerText = ""};//todo: Implement
-            //return new SendFinalRoundAnswerCommand {OwnerPlayer = playerId, AnswerText = ""};
+            string answerText = parts[1];//todo: Implement any text reading
+            return new SendFinalRoundAnswerCommand {AnswerText = answerText};
         }
         
         private string Serialize(ClearFinalRoundAnswerCommand command)
@@ -373,19 +334,27 @@ namespace Victorina
 
                 CommandType.SelectRound => ReadSelectRoundCommand(parts),
                 CommandType.SelectRoundQuestion => ReadSelectRoundQuestionCommand(parts),
-                CommandType.StartRoundQuestion => ReadStartRoundQuestionCommand(),
-                CommandType.FinishQuestion => ReadFinishQuestionCommand(),
+                CommandType.StartRoundQuestion => ReadSimpleCommand<StartRoundQuestionCommand>(),
+                CommandType.FinishQuestion => ReadSimpleCommand<FinishQuestionCommand>(),
                 
                 CommandType.SendAnswerIntention => ReadSendAnswerIntentionCommand(parts),
                 CommandType.SelectPlayerForAnswer => ReadSelectPlayerForAnswerCommand(parts),
-                CommandType.SelectFastestPlayerForAnswer => ReadSelectFastestPlayerForAnswerCommand(),
-                CommandType.AcceptAnswerAsCorrect => ReadAcceptAnswerAsCorrectCommand(),
-                CommandType.AcceptAnswerAsWrong => ReadAcceptAnswerAsWrongCommand(),
-                CommandType.CancelAcceptingAnswer => ReadCancelAcceptingAnswerCommand(),
-                CommandType.ShowAnswer => ReadShowAnswerCommand(),
+                CommandType.SelectFastestPlayerForAnswer => ReadSimpleCommand<SelectFastestPlayerForAnswerCommand>(),
+                CommandType.AcceptAnswerAsCorrect => ReadSimpleCommand<AcceptAnswerAsCorrectCommand>(),
+                CommandType.AcceptAnswerAsWrong => ReadSimpleCommand<AcceptAnswerAsWrongCommand>(),
+                CommandType.CancelAcceptingAnswer => ReadSimpleCommand<CancelAcceptingAnswerCommand>(),
+                CommandType.ShowAnswer => ReadSimpleCommand<ShowAnswerCommand>(),
 
                 CommandType.GiveCatInBag => ReadGiveCatInBagCommand(parts),
-                CommandType.FinishCatInBag => ReadFinishCatInBagCommand(),
+                CommandType.FinishCatInBag => ReadSimpleCommand<FinishCatInBagCommand>(),
+                
+                CommandType.FinishNoRisk => ReadSimpleCommand<FinishNoRiskCommand>(),
+                
+                CommandType.PassAuction => ReadSimpleCommand<PassAuctionCommand>(),
+                CommandType.MakeAllInAuction => ReadSimpleCommand<MakeAllInAuctionCommand>(),
+                CommandType.MakeBetAuction => ReadMakeBetAuctionCommand(parts),
+                CommandType.MakeBetForPlayerAuction=>ReadMakeBetForPlayerAuctionCommand(parts),
+                CommandType.FinishAuction => ReadSimpleCommand<FinishAuctionCommand>(),
                 
                 CommandType.RemoveFinalRoundTheme => ReadRemoveFinalRoundThemeCommand(parts),
                 CommandType.MakeFinalRoundBet => ReadMakeFinalRoundBetCommand(parts),

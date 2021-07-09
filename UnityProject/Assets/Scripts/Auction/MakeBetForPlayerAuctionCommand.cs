@@ -7,9 +7,10 @@ namespace Victorina
     {
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private AuctionSystem AuctionSystem { get; set; }
+        [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
         
         public int Bet { get; set; }
-        public PlayerData Player { get; set; }
+        public byte BettingPlayerId { get; set; }
         
         public override CommandType Type => CommandType.MakeBetForPlayerAuction;
         private AuctionPlayState AuctionPlayState => PlayStateData.As<AuctionPlayState>();
@@ -21,11 +22,13 @@ namespace Victorina
 
         public void ExecuteOnServer()
         {
+            PlayerData player = PlayersBoardSystem.GetPlayer(BettingPlayerId);
+            
             AuctionPlayState.Bet = Bet;
             AuctionPlayState.IsAllIn = false;
-            AuctionPlayState.Player = Player;
-            AuctionPlayState.PassedPlayers.Remove(Player);
-            AuctionPlayState.BettingPlayer = Player;
+            AuctionPlayState.Player = player;
+            AuctionPlayState.PassedPlayers.Remove(player);
+            AuctionPlayState.BettingPlayer = player;
             AuctionSystem.AddAutomaticPasses();
             AuctionPlayState.BettingPlayer = AuctionSystem.SelectNextBettingPlayer();
             
@@ -34,7 +37,7 @@ namespace Victorina
         
         public override string ToString()
         {
-            return $"[MakeBetForPlayerAuctionCommand, Bet: {Bet}, Player: {Player}]";
+            return $"[MakeBetForPlayerAuctionCommand, Bet: {Bet}, PlayerId: {BettingPlayerId}]";
         }
     }
 }
