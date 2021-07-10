@@ -99,6 +99,7 @@ namespace Victorina
             RoundPlayState playState = new RoundPlayState();
             playState.RoundNumber = roundNumber;
             playState.RoundTypes = PackageData.Package.Rounds.Select(_ => _.Type).ToArray();
+            playState.RoundNames = PackageData.Package.Rounds.Select(_ => _.Name).ToArray();
             playState.NetRound = PackageSystem.GetNetRound(round, PackageData.PackageProgress);
             ChangePlayState(playState);
         }

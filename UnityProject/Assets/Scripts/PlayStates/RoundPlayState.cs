@@ -10,6 +10,7 @@ namespace Victorina
         
         public int RoundNumber { get; set; }
         public RoundType[] RoundTypes { get; set; }
+        public string[] RoundNames { get; set; }
         public NetRound NetRound { get; set; }
         
         public string SelectedQuestionId { get; set; }//Don't sync, server only
@@ -20,6 +21,7 @@ namespace Victorina
         {
             writer.WriteInt32(RoundNumber);
             SerializationTools.SerializeEnumArray(writer, RoundTypes);
+            SerializationTools.SerializeStringsArray(writer, RoundNames);
             DataSerializationService.SerializeNetRound(writer, NetRound);
         }
 
@@ -27,6 +29,7 @@ namespace Victorina
         {
             RoundNumber = reader.ReadInt32();
             RoundTypes = SerializationTools.DeserializeEnumArray<RoundType>(reader);
+            RoundNames = SerializationTools.DeserializeStringsArray(reader);
             NetRound = DataSerializationService.DeserializeNetRound(reader);
             UpdateIsDownloadedByMe(NetRound);
         }
