@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Injection;
 using UnityEngine;
@@ -179,7 +180,7 @@ namespace Victorina
             return newTheme;
         }
 
-        public Round AddNewRound()
+        public Round AddNewRound(RoundType roundType)
         {
             Round newRound = null;
             if (Data.SelectedPackage == null)
@@ -188,15 +189,29 @@ namespace Victorina
             }
             else
             {
-                int nextNumber = Data.SelectedPackage.Rounds.Count + 1;
-                newRound = new Round {Name = $"Раунд {nextNumber}"};
+                string roundName = GetRoundDefaultName(roundType, Data.SelectedPackage);
+                newRound = new Round {Type = roundType, Name = roundName};
                 Data.SelectedPackage.Rounds.Add(newRound);
                 PackageFilesSystem.UpdatePackageJson(Data.SelectedPackage);
                 SelectRound(newRound);
             }
             return newRound;
         }
-        
+
+        private string GetRoundDefaultName(RoundType roundType, Package package)
+        {
+            switch (roundType)
+            {
+                case RoundType.Simple:
+                    int nextNumber = package.Rounds.Count + 1;
+                    return $"Раунд {nextNumber}";
+                case RoundType.Final:
+                    return "Финал";
+                default:
+                    throw new Exception($"Not supported round type: {roundType}");
+            }
+        }
+
         public void ChangeName(Round round, string newName)
         {
             bool isValid = !string.IsNullOrWhiteSpace(newName);

@@ -283,12 +283,23 @@ namespace Victorina
             }
         }
 
+        [Inject] private CrafterNewRoundTypeView NewRoundTypeView { get; set; }
+        
         public void OnAddRoundButtonClicked()
         {
-            PackageCrafterSystem.AddNewRound();
-            RefreshUI();
+            StartCoroutine(AddNewRoundCoroutine());
         }
-        
+
+        private IEnumerator AddNewRoundCoroutine()
+        {
+            yield return NewRoundTypeView.ShowAndWaitForFinish();
+            if (NewRoundTypeView.SelectedRoundType != null)
+            {
+                PackageCrafterSystem.AddNewRound(NewRoundTypeView.SelectedRoundType.Value);
+                RefreshUI();
+            }
+        }
+
         private void OnQuestionEditRequested(Question question)
         {
             StartCoroutine(EditQuestionCoroutine());
