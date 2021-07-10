@@ -1,4 +1,3 @@
-using System.Linq;
 using Injection;
 using UnityEngine;
 
@@ -6,13 +5,9 @@ namespace Victorina.Commands
 {
     public class SelectRoundCommand : Command, IServerCommand
     {
-        [Inject] private PlayStateSystem PlayStateSystem { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
-        [Inject] private PackageData PackageData { get; set; }
-        [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
-        [Inject] private PackageSystem PackageSystem { get; set; }
-        [Inject] private MatchData MatchData { get; set; }
-        
+        [Inject] private MatchSystem MatchSystem { get; set; }
+
         public int RoundNumber { get; }
         
         public override CommandType Type => CommandType.SelectRound;
@@ -37,17 +32,7 @@ namespace Victorina.Commands
 
         public void ExecuteOnServer()
         {
-            MatchData.RoundNumber = RoundNumber;
-            Round round = PackageData.Package.Rounds[RoundNumber - 1];
-            if (round.Type == RoundType.Simple)
-            {
-                PlayStateSystem.ChangeToRoundPlayState(RoundNumber);
-            }
-            else if (round.Type == RoundType.Final)
-            {
-                PlayStateSystem.ChangePlayState(new FinalRoundPlayState{Round = round});
-                FinalRoundSystem.Reset();
-            }
+           MatchSystem.NavigateToRound(RoundNumber);
         }
         
         public override string ToString()

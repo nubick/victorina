@@ -286,8 +286,7 @@ namespace Victorina
 
         public void FinishRound()
         {
-            ResultPlayState resultPlayState = new ResultPlayState();
-            PlayStateSystem.ChangePlayState(resultPlayState);
+            CommandsSystem.AddNewCommand(new FinishFinalRoundCommand());
         }
 
         #endregion

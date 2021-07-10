@@ -9,7 +9,11 @@ namespace Victorina
         [Inject] private PlayersBoard PlayersBoard { get; set; }
         [Inject] private CommandsSystem CommandsSystem { get; set; }
         [Inject] private MessageDialogueView MessageDialogueView { get; set; }
-
+        [Inject] private PlayStateSystem PlayStateSystem { get; set; }
+        [Inject] private MatchData MatchData { get; set; }
+        [Inject] private PackageData PackageData { get; set; }
+        [Inject] private FinalRoundSystem FinalRoundSystem { get; set; }
+        
         public void Initialize()
         {
             MetagameEvents.ServerStarted.Subscribe(OnServerStarted);
@@ -42,6 +46,36 @@ namespace Victorina
                 return;
 
             CommandsSystem.AddNewCommand(new SelectRoundCommand(number));
+        }
+
+        public void NavigateToRound(int number)
+        {
+            MatchData.RoundNumber = number;
+            Round round = PackageData.Package.Rounds[number - 1];
+            if (round.Type == RoundType.Simple)
+            {
+                PlayStateSystem.ChangeToRoundPlayState(number);
+            }
+            else if (round.Type == RoundType.Final)
+            {
+                PlayStateSystem.ChangePlayState(new FinalRoundPlayState {Round = round});
+                FinalRoundSystem.Reset();
+            }
+        }
+
+        public void NavigateToNextRound()
+        {
+            int nextRoundNumber = MatchData.RoundNumber + 1;
+            bool hasNextRound = PackageData.Package.Rounds.Count >= nextRoundNumber;
+            if (hasNextRound)
+            {
+                NavigateToRound(nextRoundNumber);
+            }
+            else
+            {
+                ResultPlayState resultPlayState = new ResultPlayState();
+                PlayStateSystem.ChangePlayState(resultPlayState);
+            }
         }
     }
 }

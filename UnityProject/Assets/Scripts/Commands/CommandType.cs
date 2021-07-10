@@ -33,6 +33,7 @@ namespace Victorina.Commands
         MakeFinalRoundBet,
         SendFinalRoundAnswer,
         ClearFinalRoundAnswer,
+        FinishFinalRound,
 
         //Question Show
         SendAnswerIntention,

@@ -80,6 +80,8 @@ namespace Victorina
                     return Serialize(command as SendFinalRoundAnswerCommand);
                 case CommandType.ClearFinalRoundAnswer:
                     return Serialize(command as ClearFinalRoundAnswerCommand);
+                case CommandType.FinishFinalRound:
+                    return SerializeSimpleCommand(command);
                 
                 default:
                     return $"{NotImplemented}: {command.Type} : {serverCommand}";
@@ -360,6 +362,7 @@ namespace Victorina
                 CommandType.MakeFinalRoundBet => ReadMakeFinalRoundBetCommand(parts),
                 CommandType.SendFinalRoundAnswer => ReadSendFinalRoundAnswerCommand(parts),
                 CommandType.ClearFinalRoundAnswer => ReadClearFinalRoundAnswerCommand(parts),
+                CommandType.FinishFinalRound => ReadSimpleCommand<FinishFinalRoundCommand>(),
 
                 _ => throw new Exception($"Not supported commandType: {commandType}")
             };
