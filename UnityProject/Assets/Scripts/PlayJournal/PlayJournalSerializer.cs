@@ -72,6 +72,8 @@ namespace Victorina
                 case CommandType.FinishAuction:
                     return SerializeSimpleCommand(command);
                 
+                case CommandType.RestartFinalRound:
+                    return SerializeSimpleCommand(command);
                 case CommandType.RemoveFinalRoundTheme:
                     return Serialize(command as RemoveFinalRoundThemeCommand);
                 case CommandType.MakeFinalRoundBet:
@@ -80,6 +82,8 @@ namespace Victorina
                     return Serialize(command as SendFinalRoundAnswerCommand);
                 case CommandType.ClearFinalRoundAnswer:
                     return Serialize(command as ClearFinalRoundAnswerCommand);
+                case CommandType.AcceptFinalRoundAnswer:
+                    return Serialize(command as AcceptFinalRoundAnswerCommand);
                 case CommandType.FinishFinalRound:
                     return SerializeSimpleCommand(command);
                 
@@ -110,13 +114,13 @@ namespace Victorina
         
         private string Serialize(RegisterPlayerCommand command)
         {
-            return $"{SerializeInfo(command)} {command.Guid} {command.Name}";//todo: Name is text!!! Can be any with whitespaces
+            return $"{SerializeInfo(command)} {command.Guid} {command.Name}";
         }
 
         private RegisterPlayerCommand ReadRegisterPlayerCommand(string[] parts)
         {
             string guid = parts[1];
-            string name = parts[2];
+            string name = string.Join(" ", parts, 2, parts.Length - 2);
             return new RegisterPlayerCommand {Guid = guid, Name = name};
         }
 
@@ -258,12 +262,16 @@ namespace Victorina
         
         private string Serialize(SendFinalRoundAnswerCommand command)
         {
-            return $"{SerializeInfo(command)} {command.AnswerText}";//todo: how correctly read any text?
+            string adoptedText = command.AnswerText
+                .Replace('\n', ' ')
+                .Replace('\r', ' ');
+            
+            return $"{SerializeInfo(command)} {adoptedText}";
         }
 
         private SendFinalRoundAnswerCommand ReadSendFinalRoundAnswerCommand(string[] parts)
         {
-            string answerText = parts[1];//todo: Implement any text reading
+            string answerText = string.Join(" ", parts, 1, parts.Length - 1);
             return new SendFinalRoundAnswerCommand {AnswerText = answerText};
         }
         
@@ -278,6 +286,19 @@ namespace Victorina
             return new ClearFinalRoundAnswerCommand(playerId);
         }
 
+        private string Serialize(AcceptFinalRoundAnswerCommand command)
+        {
+            return $"{SerializeInfo(command)} {command.AcceptingPlayerId} {command.Bet} {command.IsCorrect}";
+        }
+
+        private AcceptFinalRoundAnswerCommand ReadAcceptFinalRoundAnswerCommand(string[] parts)
+        {
+            byte acceptingPlayerId = byte.Parse(parts[1]);
+            int bet = int.Parse(parts[2]);
+            bool isCorrect = bool.Parse(parts[3]);
+            return new AcceptFinalRoundAnswerCommand(acceptingPlayerId, bet, isCorrect);
+        }
+        
         private (CommandType, CommandOwner, byte playerId) ReadCommandInfo(string infoString)
         {
             //Possible variants:
@@ -358,10 +379,12 @@ namespace Victorina
                 CommandType.MakeBetForPlayerAuction=>ReadMakeBetForPlayerAuctionCommand(parts),
                 CommandType.FinishAuction => ReadSimpleCommand<FinishAuctionCommand>(),
                 
+                CommandType.RestartFinalRound => ReadSimpleCommand<RestartFinalRoundCommand>(),
                 CommandType.RemoveFinalRoundTheme => ReadRemoveFinalRoundThemeCommand(parts),
                 CommandType.MakeFinalRoundBet => ReadMakeFinalRoundBetCommand(parts),
                 CommandType.SendFinalRoundAnswer => ReadSendFinalRoundAnswerCommand(parts),
                 CommandType.ClearFinalRoundAnswer => ReadClearFinalRoundAnswerCommand(parts),
+                CommandType.AcceptFinalRoundAnswer => ReadAcceptFinalRoundAnswerCommand(parts),
                 CommandType.FinishFinalRound => ReadSimpleCommand<FinishFinalRoundCommand>(),
 
                 _ => throw new Exception($"Not supported commandType: {commandType}")

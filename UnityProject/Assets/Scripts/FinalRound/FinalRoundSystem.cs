@@ -24,6 +24,13 @@ namespace Victorina
         public void Reset()
         {
             PlayState.Reset(PlayState.Round.Themes.Select(_ => _.Name).ToArray());
+            
+            PlayState.ClearBets(PlayersBoard.Players.Count);
+            PlayState.SetDoneBets(PlayersBoard.Players.Select(player => !CanParticipate(player)).ToArray());
+            
+            PlayState.ClearAnswers(PlayersBoard.Players.Count);
+            PlayState.SetDoneAnswers(PlayersBoard.Players.Select(player => !CanParticipate(player)).ToArray());
+            
             PlayState.SetPhase(FinalRoundPhase.ThemesRemoving);
             if (CanAnyParticipate())
             {
@@ -37,8 +44,13 @@ namespace Victorina
             
             ServerEvents.FinalRoundStarted.Publish();
         }
+
+        public void Restart()
+        {
+            CommandsSystem.AddNewCommand(new RestartFinalRoundCommand());   
+        }
         
-        public bool CanAnyParticipate()
+        private bool CanAnyParticipate()
         {
             return PlayersBoard.Players.Any(CanParticipate);
         }
@@ -67,19 +79,9 @@ namespace Victorina
             Debug.Log($"FinalRound change phase: {phase}");
             PlayState.SetPhase(phase);
 
-            if (phase == FinalRoundPhase.Betting)
-            {
-                PlayState.ClearBets(PlayersBoard.Players.Count);
-                PlayState.SetDoneBets(PlayersBoard.Players.Select(player => !CanParticipate(player)).ToArray());
-            }
-            else if (phase == FinalRoundPhase.QuestionShowing)
+            if (phase == FinalRoundPhase.QuestionShowing)
             {
                 ShowFinalRoundQuestion();
-            }
-            else if (phase == FinalRoundPhase.Answering)
-            {
-                PlayState.ClearAnswers(PlayersBoard.Players.Count);
-                PlayState.SetDoneAnswers(PlayersBoard.Players.Select(player => !CanParticipate(player)).ToArray());
             }
             else if (phase == FinalRoundPhase.AnswersAccepting)
             {
@@ -228,13 +230,11 @@ namespace Victorina
         public void ApplyPlayerBet()
         {
             PlayState.AcceptingPhase = FinalRoundAcceptingPhase.Bet;
-            
-            int bet = PlayState.Bets[PlayState.AcceptingPlayerIndex];
-            if (PlayState.IsAcceptedAsCorrect)
-                PlayersBoardSystem.RewardPlayer(AcceptingPlayer, bet);
-            else
-                PlayersBoardSystem.FinePlayer(AcceptingPlayer, bet);
 
+            int bet = PlayState.Bets[PlayState.AcceptingPlayerIndex];
+            
+            CommandsSystem.AddNewCommand(new AcceptFinalRoundAnswerCommand(AcceptingPlayer.PlayerId, bet, PlayState.IsAcceptedAsCorrect));
+            
             int? nextIndex = GetNextAcceptingPlayerIndex(PlayState.AcceptingPlayerIndex);
             if (nextIndex == null)
                 PlayState.AcceptingPhase = FinalRoundAcceptingPhase.Finish;

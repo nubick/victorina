@@ -136,7 +136,7 @@ namespace Victorina
 
         public void OnRestartButtonClicked()
         {
-            FinalRoundSystem.Reset();
+            FinalRoundSystem.Restart();
         }
         
         #endregion

@@ -29,10 +29,12 @@ namespace Victorina.Commands
         FinishAuction,
         
         //Final Round
+        RestartFinalRound,
         RemoveFinalRoundTheme,
         MakeFinalRoundBet,
         SendFinalRoundAnswer,
         ClearFinalRoundAnswer,
+        AcceptFinalRoundAnswer,
         FinishFinalRound,
 
         //Question Show

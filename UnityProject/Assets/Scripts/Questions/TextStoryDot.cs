@@ -9,5 +9,10 @@ namespace Victorina
         {
             Text = text;
         }
+
+        public override string ToString()
+        {
+            return "TextStoryDot";
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace Victorina
 
         public void ExecuteOnServer()
         {
-            Debug.Log($"Set player '{OwnerPlayer}' answer '{AnswerText}");
+            Debug.Log($"Set answer '{AnswerText}' for '{OwnerPlayer}'");
             int index = PlayersBoard.GetPlayerIndex(OwnerPlayer);
             PlayState.SetAnswer(index, AnswerText);
         }
