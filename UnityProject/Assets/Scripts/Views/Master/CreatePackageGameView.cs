@@ -65,14 +65,21 @@ namespace Victorina
 
         private IEnumerator CreatePackageCoroutine(Package package)
         {
-            yield return ConfirmationDialogueView.ShowAndWaitForFinish("Новая игра", "История предыдущей игры будет перезаписана.\nПродолжить?");
-            if (ConfirmationDialogueView.IsConfirmed)
+            bool isConfirmed = true;
+            
+            if (package.HasJournal)
+            {
+                yield return ConfirmationDialogueView.ShowAndWaitForFinish("Новая игра", "История предыдущей игры будет перезаписана.\nПродолжить?");
+                isConfirmed = ConfirmationDialogueView.IsConfirmed;
+            }
+
+            if (isConfirmed)
             {
                 CreatePackageGameSystem.CreatePackageGame(package);
                 SwitchTo(LobbyView);
             }
         }
-        
+
         private void ResumePackageGame(Package package)
         {
             CreatePackageGameSystem.ResumePackageGame(package);
