@@ -39,10 +39,10 @@ namespace Victorina
             string defaultName = packageName;
             return StandaloneFileBrowser.SaveFilePanel(dialogueTitle, rootDirectory, defaultName, extensions);
         }
-
-        public string UnZipArchiveToPlayFolder(string packageArchivePath)
+        
+        public void UnZipArchiveToPlayFolder(string packageArchivePath)
         {
-            return UnZipArchiveToFolder(packageArchivePath, PathData.PackagesPath);
+            UnZipArchiveToFolder(packageArchivePath, PathData.PackagesPath);
         }
 
         public string UnZipArchiveToCrafterFolder(string packageArchivePath)
@@ -53,15 +53,13 @@ namespace Victorina
         private string UnZipArchiveToFolder(string packageArchivePath, string destinationFolderPath)
         {
             string archiveName = Path.GetFileNameWithoutExtension(packageArchivePath);
-            string destinationPath = $"{destinationFolderPath}/{archiveName}";
-            
+            string destinationPath = GetEmptyFolder(destinationFolderPath, archiveName);
+
             UnZip(packageArchivePath, destinationPath);
-            
-            if (SiqConverter.IsValid(destinationPath))
-            {
+
+            if (SiqConverter.IsSiqFormat(destinationPath))
                 ConvertSiqPackage(destinationPath, destinationFolderPath);
-            }
-            
+
             return destinationPath;
         }
 
@@ -372,6 +370,17 @@ namespace Victorina
                 string filePath = $"{folderPath}/{newFileName}";
                 if (!File.Exists(filePath))
                     return newFileName;
+            }
+        }
+
+        private string GetEmptyFolder(string parentFolderPath, string baseFolderName)
+        {
+            for (int i = 1;; i++)
+            {
+                string postfix = i == 1 ? string.Empty : i.ToString();
+                string fullPath = $"{parentFolderPath}/{baseFolderName}{postfix}";
+                if (!Directory.Exists(fullPath))
+                    return fullPath;
             }
         }
     }

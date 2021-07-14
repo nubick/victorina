@@ -9,7 +9,7 @@ namespace Victorina
 {
     public class SiqConverter
     {
-        public bool IsValid(string packagePath)
+        public bool IsSiqFormat(string packagePath)
         {
             string path = $"{packagePath}/content.xml";
             return File.Exists(path);
