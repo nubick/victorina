@@ -60,10 +60,19 @@ namespace Victorina
         
         private void CreatePackageGame(Package package)
         {
-            CreatePackageGameSystem.CreatePackageGame(package);
-            SwitchTo(LobbyView);
+            StartCoroutine(CreatePackageCoroutine(package));
         }
 
+        private IEnumerator CreatePackageCoroutine(Package package)
+        {
+            yield return ConfirmationDialogueView.ShowAndWaitForFinish("Новая игра", "История предыдущей игры будет перезаписана.\nПродолжить?");
+            if (ConfirmationDialogueView.IsConfirmed)
+            {
+                CreatePackageGameSystem.CreatePackageGame(package);
+                SwitchTo(LobbyView);
+            }
+        }
+        
         private void ResumePackageGame(Package package)
         {
             CreatePackageGameSystem.ResumePackageGame(package);
