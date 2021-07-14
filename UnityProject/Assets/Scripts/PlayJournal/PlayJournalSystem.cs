@@ -43,9 +43,17 @@ namespace Victorina
 
             string journalText = File.ReadAllText(journalPath);
             List<IServerCommand> commands = ReadCommands(journalText);
-            CommandsSystem.PlayJournalCommands(commands);
 
-            Data.ExecutedCommands.AddRange(commands);
+            Data.IsCommandsPlaying = true;
+            try
+            {
+                CommandsSystem.PlayJournalCommands(commands);
+                Data.ExecutedCommands.AddRange(commands);
+            }
+            finally
+            {
+                Data.IsCommandsPlaying = false;
+            }
         }
 
         private List<IServerCommand> ReadCommands(string journalText)

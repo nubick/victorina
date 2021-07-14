@@ -8,6 +8,9 @@ namespace Victorina
     {
         [Inject] private ServerEventsData Data { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
+        [Inject] private PlayJournalData PlayJournalData { get; set; }
+        
+        private bool IsTimeToHandle => NetworkData.IsMaster && !PlayJournalData.IsCommandsPlaying;
         
         public void Initialize()
         {
@@ -37,10 +40,10 @@ namespace Victorina
                 throw new Exception($"Not supported ServerEvent type: {serverEvent}");
             }
         }
-        
+
         private void OnEventPublished(string eventId)
         {
-            if (NetworkData.IsMaster)
+            if (IsTimeToHandle)
             {
                 Data.PendingToSendEvents.Enqueue((eventId, new ServerEventArgument()));
             }
@@ -48,7 +51,7 @@ namespace Victorina
 
         private void OnEventPublished(string eventId, string strArgument)
         {
-            if (NetworkData.IsMaster)
+            if (IsTimeToHandle)
             {
                 ServerEventArgument argument = new ServerEventArgument();
                 argument.SetString(strArgument);
@@ -58,7 +61,7 @@ namespace Victorina
 
         private void OnEventPublished(string eventId, int intArgument)
         {
-            if (NetworkData.IsMaster)
+            if (IsTimeToHandle)
             {
                 ServerEventArgument argument = new ServerEventArgument();
                 argument.SetInt(intArgument);

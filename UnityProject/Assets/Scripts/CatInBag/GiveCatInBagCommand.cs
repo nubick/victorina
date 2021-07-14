@@ -9,7 +9,6 @@ namespace Victorina
     {
         [Inject] private PlayStateData PlayStateData { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
-        [Inject] private CommandsSystem CommandsSystem { get; set; }
 
         public byte ReceiverPlayerId { get; set; }
         
