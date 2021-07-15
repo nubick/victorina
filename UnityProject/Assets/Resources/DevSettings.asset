@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DevSettings
   m_EditorClassIdentifier: 
   LastMajorVersion: 0
-  LastMinorVersion: 3
-  BuildNumber: 159
+  LastMinorVersion: 4
+  BuildNumber: 0
   BuildMode: 1
-  MinSupportedClientVersion: 0.3.144
+  MinSupportedClientVersion: 0.4.0
