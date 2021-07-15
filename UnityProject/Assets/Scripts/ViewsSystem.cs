@@ -25,6 +25,7 @@ namespace Victorina
         [Inject] private MasterShowFinalRoundQuestionView MasterShowFinalRoundQuestionView { get; set; }
         [Inject] private MasterAcceptAnswerView MasterAcceptAnswerView { get; set; }
         [Inject] private MasterShowAnswerView MasterShowAnswerView { get; set; }
+        [Inject] private MasterMediaControlView MasterMediaControlView { get; set; }
         
         [Inject] private PlayerGiveAnswerView PlayerGiveAnswerView { get; set; }
         [Inject] private PlayerAcceptingAnswerView PlayerAcceptingAnswerView { get; set; }
@@ -168,8 +169,11 @@ namespace Victorina
             ViewBase storyDotView = GetStoryDotView(currentStoryDot);
             Debug.Log($"Show: {storyDotView.name}");
             storyDotView.Show();
+
+            if (NetworkData.IsMaster && storyDotPlayState.IsMediaStoryDot)
+                MasterMediaControlView.Show();
         }
-        
+
         private ViewBase GetStoryDotView(StoryDot storyDot)
         {
             return storyDot switch

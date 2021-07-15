@@ -22,7 +22,8 @@ namespace Victorina
         private StoryDot[] Story => IsQuestionStory ? NetQuestion.QuestionStory : NetQuestion.AnswerStory;
         public StoryDot CurrentStoryDot => Story[StoryDotIndex];
         public bool IsLastDot => StoryDotIndex == Story.Length - 1;
-
+        public bool IsMediaStoryDot => CurrentStoryDot is AudioStoryDot || CurrentStoryDot is VideoStoryDot;
+        
         public override void Serialize(PooledBitWriter writer)
         {
             DataSerializationService.SerializeNetQuestion(writer, NetQuestion);

@@ -19,7 +19,6 @@ namespace Victorina
         public GameObject NextQuestionDotButton;
         public GameObject StartTimerButton;
         public GameObject StopTimerButton;
-        public GameObject RestartMediaButton;
         public GameObject AcceptAnswer;
         public GameObject ShowAnswerButton;
 
@@ -50,7 +49,6 @@ namespace Victorina
             NextQuestionDotButton.SetActive(!PlayState.IsLastDot);
             
             TimerStrip.gameObject.SetActive(AnswerTimerData.State != QuestionTimerState.NotStarted);
-            RestartMediaButton.SetActive(PlayState.CurrentStoryDot is VideoStoryDot || PlayState.CurrentStoryDot is AudioStoryDot);
             StartTimerButton.SetActive(CanStartTimer(AnswerTimerData.State, PlayState.IsLastDot)); 
             StopTimerButton.SetActive(AnswerTimerData.State == QuestionTimerState.Running);
             
@@ -94,12 +92,6 @@ namespace Victorina
         public void OnNextQuestionDotButtonClicked()
         {
             ShowQuestionSystem.ShowNext();
-        }
-
-        public void OnRestartMediaButtonClicked()
-        {
-            ShowQuestionSystem.RestartMedia();
-            RefreshUI();
         }
         
         public void OnStartTimerButtonClicked()

@@ -9,6 +9,7 @@ namespace Victorina
     public class VideoStoryDotView : StoryDotView
     {
         private int? _pendingFileId;
+        private long _pausedFrame;
         
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private AppState AppState { get; set; }
@@ -22,9 +23,10 @@ namespace Victorina
         public void Initialize()
         {
             MetagameEvents.ClientFileDownloaded.Subscribe(OnClientFileDownloaded);
-            MetagameEvents.QuestionTimerStarted.Subscribe(OnQuestionTimeStarted);
-            MetagameEvents.QuestionTimerPaused.Subscribe(OnQuestionTimerPaused);
-            MetagameEvents.MediaRestarted.Subscribe(OnMediaRestarted);
+            
+            ServerEvents.PlayMedia.Subscribe(OnPlayMedia);
+            ServerEvents.PauseMedia.Subscribe(OnPauseMedia);
+            ServerEvents.RestartMedia.Subscribe(OnMediaRestarted);
             
             AppState.Volume.SubscribeChanged(SetVolume);
             SetVolume(AppState.Volume.Value);
@@ -35,17 +37,25 @@ namespace Victorina
         {
             Debug.LogWarning($"VideoPlayerOnErrorReceived: {message}");
         }
-        
+
         protected override void OnShown()
         {
             if (PlayStateData.Type == PlayStateType.AcceptingAnswer)
                 return;
 
-            StoryDot currentStoryDot = GetCurrentStoryDot();
-            if (currentStoryDot is VideoStoryDot videoStoryDot)
+            if (PlayStateData.Type == PlayStateType.ShowQuestion && PlayStateData.As<ShowQuestionPlayState>().IsCameBackFromAcceptingAnswer)
             {
-                StopAllCoroutines();
-                PlayVideo(videoStoryDot.FileId);
+                VideoPlayer.Play();
+                VideoPlayer.frame = _pausedFrame;
+            }
+            else
+            {
+                StoryDot currentStoryDot = GetCurrentStoryDot();
+                if (currentStoryDot is VideoStoryDot videoStoryDot)
+                {
+                    StopAllCoroutines();
+                    PlayVideo(videoStoryDot.FileId);
+                }
             }
         }
 
@@ -99,7 +109,7 @@ namespace Victorina
                 PlayVideo(fileId);
         }
 
-        private void OnQuestionTimeStarted()
+        private void OnPlayMedia()
         {
             if (IsActive)
             {
@@ -109,13 +119,16 @@ namespace Victorina
             }
         }
 
-        private void OnQuestionTimerPaused()
+        private void OnPauseMedia()
         {
             if (IsActive)
             {
                 Debug.Log($"Pause: VideoStoryDotView, isPaused: {VideoPlayer.isPaused}, isPlaying: {VideoPlayer.isPlaying}, isFinished: {VideoPlayer.IsFinished()}, {Time.time}");
                 if (VideoPlayer.isPlaying)
+                {
+                    _pausedFrame = VideoPlayer.frame;
                     VideoPlayer.Pause();
+                }
             }
         }
         

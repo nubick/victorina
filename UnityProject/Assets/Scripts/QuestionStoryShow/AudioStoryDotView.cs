@@ -8,22 +8,22 @@ namespace Victorina
     public class AudioStoryDotView : StoryDotView
     {
         private int? _pendingFileId;
+        private float _pausedTime;
 
         [Inject] private MasterFilesRepository MasterFilesRepository { get; set; }
         [Inject] private AppState AppState { get; set; }
         [Inject] private PathSystem PathSystem { get; set; }
-
-        private ShowQuestionPlayState PlayState => PlayStateData.As<ShowQuestionPlayState>();
         
         public AudioSource AudioSource;
         
         public void Initialize()
         {
             MetagameEvents.ClientFileDownloaded.Subscribe(OnClientFileDownloaded);
-            MetagameEvents.QuestionTimerStarted.Subscribe(OnQuestionTimerStarted);
-            MetagameEvents.QuestionTimerPaused.Subscribe(OnQuestionTimerPaused);
-            MetagameEvents.MediaRestarted.Subscribe(OnMediaRestarted);
             
+            ServerEvents.PlayMedia.Subscribe(OnPlayMedia);
+            ServerEvents.PauseMedia.Subscribe(OnPauseMedia);
+            ServerEvents.RestartMedia.Subscribe(OnMediaRestarted);
+
             AppState.Volume.SubscribeChanged(SetVolume);
             SetVolume(AppState.Volume.Value);
         }
@@ -38,10 +38,10 @@ namespace Victorina
             if (PlayStateData.Type == PlayStateType.AcceptingAnswer)
                 return;
 
-            if (PlayState.IsCameBackFromAcceptingAnswer)
+            if (PlayStateData.Type == PlayStateType.ShowQuestion && PlayStateData.As<ShowQuestionPlayState>().IsCameBackFromAcceptingAnswer)
             {
-                Debug.Log($"Came back from accepting answer");
-                AudioSource.UnPause();
+                AudioSource.time = _pausedTime;
+                AudioSource.Play();
             }
             else
             {
@@ -50,7 +50,7 @@ namespace Victorina
                     StartCoroutine(LoadAndPlay(audioStoryDot.FileId));
             }
         }
-
+        
         private IEnumerator LoadAndPlay(int fileId)
         {
             bool exist = MasterFilesRepository.Has(fileId);
@@ -96,21 +96,18 @@ namespace Victorina
             if (_pendingFileId == fileId)
                 StartCoroutine(LoadAndPlay(fileId));
         }
-        
-        private void OnQuestionTimerStarted()
+
+        private void OnPlayMedia()
         {
             if (IsActive)
-            {
-                Debug.Log($"AudioView: TimerStarted, isPlaying: {AudioSource.isPlaying}, playback pos: {AudioSource.time}, {Time.time}");
                 AudioSource.UnPause();
-            }
         }
 
-        private void OnQuestionTimerPaused()
+        private void OnPauseMedia()
         {
             if (IsActive)
             {
-                Debug.Log($"AudioView: TimerPaused, isPlaying: {AudioSource.isPlaying}, playback pos: {AudioSource.time}, {Time.time}");
+                _pausedTime = AudioSource.time;
                 AudioSource.Pause();
             }
         }

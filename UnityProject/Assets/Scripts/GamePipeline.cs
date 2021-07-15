@@ -99,6 +99,7 @@ namespace Victorina
             
             //Show Question
             _injector.Bind(FindObjectOfType<MasterShowQuestionView>());
+            _injector.Bind(FindObjectOfType<MasterMediaControlView>());
             _injector.Bind(FindObjectOfType<PlayerGiveAnswerView>());
             _injector.Bind(new AcceptAnswerSystem());
             _injector.Bind(new ShowQuestionSystem());
@@ -252,6 +253,7 @@ namespace Victorina
             _injector.Get<MatchSystem>().Initialize();
             
             _injector.Get<MasterShowQuestionView>().Initialize();
+            _injector.Get<MasterMediaControlView>().Initialize();
             _injector.Get<PlayerGiveAnswerView>().Initialize();
             _injector.Get<MasterAnswerTipSystem>().Initialize();
 

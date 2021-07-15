@@ -33,5 +33,10 @@ namespace Victorina
         {
             return _intValue;
         }
+
+        public override string ToString()
+        {
+            return $"[ServerEventArgument: {Type}, {_stringValue}, {_intValue}]";
+        }
     }
 }

@@ -73,18 +73,19 @@ namespace Victorina
         public void PauseTimer()
         {
             AnswerTimerData.State = QuestionTimerState.Paused;
+
+            if (PlayState.IsMediaStoryDot)
+                ServerEvents.PauseMedia.Publish();
         }
 
         public void ContinueTimer()
         {
             StartTimer();
+            
+            if(PlayState.IsMediaStoryDot)
+                ServerEvents.PlayMedia.Publish();
         }
-
-        public void RestartMedia()
-        {
-            CommandsSystem.AddNewCommand(new RestartMediaCommand());
-        }
-
+        
         public bool CanShowAnswer()
         {
             return PlayState.NetQuestion.Type == QuestionType.Simple && AnswerTimerData.State != QuestionTimerState.NotStarted;
@@ -119,6 +120,23 @@ namespace Victorina
                 PauseTimer();
                 SelectPlayerForAnswer(PlayersBoard.Current.PlayerId);
             }
+        }
+
+        public void PlayMedia()
+        {
+            StartTimer();
+            ServerEvents.PlayMedia.Publish();
+        }
+
+        public void PauseMedia()
+        {
+            PauseTimer();
+        }
+
+        public void RestartMedia()
+        {
+            StartTimer();
+            ServerEvents.RestartMedia.Publish();
         }
     }
 }

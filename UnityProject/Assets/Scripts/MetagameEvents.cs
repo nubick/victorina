@@ -24,7 +24,6 @@ namespace Victorina
         //Show Question
         public static GameEvent QuestionTimerStarted { get; } = new GameEvent();
         public static GameEvent QuestionTimerPaused { get; } = new GameEvent();
-        public static GameEvent MediaRestarted { get; } = new GameEvent();
 
         //Final Round
         public static GameEvent<int> FinalRoundThemeClicked { get; } = new GameEvent<int>();

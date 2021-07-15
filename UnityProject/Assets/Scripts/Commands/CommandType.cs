@@ -41,7 +41,6 @@ namespace Victorina.Commands
         SendAnswerIntention,
         SelectPlayerForAnswer,
         SelectFastestPlayerForAnswer,
-        RestartMedia,
         ShowAnswer,
         
         //Accepting Answer

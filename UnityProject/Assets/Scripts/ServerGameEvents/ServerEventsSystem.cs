@@ -11,12 +11,16 @@ namespace Victorina
         [Inject] private PlayJournalData PlayJournalData { get; set; }
         
         private bool IsTimeToHandle => NetworkData.IsMaster && !PlayJournalData.IsCommandsPlaying;
-        
+
         public void Initialize()
         {
             Register(ServerEvents.FinalRoundStarted);
             Register(ServerEvents.RoundQuestionSelected);
             Register(ServerEvents.PlaySoundEffect);
+
+            Register(ServerEvents.PlayMedia);
+            Register(ServerEvents.PauseMedia);
+            Register(ServerEvents.RestartMedia);
         }
 
         private void Register(ServerEventBase serverEvent)
