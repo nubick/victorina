@@ -230,7 +230,6 @@ namespace Victorina
         {
             HideAll();
             ResultView.Show();
-            PlayersBoardView.Show();
         }
     }
 }
