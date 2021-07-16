@@ -14,6 +14,7 @@ namespace Victorina
         [Inject] private NetworkData NetworkData { get; set; }
         [Inject] private MatchSettingsView MatchSettingsView { get; set; }
         [Inject] private PlayStateData PlayStateData { get; set; }
+        [Inject] private ViewsSystem ViewsSystem { get; set; }
         
         private readonly Dictionary<string, RoundQuestionWidget> _questionWidgetsCache = new Dictionary<string, RoundQuestionWidget>();
         
@@ -133,6 +134,8 @@ namespace Victorina
                 ServerService.StopServer();
             else
                 ClientService.LeaveGame();
+            
+            ViewsSystem.ShowStartUpView();
         }
         
         private void OnRoundQuestionClicked(NetRoundQuestion netRoundQuestion)

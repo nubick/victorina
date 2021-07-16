@@ -43,8 +43,6 @@ namespace Victorina
             StartupView.Show();
             
             MetagameEvents.PlayStateChanged.Subscribe(OnPackagePlayStateChanged);
-            MetagameEvents.DisconnectedAsClient.Subscribe(ShowStartUpView);
-            MetagameEvents.ServerStopped.Subscribe(ShowStartUpView);
         }
         
         private void HideAll()
@@ -203,7 +201,7 @@ namespace Victorina
                 PlayerAcceptingAnswerView.Show();
         }
         
-        private void ShowStartUpView()
+        public void ShowStartUpView()
         {
             HideAll();
             StartupView.Show();

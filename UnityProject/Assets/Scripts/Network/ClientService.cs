@@ -49,15 +49,22 @@ namespace Victorina
             
             while (NetworkData.ClientConnectingState == ClientConnectingState.Connecting)
                 yield return null;
+
+            NetworkData.LastPlayerName = playerName;
+            NetworkData.LastGameCode = gameCode;
         }
 
+        public IEnumerator JoinGameUsingLastNameAndCode()
+        {
+            return JoinGame(NetworkData.LastPlayerName, NetworkData.LastGameCode);
+        }
+        
         public void LeaveGame()
         {
             if (NetworkingManager.IsClient)
             {
                 Debug.Log($"Client. StopClient: {NetworkingManager.LocalClientId}");
                 NetworkingManager.StopClient();
-                MetagameEvents.DisconnectedAsClient.Publish();
             }
         }
         

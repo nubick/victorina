@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LastMajorVersion: 0
   LastMinorVersion: 4
-  BuildNumber: 0
-  BuildMode: 1
+  BuildNumber: 6
+  BuildMode: 0
   MinSupportedClientVersion: 0.4.0

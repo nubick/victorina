@@ -63,6 +63,9 @@ namespace Victorina
             
             _injector.Bind(new IpCodeSystem());
             
+            _injector.Bind(new ClientReconnectionSystem());
+            _injector.Bind(FindObjectOfType<ClientReconnectionData>());
+            
             _injector.Bind(new MatchSystem());
             MatchData matchData = new MatchData();
             _injector.Bind(matchData);
@@ -224,6 +227,7 @@ namespace Victorina
             GeneratePlayerGuid();//after load app state
             
             StartCoroutine(_injector.Get<ExternalIpSystem>().Initialize());
+            _injector.Get<ClientReconnectionSystem>().Initialize();
             
             _injector.Get<PathSystem>().Initialize();
             

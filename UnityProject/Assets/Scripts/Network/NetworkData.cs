@@ -6,5 +6,8 @@ namespace Victorina
         public bool IsMaster { get; set; }
         public bool IsClient => !IsMaster;
         public byte RegisteredPlayerId { get; set; }
+        
+        public string LastPlayerName { get; set; }
+        public string LastGameCode { get; set; }
     }
 }
