@@ -13,5 +13,8 @@ namespace Victorina
         
         public static GameEvent<int> FirstRoundQuestionStart { get; } = new GameEvent<int>();
         public static GameEvent<int> LastRoundQuestionStart { get; } = new GameEvent<int>();
+
+        public static GameEvent SupportMailClicked { get; } = new GameEvent();
+        public static GameEvent DiscordInviteLinkClicked { get; } = new GameEvent();
     }
 }

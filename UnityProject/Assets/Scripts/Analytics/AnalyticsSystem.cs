@@ -22,6 +22,9 @@ namespace Victorina
             AnalyticsEvents.FirstRoundQuestionStart.Subscribe(roundNumber => SendEvent("FirstRoundQuestionStart", "RoundNumber", roundNumber));
             AnalyticsEvents.LastRoundQuestionStart.Subscribe(roundNumber => SendEvent("LastRoundQuestionStart", "RoundNumber", roundNumber));
             
+            AnalyticsEvents.SupportMailClicked.Subscribe(() => SendEvent("SupportMailClicked"));
+            AnalyticsEvents.DiscordInviteLinkClicked.Subscribe(() => SendEvent("DiscordInviteLinkClicked"));
+            
             //Crafter
             AnalyticsEvents.CrafterOpen.Subscribe(() => SendEvent("CrafterOpen"));
             AnalyticsEvents.SavePackageAsArchive.Subscribe(archiveName => SendEvent("SavePackageAsArchive", "ArchiveName", archiveName));

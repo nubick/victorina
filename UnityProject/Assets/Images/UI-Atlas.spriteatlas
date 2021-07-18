@@ -47,8 +47,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1f09d5f3f483147ae81b8cf98d080b56, type: 3}
   - {fileID: 21300000, guid: 1c56982486e9f4b4a9ae536c29ab7973, type: 3}
   - {fileID: 21300000, guid: 0d833de40021c43d7bbbb931e0521301, type: 3}
+  - {fileID: 21300000, guid: 3466b1751c1a446ac959e0a80ab1a28d, type: 3}
   - {fileID: 21300000, guid: 2d3c2a06042f54721a01fef746aaf157, type: 3}
   - {fileID: 21300000, guid: 428c49260b15b48528ced3918bd4275a, type: 3}
+  - {fileID: 21300000, guid: acdf5f76ecd964ebb9983849df3cee27, type: 3}
   - {fileID: 21300000, guid: dbdd30f65cf4b4a25870964734ff3f91, type: 3}
   - {fileID: 21300000, guid: 8c3c522786c1b4b1d825a7ba8a6b238f, type: 3}
   - {fileID: 21300000, guid: 6554be877b8274fae91a44c26670d39f, type: 3}
@@ -78,8 +80,10 @@ SpriteAtlas:
   - button-finger
   - vuvuzelas
   - wolf-howl
+  - discord_icon
   - jigsaw-box
   - hatching
+  - envelope
   - current_border
   - auto-repair
   - swap-bag

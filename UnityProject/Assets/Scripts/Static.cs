@@ -18,6 +18,9 @@ namespace Victorina
 
         public static int AuctionMinStep = 100;
 
+        public static string SupportMail = "vumka.game@gmail.com";
+        public static string DiscordInviteLink = "https://discord.gg/VKSTCw6zQe";
+        
         private static DevSettings _devSettings;
         public static DevSettings DevSettings
         {
