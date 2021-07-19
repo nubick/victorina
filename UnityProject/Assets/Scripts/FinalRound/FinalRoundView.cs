@@ -304,6 +304,11 @@ namespace Victorina
             FinalRoundSystem.ClearAnswer();
         }
 
+        public void OnShowQuestionAgainButtonClicked()
+        {
+            FinalRoundSystem.ChangePhase(FinalRoundPhase.QuestionShowing);
+        }
+
         public void OnShowAnswersButtonClicked()
         {
             FinalRoundSystem.ChangePhase(FinalRoundPhase.AnswersAccepting);
