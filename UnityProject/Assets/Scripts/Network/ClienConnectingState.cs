@@ -2,9 +2,9 @@ namespace Victorina
 {
     public enum ClientConnectingState
     {
-        None,
         Connecting,
         Success,
+        Rejected,
         Fail
     }
 }

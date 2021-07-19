@@ -25,6 +25,8 @@ namespace Victorina
         {
             NetworkData.RegisteredPlayerId = playerId;
             InitializePlayerData();
+            NetworkData.ClientConnectingState = ClientConnectingState.Success;
+            MetagameEvents.ConnectedAsClient.Publish();
         }
         
         private void InitializePlayerData()
@@ -34,6 +36,13 @@ namespace Victorina
                 MatchData.IsMeCurrentPlayer = PlayersBoardSystem.IsCurrentPlayer(NetworkData.RegisteredPlayerId);
                 MatchData.ThisPlayer = PlayersBoardSystem.GetPlayer(NetworkData.RegisteredPlayerId);
             }
+        }
+
+        public void OnReceiveRejectReason(PlayerRejectReason rejectReason)
+        {
+            Debug.Log($"Reject Reason: {rejectReason}");
+            NetworkData.PlayerRejectReason = rejectReason;
+            NetworkData.ClientConnectingState = ClientConnectingState.Rejected;
         }
         
         public void OnReceive(PlayersBoard playersBoard)

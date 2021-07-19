@@ -46,12 +46,14 @@ namespace Victorina
 
             NetworkData.ClientConnectingState = ClientConnectingState.Connecting;
             NetworkingManager.StartClient();
-            
             while (NetworkData.ClientConnectingState == ClientConnectingState.Connecting)
                 yield return null;
 
-            NetworkData.LastPlayerName = playerName;
+            NetworkData.LastPlayerName = playerName;//todo: I have this data in AppState data
             NetworkData.LastGameCode = gameCode;
+            
+            if(NetworkData.ClientConnectingState == ClientConnectingState.Rejected)
+                NetworkingManager.StopClient();
         }
 
         public IEnumerator JoinGameUsingLastNameAndCode()
@@ -72,18 +74,8 @@ namespace Victorina
         {
             if (NetworkingManager.IsServer)
                 return;
-            
-            if (NetworkingManager.LocalClientId == clientId)
-            {
-                Debug.Log($"Client connection success, clientId: {clientId}");
-                NetworkData.ClientConnectingState = ClientConnectingState.Success;
-                MetagameEvents.ConnectedAsClient.Publish();
-            }
-            else
-            {
-                NetworkData.ClientConnectingState = ClientConnectingState.Fail;
-                throw new Exception($"I can see connection of another client, id: {clientId}, LocalClientId: {NetworkingManager.LocalClientId}");
-            }
+
+            Debug.Log($"OnClientConnected, clientId: {clientId}");
         }
 
         private void OnClientDisconnect(ulong clientId)

@@ -51,6 +51,12 @@ namespace Victorina
             networkPlayer.SendRoundFileIds(info.fileIds, info.chunksAmounts, info.priorities);
         }
 
+        public void SendRejectReason(NetworkPlayer networkPlayer, PlayerRejectReason rejectReason)
+        {
+            Debug.Log($"Master: Send reject reason to {networkPlayer.NetworkId}: {rejectReason}");
+            networkPlayer.SendRejectReason(rejectReason);
+        }
+        
         private string GetPlayersInfo()
         {
             return string.Join(",", GetPlayers().Select(_ => _.OwnerClientId.ToString()));

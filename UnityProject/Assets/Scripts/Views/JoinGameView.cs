@@ -1,6 +1,8 @@
 using System.Collections;
+using System.Diagnostics;
 using Injection;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Victorina
 {
@@ -12,8 +14,8 @@ namespace Victorina
         [Inject] private AppState AppState { get; set; }
         [Inject] private SaveSystem SaveSystem { get; set; }
         [Inject] private NetworkData NetworkData { get; set; }
-        [Inject] private ServerService ServerService { get; set; }
         [Inject] private PlayersBoardSystem PlayersBoardSystem { get; set; }
+        [Inject] private MessageDialogueView MessageDialogueView { get; set; }
 
         public ValidatedInputField PlayerNameInputField;
         public ValidatedInputField GameCodeInputField;
@@ -80,9 +82,20 @@ namespace Victorina
             else
             {
                 Debug.Log($"Join game error, client connecting state: {NetworkData.ClientConnectingState}");
+
+                if (NetworkData.ClientConnectingState == ClientConnectingState.Rejected)
+                {
+                    string rejectReasonMessage = NetworkData.PlayerRejectReason switch
+                    {
+                        PlayerRejectReason.AnotherConnection => "Пользователь с вашим ID уже подключён к игре!",
+                        PlayerRejectReason.NotSupportedVersion => "Версия клиента устарела. Обновите приложение!",
+                        _ => "Not supported reject reason!"
+                    };
+                    MessageDialogueView.Show("В подключении отказано", rejectReasonMessage);
+                }
             }
         }
-        
+
         private bool IsGameCodeValid(string gameCode)
         {
             return IpCodeSystem.IsValidGameCode(gameCode);

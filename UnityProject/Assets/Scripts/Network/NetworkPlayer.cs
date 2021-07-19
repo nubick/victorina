@@ -33,6 +33,19 @@ namespace Victorina
             Debug.Log($"Player {OwnerClientId}: Receive registered player id: {playerId}");
             PlayerDataReceiver.OnReceiveRegisteredPlayerId(playerId);
         }
+
+        public void SendRejectReason(PlayerRejectReason rejectReason)
+        {
+            int rejectReasonInt = (int) rejectReason;
+            InvokeClientRpcOnOwner(ReceiveRejectReasonClientRpc, rejectReasonInt, "Sequenced");
+        }
+
+        [ClientRPC]
+        private void ReceiveRejectReasonClientRpc(int rejectReasonInt)
+        {
+            PlayerRejectReason rejectReason = (PlayerRejectReason) rejectReasonInt;
+            PlayerDataReceiver.OnReceiveRejectReason(rejectReason);
+        }
         
         public void SendPlayersBoard(PlayersBoard playersBoard)
         {

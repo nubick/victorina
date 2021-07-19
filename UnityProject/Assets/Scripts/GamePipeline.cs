@@ -135,6 +135,7 @@ namespace Victorina
             
             //Master Only
             _injector.Bind(new ServerService());
+            _injector.Bind(new SendFirstMessageService());
             _injector.Bind(new ConnectedPlayersData());
             _injector.Bind(new FilesDeliveryStatusManager());
             _injector.Bind(new PlayersBoardSystem());
@@ -232,6 +233,7 @@ namespace Victorina
             _injector.Get<PathSystem>().Initialize();
             
             _injector.Get<ServerService>().Initialize();
+            StartCoroutine(_injector.Get<SendFirstMessageService>().SendCoroutine());
             _injector.Get<PlayersBoardSystem>().Initialize();
             
             _injector.Get<ClientService>().Initialize();

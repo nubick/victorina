@@ -8,11 +8,15 @@ namespace Victorina
     {
         public byte NextPlayerId { get; set; }
         public List<JoinedPlayer> Players { get; } = new List<JoinedPlayer>();
+        public Dictionary<ulong, PlayerRejectReason> RejectedPlayers { get; } = new Dictionary<ulong, PlayerRejectReason>();
+        public Queue<ulong> WaitingFirstMessageClientIds { get; } = new Queue<ulong>();
 
         public void Clear()
         {
             NextPlayerId = 1;
             Players.Clear();
+            RejectedPlayers.Clear();
+            WaitingFirstMessageClientIds.Clear();
         }
         
         public byte GetPlayerId(ulong clientId)
