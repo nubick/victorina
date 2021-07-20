@@ -21,6 +21,7 @@ namespace Victorina
 
         public static string SupportMail = "vumka.game@gmail.com";
         public static string DiscordInviteLink = "https://discord.gg/VKSTCw6zQe";
+        public static string DownloadPacksUrl = "https://sigame.ru/";
         
         private static DevSettings _devSettings;
         public static DevSettings DevSettings

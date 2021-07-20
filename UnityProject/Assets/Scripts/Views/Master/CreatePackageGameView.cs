@@ -105,5 +105,10 @@ namespace Victorina
         {
             SwitchTo(StartupView);
         }
+
+        public void OnDownloadPacksButtonClicked()
+        {
+            Application.OpenURL(Static.DownloadPacksUrl);
+        }
     }
 }

@@ -46,6 +46,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 292fae63ae1fe4b28bbbad2fe66ab7ff, type: 3}
   - {fileID: 21300000, guid: 1f09d5f3f483147ae81b8cf98d080b56, type: 3}
   - {fileID: 21300000, guid: 1c56982486e9f4b4a9ae536c29ab7973, type: 3}
+  - {fileID: 21300000, guid: 803b0b84b05034fb090f097aed944630, type: 3}
   - {fileID: 21300000, guid: 0d833de40021c43d7bbbb931e0521301, type: 3}
   - {fileID: 21300000, guid: 3466b1751c1a446ac959e0a80ab1a28d, type: 3}
   - {fileID: 21300000, guid: 2d3c2a06042f54721a01fef746aaf157, type: 3}
@@ -79,6 +80,7 @@ SpriteAtlas:
   - strip
   - button-finger
   - vuvuzelas
+  - save-arrow
   - wolf-howl
   - discord_icon
   - jigsaw-box
