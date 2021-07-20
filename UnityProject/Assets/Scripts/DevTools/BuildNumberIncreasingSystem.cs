@@ -5,7 +5,7 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-namespace Victorina
+namespace Victorina.DevTools
 {
     public class BuildNumberIncreasingSystem : IPreprocessBuildWithReport
     {

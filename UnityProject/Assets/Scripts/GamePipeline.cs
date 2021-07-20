@@ -181,9 +181,11 @@ namespace Victorina
 
             //DevTools
             _injector.Bind(new DevToolsSystem());
+            _injector.Bind(FindObjectOfType<DevToolsData>());
             _injector.Bind(new AnalyticsSystem());
             _injector.Bind(new LogsTrackingSystem());
             _injector.Bind(new LogsTrackingData());
+            _injector.Bind(new CheatsActivationSystem());
             
             //Crafter
             _injector.Bind(FindObjectOfType<PackageCrafterView>());
@@ -285,6 +287,7 @@ namespace Victorina
 
             //Debug
             _injector.Get<DisconnectPanelView>().Initialize();
+            _injector.Get<DevToolsSystem>().Initialize();
             
             //Journal
             _injector.Get<PlayJournalSystem>().Initialize();

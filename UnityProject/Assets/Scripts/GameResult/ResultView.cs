@@ -54,9 +54,12 @@ namespace Victorina
         private (List<PlayerData> Winners, List<PlayerData> Players) SplitPlayers(List<PlayerData> allPlayers)
         {
             List<PlayerData> winners = new List<PlayerData>();
-            int maxScore = allPlayers.Max(_ => _.Score);
-            if (maxScore > 0)
-                winners = allPlayers.Where(_ => _.Score == maxScore).ToList();
+            if (allPlayers.Any())
+            {
+                int maxScore = allPlayers.Max(_ => _.Score);
+                if (maxScore > 0)
+                    winners = allPlayers.Where(_ => _.Score == maxScore).ToList();
+            }
             List<PlayerData> players = allPlayers.Except(winners).OrderByDescending(_ => _.Score).ToList();
             return (winners, players);
         }

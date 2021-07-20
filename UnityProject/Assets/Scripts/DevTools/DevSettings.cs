@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Victorina
+namespace Victorina.DevTools
 {
     public class DevSettings : ScriptableObject
     {
@@ -10,6 +10,7 @@ namespace Victorina
         public int BuildNumber;
 
         public BuildMode BuildMode;
+        public bool EditorEnabled;
 
         public string MinSupportedClientVersion;
         

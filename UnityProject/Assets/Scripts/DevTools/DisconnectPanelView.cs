@@ -3,7 +3,7 @@ using MLAPI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Victorina
+namespace Victorina.DevTools
 {
     public class DisconnectPanelView : ViewBase
     {

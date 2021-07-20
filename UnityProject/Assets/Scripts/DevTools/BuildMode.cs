@@ -1,4 +1,4 @@
-namespace Victorina
+namespace Victorina.DevTools
 {
     public enum BuildMode
     {

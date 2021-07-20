@@ -14,12 +14,15 @@ namespace Victorina
         public Text Version;
         public Text SupportMail;
         public Text DiscordInviteLink;
+
+        public GameObject EditorButton;
         
         protected override void OnShown()
         {
             Version.text = $"Версия: {Static.DevSettings.GetAppVersion()}";
             SupportMail.text = Static.SupportMail;
             DiscordInviteLink.text = Static.DiscordInviteLink;
+            EditorButton.SetActive(Static.DevSettings.EditorEnabled);
         }
 
         public void OnCreateNewGameButtonClicked()

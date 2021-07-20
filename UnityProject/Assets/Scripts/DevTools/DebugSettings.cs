@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Victorina
+namespace Victorina.DevTools
 {
     public class DebugSettings : ScriptableObject
     {
