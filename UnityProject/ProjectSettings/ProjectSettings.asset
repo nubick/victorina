@@ -726,6 +726,7 @@ PlayerSettings:
   cloudServicesEnabled:
     Analytics: 1
     Collab: 0
+    Game Performance: 1
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
