@@ -18,6 +18,7 @@ namespace Victorina
         
         public GameObject MasterPart;
         public Text CodeText;
+        public Text HelpMessage;
         
         protected override void OnShown()
         {
@@ -42,8 +43,24 @@ namespace Victorina
                 CodeText.text = "Код Игры: ошибка!";
             else
                 CodeText.text = $"Код Игры: {GetCode()}";
+
+            HelpMessage.text = GetHelpMessage(Static.Port);
         }
-        
+
+        private string GetHelpMessage(int port)
+        {
+            string helpMessageTemplate =
+@"<b>Помощь:</b>
+Для начала игры необходимо:
+1. Иметь выделенный IP адрес
+2. Октрыть порт <color=yellow>{0}</color> (TCP и UDP)
+3. Скопировать код игры, кликнув по нему слева внизу экрана
+4. Отправить код игры игрокам
+5. Дождаться игроков
+6. Начать первый раунд";
+            return string.Format(helpMessageTemplate, port);
+        }
+
         private string GetCode()
         {
             return IpCodeSystem.GetCode(ExternalIpData.Ip);
