@@ -14,6 +14,7 @@ namespace Victorina.DevTools
         public void OnPreprocessBuild(BuildReport report)
         {
             IncreaseBuildNumber(Static.DevSettings);
+            SetBundleVersion(Static.DevSettings);
         }
 
         private void IncreaseBuildNumber(DevSettings devSettings)
@@ -31,6 +32,11 @@ namespace Victorina.DevTools
             devSettings.BuildNumber++;
             Debug.Log($"Build number is increased: {devSettings.GetAppVersion()}");
             EditorUtility.SetDirty(devSettings);
+        }
+
+        private void SetBundleVersion(DevSettings devSettings)
+        {
+            PlayerSettings.bundleVersion = devSettings.GetAppVersion().ToString();
         }
     }
 }
