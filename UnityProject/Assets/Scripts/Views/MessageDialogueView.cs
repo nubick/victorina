@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class MessageDialogueView : ViewBase
+    public class MessageDialogueView : ViewBase, IDataDependOnlyView
     {
         public Text Title;
         public Text Message;

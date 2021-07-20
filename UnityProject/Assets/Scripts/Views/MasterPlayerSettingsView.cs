@@ -7,7 +7,7 @@ using Victorina.DevTools;
 
 namespace Victorina
 {
-    public class MasterPlayerSettingsView : ViewBase
+    public class MasterPlayerSettingsView : ViewBase, IDataDependOnlyView
     {
         private PlayerData _playerData;
         

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Victorina
 {
-    public class MatchSettingsView : ViewBase
+    public class MatchSettingsView : ViewBase, IDataDependOnlyView
     {
         [Inject] private MatchSettingsData Data { get; set; }
         
